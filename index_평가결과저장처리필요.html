@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>평면기준점측량 확인평가</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .hidden { display: none; }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white py-6 shadow-md">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold text-center">평면기준점측량 확인평가</h1>
+        </div>
+    </header>
+
+    <main id="app" class="flex-grow container mx-auto px-4 py-8 max-w-3xl">
+        <!-- Start Screen -->
+        <div id="start-screen" class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">평면기준점측량 "확인평가"</h2>
+            <p class="text-gray-600 mb-8 leading-relaxed">
+                업로드된 평면기준점측량 학습모듈의 핵심 내용을 바탕으로 구성되었습니다.<br>
+                (계획수립, 외업준비, 다각측량, 삼각측량, 성과정리 등)<br>
+                실무 능력을 점검하기 위한 총 20문항의 평가입니다.
+            </p>
+            <button id="start-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-10 rounded-full transition-all shadow-md">
+                시험 시작하기
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+                <span id="unit-name" class="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">단원명</span>
+                <span id="question-count" class="text-sm text-gray-500 font-bold">1 / 20</span>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h3 id="question-text" class="text-lg font-medium text-gray-800 mb-6">질문 내용</h3>
+                <div id="options" class="space-y-3"></div>
+                <div class="mt-8 flex flex-col items-center border-t pt-6">
+                    <button id="hint-btn" class="text-orange-600 border border-orange-600 hover:bg-orange-50 px-4 py-2 rounded-lg text-sm transition-all mb-4">
+                        💡 힌트 보기
+                    </button>
+                    <div id="hint-text" class="hidden text-sm bg-orange-50 p-4 rounded-lg text-orange-800 w-full mb-4 italic"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center px-2">
+                <button id="prev-btn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium disabled:opacity-30">이전 문제</button>
+                <button id="next-btn" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700">다음 문제</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">시험 결과</h2>
+            <div class="flex justify-center mb-8">
+                <div class="relative">
+                    <svg class="w-32 h-32">
+                        <circle class="text-gray-200" stroke-width="8" stroke="currentColor" fill="transparent" r="58" cx="64" cy="64"/>
+                        <circle id="score-circle" class="text-indigo-600" stroke-width="8" stroke-dasharray="364.4" stroke-dashoffset="364.4" stroke-linecap="round" stroke="currentColor" fill="transparent" r="58" cx="64" cy="64"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center font-bold text-2xl" id="score-text">0/20</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-indigo-50 p-4 rounded-lg text-center">
+                    <p class="text-xs text-indigo-600 uppercase font-bold mb-1">정답 문항</p>
+                    <p id="correct-count" class="text-xl font-bold text-indigo-800">0</p>
+                </div>
+                <div class="bg-red-50 p-4 rounded-lg text-center">
+                    <p class="text-xs text-red-600 uppercase font-bold mb-1">오답 문항</p>
+                    <p id="wrong-count" class="text-xl font-bold text-red-800">0</p>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <h3 class="font-bold text-lg mb-4 text-gray-700">📖 오답노트</h3>
+                <div id="incorrect-notes" class="space-y-6"></div>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <button onclick="location.reload()" class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-all">다시 풀기</button>
+            </div>
+        </div>
+    </main>
+
+    <footer id="quiz-footer" class="hidden py-6 bg-transparent">
+        <div class="flex justify-center">
+            <button id="exit-btn" class="bg-red-500 hover:bg-red-600 text-white px-10 py-3 rounded-full shadow-lg font-bold transition-all">시험 종료</button>
+        </div>
+    </footer>
+
+    <!-- Custom Modal for Exit Confirmation -->
+    <div id="exit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">시험을 종료할까요?</h3>
+            <p class="text-gray-600 mb-6">현재까지 푼 내용을 바탕으로<br>결과 화면으로 이동합니다.</p>
+            <div class="flex space-x-3">
+                <button id="modal-cancel-btn" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-bold">계속 풀기</button>
+                <button id="modal-exit-btn" class="flex-1 bg-red-500 text-white py-3 rounded-lg font-bold">종료 및 결과보기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            { unit: "1. 다각측량(트래버스)", question: "다각측량에서 개방 트래버스(Open Traverse)가 주로 사용되는 공사 현장은?", options: ["단지 조성 공사", "노선 측량(도로, 하천)", "소규모 필지 측량", "정밀 기준점 매설"], answer: 1, hint: "시점과 종점이 연결되지 않는 형태로 긴 노선 공사에 쓰입니다." },
+            { unit: "1. 다각측량(트래버스)", question: "다각측량의 순서로 옳은 것은?", options: ["선점-조표-관측-답사-계산", "답사-선점-조표-관측-계산", "관측-답사-선점-조표-계산", "계산-답사-선점-조표-관측"], answer: 1, hint: "현장을 먼저 보고(답사), 위치를 정하고(선점), 표지를 세우는(조표) 순입니다." },
+            { unit: "1. 다각측량(트래버스)", question: "트래버스 측량의 폐합오차 조정 시, 각 관측의 정밀도가 같을 때 오차 배분 방법은?", options: ["거리에 비례하여 배분", "각 측점에 균등하게 배분", "가장 긴 변에 몰아줌", "조정하지 않음"], answer: 1, hint: "각오차의 경우 특별한 조건이 없으면 모든 각에 똑같이 나눠줍니다." },
+            { unit: "2. 삼각측량", question: "삼각측량에서 기선(Base Line) 측량이 필요한 이유는?", options: ["각을 측정할 수 없어서", "삼각형의 크기를 결정하기 위해", "기계고를 높이기 위해", "방위각을 구하기 위해"], answer: 1, hint: "삼각측량은 각만 재기 때문에 최소 하나의 변 길이는 알아야 합니다." },
+            { unit: "2. 삼각측량", question: "삼각형의 내각 중 가장 이상적인 각도의 크기는?", options: ["15도", "30도", "60도", "120도"], answer: 2, hint: "정삼각형에 가까울수록 측량의 정밀도가 유리합니다." },
+            { unit: "3. 거리 및 각 관측", question: "광파거리측정기(EDM)로 거리를 잴 때 프리즘 상수를 확인해야 하는 이유는?", options: ["배터리를 아끼기 위해", "기계와 프리즘의 광학적 중심차를 보정하기 위해", "프리즘의 무게를 맞추기 위해", "색수차를 줄이기 위해"], answer: 1, hint: "장비마다 빛이 반사되는 지점의 오차가 존재합니다." },
+            { unit: "3. 거리 및 각 관측", question: "토탈스테이션(Total Station)으로 측정할 수 없는 것은?", options: ["수평각", "연직각", "경사거리", "현장 대기압"], answer: 3, hint: "토탈스테이션은 각과 거리를 동시에 재는 장비입니다." },
+            { unit: "4. 좌표 및 성과 계산", question: "위거(Latitude)와 경거(Departure)를 계산할 때 필요한 요소는?", options: ["지방고와 수평거리", "수평거리와 방위각", "기계고와 연직각", "후시와 전시"], answer: 1, hint: "위거 = 거리 × cos(방위각), 경거 = 거리 × sin(방위각)입니다." },
+            { unit: "4. 좌표 및 성과 계산", question: "폐합 트래버스에서 위거의 합과 경거의 합이 0이 되지 않는 경우 발생하는 오차는?", options: ["각오차", "폐합오차", "기계오차", "굴절오차"], answer: 1, hint: "출발점으로 돌아왔을 때 좌표 차이가 생기는 것을 의미합니다." },
+            { unit: "5. 오차와 보정", question: "컴퍼스 법칙(Compass Rule)에 의한 오차 배분 조건은?", options: ["각 관측 정밀도가 거리보다 높을 때", "거리와 각의 관측 정밀도가 같을 때", "거리 관측만 정밀할 때", "오차가 없을 때"], answer: 1, hint: "거리에 비례하여 오차를 배분하는 가장 일반적인 방법입니다." },
+            { unit: "1. 다각측량(트래버스)", question: "방위각(Azimuth)의 측정 기준 방향은?", options: ["진남 방향", "진북 방향", "동쪽 방향", "임의 방향"], answer: 1, hint: "북쪽을 0도로 하여 시계방향으로 잽니다." },
+            { unit: "2. 삼각측량", question: "삼각망 중 가장 신뢰도가 높고 조건식이 많은 형태는?", options: ["단각쇄망", "사각쇄망", "유심다각망", "개방쇄망"], answer: 1, hint: "사각형 안에 대각선이 교차하는 형태로 검토 조건이 가장 많습니다." },
+            { unit: "3. 거리 및 각 관측", question: "연직각 관측 시 기계의 수평을 맞추는 가장 기초적인 장치는?", options: ["정준나사 및 기포관", "망원경", "삼각대 발", "데이터 기록기"], answer: 0, hint: "정준 과정을 통해 기계를 수평으로 세웁니다." },
+            { unit: "4. 좌표 및 성과 계산", question: "방위각이 120도인 측선의 방위(Bearing)는?", options: ["N 60 E", "S 60 E", "S 30 W", "N 30 W"], answer: 1, hint: "120도는 남동(SE) 방향이며 남쪽에서 동쪽으로 60도만큼 기울어 있습니다." },
+            { unit: "1. 다각측량(트래버스)", question: "결합 트래버스(Junction Traverse)의 특징은?", options: ["시점만 알고 종점은 모른다.", "시점과 종점이 모두 기지점이다.", "시점과 종점이 같다.", "중간에 기지점이 없다."], answer: 1, hint: "알고 있는 두 점 사이를 연결하여 오차를 확인합니다." },
+            { unit: "5. 오차와 보정", question: "측량 결과 얻어진 폐합오차를 측선 총 길이로 나눈 값은?", options: ["상대오차(정밀도)", "표준편차", "최확값", "우연오차"], answer: 0, hint: "1/2000 처럼 분수 형태로 정밀도를 나타냅니다." },
+            { unit: "3. 거리 및 각 관측", question: "측량 전 토탈스테이션의 '구심' 작업이란?", options: ["기계를 수평으로 맞추는 것", "기계의 중심을 지상 측점 바로 위에 일치시키는 것", "망원경의 초점을 맞추는 것", "프리즘을 정면으로 보는 것"], answer: 1, hint: "측점 바로 위에 기계가 수직으로 놓이게 하는 과정입니다." },
+            { unit: "2. 삼각측량", question: "삼각측량에서 계산 순서로 옳은 것은?", options: ["좌표계산-변길이계산-각조정", "각조정-변길이계산-좌표계산", "변길이계산-각조정-좌표계산", "좌표계산-각조정-변길이계산"], answer: 1, hint: "각을 먼저 맞추고 정현법칙으로 변을 구한 뒤 좌표를 냅니다." },
+            { unit: "1. 다각측량(트래버스)", question: "측선 5개인 폐합 트래버스 내각의 총합은?", options: ["360도", "540도", "720도", "900도"], answer: 1, hint: "식: 180도 × (n - 2)입니다." },
+            { unit: "4. 좌표 및 성과 계산", question: "컴퓨터를 이용한 성과 정리 시 가장 큰 장점은?", options: ["현장에 갈 필요가 없다.", "복잡한 좌표 계산 오차를 줄이고 도면화가 빠르다.", "기계가 스스로 측량한다.", "비용이 전혀 들지 않는다."], answer: 1, hint: "CAD 연동 및 수치 데이터 처리의 효율성이 핵심입니다." }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = new Array(quizData.length).fill(-1);
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const quizFooter = document.getElementById('quiz-footer');
+        const optionsContainer = document.getElementById('options');
+        const progressBar = document.getElementById('progress-bar');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const exitModal = document.getElementById('exit-modal');
+
+        function showQuestion() {
+            const q = quizData[currentQuestion];
+            document.getElementById('unit-name').textContent = q.unit;
+            document.getElementById('question-count').textContent = `${currentQuestion + 1} / ${quizData.length}`;
+            document.getElementById('question-text').textContent = q.question;
+            progressBar.style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+            document.getElementById('hint-text').textContent = q.hint;
+            document.getElementById('hint-text').classList.add('hidden');
+
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.textContent = currentQuestion === quizData.length - 1 ? "결과 확인" : "다음 문제";
+
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const isSelected = userAnswers[currentQuestion] === idx;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-4 rounded-lg border transition-all ${isSelected ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-100' : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'}`;
+                btn.innerHTML = `<span class="inline-block w-6 h-6 ${isSelected ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600'} rounded-full text-center text-sm font-bold mr-3">${idx + 1}</span> ${opt}`;
+                btn.onclick = () => { userAnswers[currentQuestion] = idx; showQuestion(); };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            quizFooter.classList.add('hidden');
+            exitModal.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            let score = 0;
+            userAnswers.forEach((ans, idx) => { if (ans === quizData[idx].answer) score++; });
+            
+            document.getElementById('score-text').textContent = `${score}/${quizData.length}`;
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('wrong-count').textContent = quizData.length - score;
+            document.getElementById('score-circle').style.strokeDashoffset = 364.4 - (364.4 * (score / quizData.length));
+            
+            const notes = document.getElementById('incorrect-notes');
+            notes.innerHTML = '';
+            userAnswers.forEach((ans, idx) => {
+                if(ans !== quizData[idx].answer) {
+                    const q = quizData[idx];
+                    const div = document.createElement('div');
+                    div.className = "bg-gray-50 p-5 rounded-xl border-l-4 border-red-400";
+                    const userChoice = ans === -1 ? "<span class='text-red-500 font-bold'>미응답</span>" : q.options[ans];
+                    div.innerHTML = `
+                        <p class="text-xs font-bold text-indigo-600 mb-1">${q.unit}</p>
+                        <p class="font-medium mb-2">${idx + 1}. ${q.question}</p>
+                        <p class="text-sm text-gray-600">나의 선택: ${userChoice}</p>
+                        <p class="text-sm text-blue-700 font-bold">정답: ${q.options[q.answer]}</p>
+                        <p class="text-sm text-gray-500 mt-2 italic border-t pt-2">💡 해설: ${q.hint}</p>
+                    `;
+                    notes.appendChild(div);
+                }
+            });
+        }
+
+        document.getElementById('start-btn').onclick = () => { startScreen.classList.add('hidden'); quizScreen.classList.remove('hidden'); quizFooter.classList.remove('hidden'); showQuestion(); };
+        nextBtn.onclick = () => { if(currentQuestion < quizData.length - 1) { currentQuestion++; showQuestion(); } else { showResult(); } };
+        prevBtn.onclick = () => { if(currentQuestion > 0) { currentQuestion--; showQuestion(); } };
+        document.getElementById('hint-btn').onclick = () => document.getElementById('hint-text').classList.toggle('hidden');
+        
+        document.getElementById('exit-btn').onclick = () => exitModal.classList.remove('hidden');
+        document.getElementById('modal-cancel-btn').onclick = () => exitModal.classList.add('hidden');
+        document.getElementById('modal-exit-btn').onclick = showResult;
+    </script>
+</body>
+</html>
