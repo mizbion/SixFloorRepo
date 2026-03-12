@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인공지능, 너의 정체는 뭐니? </title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f172a;
+    --blue: #2563eb;
+    --sky: #60a5fa;
+    --indigo: #4f46e5;
+    --orange: #f97316;
+    --amber: #fbbf24;
+    --green: #10b981;
+    --teal: #14b8a6;
+    --red: #ef4444;
+    --light: #f0f6ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; }
+
+  .site-header {
+    background: linear-gradient(135deg, #0a0f23 0%, #0f172a 45%, #1e1b4b 100%);
+    padding: 52px 24px 60px; text-align: center; position: relative; overflow: hidden;
+  }
+  .site-header::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 20% 40%, rgba(79,70,229,0.18) 0%, transparent 55%),
+                radial-gradient(circle at 80% 60%, rgba(96,165,250,0.12) 0%, transparent 55%),
+                radial-gradient(circle at 50% 90%, rgba(249,115,22,0.08) 0%, transparent 40%);
+  }
+  .dot-grid { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 28px 28px; }
+  .header-badge-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; position: relative; }
+  .badge { display: inline-block; color: #fff; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px; }
+  .badge-chapter { background: var(--indigo); }
+  .badge-dept { background: var(--orange); }
+  .site-header h1 { font-size: clamp(26px, 5vw, 50px); font-weight: 900; color: #fff; line-height: 1.2; position: relative; }
+  .site-header h1 em { color: var(--amber); font-style: normal; }
+  .site-header p { margin-top: 12px; color: rgba(255,255,255,0.55); font-size: 14px; position: relative; }
+  .code-deco { position: absolute; bottom: 0; left: 0; right: 0; font-family: 'Space Mono', monospace; font-size: 11px; color: rgba(96,165,250,0.15); pointer-events: none; white-space: nowrap; overflow: hidden; padding: 8px 16px; letter-spacing: 1px; }
+
+  nav { background: #fff; border-bottom: 3px solid var(--indigo); position: sticky; top: 0; z-index: 100; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-btn { white-space: nowrap; padding: 13px 16px; font-size: 12.5px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif; border: none; background: none; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -3px; transition: all .2s; }
+  .nav-btn:hover { color: var(--indigo); }
+  .nav-btn.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+
+  main { max-width: 980px; margin: 0 auto; padding: 32px 20px 80px; }
+  .section { display: none; animation: fadeUp .35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  .sec-title { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .sec-num { background: var(--indigo); color: #fff; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 11px; padding: 5px 11px; border-radius: 8px; flex-shrink: 0; }
+  .sec-title h2 { font-size: 22px; font-weight: 900; color: var(--navy); }
+
+  .card { background: var(--card); border-radius: 16px; padding: 22px 24px; margin-bottom: 18px; border: 1.5px solid var(--border); box-shadow: 0 2px 14px rgba(0,0,0,0.05); }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card p, .card li { font-size: 14px; line-height: 1.85; color: var(--text); }
+  .card ul, .card ol { padding-left: 20px; margin-top: 6px; }
+  .card li { margin-bottom: 4px; }
+
+  .hl { border-radius: 12px; padding: 14px 18px; margin: 10px 0; font-size: 14px; line-height: 1.85; border-left: 4px solid; }
+  .hl-blue   { background:#eff6ff; border-color:var(--blue); }
+  .hl-indigo { background:#eef2ff; border-color:var(--indigo); }
+  .hl-orange { background:#fff7ed; border-color:var(--orange); }
+  .hl-green  { background:#ecfdf5; border-color:var(--green); }
+  .hl-amber  { background:#fffbeb; border-color:var(--amber); }
+  .hl-teal   { background:#f0fdfa; border-color:var(--teal); }
+  .hl-red    { background:#fef2f2; border-color:var(--red); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+  @media(max-width:700px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } }
+  @media(max-width:900px) { .grid-4 { grid-template-columns:1fr 1fr; } }
+
+  .mc { background: var(--light); border-radius: 12px; padding: 16px; border: 1.5px solid var(--border); }
+  .mc h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 7px; color: var(--navy); }
+  .mc p  { font-size: 13px; line-height: 1.75; color: var(--muted); }
+
+  .tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 20px; margin: 2px 3px 2px 0; font-family: 'Space Mono', monospace; }
+  .tag-blue   { background:#dbeafe; color:#1d4ed8; }
+  .tag-indigo { background:#e0e7ff; color:#4338ca; }
+  .tag-orange { background:#ffedd5; color:#c2410c; }
+  .tag-green  { background:#d1fae5; color:#065f46; }
+  .tag-red    { background:#fee2e2; color:#991b1b; }
+  .tag-teal   { background:#ccfbf1; color:#0f766e; }
+  .tag-amber  { background:#fef3c7; color:#92400e; }
+
+  .accordion { margin-bottom: 8px; }
+  .acc-header { width: 100%; text-align: left; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 13px 16px; font-family: 'Noto Sans KR', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--navy); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background .2s; }
+  .acc-header:hover { background: var(--light); }
+  .acc-header.open { border-radius: 10px 10px 0 0; border-bottom-color: transparent; }
+  .acc-body { display: none; background: var(--light); border: 1.5px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 15px 18px; font-size: 13.5px; line-height: 1.85; color: var(--text); }
+  .acc-arrow { transition: transform .2s; font-size: 11px; }
+  .acc-header.open .acc-arrow { transform: rotate(180deg); }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content:''; position:absolute; left:9px; top:0; bottom:0; width:2px; background:var(--border); }
+  .tl-item { position: relative; margin-bottom: 16px; background: var(--card); border-radius: 12px; padding: 14px 16px; border: 1.5px solid var(--border); }
+  .tl-item::before { content:''; position:absolute; left:-21px; top:16px; width:11px; height:11px; border-radius:50%; background: var(--indigo); border:2px solid #fff; box-shadow:0 0 0 2px var(--indigo); }
+  .tl-item.winter::before { background:#60a5fa; box-shadow:0 0 0 2px #60a5fa; }
+  .tl-item.spring::before { background:var(--green); box-shadow:0 0 0 2px var(--green); }
+  .tl-item.now::before    { background:var(--orange); box-shadow:0 0 0 2px var(--orange); }
+  .tl-year { font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:var(--indigo); margin-bottom:4px; }
+  .tl-item.winter .tl-year { color:#60a5fa; }
+  .tl-item.spring .tl-year { color:var(--green); }
+  .tl-item.now    .tl-year { color:var(--orange); }
+  .tl-item h4 { font-size:13.5px; font-weight:700; color:var(--navy); margin-bottom:3px; }
+  .tl-item p  { font-size:13px; line-height:1.75; color:var(--muted); }
+
+  .level-cards { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+  .level-card { flex:1; min-width:150px; border-radius:14px; padding:18px 14px; text-align:center; }
+  .level-card .emoji { font-size:30px; margin-bottom:8px; display:block; }
+  .level-card h4 { font-size:13.5px; font-weight:800; margin-bottom:6px; }
+  .level-card p  { font-size:12px; line-height:1.7; }
+  .weak  { background:#eff6ff; border:2px solid #bfdbfe; } .weak h4 { color:#1d4ed8; }
+  .strong{ background:#f0fdf4; border:2px solid #86efac; } .strong h4 { color:#15803d; }
+  .super { background:#fef2f2; border:2px solid #fecaca; } .super h4 { color:#dc2626; }
+
+  .quiz-box { background: linear-gradient(135deg, #0f172a, #1e1b4b); border-radius: 16px; padding: 26px; color:#fff; margin-bottom:18px; }
+  .quiz-box h3 { font-size:15px; font-weight:700; margin-bottom:18px; }
+  .quiz-box h3 span { color:var(--amber); }
+  .options { display:flex; flex-direction:column; gap:9px; }
+  .opt-btn { background:rgba(255,255,255,0.09); border:1.5px solid rgba(255,255,255,0.18); border-radius:10px; padding:11px 15px; color:#fff; font-size:13px; font-weight:500; font-family:'Noto Sans KR',sans-serif; text-align:left; cursor:pointer; transition:all .2s; }
+  .opt-btn:hover { background:rgba(255,255,255,0.16); }
+  .opt-btn.correct { background:rgba(16,185,129,0.28); border-color:#10b981; }
+  .opt-btn.wrong   { background:rgba(239,68,68,0.22); border-color:#ef4444; }
+  .quiz-result { margin-top:12px; padding:11px 15px; border-radius:10px; font-size:13px; font-weight:600; display:none; }
+  .quiz-result.show { display:block; }
+  .quiz-result.ok { background:rgba(16,185,129,0.22); color:#6ee7b7; }
+  .quiz-result.ng { background:rgba(239,68,68,0.18); color:#fca5a5; }
+
+  .progress-wrap { margin-bottom:28px; }
+  .progress-label { display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px; }
+  .progress-bar { height:5px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--indigo),var(--sky)); border-radius:4px; transition:width .6s ease; }
+
+  .obj-list { display:flex; flex-direction:column; gap:10px; }
+  .obj-item { display:flex; align-items:flex-start; gap:13px; background:var(--card); border-radius:12px; padding:15px 17px; border:1.5px solid var(--border); }
+  .obj-num { background:var(--indigo); color:#fff; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .obj-item p { font-size:14px; line-height:1.8; padding-top:1px; }
+
+  .code-block { background:#0f172a; border-radius:10px; padding:16px 18px; font-family:'Space Mono',monospace; font-size:12px; line-height:1.9; color:#e2e8f0; overflow-x:auto; margin:10px 0; border:1px solid #1e293b; }
+  .code-block .kw  { color:#818cf8; }
+  .code-block .fn  { color:#34d399; }
+  .code-block .str { color:#fbbf24; }
+  .code-block .cm  { color:#475569; }
+  .code-block .num { color:#f472b6; }
+
+  .tool-card { background:var(--card); border-radius:12px; padding:16px; border:1.5px solid var(--border); transition:box-shadow .2s, transform .2s; }
+  .tool-card:hover { box-shadow:0 6px 20px rgba(79,70,229,0.12); transform:translateY(-2px); }
+  .tool-logo { font-size:28px; margin-bottom:8px; display:block; }
+  .tool-card h4 { font-size:13.5px; font-weight:700; color:var(--navy); margin-bottom:5px; }
+  .tool-card p  { font-size:12.5px; line-height:1.7; color:var(--muted); }
+
+  .resp-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .resp-table th { background:var(--navy); color:#fff; padding:10px 13px; text-align:left; font-size:12.5px; font-weight:700; }
+  .resp-table td { padding:10px 13px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .resp-table tr:hover td { background:var(--light); }
+
+  .skill-bar-item { margin-bottom:14px; }
+  .skill-name { font-size:13px; font-weight:600; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; }
+  .skill-track { height:10px; background:var(--border); border-radius:6px; overflow:hidden; }
+  .skill-fill  { height:100%; border-radius:6px; transition:width 1.1s ease; }
+
+  .discuss-box { background:linear-gradient(135deg,#fffbeb,#fef3c7); border:2px solid var(--amber); border-radius:14px; padding:18px 22px; margin-top:14px; }
+  .discuss-box h4 { font-size:14px; font-weight:800; color:#92400e; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .discuss-box ul { padding-left:20px; }
+  .discuss-box li { font-size:13.5px; line-height:1.85; color:#78350f; margin-bottom:3px; }
+
+  .bubble-demo { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0; }
+  .bubble { background:#e0e7ff; border-radius:50px; padding:7px 16px; font-size:12.5px; font-weight:600; color:#4338ca; cursor:pointer; transition:transform .15s; }
+  .bubble:hover { transform:scale(1.05); }
+  .bubble.selected { background:var(--indigo); color:#fff; }
+
+  .chat-window { background:#f8fafc; border-radius:12px; padding:16px; border:1.5px solid var(--border); margin-top:12px; font-size:13.5px; line-height:2.1; }
+
+  .level-table-wrap { overflow-x:auto; }
+  .level-table { width:100%; border-collapse:collapse; font-size:12px; min-width:520px; }
+  .level-table th,.level-table td { padding:9px 11px; text-align:center; border:1px solid var(--border); }
+  .lv0,.lv1 { background:#f8fafc; }
+  .lv2 { background:#eff6ff; }
+  .lv3 { background:#dbeafe; }
+  .lv4 { background:#1d4ed8; color:#fff; }
+  .lv5 { background:#1e40af; color:#fff; }
+
+  .roadmap { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+  .rm-item { display:flex; align-items:flex-start; gap:14px; background:var(--card); border-radius:10px; padding:14px 16px; border:1.5px solid var(--border); }
+  .rm-phase { background:var(--indigo); color:#fff; font-family:'Space Mono',monospace; font-size:10px; font-weight:700; padding:4px 9px; border-radius:6px; white-space:nowrap; flex-shrink:0; margin-top:2px; }
+  .rm-item h5 { font-size:13.5px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+  .rm-item p  { font-size:13px; line-height:1.75; color:var(--muted); }
+
+  footer { text-align:center; padding:28px; color:rgba(255,255,255,0.25); font-size:11px; font-family:'Space Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="dot-grid"></div>
+  <div class="header-badge-row">
+    <span class="badge badge-chapter">CHAPTER 01</span>
+    <span class="badge badge-dept">💻 </span>
+  </div>
+  <h1>인공지능,<br><em>너의 정체는 뭐니?</em></h1>
+  <p>AI 기초 개념 · 역사 · 생활 속 사례 · 프로그래밍과 AI의 미래</p>
+  <div class="code-deco">def ai(): return "인간의 지적 능력을 컴퓨터로 구현" &nbsp;|&nbsp; import intelligence &nbsp;|&nbsp; while True: learn() &nbsp;|&nbsp; AI ⊃ ML ⊃ DL</div>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="showSection('s0',this)">🎯 수업 목표</button>
+  <button class="nav-btn" onclick="showSection('s1',this)">🤖 AI란?</button>
+  <button class="nav-btn" onclick="showSection('s2',this)">📜 AI 역사</button>
+  <button class="nav-btn" onclick="showSection('s3',this)">🏠 생활 속 AI</button>
+  <button class="nav-btn" onclick="showSection('s4',this)">💼 미래 일자리</button>
+  <button class="nav-btn" onclick="showSection('s5',this)">✅ 퀴즈</button>
+</nav>
+
+<main>
+
+<!-- S0 수업목표 -->
+<section class="section active" id="s0">
+  <div class="sec-title"><span class="sec-num">00</span><h2>이 장의 목표 &amp; 수업 안내</h2></div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>전체 진도</span><span>1 / 6 단원</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div>
+  </div>
+  <div class="obj-list">
+    <div class="obj-item"><div class="obj-num">1</div><p>인공지능의 개념과 구조를 설명할 수 있다.<br><span style="font-size:12.5px;color:var(--muted)">→ AI · 머신러닝 · 딥러닝의 포함 관계, 약/강/초인공지능 단계 구분</span></p></div>
+    <div class="obj-item"><div class="obj-num">2</div><p>인공지능이 역사적으로 어떻게 발전해 왔는지 이해한다.<br><span style="font-size:12.5px;color:var(--muted)">→ 튜링 테스트, AI 겨울, 딥러닝 혁명, 생성형 AI까지</span></p></div>
+    <div class="obj-item"><div class="obj-num">3</div><p>프로그래밍 분야에서 AI가 어떻게 활용되는지 개발자 관점으로 분석할 수 있다.<br><span style="font-size:12.5px;color:var(--muted)">→ AI 코딩 도구(GitHub Copilot 등), 추천 시스템, 챗봇, 자율주행 소프트웨어</span></p></div>
+    <div class="obj-item"><div class="obj-num">4</div><p>AI 시대 프로그래머에게 필요한 역량을 인식하고 준비 방향을 제시할 수 있다.<br><span style="font-size:12.5px;color:var(--muted)">→ 프롬프트 엔지니어링, 문제 정의 능력, 비판적 코드 리뷰, AI와의 협업</span></p></div>
+  </div>
+  <div class="card" style="margin-top:18px;">
+    <div class="card-title">🗂️ 수업 구성 안내</div>
+    <div class="grid-2" style="margin-top:10px;">
+      <div class="mc"><h4>⏱ 권장 수업 시간</h4><p>총 2차시 (100분)<br>1차시: AI 개념 + 역사 (50분)<br>2차시: 생활 속 AI + 미래 일자리 (50분)</p></div>
+      <div class="mc"><h4>📌 수업 방식</h4><p>강의 + 토론 병행<br>각 단원 끝 <strong>5분 생각하기</strong> 활동<br>마지막 퀴즈로 개념 확인</p></div>
+      <div class="mc"><h4>🎓 대상 학습자</h4><p>직업계고 프로그래밍학과<br>Python/Java 기초 이상<br>AI 입문 단계</p></div>
+      <div class="mc"><h4>💡 핵심 메시지</h4><p>AI는 프로그래머를 대체하는 것이 아니라<br><strong>"AI를 다루는 프로그래머"</strong>가<br>더 강력해지는 시대입니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- S1 AI란? -->
+<section class="section" id="s1">
+  <div class="sec-title"><span class="sec-num">01-1</span><h2>인공지능이 뭐지?</h2></div>
+
+  <div class="card">
+    <div class="card-title">📖 핵심 개념 정의</div>
+    <div class="hl hl-indigo"><strong>지능(Intelligence)</strong> — 새로운 사물·현상에 부딪혀 그 의미를 이해하고, 처리하는 방법을 알아내는 지적 활동의 능력</div>
+    <div class="hl hl-blue"><strong>인공지능(Artificial Intelligence)</strong> — 인간이 가진 지적 능력을 컴퓨터로 구현하는 기술</div>
+    <div class="hl hl-green">💻 <strong>프로그래머 관점</strong>: AI는 결국 <strong>코드로 작성된 알고리즘과 데이터</strong>입니다. "마법"이 아니라 수학·통계·프로그래밍의 집약체입니다.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔵 AI · 머신러닝 · 딥러닝의 관계 (포함 구조)</div>
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:14px;">세 개념은 <strong>포함 관계(⊃)</strong>입니다. AI가 가장 넓은 개념이고, 딥러닝이 가장 구체적입니다.</p>
+    <div class="grid-3">
+      <div class="mc" style="border-color:#c7d2fe;background:#eef2ff;text-align:center;"><h4 style="color:#4338ca;">🧠 인공지능 (AI)</h4><p>사고·학습 등 인간의 지적 능력을 컴퓨터로 구현한 기술 전반</p><div style="margin-top:8px;"><span class="tag tag-indigo">가장 넓은 개념</span></div></div>
+      <div class="mc" style="border-color:#a7f3d0;background:#ecfdf5;text-align:center;"><h4 style="color:#065f46;">⚙️ 머신러닝 (ML)</h4><p>컴퓨터가 데이터로부터 스스로 학습해 AI 성능을 향상시키는 기술</p><div style="margin-top:8px;"><span class="tag tag-green">AI ⊃ ML</span></div></div>
+      <div class="mc" style="border-color:#fde68a;background:#fffbeb;text-align:center;"><h4 style="color:#92400e;">🕸️ 딥러닝 (DL)</h4><p>인간 뉴런을 모방한 인공 신경망으로 정보를 처리하는 기술</p><div style="margin-top:8px;"><span class="tag tag-amber">ML ⊃ DL</span></div></div>
+    </div>
+    <div class="hl hl-teal" style="margin-top:14px;">
+      <strong>코드로 보는 차이</strong><br>
+      일반 프로그래밍: <code style="background:#0f172a;color:#34d399;padding:1px 6px;border-radius:4px;font-size:12px;">if 고양이귀 and 수염: return "고양이"</code> — 규칙을 사람이 직접 작성<br>
+      머신러닝: 수천 장의 고양이 사진을 주면 <strong>컴퓨터가 스스로 규칙을 찾아냄</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📶 인공지능의 3단계</div>
+    <div class="level-cards">
+      <div class="level-card weak"><span class="emoji">🤝</span><h4>약인공지능<br>(Narrow AI)</h4><p>특정 목적에만 최적화<br><br><strong>현재 수준 · 실존</strong><br>GitHub Copilot, ChatGPT, 알파고</p></div>
+      <div class="level-card strong"><span class="emoji">👤</span><h4>강인공지능<br>(General AI)</h4><p>모든 영역에서 인간처럼 사고·행동<br><br><strong>아직 미실현</strong><br>자의식을 가진 AI</p></div>
+      <div class="level-card super"><span class="emoji">🚀</span><h4>초인공지능<br>(Super AI)</h4><p>모든 분야에서 인간 초월<br><br><strong>이론적 단계</strong><br>영화 터미네이터</p></div>
+    </div>
+    <div class="hl hl-amber" style="margin-top:14px;">⚠️ <strong>핵심 포인트</strong>: 지금 우리가 쓰는 AI는 전부 <strong>약인공지능</strong>입니다. ChatGPT는 매우 뛰어나지만, 스스로 "나는 왜 존재하지?"를 고민하지 않습니다.</div>
+  </div>
+
+  <div class="discuss-box">
+    <h4>⏱ 5분 생각하기 — AI와 협업한다면?</h4>
+    <ul>
+      <li>2019년 법률 AI + 변호사 팀이 변호사만 있는 팀을 이겼습니다. 프로그래밍에서도 같은 일이 일어난다면?</li>
+      <li>GitHub Copilot을 써본 적 있나요? 편리했던 점과 부족했던 점은 무엇인가요?</li>
+      <li>"AI가 코드를 다 짜준다면 개발자는 무엇을 해야 하는가?" — 자신의 생각을 말해보세요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- S2 AI 역사 -->
+<section class="section" id="s2">
+  <div class="sec-title"><span class="sec-num">01-2</span><h2>인공지능의 역사</h2></div>
+
+  <div class="card">
+    <div class="card-title">📚 배경지식 — 클릭해서 확인하기</div>
+    <div class="accordion">
+      <button class="acc-header" onclick="toggleAcc(this)">앨런 튜링(Alan Turing) — 컴퓨터 과학의 아버지 <span class="acc-arrow">▼</span></button>
+      <div class="acc-body">영국 수학자·논리학자(1912~1954). 2차 세계대전 중 독일 암호 <strong>에니그마</strong>를 해독해 연합군 승리에 기여했습니다. 영화 <em>이미테이션 게임(2014)</em>이 그의 이야기를 담고 있습니다.<br><br>1936년 <strong>'튜링 머신'</strong> 개념을 제안, 현대 컴퓨터의 이론적 토대를 마련했습니다. 프로그래밍에서 배우는 알고리즘·연산 개념의 뿌리가 바로 여기서 시작됩니다.</div>
+    </div>
+    <div class="accordion">
+      <button class="acc-header" onclick="toggleAcc(this)">튜링 테스트(Turing Test) — 기계가 생각할 수 있는가? <span class="acc-arrow">▼</span></button>
+      <div class="acc-body">사람이 텍스트 대화를 통해 상대가 사람인지 기계인지 구별하지 못하면, 그 기계를 "지능이 있다"고 판단하는 방법입니다.<br><br>• 2014년 챗봇 '유진 구스트만'이 최초로 통과했다고 발표 — 그러나 13세 우크라이나 소년 설정으로 오류를 가릴 수 있다는 비판을 받았습니다.<br>• 현재 GPT-4, Claude 등은 대부분의 상황에서 사람과 구별하기 어렵습니다.</div>
+    </div>
+    <div class="accordion">
+      <button class="acc-header" onclick="toggleAcc(this)">AI의 겨울(AI Winter) — 왜 두 번씩이나 침체됐을까? <span class="acc-arrow">▼</span></button>
+      <div class="acc-body">AI에 대한 기대가 지나치게 높아진 뒤 성과가 나오지 않아 연구비와 관심이 급격히 줄어드는 시기입니다.<br><br>• <strong>1차 겨울(1970~1980)</strong>: 연산 능력·데이터 부족으로 자금 삭감<br>• <strong>2차 겨울(1987~1997)</strong>: 전문가 시스템 유지비 급증, 세계 경기 불황<br><br>💡 <strong>개발자 교훈</strong>: 기술의 과대 광고(Hype)를 경계하고, 지금의 AI 붐도 현명하게 바라봐야 합니다.</div>
+    </div>
+    <div class="accordion">
+      <button class="acc-header" onclick="toggleAcc(this)">딥러닝 혁명 — AlexNet(2012)이 바꾼 것 <span class="acc-arrow">▼</span></button>
+      <div class="acc-body">2012년 이미지넷 대회에서 AlexNet이 기존 방법 대비 오류율을 <strong>26% → 15%</strong>로 낮추며 딥러닝 시대를 열었습니다.<br><br>핵심 요인: ① GPU를 활용한 대규모 병렬 연산 ② 대용량 데이터셋(ImageNet) ③ ReLU·드롭아웃 등 새로운 학습 기법<br><br>이후 Google, Facebook, Amazon 등이 앞다퉈 딥러닝 연구에 투자하면서 현재의 AI 전성기가 시작되었습니다.</div>
+    </div>
+    <div class="accordion">
+      <button class="acc-header" onclick="toggleAcc(this)">알파고(2016) vs 이세돌 — 프로그래머 관점으로 보기 <span class="acc-arrow">▼</span></button>
+      <div class="acc-body">구글 딥마인드의 알파고가 세계 바둑 챔피언 이세돌을 4:1로 꺾었습니다.<br><br>알파고의 핵심 기술:<br>• <strong>강화학습(Reinforcement Learning)</strong>: 스스로 수백만 번 대국하며 최적의 수를 학습<br>• <strong>몬테카를로 트리 탐색(MCTS)</strong>: 경우의 수를 확률적으로 탐색<br>• <strong>정책망 + 가치망</strong>: 딥 신경망 2개가 협력<br><br>💻 중요한 것: 알파고는 바둑 외에는 아무것도 못 합니다. 전형적인 <strong>약인공지능</strong>입니다.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕰️ AI 역사 타임라인</div>
+    <div class="timeline" style="margin-top:14px;">
+      <div class="tl-item"><div class="tl-year">1943</div><h4>매컬러-피츠 모델 — 인공 신경망의 씨앗</h4><p>0과 1로 이루어진 2진법 신경 모델. 인공 신경망 개념의 출발점.</p></div>
+      <div class="tl-item"><div class="tl-year">1950</div><h4>앨런 튜링 — 튜링 테스트 제안</h4><p>"기계가 생각할 수 있는가?" 논문 발표. AI 연구의 철학적 토대 형성.</p></div>
+      <div class="tl-item"><div class="tl-year">1956</div><h4>다트머스 회의 — 'AI' 용어 탄생</h4><p>존 매카시가 처음으로 'Artificial Intelligence' 용어 사용.</p></div>
+      <div class="tl-item winter"><div class="tl-year">1970 – 1980</div><h4>❄️ 제1차 AI 겨울</h4><p>낙관론 → 성과 부족 → 연구비 삭감. 연산 능력과 데이터 한계.</p></div>
+      <div class="tl-item spring"><div class="tl-year">1980년대</div><h4>🌱 전문가 시스템 · AI의 봄</h4><p>규칙 기반 전문가 시스템 등장. 인공신경망 연구 재개.</p></div>
+      <div class="tl-item winter"><div class="tl-year">1987 – 1997</div><h4>❄️ 제2차 AI 겨울</h4><p>전문가 시스템 유지 비용 폭증, 세계 경기 불황. 다시 침체.</p></div>
+      <div class="tl-item spring"><div class="tl-year">1997</div><h4>🌱 IBM 딥블루 — 체스 챔피언 카스파로프 격파</h4><p>최초로 AI가 인간 체스 챔피언을 꺾음. AI 부활의 신호탄.</p></div>
+      <div class="tl-item"><div class="tl-year">2011</div><h4>IBM 왓슨 — 제퍼디 퀴즈쇼 우승</h4><p>자연어 처리 + 방대한 지식 데이터베이스로 인간 챔피언 2명 격파.</p></div>
+      <div class="tl-item"><div class="tl-year">2012</div><h4>AlexNet — 딥러닝 혁명 시작</h4><p>이미지넷 대회에서 오류율 15% 기록. GPU + 대용량 데이터 + 딥러닝의 가능성 증명.</p></div>
+      <div class="tl-item"><div class="tl-year">2016</div><h4>알파고 — 이세돌 4:1 승리</h4><p>강화학습으로 바둑 세계챔피언 격파. 전 세계 AI 인식의 전환점.</p></div>
+      <div class="tl-item"><div class="tl-year">2020</div><h4>GPT-3 — 대규모 언어 모델(LLM) 시대</h4><p>1,750억 개 파라미터. 코드 작성, 번역, 요약 등 범용 언어 AI 가능성 제시.</p></div>
+      <div class="tl-item now"><div class="tl-year">2022 – 현재</div><h4>🔥 생성형 AI 시대 — ChatGPT · Copilot · Claude</h4><p>ChatGPT 출시 5일 만에 100만 사용자 돌파. AI 코딩 도구가 개발 현장에 침투. 프로그래머의 역할이 재정의되는 시대.</p></div>
+    </div>
+  </div>
+
+  <div class="discuss-box">
+    <h4>⏱ 5분 생각하기 — 기계와 인간을 구분할 수 있을까?</h4>
+    <ul>
+      <li>ChatGPT·Claude와 대화할 때 "사람과 대화하는 것 같다"고 느낀 적이 있나요?</li>
+      <li>튜링 테스트를 통과한 AI가 "생각한다"고 할 수 있을까요? 코드 관점에서 생각해보세요.</li>
+      <li>AI가 작성한 코드와 사람이 작성한 코드, 어떻게 다를까요?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- S3 생활 속 AI -->
+<section class="section" id="s3">
+  <div class="sec-title"><span class="sec-num">01-3</span><h2>생활 속의 인공지능 — 개발자 관점으로</h2></div>
+
+  <!-- 1. 추천 시스템 -->
+  <div class="card">
+    <div class="card-title">🎯 1. 추천 시스템 — 알고리즘으로 이해하기</div>
+    <p style="font-size:13.5px;line-height:1.85;margin-bottom:14px;">추천 시스템은 사용자 데이터를 분석해 맞춤 콘텐츠·상품을 제안하는 시스템입니다. 아마존 매출의 <strong>35%</strong>, 넷플릭스 시청의 <strong>80%</strong>가 추천 알고리즘에서 비롯됩니다. 프로그래머라면 이 시스템을 직접 설계하고 구현할 수 있어야 합니다.</p>
+    <div class="grid-2">
+      <div class="mc" style="border-color:#c7d2fe;background:#eef2ff;">
+        <h4 style="color:#4338ca;">📄 콘텐츠 기반 필터링</h4>
+        <p>아이템의 속성(장르·키워드·태그)과 사용자 선호도를 매칭<br><br><span class="tag tag-indigo">아이템 분석</span><span class="tag tag-blue">벡터 유사도</span><br><br>예: 액션 영화를 좋아하면 → 다른 액션 영화 추천<br>장점: 다른 사용자 데이터 불필요<br>단점: 새로운 장르 탐색이 어려움</p>
+      </div>
+      <div class="mc" style="border-color:#a7f3d0;background:#ecfdf5;">
+        <h4 style="color:#065f46;">👥 협업 필터링</h4>
+        <p>나와 비슷한 패턴의 다른 사용자 행동을 기반으로 추천<br><br><span class="tag tag-green">사용자 기반</span><span class="tag tag-teal">아이템 기반</span><br><br>예: "당신과 비슷한 사람들이 이것도 샀어요"<br>장점: 새로운 발견 가능<br>단점: 콜드 스타트 문제 발생</p>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">📐 협업 필터링 Python 구현 원리</p>
+      <div class="code-block">
+<span class="cm"># 사용자-아이템 평점 행렬 예시</span>
+ratings = {
+  <span class="str">"철수"</span>: {<span class="str">"파이썬책"</span>: <span class="num">5</span>, <span class="str">"자바책"</span>: <span class="num">3</span>, <span class="str">"AI책"</span>: <span class="num">None</span>},
+  <span class="str">"영희"</span>: {<span class="str">"파이썬책"</span>: <span class="num">4</span>, <span class="str">"자바책"</span>: <span class="num">3</span>, <span class="str">"AI책"</span>: <span class="num">5</span>},
+  <span class="str">"민준"</span>: {<span class="str">"파이썬책"</span>: <span class="num">5</span>, <span class="str">"자바책"</span>: <span class="num">2</span>, <span class="str">"AI책"</span>: <span class="num">4</span>},
+}
+<span class="cm"># 철수 ↔ 영희: 파이썬책(5,4) 자바책(3,3) → 취향 유사
+# 철수 ↔ 민준: 파이썬책(5,5) 자바책(3,2) → 취향 유사
+# → 영희, 민준 모두 AI책을 높게 평가 → 철수에게 AI책 추천!
+# 코사인 유사도(Cosine Similarity)로 사용자 간 유사성 측정</span>
+      </div>
+    </div>
+    <div class="hl hl-orange">⚠️ <strong>콜드 스타트(Cold Start)</strong>: 신규 사용자나 신상품은 데이터가 없어 추천이 부정확합니다. 이를 해결하기 위해 인기 아이템 추천, 설문 기반 초기 선호도 수집 등의 기법을 사용합니다.</div>
+    <div class="hl hl-red">🫧 <strong>필터 버블(Filter Bubble)</strong>: 알고리즘이 내가 좋아할 것만 보여줘 다양한 정보를 접하지 못하는 현상. 개발자는 <strong>다양성(Diversity)·우연성(Serendipity)</strong>을 의도적으로 설계해야 합니다.</div>
+    <div style="margin-top:16px;">
+      <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">🫧 필터 버블 체험 — 주제를 클릭해보세요</p>
+      <div class="bubble-demo" id="bubbles">
+        <div class="bubble" onclick="selectBubble(this,'python')">Python 🐍</div>
+        <div class="bubble" onclick="selectBubble(this,'game')">게임 개발 🎮</div>
+        <div class="bubble" onclick="selectBubble(this,'ai')">AI/ML 🤖</div>
+        <div class="bubble" onclick="selectBubble(this,'web')">웹 프론트엔드 🌐</div>
+        <div class="bubble" onclick="selectBubble(this,'security')">보안 🔐</div>
+        <div class="bubble" onclick="selectBubble(this,'startup')">스타트업 🚀</div>
+      </div>
+      <div id="bubble-result" class="hl hl-amber" style="display:none;margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- 2. AI 코딩 도구 -->
+  <div class="card">
+    <div class="card-title">💻 2. AI 코딩 도구 — 개발자의 새로운 협업 파트너</div>
+    <p style="font-size:13.5px;line-height:1.85;margin-bottom:14px;">AI 코딩 도구는 프로그래머의 작업 방식을 근본적으로 바꾸고 있습니다. 단순 반복 코드 작성에서 벗어나 <strong>설계·문제 정의·리뷰</strong>에 더 집중할 수 있게 됩니다. GitHub 통계에 따르면 Copilot 사용 개발자는 코딩 속도가 평균 <strong>55% 향상</strong>되었습니다.</p>
+    <div class="grid-2">
+      <div class="tool-card"><span class="tool-logo">🤖</span><h4>GitHub Copilot</h4><p>Microsoft + OpenAI 협업. 코드 자동 완성, 함수 생성, 주석→코드 변환. VSCode·JetBrains 연동. 전 세계 1,000만+ 개발자 사용. 학생은 무료.</p><div style="margin-top:8px;"><span class="tag tag-blue">자동완성</span><span class="tag tag-indigo">코드생성</span></div></div>
+      <div class="tool-card"><span class="tool-logo">💬</span><h4>ChatGPT / Claude</h4><p>코드 설명, 버그 수정, 리팩토링, 알고리즘 설계 상담. 자연어로 프로그래밍 요청 가능. 공부 중 막히는 개념을 즉시 질문할 수 있음.</p><div style="margin-top:8px;"><span class="tag tag-green">디버깅</span><span class="tag tag-teal">학습 보조</span></div></div>
+      <div class="tool-card"><span class="tool-logo">🔍</span><h4>Tabnine</h4><p>로컬·클라우드 모두 지원하는 AI 코드 완성 도구. 기업 보안 정책을 준수하면서 AI 코딩 지원 가능.</p><div style="margin-top:8px;"><span class="tag tag-orange">보안 친화적</span><span class="tag tag-blue">자동완성</span></div></div>
+      <div class="tool-card"><span class="tool-logo">🛡️</span><h4>Snyk AI / CodeQL</h4><p>AI 기반 보안 취약점 자동 탐지. 코드 리뷰 단계에서 SQL Injection, XSS 등 보안 이슈를 자동으로 감지.</p><div style="margin-top:8px;"><span class="tag tag-red">보안</span><span class="tag tag-indigo">코드리뷰</span></div></div>
+    </div>
+    <div style="margin-top:16px;">
+      <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">🎭 AI 코딩 도구 실제 동작 예시 — 직접 확인하기</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="opt-btn" style="background:#e0e7ff;color:#4338ca;border-color:#c7d2fe;flex:1;min-width:140px;" onclick="showCopilotDemo('complete')">코드 자동완성</button>
+        <button class="opt-btn" style="background:#ecfdf5;color:#065f46;border-color:#a7f3d0;flex:1;min-width:140px;" onclick="showCopilotDemo('debug')">버그 수정</button>
+        <button class="opt-btn" style="background:#fff7ed;color:#c2410c;border-color:#fde68a;flex:1;min-width:140px;" onclick="showCopilotDemo('explain')">코드 설명 요청</button>
+      </div>
+      <div id="copilot-demo" style="display:none;margin-top:12px;"></div>
+    </div>
+    <div class="hl hl-amber" style="margin-top:14px;">⚠️ <strong>AI 코딩 도구의 한계</strong>: AI가 생성한 코드를 무조건 신뢰해서는 안 됩니다. 보안 취약점, 비효율 로직, 저작권 문제가 포함될 수 있습니다. <strong>비판적으로 검토하는 능력</strong>이 오히려 더 중요해집니다.</div>
+  </div>
+
+  <!-- 3. 챗봇 -->
+  <div class="card">
+    <div class="card-title">💬 3. 챗봇 — 규칙 기반 vs AI 기반, 직접 비교</div>
+    <p style="font-size:13.5px;line-height:1.85;margin-bottom:14px;">최초의 챗봇 <strong>일라이자(ELIZA, 1966)</strong>는 정신 치료사 역할로 만들어졌습니다. 지금은 고객 응대·학습 보조·코딩 도우미 등 다양한 분야에 쓰입니다. 프로그래머라면 직접 챗봇을 구현할 수 있어야 합니다.</p>
+    <div class="grid-2">
+      <div class="mc">
+        <h4>🔴 규칙 기반 챗봇<br><small style="font-weight:400;color:var(--muted);">if-elif 분기 처리</small></h4>
+        <p>미리 정의된 패턴·키워드로 응답. 규칙 밖의 대화는 처리 불가.<br><br><span class="tag tag-orange">결정론적</span><span class="tag tag-red">확장 어려움</span><br><br>구현: Python <code style="background:#1e293b;color:#34d399;padding:1px 5px;border-radius:3px;font-size:11px;">if/elif</code> + 정규표현식</p>
+      </div>
+      <div class="mc" style="border-color:#c7d2fe;background:#eef2ff;">
+        <h4 style="color:#4338ca;">🟢 AI 챗봇 (LLM 기반)<br><small style="font-weight:400;color:var(--muted);">딥러닝 자연어 처리</small></h4>
+        <p>대규모 언어 모델로 문맥·감정을 이해하고 유연하게 응답.<br><br><span class="tag tag-indigo">확률론적</span><span class="tag tag-green">문맥 이해</span><br><br>구현: OpenAI API, LangChain, Hugging Face</p>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">🎭 같은 상황, 두 챗봇의 대화 — 비교해보기</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="opt-btn" style="background:#fee2e2;color:#991b1b;border-color:#fca5a5;flex:1;" onclick="showChatDemo('rule')">규칙 기반 챗봇 대화</button>
+        <button class="opt-btn" style="background:#d1fae5;color:#065f46;border-color:#6ee7b7;flex:1;" onclick="showChatDemo('ai')">AI 챗봇 대화</button>
+      </div>
+      <div id="chat-demo" class="chat-window" style="display:none;margin-top:12px;"></div>
+    </div>
+    <div class="hl hl-teal" style="margin-top:14px;">
+      <strong>💻 나만의 챗봇 만들기 — 개발 로드맵</strong><br>
+      Step 1: Python if/elif로 간단한 규칙 기반 챗봇 구현<br>
+      Step 2: OpenAI API Key 발급 후 ChatCompletion API 연동<br>
+      Step 3: LangChain으로 대화 히스토리 관리 및 커스텀 시스템 프롬프트 적용
+    </div>
+  </div>
+
+  <!-- 4. 자율주행 -->
+  <div class="card">
+    <div class="card-title">🚗 4. 자율주행차 — 이동하는 소프트웨어 시스템</div>
+    <p style="font-size:13.5px;line-height:1.85;margin-bottom:14px;">자율주행차는 단순한 "자동차"가 아닌 <strong>이동하는 컴퓨터 시스템</strong>입니다. 카메라·레이더·LiDAR 센서 데이터를 실시간으로 처리하는 수십만 줄의 코드가 작동합니다.</p>
+    <div class="level-table-wrap">
+      <table class="level-table">
+        <thead>
+          <tr><th class="lv0">0단계</th><th class="lv1">1단계</th><th class="lv2">2단계</th><th class="lv3">3단계</th><th class="lv4">4단계</th><th class="lv5">5단계</th></tr>
+          <tr><td class="lv0" style="font-size:11px;">비자동화</td><td class="lv1" style="font-size:11px;">운전자보조</td><td class="lv2" style="font-size:11px;">부분자동화</td><td class="lv3" style="font-size:11px;">조건부자동화</td><td class="lv4" style="font-size:11px;">고도자동화</td><td class="lv5" style="font-size:11px;">완전자동화</td></tr>
+        </thead>
+        <tbody>
+          <tr><td>운전자 전체 제어</td><td>스마트 크루즈, 차로 유지</td><td>테슬라 오토파일럿 (현재 도로)</td><td>시스템이 운전, 문제 시 인간 개입</td><td>로보택시 (특정 구역)</td><td>모든 도로 완전 자율</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="hl hl-indigo" style="margin-top:12px;"><strong>🖥️ 자율주행 소프트웨어 스택 (개발자 관점)</strong><br>인지(Perception, CNN·LiDAR 처리) → 판단(Decision Making, 강화학습) → 제어(Control, PID 제어기)<br>사용 언어: Python(ML 모델), C++(실시간 제어), ROS(로봇 운영체제)</div>
+    <div class="hl hl-amber">🇰🇷 <strong>한국 현황</strong>: 3단계까지 성공. 세종시·판교 자율주행 특구 시범 운행 중. 현대차·카카오모빌리티·42dot 등이 개발 중.</div>
+  </div>
+
+  <!-- 5. 생성형 AI -->
+  <div class="card">
+    <div class="card-title">🎨 5. 생성형 AI — 코드로 만드는 창작의 시대</div>
+    <p style="font-size:13.5px;line-height:1.85;margin-bottom:14px;">생성형 AI는 텍스트·이미지·음악·영상을 자동 생성합니다. 프로그래머는 이를 <strong>API로 직접 서비스에 통합</strong>할 수 있습니다.</p>
+    <div class="grid-2">
+      <div class="mc" style="border-color:#c7d2fe;background:#eef2ff;"><h4 style="color:#4338ca;">🎨 이미지 생성 AI</h4><p>DALL-E 3, Midjourney, Stable Diffusion — 텍스트로 이미지 생성. 게임 개발 에셋·UI 목업 자동화에 활용 가능.</p><div style="margin-top:6px;"><span class="tag tag-indigo">Diffusion Model</span></div></div>
+      <div class="mc" style="border-color:#a7f3d0;background:#ecfdf5;"><h4 style="color:#065f46;">✍️ 텍스트 생성 (LLM)</h4><p>GPT-4, Claude, Gemini — 코드·보고서·번역 자동화. 개발자의 가장 직접적인 협업 도구. OpenAI API로 내 앱에 통합 가능.</p><div style="margin-top:6px;"><span class="tag tag-green">Transformer</span></div></div>
+      <div class="mc" style="border-color:#fde68a;background:#fffbeb;"><h4 style="color:#92400e;">🎵 음악·영상 생성</h4><p>Suno(음악), Runway(영상), ElevenLabs(음성 복제). 게임 BGM·광고 영상 자동 제작에 적용 가능.</p><div style="margin-top:6px;"><span class="tag tag-amber">GAN/Diffusion</span></div></div>
+      <div class="mc" style="border-color:#fecaca;background:#fef2f2;"><h4 style="color:#dc2626;">⚠️ 딥페이크 & 개발자 윤리</h4><p>AI로 특정인의 얼굴·목소리를 합성하는 딥페이크는 범죄에 악용 가능. 개발자는 기술 윤리와 법적 책임을 고려해야 합니다.</p><div style="margin-top:6px;"><span class="tag tag-red">윤리 이슈</span></div></div>
+    </div>
+  </div>
+
+  <div class="discuss-box">
+    <h4>⏱ 5분 생각하기 — 프로그래밍 분야에서 AI를 어떻게 활용할까?</h4>
+    <ul>
+      <li>GitHub Copilot이 코드를 자동으로 짜준다면, 개발자는 무엇에 집중해야 할까요?</li>
+      <li>AI가 생성한 코드에 버그가 있어 서비스에 장애가 났다면, 책임은 누구에게 있을까요?</li>
+      <li>추천 시스템의 필터 버블 문제를 개발자로서 어떻게 해결할 수 있을지 아이디어를 내보세요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- S4 미래 일자리 -->
+<section class="section" id="s4">
+  <div class="sec-title"><span class="sec-num">01-4</span><h2>왜 AI와 친해져야 할까? — 프로그래머의 미래</h2></div>
+
+  <div class="card">
+    <div class="card-title">🔮 AI 시대 개발자 일자리 — 대체? vs 진화?</div>
+    <p style="font-size:13.5px;line-height:1.85;margin-bottom:14px;">"AI가 개발자를 대체할까?" 걱정하는 목소리가 있습니다. 하지만 데이터는 다른 방향을 가리킵니다. 미국 노동통계국(BLS)은 2022~2032년 소프트웨어 개발자 수요가 <strong>25% 증가</strong>할 것으로 전망했습니다.</p>
+    <div class="grid-2">
+      <div class="mc" style="border-color:#fecaca;background:#fef2f2;"><h4 style="color:#dc2626;">❌ AI가 대체하는 개발 업무</h4><p>단순 반복 코드 작성 (boilerplate)<br>정해진 패턴의 CRUD 구현<br>기계적인 코드 변환·마이그레이션<br>간단한 버그 수정 및 테스트 코드 생성</p></div>
+      <div class="mc" style="border-color:#a7f3d0;background:#ecfdf5;"><h4 style="color:#065f46;">✅ AI가 강화하는 개발자 역량</h4><p>복잡한 시스템 <strong>설계·아키텍처</strong> 결정<br>요구사항 분석 및 <strong>문제 정의</strong><br>AI 결과물 <strong>비판적 검토·품질 관리</strong><br>팀·고객과의 <strong>소통·협상</strong></p></div>
+    </div>
+    <div class="hl hl-indigo" style="margin-top:14px;"><strong>📊 MS 보고서 핵심</strong> (AI를 위한 준비, 2019): 수요가 높은 일자리의 약 60%가 대인 커뮤니케이션·창의적 업무·전략적 의사 결정 직군. 단순 반복 업무는 줄고 <strong>인간 고유의 판단·공감·창의</strong> 업무는 늘어납니다.</div>
+    <div class="hl hl-green"><strong>한국고용정보원</strong>: 직종보다 <strong>종합적 분석·판단·의사소통</strong> 역량을 갖춘 사람이 AI 대체 위험이 낮습니다. AI는 인간을 보조하는 수단이 될 가능성이 높습니다.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 미래 10대 핵심 역량 — 개발자 관점 해석</div>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">MS "AI를 위한 준비" 보고서 · 아시아-태평양 비즈니스 리더 설문 결과</p>
+    <div id="skill-bars"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧠 AI가 대체 못하는 프로그래머의 강점 6가지</div>
+    <div class="grid-2">
+      <div class="mc" style="border-color:#c7d2fe;background:#eef2ff;"><h4 style="color:#4338ca;">🎯 문제 정의 능력</h4><p>AI는 주어진 문제를 잘 풀지만, <strong>"무엇이 진짜 문제인가?"</strong>를 정의하는 것은 인간만 할 수 있습니다. 요구사항 분석, 비즈니스 맥락 이해가 핵심.</p></div>
+      <div class="mc" style="border-color:#a7f3d0;background:#ecfdf5;"><h4 style="color:#065f46;">🏗️ 시스템 아키텍처 설계</h4><p>마이크로서비스, DB 설계, 확장성 고려 등 <strong>전체 시스템을 조망하는 설계 능력</strong>은 AI가 아직 취약합니다.</p></div>
+      <div class="mc" style="border-color:#fde68a;background:#fffbeb;"><h4 style="color:#92400e;">🔍 비판적 코드 리뷰</h4><p>AI가 생성한 코드의 보안 취약점·성능 문제·유지보수성을 <strong>비판적으로 판단</strong>하는 능력. AI 시대에 더욱 중요.</p></div>
+      <div class="mc" style="border-color:#ccfbf1;background:#f0fdfa;"><h4 style="color:#0f766e;">💡 프롬프트 엔지니어링</h4><p>AI에게 정확한 질문을 던지고, 원하는 결과를 이끌어내는 능력. <strong>AI를 도구로 잘 활용하는 것</strong>도 핵심 역량.</p></div>
+      <div class="mc" style="border-color:#fecaca;background:#fef2f2;"><h4 style="color:#dc2626;">⚖️ 윤리·책임 판단</h4><p>개인정보 처리, 알고리즘 편향, 보안 설계 등 <strong>기술 윤리와 법적 책임</strong>을 판단하는 능력은 인간만 가집니다.</p></div>
+      <div class="mc" style="border-color:#ddd6fe;background:#f5f3ff;"><h4 style="color:#6d28d9;">🤝 팀·고객 소통</h4><p>PM·디자이너·고객과의 커뮤니케이션, 협업·설득 능력. AI가 가장 대체하기 어려운 <strong>사람과 사람 사이의 관계.</strong></p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗺️ AI 시대 프로그래머 성장 로드맵</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">AI와 함께 성장하는 개발자가 되기 위한 단계별 준비 계획</p>
+    <div class="roadmap">
+      <div class="rm-item"><div class="rm-phase">지금 당장</div><div><h5>AI 도구를 직접 써보기</h5><p>GitHub Copilot(학생 무료), ChatGPT, Claude를 실제 코딩에 활용해보세요. 어디서 유용하고, 어디서 틀리는지 직접 경험하는 것이 가장 중요합니다.</p></div></div>
+      <div class="rm-item"><div class="rm-phase">기초 학습</div><div><h5>Python + 데이터·수학 기초</h5><p>NumPy, Pandas, scikit-learn 기본 사용법을 익혀두세요. AI가 어떤 데이터를 필요로 하고, 어떤 원리로 작동하는지 이해하는 것이 출발점입니다.</p></div></div>
+      <div class="rm-item"><div class="rm-phase">심화 학습</div><div><h5>프롬프트 엔지니어링 + API 연동</h5><p>OpenAI API, Anthropic API를 활용해 AI 기능을 내 프로그램에 통합해보세요. AI를 "쓰는 사람"에서 "AI를 내 서비스에 넣는 사람"으로 발전합니다.</p></div></div>
+      <div class="rm-item"><div class="rm-phase">포트폴리오</div><div><h5>AI 활용 프로젝트 제작 · GitHub 공개</h5><p>추천 시스템, AI 챗봇, 이미지 분류 앱 등 AI를 활용한 프로젝트를 만들어 GitHub에 올리세요. "AI를 활용하는 개발자"임을 증명하는 포트폴리오가 됩니다.</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 프로그래밍학과 졸업 후 AI 시대 직업 전망</div>
+    <div style="overflow-x:auto;">
+      <table class="resp-table">
+        <thead><tr><th>직업/역할</th><th>AI의 영향</th><th>필요한 추가 역량</th><th>전망</th></tr></thead>
+        <tbody>
+          <tr><td>💻 백엔드 개발자</td><td>반복 코드는 AI가 작성, 복잡한 비즈니스 로직 설계는 인간 필요</td><td>시스템 설계, 클라우드(AWS/GCP), DB 최적화</td><td><span class="tag tag-green">수요 유지·성장</span></td></tr>
+          <tr><td>🌐 프론트엔드 개발자</td><td>UI 컴포넌트 자동 생성, 디자인-코드 변환 가속화</td><td>UX 감각, 접근성(A11y), 성능 최적화</td><td><span class="tag tag-green">수요 유지</span></td></tr>
+          <tr><td>🤖 AI/ML 엔지니어</td><td>AI가 AI를 만드는 시대, 설계·검증·운영은 인간</td><td>선형대수·확률, PyTorch/TensorFlow, MLOps</td><td><span class="tag tag-indigo">고성장 직군</span></td></tr>
+          <tr><td>🔐 보안 개발자</td><td>AI 취약점 탐지 + AI를 이용한 사이버 공격 증가로 수요 급증</td><td>AI 보안 패턴, 침투 테스트, 암호화 이론</td><td><span class="tag tag-indigo">고성장 직군</span></td></tr>
+          <tr><td>📊 데이터 엔지니어</td><td>AI 학습을 위한 고품질 데이터 파이프라인 구축 수요 폭증</td><td>SQL, Spark, Kafka, 데이터 품질 관리</td><td><span class="tag tag-indigo">고성장 직군</span></td></tr>
+          <tr><td>✍️ 프롬프트 엔지니어</td><td>AI를 효과적으로 활용하는 새로운 직군으로 등장</td><td>LLM 이해, 논리적 글쓰기, 도메인 지식</td><td><span class="tag tag-orange">신규 직군 등장</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="discuss-box">
+    <h4>⏱ 5분 생각하기 — AI 시대, 나는 어떤 개발자가 될까?</h4>
+    <ul>
+      <li>AI가 내 코드를 대신 작성해준다면, 나는 어떤 부분에서 가치를 발휘할 수 있을까요?</li>
+      <li>"AI를 잘 쓰는 개발자"와 "AI에 대체되는 개발자"의 차이는 무엇이라고 생각하나요?</li>
+      <li>10년 후 내가 되고 싶은 개발자의 모습을 구체적으로 그려보세요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- S5 퀴즈 -->
+<section class="section" id="s5">
+  <div class="sec-title"><span class="sec-num">QUIZ</span><h2>개념 확인 퀴즈</h2></div>
+  <div id="quiz-container"></div>
+  <div id="quiz-score" style="display:none;" class="card">
+    <div class="card-title">🏆 최종 점수</div>
+    <div id="score-text" style="font-size:26px;font-weight:900;text-align:center;padding:20px;color:var(--navy);"></div>
+    <button onclick="resetQuiz()" style="width:100%;padding:13px;background:var(--indigo);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;margin-top:10px;">다시 풀기 🔄</button>
+  </div>
+</section>
+
+</main>
+<footer>💻 프로그래밍학과 AI 교안 v2.0 · Chapter 01 · 인공지능, 너의 정체는 뭐니?</footer>
+
+<script>
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (id === 's4') setTimeout(animateSkillBars, 120);
+}
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling, isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.acc-header').forEach(h => { h.classList.remove('open'); h.nextElementSibling.style.display = 'none'; });
+  if (!isOpen) { btn.classList.add('open'); body.style.display = 'block'; }
+}
+
+const bubbleTexts = {
+  python:   '🐍 Python 콘텐츠를 많이 클릭하면 YouTube·인프런이 Python 강의만 추천하기 시작합니다. Rust·Go 같은 새로운 언어를 접할 기회가 줄어들고, 자신도 모르게 "Python이 최고"라는 편향이 강화될 수 있습니다.',
+  game:     '🎮 게임 개발 콘텐츠에 빠지면 알고리즘이 Unity·Unreal 영상만 추천합니다. 서버·데이터 분야 등 다른 커리어 가능성을 놓칠 수 있습니다.',
+  ai:       '🤖 AI/ML 콘텐츠를 자주 보면 "AI가 모든 것을 해결한다"는 과도한 낙관주의에 빠질 수 있습니다. 기반 알고리즘·시스템 프로그래밍의 중요성이 희석될 수 있습니다.',
+  web:      '🌐 프론트엔드에 집중되면 백엔드·인프라·보안 분야의 흐름을 놓치기 쉽습니다. 개발자는 풀스택 시각을 유지하는 것이 중요합니다.',
+  security: '🔐 보안 콘텐츠에 집중하면 관련 뉴스가 피드를 가득 채웁니다. 학습에는 도움이 되지만 지나치면 과도한 불안감을 유발할 수 있습니다.',
+  startup:  '🚀 성공 스토리만 접하면 창업의 현실적 어려움을 과소평가하게 됩니다. 알고리즘은 "성공한 스타트업" 영상을 더 추천하고 실패 사례는 잘 보여주지 않습니다.'
+};
+function selectBubble(el, key) {
+  document.querySelectorAll('.bubble').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const res = document.getElementById('bubble-result');
+  res.style.display = 'block';
+  res.innerHTML = '<strong>🔍 알고리즘 분석 결과</strong><br>' + bubbleTexts[key];
+}
+
+const copilotDemos = {
+  complete: `<div class="code-block"><span class="cm"># 주석만 작성하면 Copilot이 함수를 자동 완성</span>
+<span class="cm"># 사용자 입력: "피보나치 수열을 반환하는 함수 작성"</span>
+
+<span class="kw">def</span> <span class="fn">fibonacci</span>(n):
+    <span class="kw">if</span> n &lt;= <span class="num">0</span>:
+        <span class="kw">return</span> []
+    <span class="kw">elif</span> n == <span class="num">1</span>:
+        <span class="kw">return</span> [<span class="num">0</span>]
+    sequence = [<span class="num">0</span>, <span class="num">1</span>]
+    <span class="kw">while</span> <span class="fn">len</span>(sequence) &lt; n:
+        sequence.append(sequence[-<span class="num">1</span>] + sequence[-<span class="num">2</span>])
+    <span class="kw">return</span> sequence
+
+<span class="cm"># ✅ 주석 한 줄로 완전한 함수 생성 가능
+# ⚠️ 큰 n값에서 메모리 비효율 → 개발자가 직접 검토 필요!</span></div>`,
+  debug: `<div class="code-block"><span class="cm"># 버그가 있는 코드</span>
+<span class="kw">def</span> <span class="fn">divide</span>(a, b):
+    <span class="kw">return</span> a / b  <span class="cm"># ← ZeroDivisionError 발생 가능!</span>
+
+<span class="cm"># ChatGPT "이 코드의 문제점을 찾고 수정해줘" 요청 시</span>
+<span class="cm"># AI 수정 결과 ↓</span>
+
+<span class="kw">def</span> <span class="fn">divide</span>(a, b):
+    <span class="kw">if</span> b == <span class="num">0</span>:
+        <span class="kw">raise</span> ValueError(<span class="str">"0으로 나눌 수 없습니다."</span>)
+    <span class="kw">return</span> a / b
+
+<span class="cm"># ✅ 예외 처리 추가 완료
+# ⚠️ AI가 수정한 코드도 항상 테스트 코드로 검증하세요!</span></div>`,
+  explain: `<div class="code-block"><span class="cm"># 이해하기 어려운 코드를 AI에게 설명 요청</span>
+result = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>) <span class="kw">if</span> x % <span class="num">2</span> == <span class="num">0</span>]
+
+<span class="cm"># AI 설명:
+# "0~9 중 짝수(0,2,4,6,8)만 골라서 제곱한 리스트를 만듭니다.
+#  결과: [0, 4, 16, 36, 64]
+#  이것은 리스트 컴프리헨션(List Comprehension) 문법입니다.
+#  일반 for문보다 간결하고 빠릅니다."
+#
+# ✅ 모르는 코드를 즉시 설명 → 빠른 학습 가능
+# ✅ 오픈소스·취업 코딩테스트 분석에 활용하세요</span></div>`
+};
+function showCopilotDemo(type) {
+  const div = document.getElementById('copilot-demo');
+  div.style.display = 'block';
+  div.innerHTML = copilotDemos[type];
+}
+
+const chatDemos = {
+  rule: `<strong style="color:#991b1b;">🔴 규칙 기반 챗봇</strong><br><br>
+<strong>👤 사용자:</strong> 코드에서 버그가 생겼는데 도움 받을 수 있나요?<br>
+<strong style="color:#991b1b;">🤖 챗봇:</strong> <span style="color:#ef4444;">무슨 말인지 모르겠어요. "버그 신고" 또는 "오류 접수"라고 입력해주세요.</span><br><br>
+<strong>👤 사용자:</strong> IndexError가 발생했어요<br>
+<strong style="color:#991b1b;">🤖 챗봇:</strong> <span style="color:#ef4444;">무슨 말인지 모르겠어요. 다시 말씀해주시겠어요?</span><br><br>
+<span style="font-size:12px;color:var(--muted);">→ 규칙 밖의 대화는 처리 불가. 정해진 키워드만 인식합니다.</span>`,
+  ai: `<strong style="color:#065f46;">🟢 AI 챗봇 (LLM 기반)</strong><br><br>
+<strong>👤 사용자:</strong> 파이썬 코드에서 IndexError가 났어요<br>
+<strong style="color:#4338ca;">🤖 AI챗봇:</strong> <span style="color:#059669;">IndexError는 리스트의 범위를 벗어난 인덱스에 접근할 때 발생합니다. 코드를 보여주시면 더 구체적으로 도와드릴게요!</span><br><br>
+<strong>👤 사용자:</strong> my_list[5]인데 리스트 길이가 3이에요<br>
+<strong style="color:#4338ca;">🤖 AI챗봇:</strong> <span style="color:#059669;">아! 리스트 길이가 3이면 유효한 인덱스는 0, 1, 2까지입니다. 접근 전에 <code style="background:#1e293b;color:#34d399;padding:1px 4px;border-radius:3px;">if 5 &lt; len(my_list):</code>로 길이를 확인하거나, try-except로 예외 처리를 해보세요. 😊</span><br><br>
+<span style="font-size:12px;color:var(--muted);">→ 문맥·의도를 이해하고 실질적인 해결책을 제시합니다.</span>`
+};
+function showChatDemo(type) {
+  const div = document.getElementById('chat-demo');
+  div.style.display = 'block';
+  div.innerHTML = chatDemos[type];
+}
+
+const skills = [
+  { name:'정량적·분석적·통계적 기술', pct:51, type:'cognitive', color:'#4f46e5', note:'데이터 분석, 알고리즘 복잡도 계산 능력' },
+  { name:'디지털 기술', pct:51, type:'cognitive', color:'#4f46e5', note:'프로그래밍 도구, AI 도구 활용 능력 — 개발자 직결!' },
+  { name:'적응력과 지속적 학습', pct:49, type:'social', color:'#ef4444', note:'빠르게 변하는 기술 트렌드에 지속적으로 적응' },
+  { name:'비판적 사고 및 의사 결정', pct:47, type:'cognitive', color:'#4f46e5', note:'AI 생성 코드를 비판적으로 검토하는 능력' },
+  { name:'창의성', pct:44, type:'social', color:'#ef4444', note:'새로운 기능·서비스 아이디어를 구현하는 능력' },
+  { name:'IT 기술과 프로그래밍', pct:44, type:'expert', color:'#f59e0b', note:'코딩 역량 자체 — 프로그래밍학과의 핵심!' },
+  { name:'기업가 정신 및 주도력', pct:42, type:'social', color:'#ef4444', note:'사이드 프로젝트 추진, 팀 주도적 참여' },
+  { name:'프로젝트 관리 능력', pct:41, type:'expert', color:'#f59e0b', note:'개발 일정 관리, 스프린트 계획 능력' },
+  { name:'의사소통 및 협상 기술', pct:41, type:'social', color:'#ef4444', note:'비개발자(PM·디자이너)와의 소통 능력' },
+  { name:'대인 관계 기술 및 공감 능력', pct:39, type:'social', color:'#ef4444', note:'팀원의 어려움을 이해하고 협력하는 능력' },
+];
+const sc = document.getElementById('skill-bars');
+skills.forEach((s, i) => {
+  const typeLabel = s.type==='cognitive'?'고도 인지':s.type==='social'?'사회·정서':'전문 기술';
+  const tagClass  = s.type==='cognitive'?'tag-indigo':s.type==='social'?'tag-red':'tag-amber';
+  const div = document.createElement('div');
+  div.className = 'skill-bar-item';
+  div.innerHTML = `
+    <div class="skill-name">
+      <span>${i+1}. ${s.name} <span class="tag ${tagClass}">${typeLabel}</span></span>
+      <span style="color:var(--indigo);font-family:'Space Mono',monospace;font-size:12px;">${s.pct}%</span>
+    </div>
+    <div class="skill-track"><div class="skill-fill" style="width:0%;background:${s.color};" data-width="${s.pct}%"></div></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:3px;">💡 ${s.note}</div>`;
+  sc.appendChild(div);
+});
+function animateSkillBars() {
+  document.querySelectorAll('.skill-fill').forEach(el => { el.style.width = el.getAttribute('data-width'); });
+}
+
+const quizData = [
+  { q:"AI · 머신러닝(ML) · 딥러닝(DL)의 포함 관계를 올바르게 표현한 것은?", options:["ML ⊃ DL ⊃ AI","AI ⊃ ML ⊃ DL","DL ⊃ ML ⊃ AI","세 개념은 서로 독립적"], answer:1, explain:"AI가 가장 넓은 개념, 그 안에 ML, ML 안에 DL이 포함됩니다." },
+  { q:"현재 GitHub Copilot, ChatGPT, 알파고는 어느 단계의 AI인가?", options:["강인공지능","초인공지능","약인공지능","범용인공지능"], answer:2, explain:"현재 모든 AI는 약인공지능(Narrow AI)입니다. 특정 목적에만 최적화되어 있습니다." },
+  { q:"'Artificial Intelligence'라는 용어를 처음 사용한 장소는?", options:["MIT 튜링 심포지엄 (1950)","다트머스 회의 (1956)","스탠퍼드 AI 랩 (1963)","IBM 연구소 (1970)"], answer:1, explain:"1956년 다트머스 회의에서 존 매카시가 처음으로 사용했습니다." },
+  { q:"AI에 대한 과도한 기대 이후 성과 부족으로 연구비가 급감하는 시기를 무엇이라 하는가?", options:["AI 붐","AI 겨울(AI Winter)","AI 침묵","AI 리셋"], answer:1, explain:"AI 겨울(AI Winter) — 1차(1970~1980), 2차(1987~1997)로 두 번 발생했습니다." },
+  { q:"2012년 이미지넷 대회에서 딥러닝 혁명의 기폭제가 된 모델은?", options:["GPT-1","알파고","AlexNet","Watson"], answer:2, explain:"AlexNet이 오류율을 26%→15%로 낮추며 딥러닝 시대를 열었습니다." },
+  { q:"추천 시스템에서 나와 비슷한 다른 사용자의 행동 데이터를 기반으로 추천하는 방식은?", options:["콘텐츠 기반 필터링","협업 필터링","키워드 필터링","랜덤 추천"], answer:1, explain:"협업 필터링(Collaborative Filtering) — 유사한 사용자의 행동 패턴을 활용합니다." },
+  { q:"신규 사용자·신상품에 데이터가 없어 추천 정확도가 낮아지는 문제를 무엇이라 하는가?", options:["필터 버블","콜드 스타트(Cold Start)","데이터 드리프트","과적합"], answer:1, explain:"콜드 스타트(Cold Start) — 데이터 부족으로 추천 시스템이 제대로 동작하지 못하는 현상입니다." },
+  { q:"AI 알고리즘이 개인에게 맞는 정보만 보여줘 다양한 시각을 못 보게 되는 현상은?", options:["에코챔버","필터 버블(Filter Bubble)","오버피팅","배치 정규화"], answer:1, explain:"필터 버블(Filter Bubble) — 개발자는 다양성(Diversity)을 의도적으로 설계에 반영해야 합니다." },
+  { q:"AI 코딩 도구(GitHub Copilot 등)를 사용할 때 개발자에게 반드시 필요한 역량은?", options:["AI 코드를 빠르게 복사·붙여넣기 하는 능력","AI 결과물을 비판적으로 검토하고 보안·성능 이슈를 판단하는 능력","AI 도구를 쓰지 않고 모든 코드를 직접 작성하는 능력","최대한 많은 AI 도구를 동시에 사용하는 능력"], answer:1, explain:"AI 코딩 도구는 보안 취약점·비효율 로직이 있는 코드를 생성할 수 있습니다. 비판적 검토 능력이 필수입니다." },
+  { q:"MS 보고서에서 AI 시대 비즈니스 리더에게 가장 중요하다고 꼽은 역량은?", options:["빠른 타이핑과 암기력","창의성과 대인 관계 기술·공감 능력","단순 반복 코딩 능력","다수의 언어 암기"], answer:1, explain:"창의성과 공감 능력은 AI가 대체하기 어려운 인간 고유의 역량입니다." }
+];
+
+let quizAnswers = {};
+function buildQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = ''; quizAnswers = {};
+  quizData.forEach((q, qi) => {
+    const box = document.createElement('div');
+    box.className = 'quiz-box'; box.id = `quiz-${qi}`;
+    const optHtml = q.options.map((opt, oi) =>
+      `<button class="opt-btn" onclick="answerQuiz(${qi},${oi})">${String.fromCharCode(65+oi)}. ${opt}</button>`
+    ).join('');
+    box.innerHTML = `<h3><span>Q${qi+1}.</span> ${q.q}</h3><div class="options">${optHtml}</div><div class="quiz-result" id="qr-${qi}"></div>`;
+    container.appendChild(box);
+  });
+  document.getElementById('quiz-score').style.display = 'none';
+}
+function answerQuiz(qi, oi) {
+  if (quizAnswers[qi] !== undefined) return;
+  quizAnswers[qi] = oi;
+  const box = document.getElementById(`quiz-${qi}`);
+  const btns = box.querySelectorAll('.opt-btn');
+  const correct = quizData[qi].answer;
+  btns.forEach((btn, i) => {
+    if (i === correct) btn.classList.add('correct');
+    else if (i === oi && oi !== correct) btn.classList.add('wrong');
+    btn.style.pointerEvents = 'none';
+  });
+  const res = document.getElementById(`qr-${qi}`);
+  res.classList.add('show');
+  if (oi === correct) { res.classList.add('ok'); res.classList.remove('ng'); res.textContent = '✅ 정답! — ' + quizData[qi].explain; }
+  else { res.classList.add('ng'); res.classList.remove('ok'); res.textContent = '❌ 오답 — ' + quizData[qi].explain; }
+  if (Object.keys(quizAnswers).length === quizData.length) {
+    const score = Object.entries(quizAnswers).filter(([qi2, oi2]) => Number(oi2) === quizData[Number(qi2)].answer).length;
+    const scoreBox = document.getElementById('quiz-score');
+    scoreBox.style.display = 'block';
+    const pct = Math.round(score / quizData.length * 100);
+    const emoji = pct>=90?'🏆':pct>=70?'👍':pct>=50?'📚':'😅';
+    document.getElementById('score-text').innerHTML =
+      `${emoji} ${score} / ${quizData.length} 정답<br><span style="font-size:16px;color:var(--indigo);">${pct}점 — ${pct>=90?'완벽해요!':pct>=70?'잘했어요!':pct>=50?'복습이 필요해요':'다시 공부해봐요'}</span>`;
+    scoreBox.scrollIntoView({behavior:'smooth'});
+  }
+}
+function resetQuiz() { buildQuiz(); window.scrollTo({top:0,behavior:'smooth'}); }
+buildQuiz();
+</script>
+</body>
+</html>
