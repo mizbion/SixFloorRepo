@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인공지능 — 인식 서비스</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #f4f7fb;
+    --white:   #ffffff;
+    --border:  #dde4f2;
+    --border2: #edf1f9;
+    --text:    #1a2438;
+    --muted:   #6b7da0;
+    --muted2:  #a0afc8;
+
+    --blue:   #2563eb; --blue-bg:   #eff4ff; --blue-bd:   #bdd0fd;
+    --teal:   #0d9488; --teal-bg:   #f0fdfa; --teal-bd:   #99e6de;
+    --amber:  #d97706; --amber-bg:  #fffbeb; --amber-bd:  #fde68a;
+    --violet: #7c3aed; --violet-bg: #f5f3ff; --violet-bd: #c4b5fd;
+    --rose:   #e11d48; --rose-bg:   #fff1f2; --rose-bd:   #fecdd3;
+    --green:  #15803d; --green-bg:  #f0fdf4; --green-bd:  #a7f3d0;
+    --orange: #ea580c; --orange-bg: #fff7ed; --orange-bd: #fed7aa;
+
+    --r:  14px; --rs: 8px;
+    --sh0: 0 1px 3px rgba(26,36,56,.06);
+    --sh1: 0 4px 16px rgba(26,36,56,.10);
+    --sh2: 0 8px 32px rgba(26,36,56,.14);
+  }
+  *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); font-size:15px; line-height:1.75; }
+
+  /* ── HEADER ─────────────────────────── */
+  .site-header { background:var(--white); border-bottom:1.5px solid var(--border); position:sticky; top:0; z-index:200; box-shadow:var(--sh0); }
+  .site-header-inner { max-width:940px; margin:0 auto; padding:0 28px; height:56px; display:flex; align-items:center; gap:16px; }
+  .header-badge { font-size:11px; font-weight:800; letter-spacing:.6px; padding:3px 11px; border-radius:20px; background:var(--teal-bg); border:1.5px solid var(--teal-bd); color:var(--teal); white-space:nowrap; flex-shrink:0; }
+  .header-title { font-size:14px; font-weight:700; color:var(--text); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .progress-wrap { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .progress-bar-bg { width:120px; height:5px; background:var(--border); border-radius:5px; overflow:hidden; }
+  .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--teal),var(--blue)); width:0%; transition:width .4s ease; border-radius:5px; }
+  .progress-label { font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--muted); white-space:nowrap; }
+
+  /* ── CONTENT ─────────────────────────── */
+  .content { max-width:940px; margin:0 auto; padding:36px 28px 60px; }
+
+  /* ── HERO ────────────────────────────── */
+  .hero { background:linear-gradient(135deg,#0f4c6e 0%,#0d7a6a 50%,#1a3a6e 100%); border-radius:20px; padding:48px 44px; margin-bottom:40px; color:#fff; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; top:-40px; right:-40px; width:220px; height:220px; border-radius:50%; background:rgba(255,255,255,.05); }
+  .hero::after  { content:''; position:absolute; bottom:-60px; left:30%;  width:300px; height:300px; border-radius:50%; background:rgba(255,255,255,.04); }
+  .hero-tag  { display:inline-block; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); padding:4px 12px; border-radius:20px; margin-bottom:18px; }
+  .hero h1   { font-size:30px; font-weight:900; line-height:1.25; margin-bottom:14px; position:relative; z-index:1; }
+  .hero h1 em { font-style:normal; color:#6ee7b7; }
+  .hero-desc { font-size:14px; color:rgba(255,255,255,.80); max-width:560px; position:relative; z-index:1; }
+
+  /* ── OBJECTIVE ────────────────────────── */
+  .objective-box { background:var(--white); border:1.5px solid var(--teal-bd); border-radius:var(--r); padding:22px 26px; margin-bottom:28px; box-shadow:var(--sh0); }
+  .objective-box h2 { font-size:14px; font-weight:800; color:var(--teal); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .obj-list { display:flex; flex-direction:column; gap:10px; }
+  .obj-item { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:var(--text); }
+  .obj-check { width:22px; height:22px; border-radius:50%; background:var(--teal-bg); border:1.5px solid var(--teal-bd); color:var(--teal); font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+
+  /* ── TOC ──────────────────────────────── */
+  .toc-box { background:var(--white); border:1.5px solid var(--border); border-radius:var(--r); padding:22px 26px; margin-bottom:32px; box-shadow:var(--sh0); }
+  .toc-box h2 { font-size:13px; font-weight:800; color:var(--muted); margin-bottom:14px; letter-spacing:.5px; text-transform:uppercase; }
+  .toc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+  .toc-item { display:flex; align-items:center; gap:9px; padding:9px 13px; background:var(--bg); border:1px solid var(--border2); border-radius:var(--rs); text-decoration:none; color:var(--text); font-size:13px; font-weight:500; transition:all .18s; }
+  .toc-item:hover { background:var(--teal-bg); border-color:var(--teal-bd); color:var(--teal); }
+  .toc-num { font-size:10px; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--muted2); flex-shrink:0; }
+
+  /* ── PART TABS ───────────────────────── */
+  .part-tab-bar { display:flex; gap:8px; margin-bottom:28px; background:var(--white); border:1.5px solid var(--border); border-radius:var(--r); padding:8px; box-shadow:var(--sh0); }
+  .part-tab { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:11px 16px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .2s; border:1.5px solid transparent; user-select:none; white-space:nowrap; }
+  .part-tab:hover { background:var(--bg); color:var(--text); }
+  .part-tab.active-blue   { background:var(--blue-bg);   border-color:var(--blue-bd);   color:var(--blue);   }
+  .part-tab.active-teal   { background:var(--teal-bg);   border-color:var(--teal-bd);   color:var(--teal);   }
+  .part-tab.active-orange { background:var(--orange-bg); border-color:var(--orange-bd); color:var(--orange); }
+  .part-tab.active-violet { background:var(--violet-bg); border-color:var(--violet-bd); color:var(--violet); }
+  .part-tab-inner { display:flex; flex-direction:column; align-items:center; gap:1px; }
+  .tab-sub { font-size:10px; font-weight:500; opacity:.75; display:block; line-height:1.2; }
+  .part-panel { display:none; }
+  .part-panel.active { display:block; }
+
+  /* ── CHAPTER DIVIDER ─────────────────── */
+  .chapter { display:flex; align-items:center; gap:14px; margin:0 0 20px; }
+  .chapter-badge { font-size:12px; font-weight:800; padding:5px 14px; border-radius:20px; border:2px solid; white-space:nowrap; flex-shrink:0; }
+  .chapter-line { flex:1; height:1.5px; background:var(--border); }
+
+  /* ── CARD ────────────────────────────── */
+  .card { background:var(--white); border:1.5px solid var(--border); border-radius:var(--r); padding:26px 28px; margin-bottom:14px; box-shadow:var(--sh0); scroll-margin-top:72px; }
+  .card-title { font-size:18px; font-weight:800; color:var(--text); margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--border2); display:flex; align-items:center; gap:10px; }
+  .t-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .card p { font-size:14px; color:var(--text); line-height:1.85; margin-bottom:12px; }
+  .card p:last-child { margin-bottom:0; }
+
+  /* ── KEYWORDS ────────────────────────── */
+  .kw        { font-weight:700; background:var(--amber-bg);  border-bottom:2px solid var(--amber-bd);  padding:0 2px; border-radius:3px; color:#92400e; }
+  .kw-blue   { font-weight:700; background:var(--blue-bg);   border-bottom:2px solid var(--blue-bd);   padding:0 2px; border-radius:3px; color:var(--blue); }
+  .kw-teal   { font-weight:700; background:var(--teal-bg);   border-bottom:2px solid var(--teal-bd);   padding:0 2px; border-radius:3px; color:var(--teal); }
+  .kw-violet { font-weight:700; background:var(--violet-bg); border-bottom:2px solid var(--violet-bd); padding:0 2px; border-radius:3px; color:var(--violet); }
+  .kw-orange { font-weight:700; background:var(--orange-bg); border-bottom:2px solid var(--orange-bd); padding:0 2px; border-radius:3px; color:var(--orange); }
+
+  /* ── POINT BOX ───────────────────────── */
+  .point-box { background:var(--blue-bg); border:1.5px solid var(--blue-bd); border-radius:var(--rs); padding:14px 18px; font-size:13.5px; color:#1e3a8a; font-weight:600; margin:14px 0; display:flex; gap:10px; align-items:flex-start; line-height:1.7; }
+  .point-box.amber  { background:var(--amber-bg);  border-color:var(--amber-bd);  color:#78350f; }
+  .point-box.teal   { background:var(--teal-bg);   border-color:var(--teal-bd);   color:#134e4a; }
+  .point-box.violet { background:var(--violet-bg); border-color:var(--violet-bd); color:#4c1d95; }
+  .point-box.green  { background:var(--green-bg);  border-color:var(--green-bd);  color:#14532d; }
+  .point-box.orange { background:var(--orange-bg); border-color:var(--orange-bd); color:#9a3412; }
+  .point-box.rose   { background:var(--rose-bg);   border-color:var(--rose-bd);   color:#9f1239; }
+
+  /* ── CHECKLIST ───────────────────────── */
+  .checklist { display:flex; flex-direction:column; gap:10px; margin:14px 0; }
+  .check-item { display:flex; align-items:flex-start; gap:12px; font-size:14px; line-height:1.7; }
+  .check-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:8px; }
+
+  /* ── AI SERVICE GRID ─────────────────── */
+  .ai-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin:16px 0; }
+  .ai-card { background:var(--bg); border:1.5px solid var(--border); border-radius:var(--rs); padding:16px 18px; transition:all .18s; text-decoration:none; color:inherit; display:block; }
+  .ai-card:hover { background:var(--white); border-color:var(--blue-bd); box-shadow:var(--sh1); transform:translateY(-2px); }
+  .ai-card-icon { font-size:22px; margin-bottom:8px; }
+  .ai-card-name { font-size:13px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .ai-card-url  { font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--blue); opacity:.8; word-break:break-all; }
+  .ai-card-desc { font-size:12px; color:var(--muted); line-height:1.6; margin-top:5px; }
+
+  /* ── STEP LIST ───────────────────────── */
+  .step-list { display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+  .step-item { display:flex; gap:14px; align-items:flex-start; background:var(--bg); border:1px solid var(--border); border-radius:var(--rs); padding:14px 16px; }
+  .step-num { width:28px; height:28px; border-radius:50%; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; }
+  .step-content { flex:1; }
+  .step-title { font-size:13px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .step-desc  { font-size:13px; color:var(--muted); line-height:1.65; }
+
+  /* ── PRACTICE BLOCK ──────────────────── */
+  .practice { background:linear-gradient(135deg,#f0fdf4,#ecfdf5); border:2px solid var(--green-bd); border-radius:var(--r); padding:22px 24px; margin:14px 0; }
+  .practice-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .practice-badge { font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; background:var(--green); color:#fff; padding:3px 10px; border-radius:20px; }
+  .practice h3 { font-size:15px; font-weight:800; color:var(--green); }
+  .practice-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .meta-chip { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:4px 12px; border-radius:20px; }
+
+  /* ── PROCEDURE ───────────────────────── */
+  .procedure { display:flex; flex-direction:column; gap:0; margin:14px 0; }
+  .proc-step { display:flex; gap:0; align-items:stretch; }
+  .proc-left  { display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:42px; }
+  .proc-circle { width:30px; height:30px; border-radius:50%; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; }
+  .proc-line { flex:1; width:2px; background:var(--border); margin:2px auto; min-height:12px; }
+  .proc-step:last-child .proc-line { display:none; }
+  .proc-body { flex:1; background:var(--white); border:1.5px solid var(--border); border-radius:var(--rs); padding:12px 16px; margin-bottom:8px; margin-left:2px; }
+  .proc-title { font-size:13px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .proc-desc  { font-size:13px; color:var(--muted); line-height:1.65; }
+  .proc-note  { font-size:12px; color:var(--muted2); margin-top:6px; padding:6px 10px; background:var(--bg); border-radius:6px; border-left:3px solid var(--border); line-height:1.6; }
+
+  /* ── TIP BOX ─────────────────────────── */
+  .tip-box { background:linear-gradient(135deg,#fef3c7,#fff7ed); border:2px solid var(--amber-bd); border-radius:var(--rs); padding:14px 18px; margin:12px 0; }
+  .tip-box-title { font-size:12px; font-weight:800; color:#92400e; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .tip-box p { font-size:13px; color:#78350f; line-height:1.7; margin:0; }
+
+  /* ── WARN BOX ────────────────────────── */
+  .warn-box { background:var(--rose-bg); border:1.5px solid var(--rose-bd); border-radius:var(--rs); padding:12px 16px; margin:12px 0; font-size:13px; color:#9f1239; font-weight:600; display:flex; gap:10px; line-height:1.65; }
+
+  /* ── DEF GRID ────────────────────────── */
+  .def-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; margin:14px 0; }
+  .def-card { background:var(--bg); border:1.5px solid var(--border); border-radius:var(--rs); padding:16px; }
+  .def-term { font-size:13px; font-weight:800; color:var(--text); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .def-term .en { font-size:10px; font-family:'JetBrains Mono',monospace; font-weight:700; background:var(--border); padding:1px 6px; border-radius:4px; color:var(--muted); }
+  .def-desc { font-size:12.5px; color:var(--muted); line-height:1.65; }
+
+  /* ── COMPARE ─────────────────────────── */
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+  .compare-col { border-radius:var(--rs); padding:16px 18px; border:1.5px solid; }
+  .compare-col h4 { font-size:13px; font-weight:800; margin-bottom:10px; }
+  .compare-col ul { list-style:none; display:flex; flex-direction:column; gap:7px; }
+  .compare-col ul li { font-size:13px; line-height:1.6; padding-left:14px; position:relative; }
+  .compare-col ul li::before { content:'→'; position:absolute; left:0; font-weight:700; }
+
+  /* ── ML FLOW ──────────────────────────── */
+  .ml-flow { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin:16px 0; }
+  .flow-pill { padding:8px 14px; border-radius:20px; font-size:12px; font-weight:800; border:2px solid; white-space:nowrap; }
+  .flow-arr { color:var(--muted2); font-size:16px; font-weight:700; }
+
+  /* ── OVERFITTING VISUAL ──────────────── */
+  .fit-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+  .fit-card { border-radius:var(--rs); padding:14px; border:2px solid; text-align:center; }
+  .fit-icon { font-size:26px; margin-bottom:6px; }
+  .fit-name { font-size:13px; font-weight:800; margin-bottom:4px; }
+  .fit-desc { font-size:12px; color:var(--muted); line-height:1.6; }
+
+  /* ── LINK BOX ─────────────────────────── */
+  .link-box { display:flex; align-items:center; gap:14px; background:var(--teal-bg); border:1.5px solid var(--teal-bd); border-radius:var(--rs); padding:14px 18px; margin:14px 0; }
+  .link-icon { font-size:22px; flex-shrink:0; }
+  .link-text { flex:1; }
+  .link-text p { font-size:13px; color:#134e4a; line-height:1.6; margin:0; }
+  .link-text a { font-weight:700; color:var(--teal); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12px; }
+  .link-text a:hover { text-decoration:underline; }
+
+  /* ── CHECK SUMMARY ────────────────────── */
+  .check-summary { background:var(--violet-bg); border:2px solid var(--violet-bd); border-radius:var(--r); padding:20px 24px; margin:14px 0; }
+  .check-summary h3 { font-size:14px; font-weight:800; color:var(--violet); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .check-summary ol { padding-left:20px; display:flex; flex-direction:column; gap:8px; }
+  .check-summary ol li { font-size:13.5px; color:#4c1d95; line-height:1.7; }
+
+  /* ── BACKTOP ──────────────────────────── */
+  .backtop { position:fixed; bottom:22px; right:22px; width:38px; height:38px; background:var(--teal); color:#fff; border:none; border-radius:50%; font-size:16px; cursor:pointer; box-shadow:0 4px 16px rgba(13,148,136,.38); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .3s; z-index:300; }
+  .backtop.show { opacity:1; }
+
+  @media(max-width:640px){
+    .content { padding:20px 16px 48px; }
+    .hero { padding:32px 22px; }
+    .hero h1 { font-size:22px; }
+    .compare,.fit-cards { grid-template-columns:1fr; }
+    .progress-wrap,.tab-sub { display:none; }
+    .part-tab { padding:9px 8px; font-size:12px; }
+    .ml-flow { flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────── -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <span class="header-badge">🤖 인공지능</span>
+    <span class="header-title">인식 서비스 만들기</span>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <span class="progress-label" id="progressLabel">0%</span>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+  <!-- ── HERO ──────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-tag">🤖 인공지능</div>
+    <h1>인식 서비스 <em>직접 만들기</em></h1>
+    <p class="hero-desc">티처블 머신(Teachable Machine)으로 이미지·소리·동작을 인식하는 인공지능을 직접 만들어 봅시다.</p>
+  </div>
+
+  <!-- ── 학습 목표 ─────────────────────────── -->
+  <div class="objective-box">
+    <h2>🎯 이 장의 학습 목표</h2>
+    <div class="obj-list">
+      <div class="obj-item"><span class="obj-check">1</span>이미지 인식, 음성 인식, 동작 인식 서비스를 직접 만들 수 있어요.</div>
+      <div class="obj-item"><span class="obj-check">2</span>인식 서비스를 어디에 유용하게 사용할 수 있을지 설명할 수 있어요.</div>
+    </div>
+  </div>
+
+  <!-- ── 목차 ──────────────────────────────── -->
+  <div class="toc-box">
+    <h2>📋 학습 순서</h2>
+    <div class="toc-grid">
+      <a class="toc-item" href="#sec0"><span class="toc-num">00</span>다양한 AI 체험</a>
+      <a class="toc-item" href="#sec-pre"><span class="toc-num">01</span>만들기 전 알아두기</a>
+      <a class="toc-item" href="#sec-img"><span class="toc-num">02</span>이미지 프로젝트</a>
+      <a class="toc-item" href="#sec-audio"><span class="toc-num">03</span>오디오 프로젝트</a>
+      <a class="toc-item" href="#sec-pose"><span class="toc-num">04</span>포즈 프로젝트</a>
+      <a class="toc-item" href="#sec-flow"><span class="toc-num">05</span>모델 만드는 과정</a>
+    </div>
+  </div>
+
+  <!-- ════ PART TABS ═══════════════════════ -->
+  <div class="part-tab-bar">
+    <div class="part-tab active-blue" id="tab1" onclick="switchTab(1)">
+      <div class="part-tab-inner"><span>🌐 Part 1</span><span class="tab-sub">AI 체험 &amp; 준비</span></div>
+    </div>
+    <div class="part-tab" id="tab2" onclick="switchTab(2)">
+      <div class="part-tab-inner"><span>📷 Part 2</span><span class="tab-sub">이미지 프로젝트</span></div>
+    </div>
+    <div class="part-tab" id="tab3" onclick="switchTab(3)">
+      <div class="part-tab-inner"><span>🎙️ Part 3</span><span class="tab-sub">오디오 프로젝트</span></div>
+    </div>
+    <div class="part-tab" id="tab4" onclick="switchTab(4)">
+      <div class="part-tab-inner"><span>🕺 Part 4</span><span class="tab-sub">포즈 프로젝트</span></div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       PANEL 1 — AI 체험 & 준비
+  ════════════════════════════════════════ -->
+  <div class="part-panel active" id="panel1">
+
+    <div class="chapter" id="sec0">
+      <span class="chapter-badge" style="color:var(--blue);background:var(--blue-bg);border-color:var(--blue-bd)">🌐 Part 1 · 다양한 AI 체험</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <!-- AI 체험 목록 -->
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--blue-bg)">🎨</span>그림을 인식하는 인공지능</div>
+      <div class="ai-grid">
+        <a class="ai-card" href="https://quickdraw.withgoogle.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">✏️</div>
+          <div class="ai-card-name">퀵드로</div>
+          <div class="ai-card-url">quickdraw.withgoogle.com</div>
+          <div class="ai-card-desc">낙서를 AI가 실시간으로 인식하는 게임</div>
+        </a>
+        <a class="ai-card" href="https://autodraw.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🖊️</div>
+          <div class="ai-card-name">오토드로</div>
+          <div class="ai-card-url">autodraw.com</div>
+          <div class="ai-card-desc">대충 그린 그림을 AI가 깔끔하게 변환</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">🖼️</span>사진을 재탄생시키는 인공지능</div>
+      <div class="ai-grid">
+        <a class="ai-card" href="https://deepdreamgenerator.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🌀</div>
+          <div class="ai-card-name">딥 드림 제너레이터</div>
+          <div class="ai-card-url">deepdreamgenerator.com</div>
+          <div class="ai-card-desc">사진을 몽환적인 예술 작품으로 변환</div>
+        </a>
+        <a class="ai-card" href="https://betheintruder.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🎭</div>
+          <div class="ai-card-name">비 더 인트루더</div>
+          <div class="ai-card-url">betheintruder.com</div>
+          <div class="ai-card-desc">내 사진을 유명 그림 속에 합성</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--amber-bg)">🎵</span>음악과 미술을 접목한 예술 AI</div>
+      <div class="ai-grid">
+        <a class="ai-card" href="https://musiclab.chromeexperiments.com/Kandinsky" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🎼</div>
+          <div class="ai-card-name">칸딘스키</div>
+          <div class="ai-card-url">musiclab.chromeexperiments.com</div>
+          <div class="ai-card-desc">그림을 그리면 음악으로 변환해 주는 AI</div>
+        </a>
+        <a class="ai-card" href="https://artsandculture.google.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🎨</div>
+          <div class="ai-card-name">Paint with Music</div>
+          <div class="ai-card-url">artsandculture.google.com</div>
+          <div class="ai-card-desc">구글 아트 &amp; 컬처의 음악·미술 융합 실험</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🕺</span>동작 인식 인공지능</div>
+      <div class="ai-grid">
+        <a class="ai-card" href="https://semiconductor.withgoogle.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🎻</div>
+          <div class="ai-card-name">세미-컨덕터</div>
+          <div class="ai-card-url">semiconductor.withgoogle.com</div>
+          <div class="ai-card-desc">내 몸짓으로 오케스트라를 지휘하는 AI</div>
+        </a>
+        <a class="ai-card" href="https://scroobly.com" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🐾</div>
+          <div class="ai-card-name">스크루블리</div>
+          <div class="ai-card-url">scroobly.com</div>
+          <div class="ai-card-desc">동작을 따라 움직이는 캐릭터 AI</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--rose-bg)">😊</span>얼굴 인식 인공지능</div>
+      <div class="ai-grid">
+        <a class="ai-card" href="https://azure.microsoft.com/services/cognitive-services/face" target="_blank" rel="noopener">
+          <div class="ai-card-icon">🔎</div>
+          <div class="ai-card-name">Azure 코그니티브 서비스</div>
+          <div class="ai-card-url">azure.microsoft.com</div>
+          <div class="ai-card-desc">Microsoft의 얼굴 인식·감정 분석 AI</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- 만들기 전 알아두기 -->
+    <div class="chapter" id="sec-pre" style="margin-top:40px;">
+      <span class="chapter-badge" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">🧠 Part 1 · 만들기 전 알아두기</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🔍</span>머신러닝은 세상을 어떻게 '인식'할까?</div>
+      <p>우리가 눈, 코, 피부 등으로 무언가를 인식하고 판단하는 것처럼 <span class="kw-teal">머신러닝</span>도 데이터의 특징을 인식하여 판단을 내릴 수 있습니다.</p>
+      <div class="point-box teal">💡 여기서 '인식한다'는 것은 단지 '사물이 있다', '소리가 난다'와 같은 단순한 인식이 아닙니다. 데이터의 <strong>패턴과 특징</strong>을 학습해 분류하고 예측하는 것입니다.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--amber-bg)">🎯</span>문제를 정의한다는 것은?</div>
+      <p>인공지능을 만드는 과정은 <strong>요리할 때 어떤 음식을 만들까 생각하는 것</strong>과 비슷합니다. 메뉴를 정하지 못하면 어떤 재료가 필요한지, 어떤 순서로 만들어야 할지도 알 수 없습니다.</p>
+      <p>우리가 가장 먼저 해야 할 일은 인공지능을 이용해 <strong>어떤 문제를 해결하고 싶은지 정의</strong>하는 것입니다. 즉, 문제를 정의한다는 것은 <span class="kw">목표를 세우는 것</span>과 비슷해요.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--blue-bg)">📡</span>데이터는 어떻게 수집할까?</div>
+      <p>이 수업에서 만들 인공지능에 필요한 데이터는 <strong>웹캠(또는 이미지 파일)</strong>과 <strong>마이크(또는 사운드 파일)</strong>로 수집합니다.</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-term">센서 <span class="en">sensor</span></div>
+          <div class="def-desc">데이터를 수집하는 장치. 말소리, 움직임 같은 아날로그 정보를 <strong>0과 1의 디지털 정보</strong>로 변환합니다.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-term">티처블 머신 <span class="en">Teachable Machine</span></div>
+          <div class="def-desc">구글이 만든 시판 모델. 코드 없이도 쉽게 인공지능을 만들 수 있게 해줍니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">📈</span>모델은 많이 학습할수록 똑똑해질까?</div>
+      <div class="fit-cards">
+        <div class="fit-card" style="background:var(--blue-bg);border-color:var(--blue-bd)">
+          <div class="fit-icon">😴</div>
+          <div class="fit-name" style="color:var(--blue)">과소 적합</div>
+          <div class="fit-desc">underfitting<br>학습이 부족한 상태. 문제를 잘 풀지 못합니다.</div>
+        </div>
+        <div class="fit-card" style="background:var(--green-bg);border-color:var(--green-bd)">
+          <div class="fit-icon">😊</div>
+          <div class="fit-name" style="color:var(--green)">적정 학습</div>
+          <div class="fit-desc">good fit<br>훈련·평가 데이터 모두 높은 정확도!</div>
+        </div>
+        <div class="fit-card" style="background:var(--rose-bg);border-color:var(--rose-bd)">
+          <div class="fit-icon">😵</div>
+          <div class="fit-name" style="color:var(--rose)">과대 적합</div>
+          <div class="fit-desc">overfitting<br>훈련 데이터에만 맞고 새 데이터에 약합니다.</div>
+        </div>
+      </div>
+      <div class="point-box violet">⚠️ 얼마만큼 학습시켜야 가장 좋은 성능을 내는지 판단하기란 쉽지 않습니다. <strong>데이터 수집 → 학습 → 평가</strong> 과정을 반복하며 조정해야 합니다.</div>
+    </div>
+
+  </div><!-- /panel1 -->
+
+
+  <!-- ════════════════════════════════════════
+       PANEL 2 — 이미지 프로젝트
+  ════════════════════════════════════════ -->
+  <div class="part-panel" id="panel2">
+
+    <div class="chapter" id="sec-img">
+      <span class="chapter-badge" style="color:var(--blue);background:var(--blue-bg);border-color:var(--blue-bd)">📷 Part 2 · 이미지 프로젝트</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <!-- 시작 전 체크 -->
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--green-bg)">✅</span>시작하기 전에 체크!</div>
+      <div class="practice">
+        <div class="practice-header">
+          <span class="practice-badge">실습 목표</span>
+          <h3>가위·바위·보를 분류하는 이미지 분류기 만들기</h3>
+        </div>
+        <div class="practice-meta">
+          <span class="meta-chip" style="background:var(--blue-bg);border:1.5px solid var(--blue-bd);color:var(--blue)">📷 준비물: 웹캠 또는 이미지 파일</span>
+          <span class="meta-chip" style="background:var(--amber-bg);border:1.5px solid var(--amber-bd);color:var(--amber)">🖼️ 가위·바위·보 각 10장 + 배경 10장</span>
+          <span class="meta-chip" style="background:var(--teal-bg);border:1.5px solid var(--teal-bd);color:var(--teal)">🌐 크롬 브라우저 권장</span>
+        </div>
+        <div class="warn-box">⚠️ 티처블 머신은 크롬 브라우저에 최적화되어 있습니다. 반드시 크롬을 사용하세요.</div>
+      </div>
+    </div>
+
+    <!-- 전체 실습 흐름 -->
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🔄</span>전체 실습 흐름</div>
+      <div class="ml-flow">
+        <span class="flow-pill" style="color:var(--blue);background:var(--blue-bg);border-color:var(--blue-bd)">① 프로젝트 시작</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">② 클래스 지정</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--amber);background:var(--amber-bg);border-color:var(--amber-bd)">③ 데이터 수집</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--violet);background:var(--violet-bg);border-color:var(--violet-bd)">④ 모델 학습</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--green);background:var(--green-bg);border-color:var(--green-bd)">⑤ 모델 평가</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--orange);background:var(--orange-bg);border-color:var(--orange-bd)">⑥ 내보내기·저장</span>
+      </div>
+    </div>
+
+    <!-- Step-by-step 실습 -->
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--blue-bg)">🚀</span>Step 1 · 이미지 프로젝트 시작</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">티처블 머신 접속</div><div class="proc-desc"><a href="https://teachablemachine.withgoogle.com" target="_blank" style="color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:12px;">teachablemachine.withgoogle.com</a> 에 접속합니다.</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">2</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[시작하기] 클릭</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">3</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[이미지 프로젝트] 선택</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">4</div></div>
+          <div class="proc-body"><div class="proc-title">[표준 이미지 모델] 선택</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🏷️</span>Step 2 · 클래스 지정</div>
+      <p><span class="kw-teal">클래스(Class)</span>란 학습에 필요한 <strong>정답 레이블</strong>을 티처블 머신에서 부르는 이름입니다.</p>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">Class 1 → <strong>가위</strong>로 이름 변경</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">2</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">Class 2 → <strong>바위</strong>로 이름 변경</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">3</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[클래스 추가] 클릭 → <strong>보</strong></div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">4</div></div>
+          <div class="proc-body"><div class="proc-title">[클래스 추가] 한 번 더 → <strong>배경</strong></div><div class="proc-desc">총 4개의 클래스: 가위 · 바위 · 보 · 배경</div></div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <div class="tip-box-title">💡 배경 클래스가 필요한 이유</div>
+        <p>배경 클래스가 없으면 모델은 어떤 이미지든 가위·바위·보 중 하나라고 판단합니다. 아무것도 내지 않은 상태를 인식하려면 <strong>배경 사진 약 10장</strong>이 필요합니다.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--amber-bg)">📸</span>Step 3 · 데이터 수집</div>
+      <div class="compare">
+        <div class="compare-col" style="background:var(--blue-bg);border-color:var(--blue-bd)">
+          <h4 style="color:var(--blue)">📷 웹캠으로 촬영</h4>
+          <ul style="color:#1e3a8a">
+            <li>[웹캠] 선택</li>
+            <li>[길게 눌러서 녹화하기] 클릭</li>
+            <li>약 100장 촬영 권장</li>
+            <li>다양한 각도·크기·배경으로!</li>
+          </ul>
+        </div>
+        <div class="compare-col" style="background:var(--teal-bg);border-color:var(--teal-bd)">
+          <h4 style="color:var(--teal)">📁 파일 업로드</h4>
+          <ul style="color:#134e4a">
+            <li>[업로드] 선택</li>
+            <li>파일 선택 창에서 드래그 앤 드롭</li>
+            <li>준비한 파일의 <strong>70%만</strong> 업로드</li>
+            <li>나머지 30%는 평가용으로 보관</li>
+          </ul>
+        </div>
+      </div>
+      <div class="point-box amber">📌 같은 방법으로 <strong>보</strong>와 <strong>배경</strong>도 데이터를 추가하세요.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">⚙️</span>Step 4 · 모델 학습</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--violet)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">클래스 오른쪽의 [모델 학습시키기] 클릭</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--violet)">2</div></div>
+          <div class="proc-body"><div class="proc-title">학습 완료까지 대기</div><div class="proc-note">⚠️ 학습 중에는 탭을 닫거나 브라우저를 종료하면 안 됩니다!</div></div>
+        </div>
+      </div>
+
+      <!-- 고급 설정 -->
+      <div style="margin-top:18px;">
+        <div class="card-title" style="font-size:15px;border-bottom:1px solid var(--border2);padding-bottom:10px;margin-bottom:14px;">
+          <span class="t-icon" style="background:var(--amber-bg);width:26px;height:26px;font-size:13px;">🔧</span>
+          고급 설정 — 더 똑똑한 모델 만들기
+        </div>
+        <p style="font-size:13px;color:var(--muted);">[학습 → 고급]에서 아래 값들을 조정해 정확도를 높일 수 있습니다.</p>
+        <div class="def-grid">
+          <div class="def-card">
+            <div class="def-term">에포크 <span class="en">Epoch</span></div>
+            <div class="def-desc">데이터셋을 학습에 사용하는 <strong>반복 횟수</strong>. 책 한 권을 몇 번이나 반복해서 읽느냐와 같습니다.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">배치 크기 <span class="en">Batch Size</span></div>
+            <div class="def-desc">한 번 학습하는 데 사용하는 <strong>데이터의 개수</strong>. 묶음의 크기라고 생각하세요.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">학습률 <span class="en">Learning Rate</span></div>
+            <div class="def-desc">모래사장에서 반지를 찾을 때 <strong>보폭</strong>을 결정하는 값. 너무 크거나 작으면 학습이 잘 안 됩니다.</div>
+          </div>
+        </div>
+        <div class="tip-box">
+          <div class="tip-box-title">📊 정확도·손실 그래프 보기</div>
+          <p>[학습 → 고급 설정]에서 에포크별 <strong>정확도(Accuracy)</strong>와 <strong>손실(Loss)</strong> 그래프를 확인할 수 있습니다. 정확도는 높을수록, 손실은 낮을수록 좋습니다.</p>
+        </div>
+        <div class="tip-box" style="margin-top:8px;">
+          <div class="tip-box-title">🔲 혼동 행렬(Confusion Matrix)이란?</div>
+          <p>가위를 가위로 올바르게 분류한 수, 가위를 바위로 잘못 분류한 수 등 모델의 성능을 <strong>표로 시각화</strong>한 도구입니다. [클래스별 정확도 계산] → [혼동 행렬 계산]을 클릭하면 확인할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--green-bg)">✅</span>Step 5 · 모델 평가</div>
+      <p>학습 완료 후 화면 오른쪽에 <strong>미리 보기 창</strong>이 활성화됩니다. 손 모양을 카메라에 보이거나 이미지를 넣어 제대로 분류하는지 확인하세요.</p>
+      <div class="point-box green">🔁 만족할 만한 결과가 나올 때까지 <strong>데이터 수집 → 학습 → 평가</strong>를 반복합니다.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--orange-bg)">📤</span>Step 6 · 모델 내보내기 &amp; 저장</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--orange)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[모델 내보내기] 클릭</div><div class="proc-desc">[업로드(공유 가능한 링크)]가 기본 선택되어 있으니 그대로 둡니다.</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--orange)">2</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[모델 업로드] 클릭 → URL 생성</div><div class="proc-desc">생성된 링크를 복사해 새 탭에서 접속하거나 친구에게 공유할 수 있습니다.</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--orange)">3</div></div>
+          <div class="proc-body"><div class="proc-title">[프로젝트를 파일로 다운로드]로 저장</div><div class="proc-desc">왼쪽 상단 메뉴 → 저장 파일 확장자는 <strong>.TM</strong>. 언제든 다시 불러올 수 있습니다.</div><div class="proc-note">⚠️ 브라우저를 닫거나 다른 사이트로 이동하면 모델이 사라집니다. 반드시 저장하세요!</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel2 -->
+
+
+  <!-- ════════════════════════════════════════
+       PANEL 3 — 오디오 프로젝트
+  ════════════════════════════════════════ -->
+  <div class="part-panel" id="panel3">
+
+    <div class="chapter" id="sec-audio">
+      <span class="chapter-badge" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">🎙️ Part 3 · 오디오 프로젝트</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--green-bg)">✅</span>시작하기 전에 체크!</div>
+      <div class="practice">
+        <div class="practice-header">
+          <span class="practice-badge">실습 목표</span>
+          <h3>3가지 음성을 분류하는 오디오 분류기 만들기</h3>
+        </div>
+        <div class="practice-meta">
+          <span class="meta-chip" style="background:var(--teal-bg);border:1.5px solid var(--teal-bd);color:var(--teal)">🎙️ 마이크 또는 음성 파일</span>
+          <span class="meta-chip" style="background:var(--amber-bg);border:1.5px solid var(--amber-bd);color:var(--amber)">🔊 할머니·아버지·어머니 음성 + 20초+ 배경 소음</span>
+          <span class="meta-chip" style="background:var(--blue-bg);border:1.5px solid var(--blue-bd);color:var(--blue)">🌐 크롬 브라우저 권장</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🔄</span>전체 실습 흐름</div>
+      <div class="ml-flow">
+        <span class="flow-pill" style="color:var(--blue);background:var(--blue-bg);border-color:var(--blue-bd)">① 프로젝트 시작</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">② 배경소음 수집</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">③ 클래스·음성 수집</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--violet);background:var(--violet-bg);border-color:var(--violet-bd)">④ 모델 학습</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--green);background:var(--green-bg);border-color:var(--green-bd)">⑤ 평가·내보내기</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--blue-bg)">🚀</span>Step 1 · 오디오 프로젝트 시작</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">티처블 머신 접속 후 [시작하기] 클릭</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">2</div></div>
+          <div class="proc-body"><div class="proc-title">[오디오 프로젝트] 선택</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--amber-bg)">🔇</span>Step 2 · 배경 소음 데이터 수집</div>
+      <p><span class="kw">배경 소음 클래스</span>는 인식할 음성과 일상 소음을 <strong>구분하기 위한 필수 클래스</strong>입니다.</p>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--amber)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">설치된 마이크 선택</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--amber)">2</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[20초 녹화] 클릭 → 조용한 배경 소음 녹음</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--amber)">3</div></div>
+          <div class="proc-body"><div class="proc-title">[샘플 추출] 클릭</div><div class="proc-desc">녹음 파일을 <strong>1초 간격으로 잘라 20개의 샘플</strong>을 자동 추출합니다.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🏷️</span>Step 3 · 클래스 지정 &amp; 음성 수집</div>
+      <p>클래스 이름을 아래와 같이 변경하세요. 배경 소음 포함 <strong>총 4개</strong>의 클래스가 필요합니다.</p>
+      <div class="def-grid">
+        <div class="def-card"><div class="def-term">클래스 1</div><div class="def-desc" style="font-weight:800;color:var(--teal);font-size:15px;">Grandma (할머니)</div></div>
+        <div class="def-card"><div class="def-term">클래스 2</div><div class="def-desc" style="font-weight:800;color:var(--blue);font-size:15px;">Father (아버지)</div></div>
+        <div class="def-card"><div class="def-term">클래스 3</div><div class="def-desc" style="font-weight:800;color:var(--violet);font-size:15px;">Mother (어머니)</div></div>
+        <div class="def-card"><div class="def-term">클래스 4</div><div class="def-desc" style="font-weight:800;color:var(--muted);font-size:15px;">Background (배경 소음)</div></div>
+      </div>
+      <div style="margin-top:14px;">
+        <p style="font-size:14px;font-weight:700;margin-bottom:8px;">음성 데이터 수집 방법</p>
+        <div class="procedure">
+          <div class="proc-step">
+            <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">1</div><div class="proc-line"></div></div>
+            <div class="proc-body"><div class="proc-title">[20초 녹화] 클릭 → 이름 말하기</div><div class="proc-desc">녹음 시간을 바꾸려면 설정 아이콘 → [소요 시간] 입력</div></div>
+          </div>
+          <div class="proc-step">
+            <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">2</div></div>
+            <div class="proc-body"><div class="proc-title">[샘플 추출] 클릭</div><div class="proc-desc">배경 소음과 동일하게 1초 단위로 샘플을 추출합니다.</div></div>
+          </div>
+        </div>
+        <div class="tip-box">
+          <div class="tip-box-title">💡 [지연] 설정이란?</div>
+          <p>입력한 시간만큼 기다렸다가 녹음이 시작됩니다. 준비할 시간이 필요할 때 유용합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">⚙️</span>Step 4 · 모델 학습</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--violet)">1</div></div>
+          <div class="proc-body"><div class="proc-title">에포크 기본값 <strong>'50'</strong> 유지 후 [모델 학습시키기] 클릭</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--green-bg)">✅</span>Step 5 · 모델 평가</div>
+      <p>학습 후 미리 보기 창에서 마이크에 <strong>'할머니', '아버지', '어머니'</strong>를 직접 말하거나, 훈련에 사용하지 않은 새 데이터를 넣어 확인합니다.</p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-term">중첩 요인</div>
+          <div class="def-desc">오디오를 얼마나 자주 평가할지 결정합니다. 값을 <strong>0.5</strong>로 설정하면 0.5초마다 분류합니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--orange-bg)">📤</span>Step 6 · 모델 내보내기</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--orange)">1</div></div>
+          <div class="proc-body"><div class="proc-title">[모델 내보내기 → 업로드(공유 가능한 링크) → 모델 업로드]</div><div class="proc-desc">완성된 모델을 다른 사람도 사용할 수 있도록 배포합니다.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 좋은 모델이란? -->
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">📊</span>'학습 모델의 성능이 좋다'의 의미</div>
+      <div class="check-summary">
+        <h3>✅ 좋은 모델의 3가지 조건</h3>
+        <ol>
+          <li>과소 적합이나 과대 적합이 <strong>없어야</strong> 합니다.</li>
+          <li>훈련·테스트 데이터 모두 <strong>정확도 → 1, 손실 → 0</strong>에 가까워야 합니다.</li>
+          <li>훈련·테스트 데이터가 <strong>같은 경향성</strong>을 띠며 한 방향으로 움직여야 합니다.</li>
+        </ol>
+      </div>
+      <div class="tip-box" style="margin-top:14px;">
+        <div class="tip-box-title">📈 그래프 읽는 법</div>
+        <p>가로축 = 에포크 / 세로축 = 정확도 또는 손실<br>
+        🔵 파란 선 = 훈련 데이터 &nbsp;&nbsp; 🟠 주황 선 = 평가 데이터</p>
+      </div>
+      <div class="check-summary" style="margin-top:14px;background:var(--rose-bg);border-color:var(--rose-bd);">
+        <h3 style="color:var(--rose)">⚠️ 이 부분도 놓치지 마세요!</h3>
+        <ol style="color:#9f1239">
+          <li>평가 시 <strong>훈련에 사용하지 않은 새 데이터</strong>를 반드시 사용하세요.</li>
+          <li>성능이 낮을 땐 데이터 재수집 외에 <strong>에포크·배치 크기·학습률 조정</strong>도 시도하세요.</li>
+          <li>잘못된 데이터가 전체 데이터를 왜곡하진 않는지 <strong>꼼꼼히 확인</strong>하세요.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /panel3 -->
+
+
+  <!-- ════════════════════════════════════════
+       PANEL 4 — 포즈 프로젝트
+  ════════════════════════════════════════ -->
+  <div class="part-panel" id="panel4">
+
+    <div class="chapter" id="sec-pose">
+      <span class="chapter-badge" style="color:var(--violet);background:var(--violet-bg);border-color:var(--violet-bd)">🕺 Part 4 · 포즈 프로젝트</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--green-bg)">✅</span>시작하기 전에 체크!</div>
+      <div class="practice">
+        <div class="practice-header">
+          <span class="practice-badge">실습 목표</span>
+          <h3>3가지 동작을 분류하는 포즈 분류기 만들기</h3>
+        </div>
+        <div class="practice-meta">
+          <span class="meta-chip" style="background:var(--violet-bg);border:1.5px solid var(--violet-bd);color:var(--violet)">🕺 웹캠 또는 이미지 파일</span>
+          <span class="meta-chip" style="background:var(--amber-bg);border:1.5px solid var(--amber-bd);color:var(--amber)">📸 3가지 동작 + 준비 동작 각 10장 이상</span>
+          <span class="meta-chip" style="background:var(--blue-bg);border:1.5px solid var(--blue-bd);color:var(--blue)">🌐 크롬 브라우저 권장</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">🦴</span>키포인트란?</div>
+      <p>포즈 프로젝트에서 AI는 사람의 몸에 있는 <span class="kw-violet">키포인트(keypoint)</span>를 감지합니다. 키포인트란 <strong>관절, 눈, 코, 귀 등 신체의 주요 위치</strong>를 말합니다.</p>
+      <div class="point-box violet">🧠 AI는 이 키포인트들의 <strong>위치·각도·거리 관계</strong>를 학습해 동작을 분류합니다. 실제 이미지 픽셀이 아닌 키포인트 좌표 데이터로 학습하므로 더 빠르고 가볍습니다.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">🔄</span>전체 실습 흐름</div>
+      <div class="ml-flow">
+        <span class="flow-pill" style="color:var(--blue);background:var(--blue-bg);border-color:var(--blue-bd)">① 프로젝트 시작</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--violet);background:var(--violet-bg);border-color:var(--violet-bd)">② 클래스 지정</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--amber);background:var(--amber-bg);border-color:var(--amber-bd)">③ 데이터 수집</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">④ 모델 학습</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--green);background:var(--green-bg);border-color:var(--green-bd)">⑤ 평가</span>
+        <span class="flow-arr">→</span>
+        <span class="flow-pill" style="color:var(--orange);background:var(--orange-bg);border-color:var(--orange-bd)">⑥ 내보내기·저장</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--blue-bg)">🚀</span>Step 1 · 포즈 프로젝트 시작</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">티처블 머신 접속 후 [시작하기] 클릭</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--blue)">2</div></div>
+          <div class="proc-body"><div class="proc-title">[포즈 프로젝트] 선택</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--violet-bg)">🏷️</span>Step 2 · 클래스 지정</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--violet)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[클래스 추가]를 클릭해 <strong>4개</strong>의 클래스 생성</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--violet)">2</div></div>
+          <div class="proc-body"><div class="proc-title">클래스 이름 변경</div>
+            <div class="def-grid" style="margin-top:8px;grid-template-columns:repeat(2,1fr);">
+              <div class="def-card"><div class="def-term">클래스 1</div><div class="def-desc" style="font-weight:800;color:var(--violet)">동작 1</div></div>
+              <div class="def-card"><div class="def-term">클래스 2</div><div class="def-desc" style="font-weight:800;color:var(--blue)">동작 2</div></div>
+              <div class="def-card"><div class="def-term">클래스 3</div><div class="def-desc" style="font-weight:800;color:var(--teal)">동작 3</div></div>
+              <div class="def-card"><div class="def-term">클래스 4</div><div class="def-desc" style="font-weight:800;color:var(--muted)">준비 동작</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--amber-bg)">📸</span>Step 3 · 데이터 수집</div>
+      <div class="compare">
+        <div class="compare-col" style="background:var(--blue-bg);border-color:var(--blue-bd)">
+          <h4 style="color:var(--blue)">📷 웹캠</h4>
+          <ul style="color:#1e3a8a">
+            <li>[웹캠] 선택</li>
+            <li>[길게 눌러서 녹화하기]</li>
+            <li>다양한 각도로 동작 촬영</li>
+          </ul>
+        </div>
+        <div class="compare-col" style="background:var(--teal-bg);border-color:var(--teal-bd)">
+          <h4 style="color:var(--teal)">📁 파일</h4>
+          <ul style="color:#134e4a">
+            <li>[업로드] 선택</li>
+            <li>동작 이미지 파일 업로드</li>
+            <li>각 동작 10장 이상 권장</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--teal-bg)">⚙️</span>Step 4 · 모델 학습</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[학습] → [모델 학습시키기] 클릭</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--teal)">2</div></div>
+          <div class="proc-body"><div class="proc-title">[고급]에서 에포크·배치 크기 조정 (선택)</div><div class="proc-desc">정확도가 낮을 경우 값을 조금씩 바꿔가며 적절한 값을 찾아보세요.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--green-bg)">✅</span>Step 5 · 모델 평가</div>
+      <p>[미리 보기] 창에서 학습시킨 동작을 취하거나, <strong>학습에 사용하지 않은</strong> 동작 이미지를 넣어 잘 분류하는지 확인합니다.</p>
+      <div class="point-box green">🔁 동작을 잘 분류하지 못한다면 <strong>데이터를 더 수집해서 다시 훈련</strong>시켜 보세요.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t-icon" style="background:var(--orange-bg)">📤</span>Step 6 · 모델 내보내기 &amp; 저장</div>
+      <div class="procedure">
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--orange)">1</div><div class="proc-line"></div></div>
+          <div class="proc-body"><div class="proc-title">[모델 내보내기 → 업로드(공유 가능한 링크) → 모델 업로드]</div></div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-left"><div class="proc-circle" style="background:var(--orange)">2</div></div>
+          <div class="proc-body"><div class="proc-title">[프로젝트를 파일로 다운로드]로 저장</div><div class="proc-desc">나중에 불러오거나 다른 프로젝트에 응용할 수 있도록 저장하세요.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 머신러닝 과정 정리 -->
+    <div class="card" id="sec-flow">
+      <div class="card-title"><span class="t-icon" style="background:var(--blue-bg)">📋</span>머신러닝 모델 만드는 전체 과정 정리</div>
+      <div class="step-list">
+        <div class="step-item"><span class="step-num" style="background:var(--blue)">①</span><div class="step-content"><div class="step-title">문제를 정의합니다.</div></div></div>
+        <div class="step-item"><span class="step-num" style="background:var(--teal)">②</span><div class="step-content"><div class="step-title">데이터를 수집합니다.</div><div class="step-desc">누락되거나 불필요한 데이터를 정제하는 과정도 포함됩니다.</div></div></div>
+        <div class="step-item"><span class="step-num" style="background:var(--amber)">③</span><div class="step-content"><div class="step-title">모델을 구성합니다.</div><div class="step-desc">티처블 머신처럼 이미 구성된 모델을 사용하면 이 단계를 생략할 수 있습니다.</div></div></div>
+        <div class="step-item"><span class="step-num" style="background:var(--violet)">④</span><div class="step-content"><div class="step-title">모델을 훈련시킵니다.</div></div></div>
+        <div class="step-item"><span class="step-num" style="background:var(--rose)">⑤</span><div class="step-content"><div class="step-title">모델을 평가합니다.</div><div class="step-desc">성능이 좋지 않으면 ②로 돌아가 데이터를 수집하거나, ④로 돌아가 학습 값을 조정합니다.</div></div></div>
+        <div class="step-item"><span class="step-num" style="background:var(--green)">⑥</span><div class="step-content"><div class="step-title">모델을 배포합니다.</div></div></div>
+      </div>
+      <div class="point-box teal" style="margin-top:18px;">
+        🌟 어려운 코드부터 배워야 하는 건 아닙니다. <strong>문제를 발견하는 것</strong>이 가장 먼저 해야 할 일입니다. 여러분이 해결하고 싶은 문제는 무엇인가요?
+      </div>
+      <div class="link-box">
+        <div class="link-icon">🔬</div>
+        <div class="link-text">
+          <p>지금 바로 티처블 머신으로 나만의 AI를 만들어 보세요!</p>
+          <a href="https://teachablemachine.withgoogle.com" target="_blank" rel="noopener">teachablemachine.withgoogle.com →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel4 -->
+
+</div><!-- /content -->
+
+<button class="backtop" id="backtop" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  const TAB_ACTIVE = { 1:'active-blue', 2:'active-blue', 3:'active-teal', 4:'active-violet' };
+
+  function switchTab(n) {
+    [1,2,3,4].forEach(i => {
+      document.getElementById('tab'+i).className   = 'part-tab';
+      document.getElementById('panel'+i).className = 'part-panel';
+    });
+    document.getElementById('tab'+n).classList.add(TAB_ACTIVE[n]);
+    document.getElementById('panel'+n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const scrolled = window.scrollY;
+    const total    = document.body.scrollHeight - window.innerHeight;
+    const pct      = total > 0 ? Math.round(scrolled / total * 100) : 0;
+    document.getElementById('progressFill').style.width  = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '%';
+    document.getElementById('backtop').classList.toggle('show', scrolled > 300);
+  }
+  window.addEventListener('scroll', updateProgress);
+  updateProgress();
+</script>
+</body>
+</html>
