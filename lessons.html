@@ -371,24 +371,27 @@ const LESSONS = [
   {
     subject : "파이썬",
     unit    : "1. 입출력 기초",
-    title   : "AI와 함께 첫 프로그램 만들기",
+    title   : "입출력 연습",
     desc    : "print · input · f-string 기본 실습",
     url     : "py/p1p.html",
     date    : "2026-03-12",
     isNew   : false
   },
+
+
+  /* ── AI ──────────────────────────────────── */
   {
     subject : "AI",
-    unit    : "0. AI와 도구",
-    title   : "AI와 도구들, 프롬프트 기술, AI도구 활용",
-    /* desc    : "print / input 기초 예제 각 10개", */
+    unit    : "0. AI도구와 개요",
+    title   : "AI와 도구",
+    desc    : "AI와 도구들, 프롬프트 기술, AI도구 활용",
     url     : "ai/ai0.html",
     /*date    : "2025-07-01", */
     isNew   : false
   },
   {
     subject : "AI",
-    unit    : "1. 개요",
+    unit    : "0. AI도구와 개요",
     title   : "AI기초 개념, 역사, 생활 속 사례",
     /* desc    : "print / input 기초 예제 각 10개", */
     url     : "ai/ai1.html",
@@ -397,13 +400,25 @@ const LESSONS = [
   },
   {
     subject : "AI",
-    unit    : "2. 데이터",
-    title   : "데이터, 빅데이터, 편향, 좋은 데이터, 개인정보 보호",
-    /* desc    : "print / input 기초 예제 각 10개", */
+    unit    : "1. 데이터와 알고리즘",
+    title   : "데이터와 빅데이터",
+    desc   : "데이터, 빅데이터, 편향, 좋은 데이터, 개인정보 보호",
     url     : "ai/ai2.html",
     // date    : "2025-07-01",
     isNew   : false
   },
+  {
+    subject : "AI",
+    unit    : "1. 데이터와 알고리즘",
+    title   : "알고리즘과 머신러닝",
+    desc   : "컴퓨터가 문제를 해결하는 방법, 학습하는 머신",
+    url     : "ai/ai3.html",
+    // date    : "2025-07-01",
+    isNew   : false
+  },
+
+  /* ── 새 과목·단원 추가 예시 (주석 해제 후 사용) ──── */
+  /*
   {
     subject : "AI·파이썬",
     unit    : "1단원 · 입출력 기초",
@@ -414,8 +429,7 @@ const LESSONS = [
     isNew   : true
   },
 
-  /* ── 새 과목·단원 추가 예시 (주석 해제 후 사용) ──── */
-  /*
+  
   {
     subject : "AI·파이썬",
     unit    : "2단원 · 조건문",
@@ -452,7 +466,7 @@ const PALETTE = [
   {c:'var(--amber)',  bg:'var(--amber-bg)',  bd:'var(--amber-bd)' },
 ];
 const ICONS = {
-  "AI·파이썬":"🤖","프로그래밍":"💻","웹개발":"🌐",
+  "AI":"🤖","파이썬":"💻","웹개발":"🌐",
   "데이터베이스":"🗄️","네트워크":"📡","디자인":"🎨",
   "알고리즘":"🧮","모바일":"📱"
 };

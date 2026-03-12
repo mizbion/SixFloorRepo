@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인공지능 — 알고리즘과 머신러닝</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #f4f7fb;
+    --white:    #ffffff;
+    --border:   #dde4f2;
+    --border2:  #edf1f9;
+    --text:     #1a2438;
+    --muted:    #6b7da0;
+    --muted2:   #a0afc8;
+
+    --blue:     #2563eb; --blue-bg: #eff4ff; --blue-bd: #bdd0fd;
+    --teal:     #0d9488; --teal-bg: #f0fdfa; --teal-bd: #99e6de;
+    --amber:    #d97706; --amber-bg:#fffbeb; --amber-bd:#fde68a;
+    --violet:   #7c3aed; --violet-bg:#f5f3ff; --violet-bd:#c4b5fd;
+    --rose:     #e11d48; --rose-bg: #fff1f2; --rose-bd: #fecdd3;
+    --green:    #15803d; --green-bg:#f0fdf4; --green-bd:#a7f3d0;
+
+    --r:   14px;
+    --rs:   8px;
+    --sh0: 0 1px 3px rgba(26,36,56,.06);
+    --sh1: 0 4px 16px rgba(26,36,56,.10);
+    --sh2: 0 8px 32px rgba(26,36,56,.14);
+  }
+
+  *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ── STICKY HEADER ─────────────────────── */
+  .site-header {
+    background: var(--white);
+    border-bottom: 1.5px solid var(--border);
+    position: sticky; top:0; z-index:200;
+    box-shadow: var(--sh0);
+  }
+  .site-header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header-badge {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    padding: 3px 11px;
+    border-radius: 20px;
+    background: var(--blue-bg);
+    border: 1.5px solid var(--blue-bd);
+    color: var(--blue);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .progress-bar-bg {
+    width: 120px; height: 5px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--teal));
+    width: 0%;
+    transition: width .4s ease;
+    border-radius: 5px;
+  }
+  .progress-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ── CONTENT ───────────────────────────── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 28px 60px;
+  }
+
+  /* ── HERO ──────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #1e3a6e 0%, #1a5276 50%, #0d6e5c 100%);
+    border-radius: 20px;
+    padding: 48px 44px;
+    margin-bottom: 40px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:220px; height:220px;
+    border-radius:50%;
+    background: rgba(255,255,255,.05);
+  }
+  .hero::after {
+    content:'';
+    position:absolute; bottom:-60px; left:30%;
+    width:300px; height:300px;
+    border-radius:50%;
+    background: rgba(255,255,255,.04);
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 14px;
+    position: relative; z-index:1;
+  }
+  .hero h1 em { font-style:normal; color:#7dd3fc; }
+  .hero-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,.80);
+    max-width: 560px;
+    position: relative; z-index:1;
+  }
+
+  /* ── OBJECTIVE BOX ─────────────────────── */
+  .objective-box {
+    background: var(--white);
+    border: 1.5px solid var(--blue-bd);
+    border-radius: var(--r);
+    padding: 22px 26px;
+    margin-bottom: 36px;
+    box-shadow: var(--sh0);
+  }
+  .objective-box h2 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--blue);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .obj-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .obj-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .obj-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--blue-bg);
+    border: 1.5px solid var(--blue-bd);
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── TOC ───────────────────────────────── */
+  .toc-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 22px 26px;
+    margin-bottom: 48px;
+    box-shadow: var(--sh0);
+  }
+  .toc-box h2 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--muted);
+    margin-bottom: 14px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 13px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: var(--rs);
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all .18s;
+  }
+  .toc-item:hover {
+    background: var(--blue-bg);
+    border-color: var(--blue-bd);
+    color: var(--blue);
+  }
+  .toc-num {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--muted2);
+    flex-shrink: 0;
+  }
+
+  /* ── PART TABS ──────────────────────────── */
+  .part-tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 8px;
+    box-shadow: var(--sh0);
+  }
+  .part-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    border: 1.5px solid transparent;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .part-tab:hover { background: var(--bg); color: var(--text); }
+  .part-tab.active-blue {
+    background: var(--blue-bg);
+    border-color: var(--blue-bd);
+    color: var(--blue);
+  }
+  .part-tab.active-teal {
+    background: var(--teal-bg);
+    border-color: var(--teal-bd);
+    color: var(--teal);
+  }
+  .part-tab.active-violet {
+    background: var(--violet-bg);
+    border-color: var(--violet-bd);
+    color: var(--violet);
+  }
+  .part-tab .tab-sub {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: .75;
+    display: block;
+    line-height: 1.2;
+  }
+  .part-tab-inner { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+
+  /* 탭 패널 */
+  .part-panel { display: none; }
+  .part-panel.active { display: block; }
+
+  /* ── CHAPTER DIVIDER ───────────────────── */
+  .chapter {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 20px;
+  }
+  .chapter-badge {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 2px solid;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chapter-line { flex:1; height:1.5px; background:var(--border); }
+
+  /* ── CONTENT CARD ──────────────────────── */
+  .card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r);
+    padding: 26px 28px;
+    margin-bottom: 14px;
+    box-shadow: var(--sh0);
+    scroll-margin-top: 72px;
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .t-icon {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.85;
+    margin-bottom: 12px;
+  }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* keyword highlight */
+  .kw {
+    font-weight: 700;
+    background: var(--amber-bg);
+    border-bottom: 2px solid var(--amber-bd);
+    padding: 0 2px;
+    border-radius: 3px;
+    color: #92400e;
+  }
+  .kw-blue {
+    font-weight: 700;
+    background: var(--blue-bg);
+    border-bottom: 2px solid var(--blue-bd);
+    padding: 0 2px;
+    border-radius: 3px;
+    color: var(--blue);
+  }
+  .kw-teal {
+    font-weight: 700;
+    background: var(--teal-bg);
+    border-bottom: 2px solid var(--teal-bd);
+    padding: 0 2px;
+    border-radius: 3px;
+    color: var(--teal);
+  }
+  .kw-violet {
+    font-weight: 700;
+    background: var(--violet-bg);
+    border-bottom: 2px solid var(--violet-bd);
+    padding: 0 2px;
+    border-radius: 3px;
+    color: var(--violet);
+  }
+
+  /* ── POINT BOX ─────────────────────────── */
+  .point-box {
+    background: var(--blue-bg);
+    border: 1.5px solid var(--blue-bd);
+    border-radius: var(--rs);
+    padding: 14px 18px;
+    font-size: 13.5px;
+    color: #1e3a8a;
+    font-weight: 600;
+    margin: 14px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    line-height: 1.7;
+  }
+  .point-box.amber {
+    background: var(--amber-bg);
+    border-color: var(--amber-bd);
+    color: #78350f;
+  }
+  .point-box.teal {
+    background: var(--teal-bg);
+    border-color: var(--teal-bd);
+    color: #134e4a;
+  }
+  .point-box.violet {
+    background: var(--violet-bg);
+    border-color: var(--violet-bd);
+    color: #4c1d95;
+  }
+  .point-box.green {
+    background: var(--green-bg);
+    border-color: var(--green-bd);
+    color: #14532d;
+  }
+
+  /* ── CHECKLIST ─────────────────────────── */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .check-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+
+  /* ── COMPARE TABLE ─────────────────────── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .compare-col {
+    border-radius: var(--rs);
+    padding: 16px 18px;
+    border: 1.5px solid;
+  }
+  .compare-col h4 {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .compare-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .compare-col ul li {
+    font-size: 13px;
+    line-height: 1.6;
+    padding-left: 14px;
+    position: relative;
+  }
+  .compare-col ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+
+  /* ── STEP LIST ─────────────────────────── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+    counter-reset: step;
+  }
+  .step-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--rs);
+    padding: 14px 16px;
+    counter-increment: step;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .step-content { flex:1; }
+  .step-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .step-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── ML TYPE CARDS ─────────────────────── */
+  .ml-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .ml-card {
+    border-radius: var(--rs);
+    padding: 18px;
+    border: 1.5px solid;
+  }
+  .ml-card-icon { font-size: 24px; margin-bottom: 10px; }
+  .ml-card h4  { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+  .ml-card p   { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+  .ml-card .ml-en {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(0,0,0,.05);
+    padding: 1px 7px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+  }
+
+  /* ── NEURAL NET VISUAL ─────────────────── */
+  .neural-visual {
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+  .neural-svg-wrap {
+    background: #f8faff;
+    border: 1px solid var(--border);
+    border-radius: var(--rs);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ── DEFINITION GRID ───────────────────── */
+  .def-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .def-card {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--rs);
+    padding: 16px;
+  }
+  .def-term {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .def-term .en {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    background: var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--muted);
+  }
+  .def-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+  /* ── FLOWCHART ─────────────────────────── */
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 18px auto;
+    max-width: 360px;
+  }
+  .flow-node {
+    width: 100%;
+    padding: 11px 20px;
+    border-radius: var(--rs);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid;
+  }
+  .flow-diamond {
+    width: 100%;
+    padding: 11px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    transform: none;
+    background: var(--amber-bg);
+    border: 2px solid var(--amber-bd);
+    border-radius: var(--rs);
+    color: #78350f;
+  }
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--muted2);
+    line-height: 1.2;
+    padding: 2px 0;
+  }
+
+  /* ── ACTIVITY BOX ──────────────────────── */
+  .activity-box {
+    background: linear-gradient(135deg, #fef3c7, #fff7ed);
+    border: 2px solid var(--amber-bd);
+    border-radius: var(--r);
+    padding: 22px 24px;
+    margin: 14px 0;
+  }
+  .activity-box h3 {
+    font-size: 15px;
+    font-weight: 800;
+    color: #92400e;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .activity-box p {
+    font-size: 13.5px;
+    color: #78350f;
+    line-height: 1.8;
+    margin-bottom: 8px;
+  }
+  .activity-box p:last-child { margin-bottom:0; }
+
+  /* ── LINK BOX ──────────────────────────── */
+  .link-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--teal-bg);
+    border: 1.5px solid var(--teal-bd);
+    border-radius: var(--rs);
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .link-icon { font-size: 22px; flex-shrink:0; }
+  .link-text { flex:1; }
+  .link-text p { font-size: 13px; color: #134e4a; line-height:1.6; margin:0; }
+  .link-text a {
+    font-weight: 700;
+    color: var(--teal);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .link-text a:hover { text-decoration: underline; }
+
+  /* ── BACK TOP ──────────────────────────── */
+  .backtop {
+    position:fixed; bottom:22px; right:22px;
+    width:38px; height:38px;
+    background:var(--blue); color:#fff;
+    border:none; border-radius:50%;
+    font-size:16px; cursor:pointer;
+    box-shadow:0 4px 16px rgba(37,99,235,.38);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transition:opacity .3s; z-index:300;
+  }
+  .backtop.show { opacity:1; }
+
+  @media(max-width:620px){
+    .content { padding:20px 16px 48px; }
+    .hero { padding:32px 22px; }
+    .hero h1 { font-size:22px; }
+    .compare { grid-template-columns:1fr; }
+    .progress-wrap { display:none; }
+    .part-tab { padding:9px 8px; font-size:12px; gap:4px; }
+    .tab-sub { display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── STICKY HEADER ──────────────────────────── -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <span class="header-badge">📘 인공지능</span>
+    <span class="header-title">알고리즘과 머신러닝</span>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <span class="progress-label" id="progressLabel">0%</span>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+  <!-- ── HERO ─────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-tag">🤖 인공지능 </div>
+    <h1>알고리즘과 <em>머신러닝</em></h1>
+    <p class="hero-desc">컴퓨터가 문제를 해결하는 방법, 알고리즘을 이해하고 기계가 스스로 학습하는 머신러닝과 딥러닝의 원리를 알아봅시다.</p>
+  </div>
+
+  <!-- ── 학습 목표 ─────────────────────────────── -->
+  <div class="objective-box">
+    <h2>🎯 목표</h2>
+    <div class="obj-list">
+      <div class="obj-item">
+        <span class="obj-check">1</span>
+        알고리즘이 무엇인지 이해할 수 있어요.
+      </div>
+      <div class="obj-item">
+        <span class="obj-check">2</span>
+        좋은 알고리즘을 구분하고 순서도를 그릴 수 있어요.
+      </div>
+      <div class="obj-item">
+        <span class="obj-check">3</span>
+        머신러닝이란 무엇인지, 그리고 어떻게 활용하는지 알 수 있어요.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 목차 ─────────────────────────────────── -->
+  <div class="toc-box">
+    <h2>📋 목차</h2>
+    <div class="toc-grid">
+      <a class="toc-item" href="#sec1"><span class="toc-num">01</span>생활 속의 알고리즘</a>
+      <a class="toc-item" href="#sec2"><span class="toc-num">02</span>좋은 알고리즘이란?</a>
+      <a class="toc-item" href="#sec3"><span class="toc-num">03</span>프로그램과 프로그래밍</a>
+      <a class="toc-item" href="#sec4"><span class="toc-num">04</span>순서도 그려보기</a>
+      <a class="toc-item" href="#sec5"><span class="toc-num">05</span>머신러닝이란?</a>
+      <a class="toc-item" href="#sec6"><span class="toc-num">06</span>기계의 학습 과정</a>
+      <a class="toc-item" href="#sec7"><span class="toc-num">07</span>머신러닝의 종류</a>
+      <a class="toc-item" href="#sec8"><span class="toc-num">08</span>인공 신경망</a>
+      <a class="toc-item" href="#sec9"><span class="toc-num">09</span>가중치와 편향</a>
+      <a class="toc-item" href="#sec10"><span class="toc-num">10</span>활성화 함수</a>
+    </div>
+  </div>
+
+
+  <!-- ════ PART 탭 바 ═══════════════════════ -->
+  <div class="part-tab-bar">
+    <div class="part-tab active-blue" id="tab1" onclick="switchTab(1)">
+      <div class="part-tab-inner">
+        <span>🧩 Part 1</span>
+        <span class="tab-sub">알고리즘</span>
+      </div>
+    </div>
+    <div class="part-tab" id="tab2" onclick="switchTab(2)">
+      <div class="part-tab-inner">
+        <span>🤖 Part 2</span>
+        <span class="tab-sub">머신러닝</span>
+      </div>
+    </div>
+    <div class="part-tab" id="tab3" onclick="switchTab(3)">
+      <div class="part-tab-inner">
+        <span>🧠 Part 3</span>
+        <span class="tab-sub">인공 신경망 &amp; 딥러닝</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PART 1 패널 ══════════════════════ -->
+  <div class="part-panel active" id="panel1">
+    <div class="chapter">
+      <span class="chapter-badge" style="color:var(--blue);background:var(--blue-bg);border-color:var(--blue-bd)">🧩 Part 1 · 알고리즘</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <div class="card" id="sec1">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--blue-bg)">🔍</span>
+        생활 속의 알고리즘
+      </div>
+      <p>
+        <span class="kw-blue">알고리즘</span>은 <strong>문제를 해결하는 절차</strong>입니다.
+        절차를 정하는 것, 그리고 절차를 잘 따르는 것은 무척 중요합니다.
+      </p>
+      <p>
+        알고리즘은 수많은 실패와 성공의 경험을 통해 문제를 해결하는 <strong>최적의 과정</strong>을 도출한 것입니다.
+        어떻게 하면 문제를 빠르고 정확하면서도 완성도 높게 해결하느냐를 알려 주는 게 알고리즘의 역할입니다.
+      </p>
+      <div class="point-box">
+        💡 우리 일상에도 알고리즘이 가득합니다. 라면 끓이는 순서, 음료 자판기 이용법, 우는 아이를 달래는 방법 — 모두 알고리즘입니다!
+      </div>
+    </div>
+
+    <div class="card" id="sec2">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--amber-bg)">⭐</span>
+        좋은 알고리즘이란?
+      </div>
+      <div class="checklist">
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--blue)"></span>
+          문제를 <strong>정확하게</strong> 해결해야 합니다.
+        </div>
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--teal)"></span>
+          <strong>빠르게</strong> 처리합니다.
+        </div>
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--amber)"></span>
+          <strong>최소의 자원</strong>으로 최대의 효율을 냅니다.
+        </div>
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--violet)"></span>
+          <strong>단순 명료</strong>합니다.
+        </div>
+      </div>
+      <div class="point-box amber">
+        🌟 가장 좋은 알고리즘은 <strong>그때그때 달라요!</strong><br>
+        주어진 상황에서 문제를 가장 효율적으로 해결하는 것이 최선입니다.
+      </div>
+    </div>
+
+    <div class="card" id="sec3">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--teal-bg)">💻</span>
+        프로그램과 프로그래밍
+      </div>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-term">프로그램 <span class="en">program</span></div>
+          <div class="def-desc">컴퓨터 언어로 <strong>알고리즘을 구현</strong>한 것</div>
+        </div>
+        <div class="def-card">
+          <div class="def-term">프로그래밍 언어 <span class="en">language</span></div>
+          <div class="def-desc">프로그램을 작성하기 위해 사용하는 <strong>특별한 언어</strong></div>
+        </div>
+        <div class="def-card" style="grid-column:1/-1">
+          <div class="def-term">프로그래밍 <span class="en">programming</span></div>
+          <div class="def-desc">문제를 설정하고 → 알고리즘을 구성하고 → 프로그램으로 작성해 컴퓨터에 입력하는 <strong>전체 과정</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="sec4">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--violet-bg)">🔀</span>
+        순서도 그려보기
+      </div>
+      <p>
+        <span class="kw-violet">순서도</span>는 <strong>작업의 실행 순서를 그림으로 나타낸 것</strong>입니다.
+        프로그램 코드를 작성하기 전에 순서도를 그려 보면 생각을 정리하는 데 큰 도움이 됩니다.
+      </p>
+      <p>기호를 이용해 음료 자판기의 순서도를 그려 보면 아래와 같습니다.</p>
+      <div class="flowchart">
+        <div class="flow-node" style="background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue)">▶ 시작</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--bg);border-color:var(--border);color:var(--text)">💰 돈을 넣는다</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-diamond">🤔 원하는 음료의<br>버튼을 누른다</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--bg);border-color:var(--border);color:var(--text)">🧾 잔액 확인</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--teal-bg);border-color:var(--teal-bd);color:var(--teal)">🥤 음료 나옴</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--bg);border-color:var(--border);color:var(--text)">💵 거스름돈 반환</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--rose-bg);border-color:var(--rose-bd);color:var(--rose)">⏹ 끝</div>
+      </div>
+      <div class="activity-box">
+        <h3>✏️ 활동 — 나만의 순서도 그려보기</h3>
+        <p>우는 아이를 달랠 때, 햄버거를 만들 때, 자판기에서 음료를 뽑을 때처럼 우리 일상에서 어떤 과정을 알고리즘으로 만들 수 있는지 둘러 보고 <strong>순서도를 직접 그려보세요.</strong></p>
+        <p>핵심 정리: 알고리즘은 주어진 문제를 논리적으로 해결하는 일련의 방법 또는 절차를 순서대로 나열한 것입니다.</p>
+      </div>
+    </div>
+  </div><!-- /panel1 -->
+
+  <!-- ════ PART 2 패널 ══════════════════════ -->
+  <div class="part-panel" id="panel2">
+    <div class="chapter">
+      <span class="chapter-badge" style="color:var(--teal);background:var(--teal-bg);border-color:var(--teal-bd)">🤖 Part 2 · 머신러닝</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <div class="card" id="sec5">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--teal-bg)">🤖</span>
+        전통적인 프로그래밍 vs 머신러닝
+      </div>
+      <div class="compare">
+        <div class="compare-col" style="background:var(--blue-bg);border-color:var(--blue-bd)">
+          <h4 style="color:var(--blue)">💻 전통적인 프로그래밍</h4>
+          <ul style="color:#1e3a8a">
+            <li>데이터 + 알고리즘 → 입력</li>
+            <li>컴퓨터가 계산 수행</li>
+            <li>원하는 결과 출력</li>
+            <li>사람이 규칙을 직접 작성</li>
+          </ul>
+        </div>
+        <div class="compare-col" style="background:var(--teal-bg);border-color:var(--teal-bd)">
+          <h4 style="color:var(--teal)">🧠 머신러닝</h4>
+          <ul style="color:#134e4a">
+            <li>데이터 + 원하는 결과 → 입력</li>
+            <li>컴퓨터가 패턴 학습</li>
+            <li>최적의 알고리즘 출력</li>
+            <li>기계가 규칙을 스스로 찾음</li>
+          </ul>
+        </div>
+      </div>
+      <p>
+        프로그래밍이 컴퓨터에 <strong>데이터와 알고리즘</strong>을 입력해 원하는 결과를 출력하는 것이라면,
+        <span class="kw-teal">머신러닝</span>은 컴퓨터에 <strong>데이터와 원하는 결과</strong>를 입력해 문제를 해결할 최적의 알고리즘을 찾아내는 것입니다.
+      </p>
+    </div>
+
+    <div class="card" id="sec6">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--green-bg)">📊</span>
+        기계가 데이터를 학습하는 6단계
+      </div>
+      <div class="step-list">
+        <div class="step-item">
+          <span class="step-num" style="background:var(--blue)">1</span>
+          <div class="step-content">
+            <div class="step-title">문제 정의</div>
+            <div class="step-desc">해결할 문제가 무엇인지 명확하게 정의합니다.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-num" style="background:var(--teal)">2</span>
+          <div class="step-content">
+            <div class="step-title">데이터 수집</div>
+            <div class="step-desc">문제를 해결하는 데 필요한 데이터를 수집합니다.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-num" style="background:var(--amber)">3</span>
+          <div class="step-content">
+            <div class="step-title">데이터 전처리</div>
+            <div class="step-desc">수집한 데이터를 학습에 사용할 수 있도록 다듬습니다.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-num" style="background:var(--violet)">4</span>
+          <div class="step-content">
+            <div class="step-title">모델 학습 방법 선택 &amp; 학습</div>
+            <div class="step-desc">문제 해결에 적합한 모델을 구성하고 주어진 데이터로 학습시킵니다.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-num" style="background:var(--rose)">5</span>
+          <div class="step-content">
+            <div class="step-title">모델 평가 &amp; 재학습</div>
+            <div class="step-desc">모델이 잘 학습했는지 평가합니다. 잘 되지 않았다면 데이터를 점검하거나 다른 학습 방법을 시도합니다.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-num" style="background:var(--green)">6</span>
+          <div class="step-content">
+            <div class="step-title">머신러닝 모델 제작 &amp; 배포</div>
+            <div class="step-desc">머신러닝 모델을 제작하고 배포합니다. 실제 데이터를 넣어 분류, 예측 작업 등을 수행합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="sec7">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--violet-bg)">🗂️</span>
+        머신러닝의 종류
+      </div>
+      <div class="ml-types">
+        <div class="ml-card" style="background:var(--blue-bg);border-color:var(--blue-bd)">
+          <div class="ml-card-icon">🏷️</div>
+          <span class="ml-en" style="color:var(--blue)">supervised learning</span>
+          <h4 style="color:var(--blue)">지도 학습</h4>
+          <p>정답을 아는 상태에서 학습합니다. 꽃이 장미인지 백합인지 나누는 <strong>분류</strong>, 5년 뒤 몸무게를 예측하는 <strong>회귀</strong> 작업에 사용합니다.</p>
+        </div>
+        <div class="ml-card" style="background:var(--teal-bg);border-color:var(--teal-bd)">
+          <div class="ml-card-icon">🔍</div>
+          <span class="ml-en" style="color:var(--teal)">unsupervised learning</span>
+          <h4 style="color:var(--teal)">비지도 학습</h4>
+          <p>목푯값 없이 데이터에서 특성을 뽑아 <strong>비슷한 것끼리 분류</strong>합니다. 데이터 연관성이나 비정상 데이터를 찾을 때 사용합니다.</p>
+        </div>
+        <div class="ml-card" style="background:var(--amber-bg);border-color:var(--amber-bd)">
+          <div class="ml-card-icon">🏆</div>
+          <span class="ml-en" style="color:var(--amber)">reinforcement learning</span>
+          <h4 style="color:var(--amber)">강화 학습</h4>
+          <p>어떤 행위에 <strong>보상을 주면</strong> 결과를 긍정적으로 인식하고 행동을 점점 강화해 나갑니다. 게임 AI 등에 활용됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /panel2 -->
+
+  <!-- ════ PART 3 패널 ══════════════════════ -->
+  <div class="part-panel" id="panel3">
+    <div class="chapter">
+      <span class="chapter-badge" style="color:var(--violet);background:var(--violet-bg);border-color:var(--violet-bd)">🧠 Part 3 · 인공 신경망 &amp; 딥러닝</span>
+      <div class="chapter-line"></div>
+    </div>
+
+    <div class="card" id="sec8">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--violet-bg)">🧠</span>
+        인공 신경망
+      </div>
+      <p>
+        <span class="kw-violet">신경망(neural network)</span>이란 인간 뇌의 생물학적 특성인 신경 세포, 즉 <strong>뉴런(neuron)</strong>의 연결 구조를 말합니다.
+      </p>
+      <div class="checklist">
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--violet)"></span>
+          인간의 뇌에는 약 <strong>천억 개의 뉴런</strong>이 있습니다.
+        </div>
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--violet)"></span>
+          하나의 뉴런이 다른 뉴런으로부터 신호를 받으면 또 다른 뉴런에 전달하는 방식으로 문제를 인식하고 처리합니다.
+        </div>
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--violet)"></span>
+          이런 전달 방식을 컴퓨터로 구현한 것이 <strong>인공 신경망(artificial neural network)</strong>입니다.
+        </div>
+      </div>
+      <div class="neural-visual">
+        <div class="neural-svg-wrap">
+          <svg width="460" height="160" viewBox="0 0 460 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="60" y1="40"  x2="160" y2="30"  stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="40"  x2="160" y2="80"  stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="40"  x2="160" y2="130" stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="80"  x2="160" y2="30"  stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="80"  x2="160" y2="80"  stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="80"  x2="160" y2="130" stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="120" x2="160" y2="30"  stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="120" x2="160" y2="80"  stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="60" y1="120" x2="160" y2="130" stroke="#c4b5fd" stroke-width="1.2"/>
+            <line x1="180" y1="30"  x2="280" y2="30"  stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="30"  x2="280" y2="80"  stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="30"  x2="280" y2="130" stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="80"  x2="280" y2="30"  stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="80"  x2="280" y2="80"  stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="80"  x2="280" y2="130" stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="130" x2="280" y2="30"  stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="130" x2="280" y2="80"  stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="180" y1="130" x2="280" y2="130" stroke="#93c5fd" stroke-width="1.2"/>
+            <line x1="300" y1="30"  x2="400" y2="55"  stroke="#6ee7b7" stroke-width="1.2"/>
+            <line x1="300" y1="80"  x2="400" y2="55"  stroke="#6ee7b7" stroke-width="1.2"/>
+            <line x1="300" y1="130" x2="400" y2="55"  stroke="#6ee7b7" stroke-width="1.2"/>
+            <line x1="300" y1="30"  x2="400" y2="105" stroke="#6ee7b7" stroke-width="1.2"/>
+            <line x1="300" y1="80"  x2="400" y2="105" stroke="#6ee7b7" stroke-width="1.2"/>
+            <line x1="300" y1="130" x2="400" y2="105" stroke="#6ee7b7" stroke-width="1.2"/>
+            <circle cx="60" cy="40"  r="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+            <circle cx="60" cy="80"  r="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+            <circle cx="60" cy="120" r="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+            <circle cx="170" cy="30"  r="16" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="170" cy="80"  r="16" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="170" cy="130" r="16" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="290" cy="30"  r="16" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="290" cy="80"  r="16" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="290" cy="130" r="16" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="400" cy="55"  r="16" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+            <circle cx="400" cy="105" r="16" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+            <text x="60"  y="155" text-anchor="middle" font-size="10" fill="#7282a4" font-family="Noto Sans KR">입력층</text>
+            <text x="170" y="155" text-anchor="middle" font-size="10" fill="#7282a4" font-family="Noto Sans KR">은닉층1</text>
+            <text x="290" y="155" text-anchor="middle" font-size="10" fill="#7282a4" font-family="Noto Sans KR">은닉층2</text>
+            <text x="400" y="155" text-anchor="middle" font-size="10" fill="#7282a4" font-family="Noto Sans KR">출력층</text>
+          </svg>
+        </div>
+      </div>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-term">퍼셉트론 <span class="en">perceptron</span></div>
+          <div class="def-desc">여러 입력을 처리해 하나의 결과로 출력하는 기본 단위</div>
+        </div>
+        <div class="def-card">
+          <div class="def-term">다층 퍼셉트론 <span class="en">MLP</span></div>
+          <div class="def-desc">신경망을 3층 이상으로 쌓아 층 구조로 설계한 것</div>
+        </div>
+        <div class="def-card">
+          <div class="def-term">심층 신경망 <span class="en">DNN</span></div>
+          <div class="def-desc">여러 층 깊게 쌓여 있다는 의미의 deep neural network</div>
+        </div>
+        <div class="def-card">
+          <div class="def-term">딥러닝 <span class="en">deep learning</span></div>
+          <div class="def-desc">은닉층이 2개 이상인 심층 신경망을 학습시키는 것</div>
+        </div>
+      </div>
+      <div class="point-box violet">
+        ⚠️ <strong>과적합(overfitting)</strong>: 은닉층과 뉴런을 너무 많이 두면 계산량이 어마어마해지고, 세세한 요소에 집중해 오히려 쉬운 문제를 풀지 못하는 현상이 발생할 수 있습니다.
+      </div>
+      <div class="link-box">
+        <div class="link-icon">🔬</div>
+        <div class="link-text">
+          <p>인공 신경망이 동작하는 과정을 직접 확인해보세요!</p>
+          <a href="https://playground.tensorflow.org" target="_blank" rel="noopener">playground.tensorflow.org →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="sec9">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--amber-bg)">⚖️</span>
+        가중치와 편향
+      </div>
+      <p>
+        뉴런에서 다른 뉴런으로 전달되는 신호의 세기는 <strong>정보의 중요도</strong>에 따라 달라질 수 있습니다.
+      </p>
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="def-term">가중치 <span class="en">weight</span></div>
+          <div class="def-desc">중요하지 않은 정보는 낮은 가중치로 전달되거나 소멸됩니다. 가중치가 0이 될 수도 있습니다.</div>
+        </div>
+        <div class="def-card">
+          <div class="def-term">편향 <span class="en">bias</span></div>
+          <div class="def-desc">라면의 마지막에 얹는 치즈처럼, 더 좋은 결과가 나오도록 약간 조정해 주는 역할을 합니다.</div>
+        </div>
+      </div>
+      <div class="point-box amber">
+        🔑 가중치와 편향은 사람이 직접 입력하는 값이 아닙니다.<br>
+        신경망을 학습한다는 것은 결국 가중치와 편향의 값을 찾아가는 과정입니다.
+      </div>
+    </div>
+
+    <div class="card" id="sec10">
+      <div class="card-title">
+        <span class="t-icon" style="background:var(--green-bg)">⚡</span>
+        활성화 함수
+      </div>
+      <p>
+        10점이면 가장 맛있는 라면, 1점이면 가장 맛없는 라면이라고 할 때,
+        <strong>8점 이상이면 1, 8점 미만이면 0</strong>을 출력하는 <span class="kw-teal">활성화 함수</span>를 추가하면 퍼셉트론이 이 함수를 거쳐 결과를 출력합니다.
+      </p>
+      <div class="checklist">
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--green)"></span>
+          맛있는 라면 → 1 출력 → 다음 층으로 전달
+        </div>
+        <div class="check-item">
+          <span class="check-dot" style="background:var(--rose)"></span>
+          맛없는 라면 → 0 출력 → 다음 층에 전달되지 않음
+        </div>
+      </div>
+      <div class="point-box teal">
+        💡 활성화 함수는 망을 더 복잡하고 깊게 만들어 <strong>더 복잡한 문제를 잘 풀기 위해서</strong> 사용합니다.
+      </div>
+    </div>
+  </div><!-- /panel3 -->
+
+</div><!-- /content -->
+
+<button class="backtop" id="backtop" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  /* ── 탭 전환 ─────────────────────────────── */
+  const TAB_ACTIVE = { 1:'active-blue', 2:'active-teal', 3:'active-violet' };
+
+  function switchTab(n) {
+    // 모든 탭·패널 초기화
+    [1,2,3].forEach(i => {
+      document.getElementById('tab'+i).className   = 'part-tab';
+      document.getElementById('panel'+i).className = 'part-panel';
+    });
+    // 선택한 탭·패널 활성화
+    document.getElementById('tab'+n).classList.add(TAB_ACTIVE[n]);
+    document.getElementById('panel'+n).classList.add('active');
+    // 탭 클릭 시 상단으로 부드럽게 이동
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── 읽기 진행률 ─────────────────────────── */
+  function updateProgress() {
+    const scrolled = window.scrollY;
+    const total    = document.body.scrollHeight - window.innerHeight;
+    const pct      = total > 0 ? Math.round(scrolled / total * 100) : 0;
+    document.getElementById('progressFill').style.width  = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '%';
+    document.getElementById('backtop').classList.toggle('show', scrolled > 300);
+  }
+  window.addEventListener('scroll', updateProgress);
+  updateProgress();
+</script>
+</body>
+</html>
