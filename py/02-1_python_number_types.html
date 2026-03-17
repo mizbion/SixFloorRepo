@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02-1 숫자형 | 파이썬 기초</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #fffdf7;
+    --surface2: #f0ebe0;
+    --border: #d8cfc0;
+    --text: #2a2218;
+    --text-sub: #6b5e4e;
+    --accent: #c0392b;
+    --accent2: #2980b9;
+    --accent3: #27ae60;
+    --accent4: #e67e22;
+    --code-bg: #1e1a14;
+    --code-text: #f8f4ec;
+    --code-comment: #8a7a60;
+    --code-keyword: #e5a04a;
+    --code-string: #7ecb99;
+    --code-number: #a0c4f1;
+    --code-func: #d48fcf;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--text);
+    color: #f5f0e8;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  .header-meta {
+    font-size: 12px;
+    color: #a08060;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent4) 100%);
+    width: 20%;
+    transition: width 0.3s;
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 40px 48px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent4), var(--accent2));
+  }
+  .hero-chapter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .hero-desc {
+    color: var(--text-sub);
+    font-size: 15px;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .hero-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .tag-red { color: var(--accent); border-color: var(--accent); background: #fdecea; }
+  .tag-blue { color: var(--accent2); border-color: var(--accent2); background: #eaf4fb; }
+  .tag-green { color: var(--accent3); border-color: var(--accent3); background: #eafaf1; }
+  .tag-orange { color: var(--accent4); border-color: var(--accent4); background: #fef5ea; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 32px;
+    margin-bottom: 40px;
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-sub);
+    margin-bottom: 14px;
+  }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a {
+    color: var(--accent2);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+  .toc ol ol { margin-top: 6px; }
+  .toc ol ol li { font-size: 13px; color: var(--text-sub); }
+
+  /* ── Section ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--text);
+    color: #f5f0e8;
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 28px 0 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h3::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: var(--text);
+    color: #f5f0e8;
+    padding: 10px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:hover td { background: var(--surface2); }
+  td code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 16px 0 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .code-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: #2a2418;
+    border-bottom: 1px solid #3a3020;
+  }
+  .code-label-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #8a7a60;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  pre {
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--code-text);
+  }
+  .kw { color: var(--code-keyword); }
+  .st { color: var(--code-string); }
+  .nu { color: var(--code-number); }
+  .fn { color: var(--code-func); }
+  .cm { color: var(--code-comment); font-style: italic; }
+  .op { color: #e0a0e0; }
+  .out { color: #90d0f0; }
+  .prompt { color: #8a7a60; user-select: none; }
+
+  /* ── Info / Tip box ── */
+  .box {
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0 24px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .box-info {
+    background: #eaf4fb;
+    border-left: 4px solid var(--accent2);
+    color: #1a4a6e;
+  }
+  .box-tip {
+    background: #eafaf1;
+    border-left: 4px solid var(--accent3);
+    color: #1a4a2e;
+  }
+  .box-warn {
+    background: #fef5ea;
+    border-left: 4px solid var(--accent4);
+    color: #7a4010;
+  }
+  .box-quiz {
+    background: #fdecea;
+    border-left: 4px solid var(--accent);
+    color: #5a1010;
+  }
+  .box strong {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.7;
+  }
+
+  /* ── Operator cards ── */
+  .op-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 20px 0 28px;
+  }
+  .op-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .op-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .op-symbol {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .op-name {
+    font-size: 13px;
+    color: var(--text-sub);
+    font-weight: 700;
+  }
+  .op-example {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 4px;
+  }
+
+  /* ── Quiz section ── */
+  .quiz-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .quiz-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--accent);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .quiz-item {
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .quiz-q {
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  .quiz-input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .quiz-input input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text);
+    width: 120px;
+  }
+  .quiz-input input:focus {
+    outline: none;
+    border-color: var(--accent2);
+  }
+  .btn-check {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 8px 20px;
+    background: var(--text);
+    color: #f5f0e8;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-check:hover { background: var(--accent); }
+  .quiz-result {
+    margin-top: 10px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 20px;
+  }
+  .correct { color: var(--accent3); }
+  .wrong { color: var(--accent); }
+
+  /* ── Summary table ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+  }
+  @media (max-width: 600px) {
+    .summary-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+    .section, .quiz-section { padding: 24px 20px; }
+    .hero { padding: 28px 24px; }
+  }
+  .summary-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .summary-card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+  }
+  .summary-card code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--surface);
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .summary-card p { font-size: 13px; margin: 4px 0; }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--text);
+    color: #a08060;
+    text-align: center;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  footer span { color: var(--accent); }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section, .quiz-section, .hero {
+    animation: fadeUp 0.4s ease both;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="header-badge">Python Basic</span>
+    <span class="header-title">02장 · 파이썬 자료형</span>
+    <span class="header-meta">02-1 숫자형</span>
+  </div>
+  <div class="progress-bar" id="progressBar"></div>
+</header>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-chapter">Chapter 02-1</div>
+    <h1>숫자형 (Number Types)</h1>
+    <p class="hero-desc">파이썬에서 숫자를 다루는 방법을 배웁니다. 정수, 실수, 8진수, 16진수의 개념과 다양한 연산자를 예제와 함께 익혀봅니다.</p>
+    <div class="hero-tags">
+      <span class="tag tag-red">정수형 int</span>
+      <span class="tag tag-blue">실수형 float</span>
+      <span class="tag tag-orange">8진수 · 16진수</span>
+      <span class="tag tag-green">산술 연산자</span>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">목차 · Table of Contents</div>
+    <ol>
+      <li><a href="#sec1">숫자형의 종류</a>
+        <ol>
+          <li><a href="#int">정수형 (int)</a></li>
+          <li><a href="#float">실수형 (float)</a></li>
+          <li><a href="#octhex">8진수 · 16진수</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec2">숫자형 연산자</a>
+        <ol>
+          <li><a href="#arith">사칙 연산</a></li>
+          <li><a href="#pow">제곱 연산 **</a></li>
+          <li><a href="#mod">나머지 연산 %</a></li>
+          <li><a href="#floordiv">몫 연산 //</a></li>
+          <li><a href="#compound">복합 연산자</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec3">실전 예제</a></li>
+      <li><a href="#quiz">확인 퀴즈</a></li>
+    </ol>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>숫자형의 종류</h2>
+    </div>
+
+    <p>파이썬에서 숫자를 표현하는 자료형은 크게 네 가지입니다. 가장 많이 사용하는 것은 <strong>정수형</strong>과 <strong>실수형</strong>입니다.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>종류</th>
+            <th>영문</th>
+            <th>파이썬 예시</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>정수형</td><td>int</td><td><code>123, -345, 0</code></td><td>소수점 없는 숫자</td></tr>
+          <tr><td>실수형</td><td>float</td><td><code>1.23, -3.14, 4.2e10</code></td><td>소수점이 있는 숫자</td></tr>
+          <tr><td>8진수</td><td>octal</td><td><code>0o177</code></td><td>0o로 시작</td></tr>
+          <tr><td>16진수</td><td>hexadecimal</td><td><code>0xFF, 0xABC</code></td><td>0x로 시작</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="int">정수형 (int)</h3>
+    <p>소수점이 없는 숫자입니다. 양수, 음수, 0 모두 정수형입니다. 파이썬의 정수형은 자리수 제한이 없어 매우 큰 수도 표현 가능합니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 정수형</span>
+      </div>
+      <pre><span class="cm"># 정수형 변수 선언</span>
+a = <span class="nu">123</span>       <span class="cm"># 양의 정수</span>
+b = <span class="op">-</span><span class="nu">178</span>      <span class="cm"># 음의 정수</span>
+c = <span class="nu">0</span>         <span class="cm"># 0도 정수형</span>
+big = <span class="nu">999999999999999999</span>  <span class="cm"># 자리수 제한 없음!</span>
+
+<span class="fn">print</span>(<span class="fn">type</span>(a))   <span class="cm"># 자료형 확인</span>
+<span class="out">&lt;class 'int'&gt;</span>
+
+<span class="fn">print</span>(a, b, c)
+<span class="out">123 -178 0</span></pre>
+    </div>
+
+    <div class="box box-info">
+      <strong>💡 type() 함수</strong>
+      <code style="color:inherit;background:rgba(0,0,0,0.08);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace">type(변수)</code>를 사용하면 해당 변수의 자료형을 확인할 수 있습니다. 학습 중 자료형이 헷갈릴 때 바로 확인해보세요.
+    </div>
+
+    <h3 id="float">실수형 (float)</h3>
+    <p>소수점이 포함된 숫자입니다. 과학적 표기법(지수 표현)도 사용할 수 있습니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 실수형</span>
+      </div>
+      <pre><span class="cm"># 일반 실수</span>
+a = <span class="nu">1.2</span>
+b = <span class="op">-</span><span class="nu">3.45</span>
+c = <span class="nu">0.0</span>
+
+<span class="cm"># 지수 표현 (e 또는 E 사용 가능)</span>
+d = <span class="nu">4.24e10</span>      <span class="cm"># 4.24 × 10¹⁰ = 42400000000.0</span>
+e = <span class="nu">4.24E10</span>      <span class="cm"># 위와 동일</span>
+f = <span class="nu">1.5e-3</span>       <span class="cm"># 1.5 × 10⁻³ = 0.0015</span>
+
+<span class="fn">print</span>(d)         <span class="out">42400000000.0</span>
+<span class="fn">print</span>(f)         <span class="out">0.0015</span>
+<span class="fn">print</span>(<span class="fn">type</span>(a))   <span class="out">&lt;class 'float'&gt;</span></pre>
+    </div>
+
+    <div class="box box-warn">
+      <strong>⚠️ 부동소수점 주의</strong>
+      컴퓨터는 실수를 이진수로 저장하기 때문에 아주 미세한 오차가 발생할 수 있습니다.<br>
+      <code style="font-family:'JetBrains Mono',monospace;color:inherit">0.1 + 0.2 == 0.3</code>의 결과가 <code style="font-family:'JetBrains Mono',monospace;color:inherit">False</code>가 될 수 있습니다. (실제로 0.30000000000000004)
+    </div>
+
+    <h3 id="octhex">8진수 · 16진수</h3>
+    <p>실무에서는 자주 쓰이지 않지만, 하드웨어 제어나 색상 코드 등 특수한 상황에서 활용됩니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 8진수 · 16진수</span>
+      </div>
+      <pre><span class="cm"># 8진수: 0o 또는 0O 로 시작</span>
+a = <span class="nu">0o177</span>        <span class="cm"># 8진수 177 → 십진수 127</span>
+<span class="fn">print</span>(a)          <span class="out">127</span>
+<span class="cm"># 계산: 1×8² + 7×8¹ + 7×8⁰ = 64 + 56 + 7 = 127</span>
+
+<span class="cm"># 16진수: 0x 로 시작 (A=10, B=11, C=12, D=13, E=14, F=15)</span>
+b = <span class="nu">0xFF</span>          <span class="cm"># 16진수 FF → 십진수 255</span>
+c = <span class="nu">0xABC</span>         <span class="cm"># 16진수 ABC → 십진수 2748</span>
+<span class="fn">print</span>(b, c)       <span class="out">255 2748</span>
+<span class="cm"># 계산: 10×16² + 11×16¹ + 12×16⁰ = 2560 + 176 + 12 = 2748</span>
+
+<span class="cm"># 십진수 → 다른 진수로 변환하는 내장함수</span>
+<span class="fn">print</span>(<span class="fn">oct</span>(<span class="nu">127</span>))    <span class="out">0o177</span>
+<span class="fn">print</span>(<span class="fn">hex</span>(<span class="nu">255</span>))    <span class="out">0xff</span></pre>
+    </div>
+
+    <div class="box box-tip">
+      <strong>📌 활용 팁</strong>
+      16진수는 웹 색상 코드(<code style="font-family:'JetBrains Mono',monospace;color:inherit">#FF0000 = 빨강</code>), 메모리 주소 표현 등에 실제로 많이 사용됩니다.
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>숫자형 연산자</h2>
+    </div>
+
+    <p>파이썬에서 사용할 수 있는 주요 숫자 연산자를 정리했습니다. 사칙연산은 물론, 다른 언어에서 보기 드문 편리한 연산자들도 있습니다.</p>
+
+    <div class="op-grid">
+      <div class="op-card"><span class="op-symbol">+</span><div class="op-name">덧셈</div><div class="op-example">3 + 4 → 7</div></div>
+      <div class="op-card"><span class="op-symbol">-</span><div class="op-name">뺄셈</div><div class="op-example">10 - 3 → 7</div></div>
+      <div class="op-card"><span class="op-symbol">*</span><div class="op-name">곱셈</div><div class="op-example">3 * 4 → 12</div></div>
+      <div class="op-card"><span class="op-symbol">/</span><div class="op-name">나눗셈</div><div class="op-example">7 / 4 → 1.75</div></div>
+      <div class="op-card"><span class="op-symbol">**</span><div class="op-name">제곱</div><div class="op-example">3 ** 4 → 81</div></div>
+      <div class="op-card"><span class="op-symbol">%</span><div class="op-name">나머지</div><div class="op-example">7 % 3 → 1</div></div>
+      <div class="op-card"><span class="op-symbol">//</span><div class="op-name">몫</div><div class="op-example">7 // 4 → 1</div></div>
+    </div>
+
+    <h3 id="arith">사칙 연산</h3>
+    <p>수학에서 사용하는 사칙연산과 동일합니다. 단, 나눗셈(/)은 항상 실수형(float)을 반환합니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 사칙 연산</span>
+      </div>
+      <pre>a = <span class="nu">3</span>
+b = <span class="nu">4</span>
+
+<span class="fn">print</span>(a <span class="op">+</span> b)    <span class="out">7</span>
+<span class="fn">print</span>(a <span class="op">-</span> b)    <span class="out">-1</span>
+<span class="fn">print</span>(a <span class="op">*</span> b)    <span class="out">12</span>
+<span class="fn">print</span>(a <span class="op">/</span> b)    <span class="out">0.75</span>   <span class="cm"># 결과는 항상 float!</span>
+
+<span class="cm"># 정수 나눗셈도 float 반환</span>
+<span class="fn">print</span>(<span class="nu">10</span> <span class="op">/</span> <span class="nu">2</span>)   <span class="out">5.0</span>    <span class="cm"># 5가 아니라 5.0</span></pre>
+    </div>
+
+    <h3 id="pow">제곱 연산 <code style="font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--surface2);padding:2px 8px;border-radius:4px">**</code></h3>
+    <p><code>x ** y</code>는 x의 y제곱을 계산합니다. 다른 언어의 <code>Math.pow(x, y)</code>와 동일한 역할을 합니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 제곱 연산</span>
+      </div>
+      <pre><span class="fn">print</span>(<span class="nu">3</span> <span class="op">**</span> <span class="nu">4</span>)     <span class="out">81</span>      <span class="cm"># 3⁴ = 81</span>
+<span class="fn">print</span>(<span class="nu">2</span> <span class="op">**</span> <span class="nu">10</span>)    <span class="out">1024</span>    <span class="cm"># 2¹⁰ = 1024</span>
+<span class="fn">print</span>(<span class="nu">2</span> <span class="op">**</span> <span class="nu">0.5</span>)   <span class="out">1.4142135623730951</span>  <span class="cm"># √2</span>
+
+<span class="cm"># 응용: 큰 수의 제곱도 쉽게</span>
+<span class="fn">print</span>(<span class="nu">10</span> <span class="op">**</span> <span class="nu">20</span>)   <span class="out">100000000000000000000</span></pre>
+    </div>
+
+    <h3 id="mod">나머지 연산 <code style="font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--surface2);padding:2px 8px;border-radius:4px">%</code></h3>
+    <p>나눗셈을 수행한 후 <strong>나머지</strong>를 반환합니다. 짝수/홀수 판별, 주기적인 반복 처리 등에 매우 자주 사용됩니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 나머지 연산</span>
+      </div>
+      <pre><span class="fn">print</span>(<span class="nu">7</span> <span class="op">%</span> <span class="nu">3</span>)    <span class="out">1</span>   <span class="cm"># 7 = 3×2 + 1</span>
+<span class="fn">print</span>(<span class="nu">3</span> <span class="op">%</span> <span class="nu">7</span>)    <span class="out">3</span>   <span class="cm"># 3 = 7×0 + 3</span>
+<span class="fn">print</span>(<span class="nu">10</span> <span class="op">%</span> <span class="nu">5</span>)   <span class="out">0</span>   <span class="cm"># 나머지 없음</span>
+
+<span class="cm"># 실전 활용: 짝수/홀수 판별</span>
+n = <span class="nu">14</span>
+<span class="kw">if</span> n <span class="op">%</span> <span class="nu">2</span> <span class="op">==</span> <span class="nu">0</span>:
+    <span class="fn">print</span>(n, <span class="st">"은(는) 짝수"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(n, <span class="st">"은(는) 홀수"</span>)
+<span class="out">14 은(는) 짝수</span></pre>
+    </div>
+
+    <div class="box box-info">
+      <strong>💡 활용 예</strong>
+      <code style="font-family:'JetBrains Mono',monospace;color:inherit">n % 2 == 0</code> → 짝수 판별 &nbsp;|&nbsp;
+      <code style="font-family:'JetBrains Mono',monospace;color:inherit">n % 3 == 0</code> → 3의 배수 판별 &nbsp;|&nbsp;
+      시계처럼 반복(0~23시: <code style="font-family:'JetBrains Mono',monospace;color:inherit">hour % 24</code>)
+    </div>
+
+    <h3 id="floordiv">몫 연산 <code style="font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--surface2);padding:2px 8px;border-radius:4px">//</code></h3>
+    <p>나눗셈을 수행한 후 <strong>정수 몫</strong>만 반환합니다. <code>/</code>와의 차이를 꼭 구분하세요.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 몫 연산</span>
+      </div>
+      <pre><span class="fn">print</span>(<span class="nu">7</span> <span class="op">/</span> <span class="nu">4</span>)    <span class="out">1.75</span>   <span class="cm"># 일반 나눗셈 → float</span>
+<span class="fn">print</span>(<span class="nu">7</span> <span class="op">//</span> <span class="nu">4</span>)   <span class="out">1</span>      <span class="cm"># 몫만 반환 → int</span>
+
+<span class="fn">print</span>(<span class="nu">10</span> <span class="op">//</span> <span class="nu">3</span>)  <span class="out">3</span>      <span class="cm"># 10 = 3×3 + 1</span>
+<span class="fn">print</span>(<span class="nu">-7</span> <span class="op">//</span> <span class="nu">2</span>)  <span class="out">-4</span>     <span class="cm"># 음수는 더 작은 정수로 내림</span>
+
+<span class="cm"># 실전 활용: 분 → 시간·분 변환</span>
+total_min = <span class="nu">137</span>
+hours = total_min <span class="op">//</span> <span class="nu">60</span>
+mins  = total_min <span class="op">%</span> <span class="nu">60</span>
+<span class="fn">print</span>(<span class="st">f"</span><span class="op">{</span>total_min<span class="op">}</span><span class="st">분 = </span><span class="op">{</span>hours<span class="op">}</span><span class="st">시간 </span><span class="op">{</span>mins<span class="op">}</span><span class="st">분"</span>)
+<span class="out">137분 = 2시간 17분</span></pre>
+    </div>
+
+    <h3 id="compound">복합 연산자</h3>
+    <p>산술 연산자와 대입 연산자(<code>=</code>)를 결합한 형태입니다. 코드를 더 간결하게 작성할 수 있습니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 복합 연산자</span>
+      </div>
+      <pre>a = <span class="nu">10</span>
+
+a <span class="op">+=</span> <span class="nu">3</span>    <span class="cm"># a = a + 3</span>  → <span class="out">13</span>
+a <span class="op">-=</span> <span class="nu">2</span>    <span class="cm"># a = a - 2</span>  → <span class="out">11</span>
+a <span class="op">*=</span> <span class="nu">4</span>    <span class="cm"># a = a * 4</span>  → <span class="out">44</span>
+a <span class="op">/=</span> <span class="nu">2</span>    <span class="cm"># a = a / 2</span>  → <span class="out">22.0</span> (float!)
+a <span class="op">//=</span> <span class="nu">3</span>   <span class="cm"># a = a // 3</span> → <span class="out">7.0</span>
+a <span class="op">%=</span> <span class="nu">4</span>    <span class="cm"># a = a % 4</span>  → <span class="out">3.0</span>
+a <span class="op">**=</span> <span class="nu">2</span>   <span class="cm"># a = a ** 2</span> → <span class="out">9.0</span>
+
+<span class="fn">print</span>(a)  <span class="out">9.0</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 3 실전 예제 -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>실전 예제</h2>
+    </div>
+
+    <h3>예제 1 — 거스름돈 계산기</h3>
+    <p><code>%</code>와 <code>//</code>를 활용하여 금액을 지폐/동전 단위로 분해합니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 거스름돈 계산기</span>
+      </div>
+      <pre>money = <span class="nu">4870</span>  <span class="cm"># 거스름돈 금액</span>
+
+won1000 = money <span class="op">//</span> <span class="nu">1000</span>
+money   = money <span class="op">%</span>  <span class="nu">1000</span>
+won500  = money <span class="op">//</span> <span class="nu">500</span>
+money   = money <span class="op">%</span>  <span class="nu">500</span>
+won100  = money <span class="op">//</span> <span class="nu">100</span>
+money   = money <span class="op">%</span>  <span class="nu">100</span>
+won10   = money <span class="op">//</span> <span class="nu">10</span>
+
+<span class="fn">print</span>(<span class="st">f"1000원: </span><span class="op">{</span>won1000<span class="op">}</span><span class="st">개"</span>)  <span class="out">1000원: 4개</span>
+<span class="fn">print</span>(<span class="st">f"500원:  </span><span class="op">{</span>won500<span class="op">}</span><span class="st">개"</span>)   <span class="out">500원:  1개</span>
+<span class="fn">print</span>(<span class="st">f"100원:  </span><span class="op">{</span>won100<span class="op">}</span><span class="st">개"</span>)   <span class="out">100원:  3개</span>
+<span class="fn">print</span>(<span class="st">f"10원:   </span><span class="op">{</span>won10<span class="op">}</span><span class="st">개"</span>)    <span class="out">10원:   7개</span></pre>
+    </div>
+
+    <h3>예제 2 — 원의 넓이와 둘레</h3>
+    <p><code>**</code>를 사용한 제곱 연산으로 원의 넓이와 둘레를 계산합니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 원의 넓이와 둘레</span>
+      </div>
+      <pre>pi = <span class="nu">3.14159</span>
+r  = <span class="nu">5</span>        <span class="cm"># 반지름</span>
+
+area = pi <span class="op">*</span> r <span class="op">**</span> <span class="nu">2</span>         <span class="cm"># 넓이 = π × r²</span>
+circumference = <span class="nu">2</span> <span class="op">*</span> pi <span class="op">*</span> r  <span class="cm"># 둘레 = 2πr</span>
+
+<span class="fn">print</span>(<span class="st">f"반지름 {r}인 원"</span>)
+<span class="fn">print</span>(<span class="st">f"넓이:  {area:.2f}"</span>)           <span class="out">넓이:  78.54</span>
+<span class="fn">print</span>(<span class="st">f"둘레:  {circumference:.2f}"</span>)   <span class="out">둘레:  31.42</span></pre>
+    </div>
+
+    <h3>예제 3 — 성적 평균 계산</h3>
+    <p>복합 연산자를 활용한 누적 합산과 평균 계산입니다.</p>
+
+    <div class="code-block">
+      <div class="code-label">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="code-label-text">Python — 성적 평균</span>
+      </div>
+      <pre>kor = <span class="nu">85</span>
+eng = <span class="nu">92</span>
+math = <span class="nu">78</span>
+sci = <span class="nu">88</span>
+
+total = <span class="nu">0</span>
+total <span class="op">+=</span> kor
+total <span class="op">+=</span> eng
+total <span class="op">+=</span> math
+total <span class="op">+=</span> sci
+
+avg = total <span class="op">/</span> <span class="nu">4</span>
+
+<span class="fn">print</span>(<span class="st">f"총점: {total}점"</span>)       <span class="out">총점: 343점</span>
+<span class="fn">print</span>(<span class="st">f"평균: {avg:.1f}점"</span>)    <span class="out">평균: 85.8점</span></pre>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quiz">
+    <div class="quiz-header">
+      <span class="quiz-badge">QUIZ</span>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;">확인 퀴즈</h2>
+    </div>
+    <p style="margin-bottom:20px;color:var(--text-sub);font-size:14px;">아래 코드의 실행 결과를 예측하고 입력해보세요.</p>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q1. <code style="font-family:'JetBrains Mono',monospace">print(2 ** 8)</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q1" placeholder="답 입력">
+        <button class="btn-check" onclick="check(1,'256')">확인</button>
+        <div class="quiz-result" id="r1"></div>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q2. <code style="font-family:'JetBrains Mono',monospace">print(17 % 5)</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q2" placeholder="답 입력">
+        <button class="btn-check" onclick="check(2,'2')">확인</button>
+        <div class="quiz-result" id="r2"></div>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q3. <code style="font-family:'JetBrains Mono',monospace">print(17 // 5)</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q3" placeholder="답 입력">
+        <button class="btn-check" onclick="check(3,'3')">확인</button>
+        <div class="quiz-result" id="r3"></div>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q4. <code style="font-family:'JetBrains Mono',monospace">a = 5; a *= 3; a -= 7; print(a)</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q4" placeholder="답 입력">
+        <button class="btn-check" onclick="check(4,'8')">확인</button>
+        <div class="quiz-result" id="r4"></div>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q5. <code style="font-family:'JetBrains Mono',monospace">print(type(10 / 2))</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q5" placeholder="답 입력">
+        <button class="btn-check" onclick="check(5,\"<class 'float'>\")">확인</button>
+        <div class="quiz-result" id="r5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">정리</span>
+      <h2>핵심 요약</h2>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-card-title">숫자형 종류</div>
+        <p><code>int</code> — 정수 (소수점 없음)</p>
+        <p><code>float</code> — 실수 (소수점 포함)</p>
+        <p><code>0o...</code> — 8진수</p>
+        <p><code>0x...</code> — 16진수</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">핵심 연산자</div>
+        <p><code>**</code> — 제곱 (x의 y승)</p>
+        <p><code>%</code> — 나머지</p>
+        <p><code>//</code> — 몫 (정수)</p>
+        <p><code>/</code> — 나눗셈 (항상 float)</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">복합 연산자</div>
+        <p><code>+=  -=  *=  /=</code></p>
+        <p><code>//=  %=  **=</code></p>
+        <p style="color:var(--text-sub);font-size:12px;margin-top:6px">a op= b  ≡  a = a op b</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">주의사항</div>
+        <p><code>/</code>는 항상 float 반환</p>
+        <p>float 부동소수점 오차 주의</p>
+        <p><code>type()</code>으로 자료형 확인</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  02-1 숫자형 &nbsp;|&nbsp; <span>Python Basic</span> &nbsp;|&nbsp; bion.T
+</footer>
+
+<script>
+  // Quiz check
+  function check(num, answer) {
+    const input = document.getElementById('q' + num).value.trim();
+    const result = document.getElementById('r' + num);
+    if (input === answer) {
+      result.textContent = '✓ 정답입니다!';
+      result.className = 'quiz-result correct';
+    } else if (input === '') {
+      result.textContent = '답을 입력해주세요.';
+      result.className = 'quiz-result';
+    } else {
+      result.textContent = '✗ 틀렸습니다. 다시 도전!';
+      result.className = 'quiz-result wrong';
+    }
+  }
+
+  // Allow Enter key on quiz inputs
+  document.querySelectorAll('.quiz-input input').forEach((input, i) => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        input.nextElementSibling.click();
+      }
+    });
+  });
+
+  // Progress bar on scroll
+  window.addEventListener('scroll', () => {
+    const total = document.body.scrollHeight - window.innerHeight;
+    const pct = Math.round((window.scrollY / total) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+</script>
+</body>
+</html>
