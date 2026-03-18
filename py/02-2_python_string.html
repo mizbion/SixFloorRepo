@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02-2 문자열 자료형 | 파이썬 기초</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #fffdf7;
+    --surface2: #f0ebe0;
+    --border: #d8cfc0;
+    --text: #2a2218;
+    --text-sub: #6b5e4e;
+    --accent: #c0392b;
+    --accent2: #2980b9;
+    --accent3: #27ae60;
+    --accent4: #e67e22;
+    --accent5: #8e44ad;
+    --code-bg: #1e1a14;
+    --code-text: #f8f4ec;
+    --code-comment: #8a7a60;
+    --code-keyword: #e5a04a;
+    --code-string: #7ecb99;
+    --code-number: #a0c4f1;
+    --code-func: #d48fcf;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--text);
+    color: #f5f0e8;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--accent2);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 18px; }
+  .header-meta { font-size: 12px; color: #a08060; font-family: 'JetBrains Mono', monospace; }
+  .progress-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent2) 0%, var(--accent3) 100%);
+    width: 0%;
+    transition: width 0.2s;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 40px 48px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent3), var(--accent5));
+  }
+  .hero-chapter { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 12px; line-height: 1.2; }
+  .hero-desc { color: var(--text-sub); font-size: 15px; max-width: 580px; line-height: 1.7; }
+  .hero-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid; }
+  .tag-blue { color: var(--accent2); border-color: var(--accent2); background: #eaf4fb; }
+  .tag-green { color: var(--accent3); border-color: var(--accent3); background: #eafaf1; }
+  .tag-orange { color: var(--accent4); border-color: var(--accent4); background: #fef5ea; }
+  .tag-purple { color: var(--accent5); border-color: var(--accent5); background: #f5eafb; }
+  .tag-red { color: var(--accent); border-color: var(--accent); background: #fdecea; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 32px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.4s ease 0.05s both;
+  }
+  .toc-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-sub); margin-bottom: 14px; }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 5px; }
+  .toc a { color: var(--accent2); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+  @media (max-width: 600px) { .toc-grid { grid-template-columns: 1fr; } }
+
+  /* ── Section ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+    animation: fadeUp 0.4s ease both;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--text);
+    color: #f5f0e8;
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .section h2 { font-family: 'Playfair Display', serif; font-size: 22px; }
+  h3 {
+    font-size: 16px; font-weight: 700; margin: 28px 0 12px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  h3::before {
+    content: ''; display: inline-block; width: 4px; height: 16px;
+    background: var(--accent2); border-radius: 2px; flex-shrink: 0;
+  }
+  p { margin-bottom: 14px; }
+
+  /* ── Tab nav ── */
+  .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+  .tab-btn {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 10px 20px;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--text-sub);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--accent2); border-bottom-color: var(--accent2); font-weight: 700; }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+  .tab-panel { display: none; padding-top: 20px; }
+  .tab-panel.active { display: block; }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--text); color: #f5f0e8; padding: 10px 16px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.05em; }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: var(--surface2); }
+  td code, .inline { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); background: var(--surface2); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 16px 0 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .code-label {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px; background: #2a2418; border-bottom: 1px solid #3a3020;
+  }
+  .code-label-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8a7a60; text-transform: uppercase; letter-spacing: 0.08em; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+  pre {
+    padding: 20px 24px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.75; color: var(--code-text);
+  }
+  .kw { color: var(--code-keyword); }
+  .st { color: var(--code-string); }
+  .nu { color: var(--code-number); }
+  .fn { color: var(--code-func); }
+  .cm { color: var(--code-comment); font-style: italic; }
+  .op { color: #e0a0e0; }
+  .out { color: #90d0f0; }
+
+  /* ── Box ── */
+  .box { border-radius: 6px; padding: 16px 20px; margin: 16px 0 24px; font-size: 14px; line-height: 1.7; }
+  .box-info  { background: #eaf4fb; border-left: 4px solid var(--accent2); color: #1a4a6e; }
+  .box-tip   { background: #eafaf1; border-left: 4px solid var(--accent3); color: #1a4a2e; }
+  .box-warn  { background: #fef5ea; border-left: 4px solid var(--accent4); color: #7a4010; }
+  .box-quiz  { background: #fdecea; border-left: 4px solid var(--accent); color: #5a1010; }
+  .box-purple{ background: #f5eafb; border-left: 4px solid var(--accent5); color: #4a1a6e; }
+  .box strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; opacity: 0.7; }
+  .box code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.08); padding: 1px 5px; border-radius: 3px; font-size: 13px; color: inherit; }
+
+  /* ── Index visual ── */
+  .index-visual {
+    background: var(--code-bg);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 16px 0 24px;
+    overflow-x: auto;
+  }
+  .index-row { display: flex; align-items: stretch; min-width: max-content; }
+  .index-cell {
+    min-width: 36px;
+    text-align: center;
+    border: 1px solid #3a3020;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .index-char { padding: 10px 8px; font-size: 15px; color: var(--code-string); border-bottom: 1px solid #3a3020; }
+  .index-pos-top { padding: 6px 4px; font-size: 10px; color: var(--code-number); }
+  .index-pos-bot { padding: 6px 4px; font-size: 10px; color: #e5a04a; }
+  .index-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-bottom: 8px; }
+  .idx-blue { color: var(--code-number); }
+  .idx-orange { color: #e5a04a; }
+
+  /* ── Slice visual ── */
+  .slice-visual { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin: 16px 0 20px; }
+  .s-cell {
+    width: 34px; height: 40px; display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    border: 2px solid var(--border); border-radius: 4px; background: var(--surface2);
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .s-cell.highlight { background: #d0eefd; border-color: var(--accent2); font-weight: 700; color: var(--accent2); }
+  .s-num { font-size: 9px; color: var(--text-sub); position: absolute; top: -16px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+
+  /* ── Method cards ── */
+  .method-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 20px 0 28px; }
+  .method-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 18px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .method-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent2); }
+  .method-name { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--accent2); margin-bottom: 4px; }
+  .method-desc { font-size: 12px; color: var(--text-sub); }
+
+  /* ── Format comparison table ── */
+  .fmt-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0 24px; }
+  .fmt-table th { background: var(--text); color: #f5f0e8; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.05em; }
+  .fmt-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .fmt-table tr:hover td { background: var(--surface2); }
+  .fmt-table code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); background: var(--surface2); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
+
+  /* ── Quiz ── */
+  .quiz-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 36px 40px; margin-bottom: 28px; box-shadow: var(--shadow);
+    animation: fadeUp 0.4s ease both;
+  }
+  .quiz-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .quiz-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--accent2); color: #fff; padding: 4px 10px; border-radius: 4px; }
+  .quiz-item { background: var(--surface2); border-radius: 6px; padding: 20px 24px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .quiz-q { font-weight: 700; margin-bottom: 12px; font-size: 14px; }
+  .quiz-input { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .quiz-input input { font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); width: 200px; }
+  .quiz-input input:focus { outline: none; border-color: var(--accent2); }
+  .btn-check { font-family: 'Noto Sans KR', sans-serif; font-size: 13px; padding: 8px 20px; background: var(--text); color: #f5f0e8; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+  .btn-check:hover { background: var(--accent2); }
+  .quiz-result { margin-top: 8px; font-size: 13px; font-family: 'JetBrains Mono', monospace; min-height: 20px; }
+  .correct { color: var(--accent3); } .wrong { color: var(--accent); }
+
+  /* ── Summary ── */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+  @media (max-width: 600px) { .summary-grid { grid-template-columns: 1fr; } }
+  .summary-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; }
+  .summary-card-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-sub); margin-bottom: 10px; }
+  .summary-card p { font-size: 13px; margin: 4px 0; }
+  .summary-card code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); background: var(--surface); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
+
+  /* ── Footer ── */
+  footer { background: var(--text); color: #a08060; text-align: center; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  footer span { color: var(--accent2); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 26px; }
+    .section, .quiz-section { padding: 24px 20px; }
+    .hero { padding: 28px 24px; }
+    .header-inner { padding: 12px 20px; }
+    .header-meta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="header-badge">Python Basic</span>
+    <span class="header-title">02장 · 파이썬 자료형</span>
+    <span class="header-meta">02-2 문자열 자료형</span>
+  </div>
+  <div class="progress-bar" id="progressBar"></div>
+</header>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-chapter">Chapter 02-2</div>
+    <h1>문자열 자료형 (String)</h1>
+    <p class="hero-desc">파이썬에서 가장 많이 사용하는 자료형입니다. 문자열 만들기부터 인덱싱·슬라이싱, 포매팅, 내장 함수까지 단계별로 학습합니다.</p>
+    <div class="hero-tags">
+      <span class="tag tag-blue">문자열 생성</span>
+      <span class="tag tag-green">인덱싱 · 슬라이싱</span>
+      <span class="tag tag-orange">포매팅</span>
+      <span class="tag tag-purple">내장 함수</span>
+      <span class="tag tag-red">이스케이프 코드</span>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">목차 · Table of Contents</div>
+    <div class="toc-grid">
+      <ol>
+        <li><a href="#sec1">문자열 만들기</a></li>
+        <li><a href="#sec2">이스케이프 코드</a></li>
+        <li><a href="#sec3">문자열 연산</a></li>
+        <li><a href="#sec4">인덱싱</a></li>
+        <li><a href="#sec5">슬라이싱</a></li>
+      </ol>
+      <ol start="6">
+        <li><a href="#sec6">문자열 포매팅</a></li>
+        <li><a href="#sec7">내장 함수</a></li>
+        <li><a href="#sec8">실전 예제</a></li>
+        <li><a href="#quiz">확인 퀴즈</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Section 1: 문자열 만들기 -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>문자열 만들기</h2>
+    </div>
+
+    <p>파이썬에서 문자열(String)은 <strong>따옴표로 둘러싸인 문자들의 나열</strong>입니다. 숫자 <span class="inline">"123"</span>도 따옴표로 감싸면 문자열입니다. 생성 방법은 총 4가지가 있습니다.</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'t1a')">① 큰따옴표</button>
+      <button class="tab-btn" onclick="switchTab(this,'t1b')">② 작은따옴표</button>
+      <button class="tab-btn" onclick="switchTab(this,'t1c')">③ 큰따옴표 3개</button>
+      <button class="tab-btn" onclick="switchTab(this,'t1d')">④ 작은따옴표 3개</button>
+    </div>
+
+    <div class="tab-panel active" id="t1a">
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">① 큰따옴표</span></div>
+        <pre>a = <span class="st">"Hello World"</span>
+b = <span class="st">"Python is fun"</span>
+c = <span class="st">"123"</span>   <span class="cm"># 숫자도 따옴표 안에 있으면 문자열!</span>
+<span class="fn">print</span>(<span class="fn">type</span>(c))   <span class="out">&lt;class 'str'&gt;</span></pre>
+      </div>
+      <div class="box box-info"><strong>활용 상황</strong>문자열 안에 작은따옴표(')가 포함될 때 사용합니다.<br>예: <code>food = "Python's favorite food"</code></div>
+    </div>
+
+    <div class="tab-panel" id="t1b">
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">② 작은따옴표</span></div>
+        <pre>a = <span class="st">'Hello World'</span>
+b = <span class="st">'Python is fun'</span>
+
+<span class="cm"># 문자열 안에 큰따옴표가 있을 때 유용!</span>
+say = <span class="st">'"Python is easy." he says.'</span>
+<span class="fn">print</span>(say)   <span class="out">"Python is easy." he says.</span></pre>
+      </div>
+      <div class="box box-info"><strong>활용 상황</strong>문자열 안에 큰따옴표(")가 포함될 때 사용합니다.</div>
+    </div>
+
+    <div class="tab-panel" id="t1c">
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">③ 큰따옴표 3개 — 여러 줄 문자열</span></div>
+        <pre>multiline = <span class="st">"""
+Life is too short
+You need Python
+"""</span>
+
+<span class="fn">print</span>(multiline)
+<span class="out">
+Life is too short
+You need Python
+</span></pre>
+      </div>
+      <div class="box box-tip"><strong>💡 언제 쓰나요?</strong>긴 안내문, HTML 템플릿, SQL 쿼리 등 여러 줄에 걸친 문자열을 깔끔하게 작성할 때 최적입니다.</div>
+    </div>
+
+    <div class="tab-panel" id="t1d">
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">④ 작은따옴표 3개 — 여러 줄 문자열</span></div>
+        <pre>multiline = <span class="st">'''
+Life is too short
+You need Python
+'''</span>
+
+<span class="fn">print</span>(multiline)
+<span class="out">
+Life is too short
+You need Python
+</span></pre>
+      </div>
+      <div class="box box-info"><strong>정리</strong>큰따옴표 3개(""")와 작은따옴표 3개(''') 모두 여러 줄 문자열을 표현합니다. 결과는 동일합니다.</div>
+    </div>
+
+    <h3>따옴표를 문자열 안에 포함하기</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>상황</th><th>방법</th><th>예시</th></tr></thead>
+        <tbody>
+          <tr><td>작은따옴표 포함</td><td>큰따옴표로 감싸기</td><td><code>"Python's food"</code></td></tr>
+          <tr><td>큰따옴표 포함</td><td>작은따옴표로 감싸기</td><td><code>'"Easy." he says.'</code></td></tr>
+          <tr><td>둘 다 포함</td><td>역슬래시(\) 사용</td><td><code>'Python\'s "world"'</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 2: 이스케이프 코드 -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>이스케이프 코드</h2>
+    </div>
+    <p>역슬래시(<span class="inline">\</span>)와 특수 문자를 조합한 <strong>이스케이프 코드</strong>는 출력을 제어하거나 특수 문자를 표현할 때 사용합니다.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>코드</th><th>의미</th><th>활용 빈도</th></tr></thead>
+        <tbody>
+          <tr><td><code>\n</code></td><td>줄바꿈 (newline)</td><td>⭐⭐⭐</td></tr>
+          <tr><td><code>\t</code></td><td>탭(tab) 간격</td><td>⭐⭐⭐</td></tr>
+          <tr><td><code>\\</code></td><td>역슬래시(\) 자체</td><td>⭐⭐⭐</td></tr>
+          <tr><td><code>\'</code></td><td>작은따옴표 자체</td><td>⭐⭐⭐</td></tr>
+          <tr><td><code>\"</code></td><td>큰따옴표 자체</td><td>⭐⭐⭐</td></tr>
+          <tr><td><code>\r</code></td><td>캐리지 리턴 (커서를 줄 맨 앞으로)</td><td>⭐</td></tr>
+          <tr><td><code>\a</code></td><td>벨 소리(삑)</td><td>⭐</td></tr>
+          <tr><td><code>\b</code></td><td>백스페이스</td><td>⭐</td></tr>
+          <tr><td><code>\000</code></td><td>널(null) 문자</td><td>⭐</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 이스케이프 코드 활용</span></div>
+      <pre><span class="cm"># \n : 줄바꿈</span>
+<span class="fn">print</span>(<span class="st">"1행\n2행\n3행"</span>)
+<span class="out">1행
+2행
+3행</span>
+
+<span class="cm"># \t : 탭 간격</span>
+<span class="fn">print</span>(<span class="st">"이름\t나이\t점수"</span>)
+<span class="fn">print</span>(<span class="st">"홍길동\t20\t95"</span>)
+<span class="out">이름    나이    점수
+홍길동  20      95</span>
+
+<span class="cm"># \\ : 역슬래시 출력</span>
+<span class="fn">print</span>(<span class="st">"C:\\Users\\파이썬"</span>)
+<span class="out">C:\Users\파이썬</span>
+
+<span class="cm"># \' : 작은따옴표 출력</span>
+<span class="fn">print</span>(<span class="st">'Python\'s world'</span>)
+<span class="out">Python's world</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 3: 문자열 연산 -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>문자열 연산</h2>
+    </div>
+    <p>파이썬은 문자열에 <strong>더하기(+)</strong>와 <strong>곱하기(*)</strong> 연산을 지원합니다. 다른 언어에서는 보기 드문 파이썬만의 특징입니다.</p>
+
+    <h3>문자열 더하기 (+) — 이어 붙이기</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 문자열 +</span></div>
+      <pre>head = <span class="st">"Python"</span>
+tail = <span class="st">" is fun!"</span>
+result = head <span class="op">+</span> tail
+<span class="fn">print</span>(result)   <span class="out">Python is fun!</span>
+
+<span class="cm"># 여러 개를 연결할 수도 있음</span>
+name = <span class="st">"홍"</span> <span class="op">+</span> <span class="st">"길"</span> <span class="op">+</span> <span class="st">"동"</span>
+<span class="fn">print</span>(name)     <span class="out">홍길동</span></pre>
+    </div>
+
+    <h3>문자열 곱하기 (*) — 반복</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 문자열 *</span></div>
+      <pre>a = <span class="st">"python"</span>
+<span class="fn">print</span>(a <span class="op">*</span> <span class="nu">3</span>)    <span class="out">pythonpythonpython</span>
+
+<span class="cm"># 활용 예: 구분선 만들기</span>
+<span class="fn">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="nu">40</span>)
+<span class="fn">print</span>(<span class="st">"  성적표  "</span>)
+<span class="fn">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="nu">40</span>)
+<span class="out">========================================
+  성적표  
+========================================</span></pre>
+    </div>
+
+    <h3>문자열 길이 — len()</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — len()</span></div>
+      <pre>a = <span class="st">"Life is too short"</span>
+<span class="fn">print</span>(<span class="fn">len</span>(a))    <span class="out">17</span>   <span class="cm"># 공백도 1글자로 셈!</span>
+
+name = <span class="st">"홍길동"</span>
+<span class="fn">print</span>(<span class="fn">len</span>(name))  <span class="out">3</span></pre>
+    </div>
+    <div class="box box-warn"><strong>⚠️ 주의</strong>문자열에 숫자를 직접 더할 수 없습니다. <code>"나이: " + 20</code>은 오류! 반드시 <code>str(20)</code>으로 변환하거나 f-string을 사용하세요.</div>
+  </div>
+
+  <!-- Section 4: 인덱싱 -->
+  <div class="section" id="sec4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>인덱싱 (Indexing)</h2>
+    </div>
+    <p>인덱싱은 문자열에서 <strong>특정 위치의 문자 하나</strong>를 가져오는 방법입니다. 파이썬은 <strong>0부터</strong> 번호를 매깁니다.</p>
+
+    <!-- 인덱스 시각화 -->
+    <div class="index-visual">
+      <div class="index-label idx-blue">양수 인덱스 (0부터 시작)</div>
+      <div class="index-row" id="indexRow"></div>
+      <div style="height:12px"></div>
+      <div class="index-label idx-orange">음수 인덱스 (뒤에서부터)</div>
+      <div class="index-row" id="indexRowNeg"></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 인덱싱</span></div>
+      <pre>a = <span class="st">"Life is too short"</span>
+
+<span class="cm"># 양수 인덱스 (앞에서부터, 0부터 시작)</span>
+<span class="fn">print</span>(a[<span class="nu">0</span>])    <span class="out">L</span>
+<span class="fn">print</span>(a[<span class="nu">1</span>])    <span class="out">i</span>
+<span class="fn">print</span>(a[<span class="nu">5</span>])    <span class="out">i</span>
+
+<span class="cm"># 음수 인덱스 (뒤에서부터)</span>
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">1</span>])   <span class="out">t</span>   <span class="cm"># 마지막 문자</span>
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">2</span>])   <span class="out">r</span>   <span class="cm"># 뒤에서 두 번째</span>
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">5</span>])   <span class="out">s</span></pre>
+    </div>
+
+    <div class="box box-warn">
+      <strong>⚠️ 문자열은 변경 불가 (immutable)</strong>
+      <code>a[0] = 'X'</code>처럼 인덱싱으로 특정 문자를 바꾸는 것은 오류가 납니다.<br>
+      수정이 필요하면 슬라이싱으로 새 문자열을 만들어야 합니다.
+    </div>
+  </div>
+
+  <!-- Section 5: 슬라이싱 -->
+  <div class="section" id="sec5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>슬라이싱 (Slicing)</h2>
+    </div>
+    <p>슬라이싱은 문자열의 <strong>일부 구간을 잘라내는</strong> 방법입니다. <span class="inline">a[시작:끝]</span> 형태로 사용하며, <strong>끝 번호의 문자는 포함하지 않습니다.</strong></p>
+
+    <div class="box box-purple">
+      <strong>핵심 규칙</strong>
+      <code>a[start:end]</code> → <code>start</code> ≤ 포함 범위 &lt; <code>end</code><br>
+      끝 인덱스의 문자는 <strong>포함되지 않습니다!</strong>
+    </div>
+
+    <!-- 슬라이스 시각화 -->
+    <div id="sliceDemo" style="margin: 20px 0;">
+      <p style="font-size:13px;color:var(--text-sub);margin-bottom:8px;">🖱 아래 버튼을 눌러 슬라이싱 결과를 확인해보세요</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+        <button class="btn-check" onclick="showSlice(0,4,'Life')">a[0:4]</button>
+        <button class="btn-check" onclick="showSlice(5,7,'is')">a[5:7]</button>
+        <button class="btn-check" onclick="showSlice(12,17,'short')">a[12:17]</button>
+        <button class="btn-check" onclick="showSlice(0,17,'Life is too short')">a[:]</button>
+      </div>
+      <div class="slice-visual" id="sliceVisual"></div>
+      <div id="sliceResult" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent2);margin-top:8px;min-height:22px;"></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 슬라이싱</span></div>
+      <pre>a = <span class="st">"Life is too short"</span>
+
+<span class="fn">print</span>(a[<span class="nu">0</span>:<span class="nu">4</span>])    <span class="out">Life</span>    <span class="cm"># 0,1,2,3 → 4 미포함</span>
+<span class="fn">print</span>(a[<span class="nu">5</span>:<span class="nu">7</span>])    <span class="out">is</span>
+<span class="fn">print</span>(a[<span class="nu">12</span>:<span class="nu">17</span>])  <span class="out">short</span>
+
+<span class="cm"># 시작/끝 생략 가능</span>
+<span class="fn">print</span>(a[:<span class="nu">4</span>])     <span class="out">Life</span>    <span class="cm"># 처음부터 4 미포함까지</span>
+<span class="fn">print</span>(a[<span class="nu">8</span>:])     <span class="out">too short</span>  <span class="cm"># 8부터 끝까지</span>
+<span class="fn">print</span>(a[:])      <span class="out">Life is too short</span>  <span class="cm"># 전체</span>
+
+<span class="cm"># 음수 인덱스도 사용 가능</span>
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">5</span>:])    <span class="out">short</span>   <span class="cm"># 뒤에서 5번째부터 끝까지</span></pre>
+    </div>
+
+    <h3>실전: 슬라이싱으로 문자열 분리하기</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 날짜 문자열 분리</span></div>
+      <pre><span class="cm"># 날짜 코드에서 연·월·일 추출</span>
+date_code = <span class="st">"20231225Sunny"</span>
+
+year    = date_code[:<span class="nu">4</span>]    <span class="cm"># → '2023'</span>
+month   = date_code[<span class="nu">4</span>:<span class="nu">6</span>]   <span class="cm"># → '12'</span>
+day     = date_code[<span class="nu">6</span>:<span class="nu">8</span>]   <span class="cm"># → '25'</span>
+weather = date_code[<span class="nu">8</span>:]    <span class="cm"># → 'Sunny'</span>
+
+<span class="fn">print</span>(<span class="st">f"연도: {year}, 월: {month}, 일: {day}, 날씨: {weather}"</span>)
+<span class="out">연도: 2023, 월: 12, 일: 25, 날씨: Sunny</span>
+
+<span class="cm"># 슬라이싱으로 문자열 수정 (Pithon → Python)</span>
+wrong = <span class="st">"Pithon"</span>
+fixed = wrong[:<span class="nu">1</span>] <span class="op">+</span> <span class="st">'y'</span> <span class="op">+</span> wrong[<span class="nu">2</span>:]
+<span class="fn">print</span>(fixed)   <span class="out">Python</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 6: 포매팅 -->
+  <div class="section" id="sec6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>문자열 포매팅</h2>
+    </div>
+    <p>문자열 안에 변수 값을 삽입하는 방법입니다. 파이썬 3.6 이상에서는 <strong>f-string</strong>을 가장 많이 사용합니다.</p>
+
+    <div class="table-wrap">
+      <table class="fmt-table">
+        <thead><tr><th>방식</th><th>문법</th><th>지원 버전</th><th>권장</th></tr></thead>
+        <tbody>
+          <tr><td>% 포매팅</td><td><code>"이름: %s" % name</code></td><td>모든 버전</td><td>레거시</td></tr>
+          <tr><td>format() 함수</td><td><code>"이름: {}".format(name)</code></td><td>Python 2.7+</td><td>가능</td></tr>
+          <tr><td>f-string</td><td><code>f"이름: {name}"</code></td><td>Python 3.6+</td><td>⭐ 권장</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'tf1')">% 포매팅</button>
+      <button class="tab-btn" onclick="switchTab(this,'tf2')">format() 함수</button>
+      <button class="tab-btn" onclick="switchTab(this,'tf3')">f-string ⭐</button>
+    </div>
+
+    <div class="tab-panel active" id="tf1">
+      <h3 style="margin-top:20px">% 포맷 코드</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>코드</th><th>의미</th></tr></thead>
+          <tbody>
+            <tr><td><code>%s</code></td><td>문자열 (어떤 값이든 자동 변환)</td></tr>
+            <tr><td><code>%d</code></td><td>정수</td></tr>
+            <tr><td><code>%f</code></td><td>실수 (소수점)</td></tr>
+            <tr><td><code>%c</code></td><td>문자 1개</td></tr>
+            <tr><td><code>%%</code></td><td>% 문자 자체</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">% 포매팅</span></div>
+        <pre><span class="cm"># 기본 사용</span>
+<span class="fn">print</span>(<span class="st">"I eat %d apples."</span> <span class="op">%</span> <span class="nu">3</span>)          <span class="out">I eat 3 apples.</span>
+<span class="fn">print</span>(<span class="st">"I eat %s apples."</span> <span class="op">%</span> <span class="st">"five"</span>)   <span class="out">I eat five apples.</span>
+
+<span class="cm"># 여러 값</span>
+n, day = <span class="nu">10</span>, <span class="st">"three"</span>
+<span class="fn">print</span>(<span class="st">"I ate %d apples. Sick for %s days."</span> <span class="op">%</span> (n, day))
+<span class="out">I ate 10 apples. Sick for three days.</span>
+
+<span class="cm"># 정렬과 소수점</span>
+<span class="fn">print</span>(<span class="st">"%10s"</span> <span class="op">%</span> <span class="st">"hi"</span>)      <span class="out">        hi</span>   <span class="cm"># 오른쪽 정렬, 10자리</span>
+<span class="fn">print</span>(<span class="st">"%-10s|"</span> <span class="op">%</span> <span class="st">"hi"</span>)    <span class="out">hi        |</span>  <span class="cm"># 왼쪽 정렬</span>
+<span class="fn">print</span>(<span class="st">"%.2f"</span> <span class="op">%</span> <span class="nu">3.14159</span>)   <span class="out">3.14</span>         <span class="cm"># 소수점 2자리</span>
+
+<span class="cm"># %를 문자로 표현</span>
+<span class="fn">print</span>(<span class="st">"정답률: %d%%"</span> <span class="op">%</span> <span class="nu">98</span>)  <span class="out">정답률: 98%</span></pre>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tf2">
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">format() 함수</span></div>
+        <pre><span class="cm"># 인덱스로 삽입</span>
+<span class="fn">print</span>(<span class="st">"I eat {0} apples"</span>.<span class="fn">format</span>(<span class="nu">3</span>))             <span class="out">I eat 3 apples</span>
+<span class="fn">print</span>(<span class="st">"{0} + {1} = {2}"</span>.<span class="fn">format</span>(<span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">7</span>))         <span class="out">3 + 4 = 7</span>
+
+<span class="cm"># 이름으로 삽입</span>
+<span class="fn">print</span>(<span class="st">"안녕, {name}! 나이는 {age}살."</span>.<span class="fn">format</span>(name=<span class="st">"지수"</span>, age=<span class="nu">20</span>))
+<span class="out">안녕, 지수! 나이는 20살.</span>
+
+<span class="cm"># 정렬</span>
+<span class="fn">print</span>(<span class="st">"{0:&lt;10}"</span>.<span class="fn">format</span>(<span class="st">"hi"</span>))   <span class="out">hi        </span>  <span class="cm"># 왼쪽</span>
+<span class="fn">print</span>(<span class="st">"{0:&gt;10}"</span>.<span class="fn">format</span>(<span class="st">"hi"</span>))   <span class="out">        hi</span>  <span class="cm"># 오른쪽</span>
+<span class="fn">print</span>(<span class="st">"{0:^10}"</span>.<span class="fn">format</span>(<span class="st">"hi"</span>))   <span class="out">    hi    </span>  <span class="cm"># 가운데</span>
+<span class="fn">print</span>(<span class="st">"{0:=^10}"</span>.<span class="fn">format</span>(<span class="st">"hi"</span>))  <span class="out">====hi====</span>  <span class="cm"># 가운데 + 채우기</span>
+
+<span class="cm"># 소수점</span>
+<span class="fn">print</span>(<span class="st">"{0:.4f}"</span>.<span class="fn">format</span>(<span class="nu">3.14159</span>))  <span class="out">3.1416</span></pre>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tf3">
+      <div class="code-block">
+        <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">f-string (Python 3.6+) ⭐ 권장</span></div>
+        <pre><span class="cm"># 기본: 변수를 {} 안에 직접 삽입</span>
+name = <span class="st">"홍길동"</span>
+age  = <span class="nu">25</span>
+<span class="fn">print</span>(<span class="st">f"이름: {name}, 나이: {age}"</span>)
+<span class="out">이름: 홍길동, 나이: 25</span>
+
+<span class="cm"># {} 안에서 연산도 가능!</span>
+<span class="fn">print</span>(<span class="st">f"내년이면 {age + 1}살"</span>)   <span class="out">내년이면 26살</span>
+
+<span class="cm"># 소수점 제어</span>
+pi = <span class="nu">3.141592</span>
+<span class="fn">print</span>(<span class="st">f"원주율: {pi:.2f}"</span>)        <span class="out">원주율: 3.14</span>
+
+<span class="cm"># 정렬</span>
+<span class="fn">print</span>(<span class="st">f'{"hi":&lt;10}|'</span>)           <span class="out">hi        |</span>
+<span class="fn">print</span>(<span class="st">f'{"hi":&gt;10}|'</span>)           <span class="out">        hi|</span>
+<span class="fn">print</span>(<span class="st">f'{"hi":^10}|'</span>)           <span class="out">    hi    |</span>
+
+<span class="cm"># 천 단위 콤마 삽입</span>
+money = <span class="nu">1500000</span>
+<span class="fn">print</span>(<span class="st">f"잔액: {money:,}원"</span>)      <span class="out">잔액: 1,500,000원</span>
+
+<span class="cm"># 딕셔너리 활용</span>
+student = {<span class="st">'name'</span>: <span class="st">'김철수'</span>, <span class="st">'score'</span>: <span class="nu">95</span>}
+<span class="fn">print</span>(<span class="st">f"{student['name']}의 점수: {student['score']}점"</span>)
+<span class="out">김철수의 점수: 95점</span></pre>
+      </div>
+      <div class="box box-tip"><strong>💡 f-string이 권장되는 이유</strong>가장 읽기 쉽고, 식(expression)을 직접 쓸 수 있으며, 속도도 가장 빠릅니다.</div>
+    </div>
+  </div>
+
+  <!-- Section 7: 내장 함수 -->
+  <div class="section" id="sec7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>문자열 내장 함수</h2>
+    </div>
+    <p>문자열 변수에 점(<span class="inline">.</span>)을 붙여 호출하는 함수들입니다. <strong>원본 문자열은 변경되지 않고</strong> 처리 결과를 반환합니다.</p>
+
+    <div class="method-grid">
+      <div class="method-card"><div class="method-name">.count()</div><div class="method-desc">특정 문자 개수 세기</div></div>
+      <div class="method-card"><div class="method-name">.find()</div><div class="method-desc">위치 찾기 (없으면 -1)</div></div>
+      <div class="method-card"><div class="method-name">.index()</div><div class="method-desc">위치 찾기 (없으면 오류)</div></div>
+      <div class="method-card"><div class="method-name">.join()</div><div class="method-desc">사이에 문자 삽입</div></div>
+      <div class="method-card"><div class="method-name">.upper()</div><div class="method-desc">대문자로 변환</div></div>
+      <div class="method-card"><div class="method-name">.lower()</div><div class="method-desc">소문자로 변환</div></div>
+      <div class="method-card"><div class="method-name">.strip()</div><div class="method-desc">양쪽 공백 제거</div></div>
+      <div class="method-card"><div class="method-name">.replace()</div><div class="method-desc">문자열 교체</div></div>
+      <div class="method-card"><div class="method-name">.split()</div><div class="method-desc">기준으로 분리 → 리스트</div></div>
+      <div class="method-card"><div class="method-name">.isalpha()</div><div class="method-desc">알파벳만? True/False</div></div>
+      <div class="method-card"><div class="method-name">.isdigit()</div><div class="method-desc">숫자만? True/False</div></div>
+      <div class="method-card"><div class="method-name">.startswith()</div><div class="method-desc">특정 문자로 시작?</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 문자열 내장 함수 전체 예제</span></div>
+      <pre>a = <span class="st">"Python is the best choice"</span>
+
+<span class="cm"># count: 특정 문자 개수</span>
+<span class="fn">print</span>(a.count(<span class="st">'t'</span>))          <span class="out">3</span>
+
+<span class="cm"># find: 위치 (없으면 -1 반환)</span>
+<span class="fn">print</span>(a.find(<span class="st">'b'</span>))           <span class="out">14</span>
+<span class="fn">print</span>(a.find(<span class="st">'z'</span>))           <span class="out">-1</span>   <span class="cm"># 없으면 -1</span>
+
+<span class="cm"># index: 위치 (없으면 오류 발생!)</span>
+<span class="fn">print</span>(a.index(<span class="st">'t'</span>))          <span class="out">4</span>
+
+<span class="cm"># join: 사이에 문자 삽입</span>
+<span class="fn">print</span>(<span class="st">"-"</span>.join(<span class="st">"ABCD"</span>))       <span class="out">A-B-C-D</span>
+<span class="fn">print</span>(<span class="st">", "</span>.join([<span class="st">"사과"</span>,<span class="st">"바나나"</span>,<span class="st">"포도"</span>]))  <span class="out">사과, 바나나, 포도</span>
+
+<span class="cm"># upper / lower</span>
+<span class="fn">print</span>(<span class="st">"hello"</span>.upper())       <span class="out">HELLO</span>
+<span class="fn">print</span>(<span class="st">"HELLO"</span>.lower())       <span class="out">hello</span>
+
+<span class="cm"># strip / lstrip / rstrip: 공백 제거</span>
+s = <span class="st">"  hello  "</span>
+<span class="fn">print</span>(s.strip())              <span class="out">hello</span>
+<span class="fn">print</span>(s.lstrip())             <span class="out">hello  </span>
+<span class="fn">print</span>(s.rstrip())             <span class="out">  hello</span>
+
+<span class="cm"># replace: 문자열 교체</span>
+<span class="fn">print</span>(<span class="st">"Life is short"</span>.replace(<span class="st">"Life"</span>, <span class="st">"Your leg"</span>))
+<span class="out">Your leg is short</span>
+
+<span class="cm"># split: 문자열 분리 → 리스트 반환</span>
+<span class="fn">print</span>(<span class="st">"Life is too short"</span>.split())
+<span class="out">['Life', 'is', 'too', 'short']</span>
+<span class="fn">print</span>(<span class="st">"a:b:c:d"</span>.split(<span class="st">':'</span>))
+<span class="out">['a', 'b', 'c', 'd']</span>
+
+<span class="cm"># 확인 함수들</span>
+<span class="fn">print</span>(<span class="st">"Python"</span>.isalpha())     <span class="out">True</span>
+<span class="fn">print</span>(<span class="st">"Python3"</span>.isalpha())    <span class="out">False</span>  <span class="cm"># 숫자 포함</span>
+<span class="fn">print</span>(<span class="st">"12345"</span>.isdigit())      <span class="out">True</span>
+<span class="fn">print</span>(<span class="st">"12.3"</span>.isdigit())       <span class="out">False</span>  <span class="cm"># 점(.) 포함</span>
+<span class="fn">print</span>(<span class="st">"Life is short"</span>.startswith(<span class="st">"Life"</span>))   <span class="out">True</span>
+<span class="fn">print</span>(<span class="st">"Life is short"</span>.endswith(<span class="st">"short"</span>))   <span class="out">True</span></pre>
+    </div>
+
+    <div class="box box-warn">
+      <strong>⚠️ 중요: 원본은 변하지 않습니다</strong>
+      <code>a.upper()</code>를 해도 <code>a</code>의 값은 그대로입니다. 변경된 값을 사용하려면 반드시 변수에 재대입해야 합니다.<br>
+      <code>a = a.upper()</code> ← 이렇게 해야 a가 바뀝니다.
+    </div>
+  </div>
+
+  <!-- Section 8: 실전 예제 -->
+  <div class="section" id="sec8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>실전 예제</h2>
+    </div>
+
+    <h3>예제 1 — 성적표 출력</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 성적표 출력</span></div>
+      <pre>students = [
+    {<span class="st">"name"</span>: <span class="st">"홍길동"</span>, <span class="st">"score"</span>: <span class="nu">92</span>},
+    {<span class="st">"name"</span>: <span class="st">"김철수"</span>, <span class="st">"score"</span>: <span class="nu">85</span>},
+    {<span class="st">"name"</span>: <span class="st">"이영희"</span>, <span class="st">"score"</span>: <span class="nu">78</span>},
+]
+
+<span class="fn">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="nu">30</span>)
+<span class="fn">print</span>(<span class="st">f"{'이름':^10} {'점수':^10}"</span>)
+<span class="fn">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="nu">30</span>)
+<span class="kw">for</span> s <span class="kw">in</span> students:
+    <span class="fn">print</span>(<span class="st">f"{s['name']:^10} {s['score']:^10}"</span>)
+<span class="fn">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="nu">30</span>)
+<span class="out">==============================
+    이름         점수    
+==============================
+   홍길동         92     
+   김철수         85     
+   이영희         78     
+==============================</span></pre>
+    </div>
+
+    <h3>예제 2 — 이메일 유효성 기본 검사</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 이메일 검사</span></div>
+      <pre>emails = [<span class="st">"user@example.com"</span>, <span class="st">"badformat"</span>, <span class="st">"test@naver.com"</span>]
+
+<span class="kw">for</span> email <span class="kw">in</span> emails:
+    has_at   = <span class="st">"@"</span> <span class="kw">in</span> email
+    has_dot  = email.endswith(<span class="st">".com"</span>) <span class="kw">or</span> email.endswith(<span class="st">".net"</span>)
+    parts    = email.split(<span class="st">"@"</span>)
+    valid    = has_at <span class="kw">and</span> has_dot <span class="kw">and</span> <span class="fn">len</span>(parts) <span class="op">==</span> <span class="nu">2</span>
+    status   = <span class="st">"✓ 유효"</span> <span class="kw">if</span> valid <span class="kw">else</span> <span class="st">"✗ 오류"</span>
+    <span class="fn">print</span>(<span class="st">f"{email:25} → {status}"</span>)
+<span class="out">user@example.com          → ✓ 유효
+badformat                 → ✗ 오류
+test@naver.com            → ✓ 유효</span></pre>
+    </div>
+
+    <h3>예제 3 — 이름 포맷 정리</h3>
+    <div class="code-block">
+      <div class="code-label"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="code-label-text">Python — 이름 정규화</span></div>
+      <pre><span class="cm"># 입력값이 지저분할 때 정리하기</span>
+raw_name = <span class="st">"  hong GIL dong  "</span>
+
+cleaned = raw_name.strip()            <span class="cm"># 공백 제거</span>
+lower   = cleaned.lower()             <span class="cm"># 소문자로</span>
+parts   = lower.split()               <span class="cm"># 단어 분리</span>
+proper  = <span class="st">" "</span>.join(p.capitalize() <span class="kw">for</span> p <span class="kw">in</span> parts)  <span class="cm"># 첫 글자 대문자</span>
+
+<span class="fn">print</span>(<span class="st">f"원본:  '{raw_name}'"</span>)
+<span class="fn">print</span>(<span class="st">f"정리:  '{proper}'"</span>)
+<span class="out">원본:  '  hong GIL dong  '
+정리:  'Hong Gil Dong'</span></pre>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quiz">
+    <div class="quiz-header">
+      <span class="quiz-badge">QUIZ</span>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;">확인 퀴즈</h2>
+    </div>
+    <p style="margin-bottom:20px;color:var(--text-sub);font-size:14px;">코드의 실행 결과를 예측하고 입력하세요. (Enter키로 제출 가능)</p>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q1. <code style="font-family:'JetBrains Mono',monospace">print("Life" + " is" + " short")</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q1" placeholder="답 입력">
+        <button class="btn-check" onclick="check(1,'Life is short')">확인</button>
+      </div>
+      <div class="quiz-result" id="r1"></div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q2. <code style="font-family:'JetBrains Mono',monospace">a = "Python"; print(a[-2])</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q2" placeholder="답 입력">
+        <button class="btn-check" onclick="check(2,'o')">확인</button>
+      </div>
+      <div class="quiz-result" id="r2"></div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q3. <code style="font-family:'JetBrains Mono',monospace">a = "Hello World"; print(a[6:])</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q3" placeholder="답 입력">
+        <button class="btn-check" onclick="check(3,'World')">확인</button>
+      </div>
+      <div class="quiz-result" id="r3"></div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q4. <code style="font-family:'JetBrains Mono',monospace">print("ab" * 3)</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q4" placeholder="답 입력">
+        <button class="btn-check" onclick="check(4,'ababab')">확인</button>
+      </div>
+      <div class="quiz-result" id="r4"></div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q5. <code style="font-family:'JetBrains Mono',monospace">print("a:b:c".split(':'))</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q5" placeholder="답 입력">
+        <button class="btn-check" onclick="check(5,[\"['a', 'b', 'c']\",\"['a','b','c']\"])">확인</button>
+      </div>
+      <div class="quiz-result" id="r5"></div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-q">Q6. <code style="font-family:'JetBrains Mono',monospace">name="철수"; age=17; print(f"{name}은 {age+1}살")</code> 의 결과는?</div>
+      <div class="quiz-input">
+        <input type="text" id="q6" placeholder="답 입력">
+        <button class="btn-check" onclick="check(6,'철수은 18살')">확인</button>
+      </div>
+      <div class="quiz-result" id="r6"></div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">정리</span>
+      <h2>핵심 요약</h2>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-card-title">문자열 생성</div>
+        <p><code>"..."</code> 큰따옴표</p>
+        <p><code>'...'</code> 작은따옴표</p>
+        <p><code>"""..."""</code> 여러 줄</p>
+        <p><code>'''...'''</code> 여러 줄</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">연산</div>
+        <p><code>+</code> 문자열 이어 붙이기</p>
+        <p><code>*</code> 문자열 반복</p>
+        <p><code>len()</code> 길이 (공백 포함)</p>
+        <p><code>in</code> 포함 여부 확인</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">인덱싱·슬라이싱</div>
+        <p><code>a[0]</code> 첫 번째 문자</p>
+        <p><code>a[-1]</code> 마지막 문자</p>
+        <p><code>a[0:4]</code> 0~3번 문자</p>
+        <p><code>a[:4]</code> / <code>a[4:]</code> 생략 가능</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">포매팅 (권장)</div>
+        <p><code>f"이름: {name}"</code></p>
+        <p><code>f"{pi:.2f}"</code> 소수점</p>
+        <p><code>f"{n:,}"</code> 천 단위 콤마</p>
+        <p><code>f"{'hi':^10}"</code> 정렬</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">자주 쓰는 내장 함수</div>
+        <p><code>.replace(a,b)</code> 교체</p>
+        <p><code>.split(sep)</code> 분리</p>
+        <p><code>.strip()</code> 공백 제거</p>
+        <p><code>.upper() / .lower()</code> 대소문자</p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-title">주의사항</div>
+        <p>문자열은 <code>immutable</code></p>
+        <p>내장 함수는 원본 불변</p>
+        <p>슬라이싱 끝 인덱스 미포함</p>
+        <p>인덱스는 0부터 시작</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  02-2 문자열 자료형 &nbsp;|&nbsp; <span>Python Basic</span> &nbsp;|&nbsp; bion.T
+</footer>
+
+<script>
+  // ── Tab switch ──
+  function switchTab(btn, panelId) {
+    const section = btn.closest('.section, .quiz-section') || document.body;
+    const allBtns = btn.parentElement.querySelectorAll('.tab-btn');
+    const allPanels = btn.closest('.section').querySelectorAll('.tab-panel');
+    allBtns.forEach(b => b.classList.remove('active'));
+    allPanels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  // ── Index visual ──
+  const STR = "Life is too short";
+  function buildIndexRows() {
+    const posRow = document.getElementById('indexRow');
+    const negRow = document.getElementById('indexRowNeg');
+    if (!posRow) return;
+    const n = STR.length;
+    STR.split('').forEach((ch, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'index-cell';
+      cell.innerHTML = `<div class="index-pos-top">${i}</div><div class="index-char">${ch === ' ' ? '·' : ch}</div>`;
+      posRow.appendChild(cell);
+
+      const cell2 = document.createElement('div');
+      cell2.className = 'index-cell';
+      cell2.innerHTML = `<div class="index-char">${ch === ' ' ? '·' : ch}</div><div class="index-pos-bot">${i - n}</div>`;
+      negRow.appendChild(cell2);
+    });
+  }
+  buildIndexRows();
+
+  // ── Slice visual ──
+  const SLICE_STR = "Life is too short";
+  function buildSliceVisual() {
+    const el = document.getElementById('sliceVisual');
+    if (!el) return;
+    el.innerHTML = '';
+    SLICE_STR.split('').forEach((ch, i) => {
+      const cell = document.createElement('div');
+      cell.className = 's-cell';
+      cell.id = 'sc' + i;
+      const num = document.createElement('span');
+      num.className = 's-num';
+      num.textContent = i;
+      cell.appendChild(num);
+      cell.appendChild(document.createTextNode(ch === ' ' ? '·' : ch));
+      el.appendChild(cell);
+    });
+  }
+  buildSliceVisual();
+
+  function showSlice(start, end, result) {
+    SLICE_STR.split('').forEach((_, i) => {
+      const c = document.getElementById('sc' + i);
+      if (c) c.className = (i >= start && i < end) ? 's-cell highlight' : 's-cell';
+    });
+    document.getElementById('sliceResult').textContent = `a[${start}:${end}] = '${result}'`;
+  }
+
+  // ── Quiz ──
+  function check(num, answer) {
+    const input = document.getElementById('q' + num).value.trim();
+    const result = document.getElementById('r' + num);
+    const answers = Array.isArray(answer) ? answer : [answer];
+    if (input === '') {
+      result.textContent = '답을 입력해주세요.';
+      result.className = 'quiz-result';
+    } else if (answers.includes(input)) {
+      result.textContent = '✓ 정답입니다!';
+      result.className = 'quiz-result correct';
+    } else {
+      result.textContent = `✗ 틀렸습니다. 다시 도전!`;
+      result.className = 'quiz-result wrong';
+    }
+  }
+  document.querySelectorAll('.quiz-input input').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') input.nextElementSibling.click();
+    });
+  });
+
+  // ── Progress bar ──
+  window.addEventListener('scroll', () => {
+    const total = document.body.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? Math.round((window.scrollY / total) * 100) : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+</script>
+</body>
+</html>
