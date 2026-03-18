@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬으로 뭘 만들 수 있을까? 🐍</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f7f4ee;
+  --surface: #ffffff;
+  --surf2:   #f0ece3;
+  --surf3:   #e8e3d8;
+  --border:  #ddd8cc;
+  --text:    #1e1a14;
+  --sub:     #7a6e60;
+  --c1: #e8472a;   /* 빨강 */
+  --c2: #f59e0b;   /* 황금 */
+  --c3: #16a34a;   /* 초록 */
+  --c4: #2563eb;   /* 파랑 */
+  --c5: #7c3aed;   /* 보라 */
+  --c6: #ea7317;   /* 주황 */
+  --c1l: #fff1ef; --c1b: #fecdc5;
+  --c2l: #fffbeb; --c2b: #fde68a;
+  --c3l: #f0fdf4; --c3b: #bbf7d0;
+  --c4l: #eff6ff; --c4b: #bfdbfe;
+  --c5l: #f5f3ff; --c5b: #ddd6fe;
+  --c6l: #fff7ed; --c6b: #fed7aa;
+  --code-bg: #1e1a14;
+  --code-tx: #f8f4ec;
+  --code-cm: #7a6a50;
+  --code-kw: #f59e0b;
+  --code-st: #16a34a;
+  --code-nu: #2563eb;
+  --code-fn: #ea7317;
+  --code-k:  #d97706;
+  --code-v:  #2563eb;
+  --sh:    0 2px 12px rgba(0,0,0,.07);
+  --sh-md: 0 6px 28px rgba(0,0,0,.11);
+  --sh-lg: 0 12px 48px rgba(0,0,0,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.65;
+  font-size:15px;
+  overflow-x:hidden;
+}
+
+/* ── 배경 패턴 ── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(37,99,235,.04) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(124,58,237,.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(22,163,74,.03) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── 헤더 ── */
+.page-header{
+  text-align:center;
+  padding:72px 20px 56px;
+  position:relative;
+  z-index:1;
+}
+.emoji-row{
+  font-size:46px;
+  letter-spacing:10px;
+  margin-bottom:22px;
+  animation:wave 3s ease-in-out infinite;
+  display:inline-block;
+}
+@keyframes wave{
+  0%,100%{transform:rotate(-2deg);}
+  50%{transform:rotate(2deg);}
+}
+.page-header h1{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(30px,6vw,58px);
+  line-height:1.15;
+  margin-bottom:18px;
+  color:var(--text);
+}
+.page-header h1 .hl{
+  background:linear-gradient(120deg,var(--c4),var(--c5),var(--c1));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.page-header .desc{
+  color:var(--sub);
+  font-size:16px;
+  max-width:520px;
+  margin:0 auto 32px;
+  line-height:1.7;
+}
+.badge-row{
+  display:flex;justify-content:center;
+  gap:10px;flex-wrap:wrap;
+}
+.badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  padding:5px 14px;
+  border-radius:20px;
+  border:1.5px solid;
+  font-weight:700;
+}
+
+/* ── 섹션 헤더 ── */
+.sec-header{
+  text-align:center;
+  padding:64px 20px 8px;
+  position:relative;
+  z-index:1;
+}
+.sec-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.sec-num::before,.sec-num::after{
+  content:'';
+  display:block;
+  width:40px;height:1px;
+  background:var(--border);
+}
+.sec-header h2{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(22px,4vw,34px);
+  margin-bottom:8px;
+}
+.sec-header p{color:var(--sub);font-size:14px;max-width:460px;margin:0 auto;}
+
+/* ── 카드 ── */
+.card-wrap{
+  max-width:900px;
+  margin:28px auto 0;
+  padding:0 20px;
+  position:relative;
+  z-index:1;
+}
+.card{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  padding:34px 38px;
+  margin-bottom:20px;
+  box-shadow:var(--sh);
+  position:relative;
+  overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--sh-lg);}
+.card-stripe{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:5px;
+  border-radius:20px 20px 0 0;
+}
+.s-c5{background:linear-gradient(90deg,var(--c5),var(--c4));}
+.s-c2{background:linear-gradient(90deg,var(--c2),var(--c6));}
+.s-c3{background:linear-gradient(90deg,var(--c3),var(--c4));}
+.s-c4{background:linear-gradient(90deg,var(--c4),var(--c5));}
+.s-c1{background:linear-gradient(90deg,var(--c1),var(--c6));}
+.s-c6{background:linear-gradient(90deg,var(--c6),var(--c2));}
+
+.card-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:21px;
+  margin-bottom:5px;
+  display:flex;align-items:center;gap:10px;
+}
+.card-sub{font-size:13px;color:var(--sub);margin-bottom:22px;}
+
+/* ── 코드 블록 ── */
+.code-area{
+  background:var(--code-bg);
+  border-radius:10px;
+  padding:18px 22px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  line-height:1.8;
+  color:var(--code-tx);
+  margin-bottom:16px;
+  border:none;
+  white-space:pre-wrap;
+  overflow-x:auto;
+}
+.kw{color:var(--code-kw);}
+.fn{color:var(--code-fn);}
+.st{color:var(--code-st);}
+.nu{color:var(--code-nu);}
+.cm{color:var(--code-cm);font-style:italic;}
+.op{color:#a78bfa;}
+.out{color:#4ade80;}
+.dk{color:var(--code-k);font-weight:700;}
+.dv{color:var(--code-v);}
+
+/* ── 인풋 ── */
+input[type=text],input[type=number],textarea,select{
+  background:var(--surf2);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:10px 16px;
+  color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;
+  width:100%;
+  outline:none;
+  transition:border-color .2s,background .2s;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--c4);
+  background:#fff;
+}
+.input-label{
+  font-size:12px;
+  color:var(--sub);
+  margin-bottom:6px;
+  font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  font-weight:700;
+}
+.input-group{flex:1;min-width:120px;}
+.input-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;}
+
+/* ── 버튼 ── */
+.run-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 28px;border:none;border-radius:10px;
+  font-family:'Black Han Sans',sans-serif;font-size:15px;
+  cursor:pointer;transition:all .2s;letter-spacing:.02em;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.run-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.18);}
+.run-btn:active{transform:translateY(0);}
+.btn-c1{background:var(--c1);color:#fff;}
+.btn-c2{background:var(--c2);color:#fff;}
+.btn-c3{background:var(--c3);color:#fff;}
+.btn-c4{background:var(--c4);color:#fff;}
+.btn-c5{background:var(--c5);color:#fff;}
+.btn-c6{background:var(--c6);color:#fff;}
+.btn-ghost{background:var(--surf2);color:var(--sub);border:1.5px solid var(--border);box-shadow:none;}
+.btn-ghost:hover{background:var(--surf3);box-shadow:none;}
+
+/* ── 결과창 ── */
+.result-box{
+  background:var(--surf2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:16px 20px;
+  margin-top:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  min-height:52px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.result-box.pop{animation:pop .3s ease;}
+@keyframes pop{0%{transform:scale(.97);}60%{transform:scale(1.02);}100%{transform:scale(1);}}
+
+/* ── 파이썬 힌트 ── */
+.py-hint{
+  background:var(--c4l);
+  border:1.5px solid var(--c4b);
+  border-radius:12px;
+  padding:16px 20px;
+  margin-top:20px;
+  font-size:13px;
+  line-height:1.7;
+}
+.hint-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--c4);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-weight:700;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.py-hint code{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--c4b);
+  padding:1px 7px;border-radius:4px;
+  font-size:12px;color:var(--c4);font-weight:700;
+}
+
+/* ── Tab ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);flex-wrap:wrap;margin-bottom:20px;}
+.tbn{
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:500;
+  padding:10px 20px;border:none;background:transparent;
+  cursor:pointer;color:var(--sub);
+  border-bottom:2px solid transparent;margin-bottom:-2px;
+  transition:color .2s,border-color .2s;white-space:nowrap;
+}
+.tbn.active{color:var(--c4);border-bottom-color:var(--c4);font-weight:700;}
+.tbn:hover:not(.active){color:var(--text);}
+.tpn{display:none;}
+.tpn.active{display:block;}
+
+/* ── 1. 닉네임 ── */
+.nick-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:10px;margin-top:16px;
+}
+.nick-chip{
+  background:var(--surf2);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;font-weight:700;
+  text-align:center;cursor:pointer;
+  transition:all .15s;color:var(--sub);
+}
+.nick-chip:hover{border-color:var(--c5);color:var(--c5);background:var(--c5l);}
+.nick-chip.chosen{background:var(--c5l);border-color:var(--c5);color:var(--c5);}
+
+/* ── 2. 운세 ── */
+.fortune-circle{
+  width:148px;height:148px;border-radius:50%;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  border:3px solid var(--border);
+  background:var(--surf2);
+  transition:all .6s cubic-bezier(.34,1.56,.64,1);
+  margin:0 auto 20px;
+}
+.fortune-circle .f-emoji{font-size:32px;margin-bottom:2px;}
+.fortune-circle .f-score{
+  font-family:'Black Han Sans',sans-serif;font-size:32px;line-height:1;
+}
+.fortune-circle .f-label{font-size:11px;color:var(--sub);margin-top:2px;}
+.fortune-bars{display:grid;gap:10px;}
+.fbar-row{display:flex;align-items:center;gap:10px;}
+.fbar-name{font-size:13px;width:54px;color:var(--sub);}
+.fbar-track{flex:1;height:10px;background:var(--surf3);border-radius:5px;overflow:hidden;}
+.fbar-fill{height:100%;border-radius:5px;width:0%;transition:width .9s cubic-bezier(.22,1,.36,1);}
+.fbar-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;width:32px;text-align:right;}
+
+/* ── 3. BMI ── */
+.bmi-num{
+  font-family:'Black Han Sans',sans-serif;font-size:60px;line-height:1;
+  text-align:center;margin-bottom:4px;
+}
+.bmi-label{font-size:20px;font-weight:700;text-align:center;margin-bottom:16px;}
+.bmi-bar-wrap{
+  width:100%;height:22px;border-radius:11px;
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.08);
+}
+.bmi-bar-bg{
+  width:100%;height:100%;
+  background:linear-gradient(90deg,#60a5fa 0%,#34d399 30%,#fbbf24 60%,#f87171 85%,#dc2626 100%);
+}
+.bmi-marker{
+  position:absolute;top:-4px;
+  width:6px;height:30px;
+  background:var(--text);border-radius:3px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+  transform:translateX(-50%);
+  transition:left .7s cubic-bezier(.34,1.56,.64,1);
+}
+.bmi-scale{
+  display:flex;justify-content:space-between;
+  margin-top:8px;font-size:11px;color:var(--sub);
+  font-family:'JetBrains Mono',monospace;
+}
+.bmi-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;
+}
+.bmi-stat{
+  background:var(--surf2);border:1.5px solid var(--border);
+  border-radius:10px;padding:14px 16px;
+}
+.bmi-stat-label{font-size:11px;color:var(--sub);margin-bottom:4px;}
+.bmi-stat-val{font-family:'Black Han Sans',sans-serif;font-size:22px;}
+
+/* ── 4. 주사위 ── */
+.dice-area{
+  display:flex;gap:14px;justify-content:center;
+  flex-wrap:wrap;margin:20px 0;
+}
+.die{
+  width:76px;height:76px;
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;cursor:pointer;
+  box-shadow:var(--sh);
+  transition:transform .15s,box-shadow .15s;
+  user-select:none;
+}
+.die:hover{transform:scale(1.08);box-shadow:var(--sh-md);}
+.die.rolling{animation:rollAnim .45s ease;}
+@keyframes rollAnim{
+  0%{transform:rotate(0) scale(1);}
+  25%{transform:rotate(-18deg) scale(.9);}
+  75%{transform:rotate(18deg) scale(1.1);}
+  100%{transform:rotate(0) scale(1);}
+}
+.dice-total{
+  text-align:center;
+  font-family:'Black Han Sans',sans-serif;font-size:28px;
+  color:var(--c6);margin-bottom:8px;
+}
+.dice-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+.cnt-btn{
+  width:36px;height:36px;border-radius:8px;
+  border:1.5px solid var(--border);
+  background:var(--surf2);color:var(--text);
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.cnt-btn:hover{background:var(--surf3);border-color:var(--c6);}
+.cnt-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px;font-weight:700;padding:0 10px;
+}
+
+/* ── 5. 텍스트 ── */
+.lyrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+.lyrics-panel{
+  background:var(--surf2);border:1.5px solid var(--border);
+  border-radius:12px;padding:16px 18px;
+}
+.panel-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--sub);text-transform:uppercase;
+  letter-spacing:.08em;font-weight:700;margin-bottom:8px;
+}
+.lyrics-text{font-size:14px;line-height:1.9;min-height:90px;white-space:pre-wrap;word-break:break-word;}
+.xbtn-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+.xbtn{
+  padding:7px 14px;
+  border:1.5px solid var(--border);border-radius:8px;
+  background:var(--surf2);color:var(--sub);
+  font-size:13px;cursor:pointer;transition:all .15s;
+}
+.xbtn:hover{border-color:var(--c5);color:var(--c5);background:var(--c5l);}
+.xbtn.active{background:var(--c5l);border-color:var(--c5);color:var(--c5);font-weight:700;}
+
+/* ── 6. 타이핑 ── */
+.typing-target{
+  background:var(--surf2);border:1.5px solid var(--border);
+  border-radius:12px;padding:18px 22px;
+  font-size:16px;line-height:2;letter-spacing:.02em;
+  margin-bottom:12px;min-height:72px;
+}
+.typing-target .correct{color:var(--c3);}
+.typing-target .wrong{color:var(--c1);text-decoration:underline wavy;}
+.typing-target .cursor{
+  display:inline-block;width:2px;height:1.1em;
+  background:var(--c2);vertical-align:text-bottom;
+  animation:blink .8s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;}
+.stat-box{
+  background:var(--surf2);border:1.5px solid var(--border);
+  border-radius:12px;padding:14px 10px;text-align:center;
+}
+.stat-val{font-family:'Black Han Sans',sans-serif;font-size:26px;margin-bottom:2px;}
+.stat-name{font-size:11px;color:var(--sub);}
+
+/* ── 7. 학교 ── */
+.big-result{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:48px;text-align:center;padding:16px 0;
+}
+.info-row{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;padding:4px 0;
+  border-bottom:1px solid var(--border);
+}
+.info-row:last-child{border:none;}
+.info-row strong{font-weight:700;}
+
+/* ── 에러 패널 ── */
+.err-panel{
+  background:#1e0a0a;border:1px solid #7f1d1d;
+  border-radius:10px;padding:14px 18px;margin:8px 0 16px;
+}
+.err-panel pre{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;color:#fca5a5;line-height:1.6;padding:0;
+  background:transparent;
+}
+
+/* ── Nav dots ── */
+.nav-dots{
+  position:fixed;right:18px;top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:10px;z-index:100;
+}
+.ndot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--border);cursor:pointer;
+  border:1.5px solid var(--border);
+  transition:all .2s;
+}
+.ndot.active{background:var(--c4);border-color:var(--c4);transform:scale(1.35);}
+.ndot:hover{background:var(--sub);}
+
+/* ── Divider ── */
+.divider{
+  max-width:900px;margin:40px auto 0;padding:0 20px;
+  position:relative;z-index:1;
+}
+.divider hr{border:none;border-top:1.5px dashed var(--border);}
+
+/* ── Footer ── */
+.page-footer{
+  text-align:center;padding:44px 20px 70px;
+  position:relative;z-index:1;
+}
+
+@media(max-width:640px){
+  .lyrics-grid,.stat-grid{grid-template-columns:1fr 1fr;}
+  .card{padding:22px 18px;}
+  .input-row{flex-direction:column;}
+  .nav-dots{display:none;}
+  .bmi-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:400px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="page-header" id="sec0">
+  <div class="emoji-row">🐍 💻 🎮 🎵 ✨</div>
+  <h1>숫자&amp;문자로<br><span class="hl">뭐든 만들 수 있다!</span></h1>
+  <p class="desc">파이썬의 숫자형과 문자열 자료형만 알아도 이런 걸 만들 수 있어요.<br>직접 입력하고 결과를 확인해보세요!</p>
+  <div class="badge-row">
+    <span class="badge" style="color:var(--c1);border-color:var(--c1);background:var(--c1l)">int · float</span>
+    <span class="badge" style="color:var(--c3);border-color:var(--c3);background:var(--c3l)">str · f-string</span>
+    <span class="badge" style="color:var(--c4);border-color:var(--c4);background:var(--c4l)">슬라이싱 · 인덱싱</span>
+    <span class="badge" style="color:var(--c5);border-color:var(--c5);background:var(--c5l)">문자열 메서드</span>
+    <span class="badge" style="color:var(--c6);border-color:var(--c6);background:var(--c6l)">산술 연산자</span>
+  </div>
+</div>
+
+<!-- ═══════ 1. 닉네임 ═══════ -->
+<div class="sec-header" id="sec1">
+  <div class="sec-num" style="color:var(--c5)">예제 01</div>
+  <h2 style="color:var(--c5)">🎮 게임 닉네임 생성기</h2>
+  <p>이름과 생년월일로 나만의 닉네임을 만들어봐요 — 문자열 슬라이싱 활용!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c5"></div>
+    <div class="card-title">🎮 닉네임 생성기</div>
+    <div class="card-sub">내 이름 + 숫자의 조합으로 유니크한 닉네임을!</div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <div class="input-label">이름 (한글 or 영문)</div>
+        <input type="text" id="nickName" placeholder="예: 홍길동" maxlength="10">
+      </div>
+      <div class="input-group">
+        <div class="input-label">생년월일 8자리</div>
+        <input type="text" id="nickBirth" placeholder="예: 20070315" maxlength="8">
+      </div>
+      <div class="input-group">
+        <div class="input-label">좋아하는 숫자</div>
+        <input type="number" id="nickNum" placeholder="예: 7" min="1" max="99">
+      </div>
+    </div>
+    <button class="run-btn btn-c5" onclick="makeNick()">✨ 닉네임 생성</button>
+    <div class="nick-grid" id="nickResult"></div>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># 문자열 슬라이싱 + 인덱싱 + f-string 활용</span>
+name  = <span class="st">"홍길동"</span>
+birth = <span class="st">"20070315"</span>
+num   = <span class="nu">7</span>
+
+year  = birth[<span class="nu">2</span>:<span class="nu">4</span>]            <span class="cm"># "07" ← 슬라이싱!</span>
+month = birth[<span class="nu">4</span>:<span class="nu">6</span>]            <span class="cm"># "03"</span>
+init  = name[<span class="nu">0</span>]                <span class="cm"># "홍" ← 인덱싱!</span>
+
+nick = <span class="st">f"{init}{year}{month}_{num:02d}"</span>
+<span class="fn">print</span>(nick)   <span class="cm"># → 홍0703_07</span></div>
+      사용 개념: <code>슬라이싱 [2:4]</code> · <code>인덱싱 [0]</code> · <code>f-string</code> · <code>:02d 포맷</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 2. 운세 ═══════ -->
+<div class="sec-header" id="sec2">
+  <div class="sec-num" style="color:var(--c2)">예제 02</div>
+  <h2 style="color:var(--c2)">🔮 오늘의 운세</h2>
+  <p>이름과 생일로 오늘의 운세를 뽑아봐요 — 나머지(%) 연산 활용!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c2"></div>
+    <div class="card-title">🔮 오늘의 운세</div>
+    <div class="card-sub">수학적(?) 근거로 계산하는 나의 오늘 운세</div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <div class="input-label">이름</div>
+        <input type="text" id="fortuneName" placeholder="예: 홍길동">
+      </div>
+      <div class="input-group">
+        <div class="input-label">생년월일 8자리</div>
+        <input type="text" id="fortuneBirth" placeholder="예: 20070315" maxlength="8">
+      </div>
+    </div>
+    <button class="run-btn btn-c2" onclick="calcFortune()">🔮 운세 보기</button>
+
+    <div id="fortuneResult" style="display:none;margin-top:24px;">
+      <div class="fortune-circle" id="fortuneCircle">
+        <span class="f-emoji" id="fEmoji">⭐</span>
+        <span class="f-score" id="fScore">?</span>
+        <span class="f-label">오늘의 운</span>
+      </div>
+      <div class="fortune-bars">
+        <div class="fbar-row"><span class="fbar-name">💰 금전</span><div class="fbar-track"><div class="fbar-fill" id="fb1" style="background:var(--c2)"></div></div><span class="fbar-val" id="fv1" style="color:var(--c2)">?</span></div>
+        <div class="fbar-row"><span class="fbar-name">❤️ 애정</span><div class="fbar-track"><div class="fbar-fill" id="fb2" style="background:var(--c1)"></div></div><span class="fbar-val" id="fv2" style="color:var(--c1)">?</span></div>
+        <div class="fbar-row"><span class="fbar-name">📚 학업</span><div class="fbar-track"><div class="fbar-fill" id="fb3" style="background:var(--c4)"></div></div><span class="fbar-val" id="fv3" style="color:var(--c4)">?</span></div>
+        <div class="fbar-row"><span class="fbar-name">🏃 건강</span><div class="fbar-track"><div class="fbar-fill" id="fb4" style="background:var(--c3)"></div></div><span class="fbar-val" id="fv4" style="color:var(--c3)">?</span></div>
+      </div>
+      <div class="result-box" style="margin-top:14px;background:var(--c2l);border-color:var(--c2b);">
+        <span id="fortuneMsg" style="font-size:14px;font-family:'Noto Sans KR',sans-serif;"></span>
+      </div>
+    </div>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># % 나머지 연산으로 점수를 0~99 범위로 조절</span>
+name  = <span class="st">"홍길동"</span>
+birth = <span class="st">"20070315"</span>
+
+name_val  = <span class="fn">len</span>(name) <span class="op">*</span> <span class="fn">ord</span>(name[<span class="nu">0</span>])   <span class="cm"># 이름 수치화</span>
+birth_val = <span class="fn">int</span>(birth[<span class="nu">4</span>:<span class="nu">8</span>])           <span class="cm"># MMDD 부분</span>
+today_val = <span class="nu">18</span>                        <span class="cm"># 오늘 날짜</span>
+
+score = (name_val <span class="op">+</span> birth_val <span class="op">+</span> today_val) <span class="op">%</span> <span class="nu">100</span>
+<span class="fn">print</span>(<span class="st">f"오늘의 운: {score}점"</span>)</div>
+      사용 개념: <code>% 나머지</code> · <code>int()</code> · <code>ord()</code> · <code>슬라이싱</code> · <code>f-string</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 3. BMI ═══════ -->
+<div class="sec-header" id="sec3">
+  <div class="sec-num" style="color:var(--c3)">예제 03</div>
+  <h2 style="color:var(--c3)">💪 BMI & 칼로리 계산기</h2>
+  <p>실수형 연산 + 제곱(**) 연산자로 건강 지표를 계산해봐요!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c3"></div>
+    <div class="card-title">💪 나의 BMI</div>
+    <div class="card-sub">키와 몸무게로 체질량지수를 계산해요</div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <div class="input-label">키 (cm)</div>
+        <input type="number" id="bmiH" placeholder="예: 172" min="100" max="250">
+      </div>
+      <div class="input-group">
+        <div class="input-label">몸무게 (kg)</div>
+        <input type="number" id="bmiW" placeholder="예: 65" min="20" max="200">
+      </div>
+      <div class="input-group">
+        <div class="input-label">나이</div>
+        <input type="number" id="bmiA" placeholder="예: 18" min="10" max="100">
+      </div>
+    </div>
+    <button class="run-btn btn-c3" onclick="calcBMI()">📊 계산하기</button>
+
+    <div id="bmiResult" style="display:none;margin-top:22px;">
+      <div class="bmi-num" id="bmiNum">--</div>
+      <div class="bmi-label" id="bmiLabel">--</div>
+      <div class="bmi-bar-wrap">
+        <div class="bmi-bar-bg"></div>
+        <div class="bmi-marker" id="bmiMarker"></div>
+      </div>
+      <div class="bmi-scale">
+        <span>저체중<br>&lt;18.5</span>
+        <span style="text-align:center">정상<br>18.5~23</span>
+        <span style="text-align:center">과체중<br>23~25</span>
+        <span style="text-align:right">비만<br>&gt;25</span>
+      </div>
+      <div class="bmi-grid">
+        <div class="bmi-stat">
+          <div class="bmi-stat-label">기초대사율 (BMR)</div>
+          <div class="bmi-stat-val" id="bmiCalVal" style="color:var(--c3)">--</div>
+          <div style="font-size:11px;color:var(--sub)">kcal/day</div>
+        </div>
+        <div class="bmi-stat">
+          <div class="bmi-stat-label">표준 체중</div>
+          <div class="bmi-stat-val" id="bmiIdealVal" style="color:var(--c4)">--</div>
+          <div style="font-size:11px;color:var(--sub)">kg</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># ** 제곱 연산자 + 실수(float) 연산</span>
+height = <span class="nu">172</span>    <span class="cm"># cm</span>
+weight = <span class="nu">65</span>     <span class="cm"># kg</span>
+age    = <span class="nu">18</span>
+
+h_m   = height / <span class="nu">100</span>            <span class="cm"># cm → m 변환</span>
+bmi   = weight / (h_m <span class="op">**</span> <span class="nu">2</span>)    <span class="cm"># BMI = kg / m²</span>
+ideal = (height - <span class="nu">100</span>) <span class="op">*</span> <span class="nu">0.9</span>   <span class="cm"># 표준체중 공식</span>
+
+<span class="fn">print</span>(<span class="st">f"BMI: {bmi:.1f}"</span>)          <span class="cm"># :.1f → 소수 1자리</span>
+<span class="fn">print</span>(<span class="st">f"표준체중: {ideal:.1f}kg"</span>)</div>
+      사용 개념: <code>** 제곱</code> · <code>/ 나눗셈</code> · <code>float</code> · <code>:.1f 포맷</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 4. 주사위 ═══════ -->
+<div class="sec-header" id="sec4">
+  <div class="sec-num" style="color:var(--c6)">예제 04</div>
+  <h2 style="color:var(--c6)">🎲 RPG 주사위 굴리기</h2>
+  <p>나머지 연산과 f-string으로 만드는 간단한 RPG 전투!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c6"></div>
+    <div class="card-title">🎲 RPG 주사위</div>
+    <div class="card-sub">주사위를 굴려서 몬스터를 처치해봐요!</div>
+
+    <div class="dice-controls">
+      <span style="font-size:13px;color:var(--sub);font-weight:500">주사위 수:</span>
+      <button class="cnt-btn" onclick="changeDice(-1)">−</button>
+      <span class="cnt-num" id="diceCount">2</span>
+      <button class="cnt-btn" onclick="changeDice(+1)">+</button>
+      <span style="font-size:13px;color:var(--sub);font-weight:500;margin-left:8px">면수:</span>
+      <select id="diceFace" style="width:auto;padding:8px 14px;">
+        <option value="4">D4</option>
+        <option value="6" selected>D6</option>
+        <option value="8">D8</option>
+        <option value="10">D10</option>
+        <option value="12">D12</option>
+        <option value="20">D20</option>
+      </select>
+    </div>
+    <div class="dice-area" id="diceArea"></div>
+    <div class="dice-total" id="diceTotal"></div>
+    <div id="rpgResult" class="result-box" style="display:none;background:var(--c6l);border-color:var(--c6b);font-family:'Noto Sans KR',sans-serif;font-size:14px;"></div>
+    <br>
+    <button class="run-btn btn-c6" onclick="rollDice()">🎲 굴리기!</button>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># random 모듈 + sum() + f-string</span>
+<span class="kw">import</span> random
+
+dice_count = <span class="nu">2</span>
+dice_face  = <span class="nu">6</span>
+
+results = [random.randint(<span class="nu">1</span>, dice_face) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(dice_count)]
+total   = <span class="fn">sum</span>(results)
+
+<span class="fn">print</span>(<span class="st">f"결과: {results}"</span>)
+<span class="fn">print</span>(<span class="st">f"합계: {total}"</span>)
+<span class="fn">print</span>(<span class="st">f"평균: {total / dice_count:.1f}"</span>)</div>
+      사용 개념: <code>randint()</code> · <code>sum()</code> · <code>/ 나눗셈</code> · <code>:.1f</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 5. 텍스트 ═══════ -->
+<div class="sec-header" id="sec5">
+  <div class="sec-num" style="color:var(--c1)">예제 05</div>
+  <h2 style="color:var(--c1)">🎵 텍스트 & 가사 변환기</h2>
+  <p>문자열 메서드의 모든 것! upper, lower, replace, count, 슬라이싱 활용!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c1"></div>
+    <div class="card-title">🎵 텍스트 마법사</div>
+    <div class="card-sub">좋아하는 가사나 문장을 입력하고 변환해봐요!</div>
+
+    <div style="margin-bottom:14px;">
+      <div class="input-label">텍스트 입력</div>
+      <textarea id="lyricsInput" rows="3" placeholder="예: Life is too short, You need Python!&#10;좋아하는 노래 가사나 문장을 입력하세요..."></textarea>
+    </div>
+
+    <div class="xbtn-row">
+      <button class="xbtn" onclick="applyT('upper')">🔠 대문자</button>
+      <button class="xbtn" onclick="applyT('lower')">🔡 소문자</button>
+      <button class="xbtn" onclick="applyT('title')">📝 첫글자 대문자</button>
+      <button class="xbtn" onclick="applyT('reverse')">🔄 뒤집기</button>
+      <button class="xbtn" onclick="applyT('star')">⭐ ★로 대체</button>
+      <button class="xbtn" onclick="applyT('shout')">📢 외치기!!</button>
+      <button class="xbtn" onclick="applyT('count')">🔢 글자 통계</button>
+    </div>
+
+    <div class="lyrics-grid">
+      <div class="lyrics-panel">
+        <div class="panel-label">원본</div>
+        <div class="lyrics-text" id="lyricsOrig" style="color:var(--sub)">텍스트를 입력하세요</div>
+      </div>
+      <div class="lyrics-panel" style="background:var(--c3l);border-color:var(--c3b);">
+        <div class="panel-label" id="transLabel" style="color:var(--c3)">결과</div>
+        <div class="lyrics-text" id="lyricsRes" style="color:var(--c3)">변환 버튼을 누르면 여기에 나와요!</div>
+      </div>
+    </div>
+    <div id="statsBox" class="result-box" style="display:none;background:var(--c4l);border-color:var(--c4b);font-size:13px;font-family:'Noto Sans KR',sans-serif;"></div>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># 문자열 메서드 총정리</span>
+text = <span class="st">"Life is too short, You need Python!"</span>
+
+<span class="fn">print</span>(text.<span class="fn">upper</span>())      <span class="cm"># LIFE IS TOO SHORT...</span>
+<span class="fn">print</span>(text.<span class="fn">lower</span>())      <span class="cm"># life is too short...</span>
+<span class="fn">print</span>(text.<span class="fn">title</span>())      <span class="cm"># Life Is Too Short...</span>
+<span class="fn">print</span>(text[::<span class="op">-</span><span class="nu">1</span>])         <span class="cm"># !nohtyP deen uoY...</span>
+<span class="fn">print</span>(text.<span class="fn">count</span>(<span class="st">'o'</span>))    <span class="cm"># 'o' 개수: 4</span>
+<span class="fn">print</span>(<span class="fn">len</span>(text))          <span class="cm"># 전체 길이: 36</span></div>
+      사용 개념: <code>.upper()</code> · <code>.lower()</code> · <code>.title()</code> · <code>[::-1]</code> · <code>.count()</code> · <code>len()</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 6. 타이핑 ═══════ -->
+<div class="sec-header" id="sec6">
+  <div class="sec-num" style="color:var(--c4)">예제 06</div>
+  <h2 style="color:var(--c4)">⌨️ 타이핑 속도 측정기</h2>
+  <p>문자열 비교 + 나눗셈으로 나의 WPM을 측정해봐요!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c4"></div>
+    <div class="card-title">⌨️ 타이핑 챌린지</div>
+    <div class="card-sub">아래 문장을 최대한 빠르고 정확하게 따라 입력하세요!</div>
+
+    <div class="typing-target" id="typingTarget"></div>
+    <div class="input-label" style="margin-bottom:6px;">여기에 입력하세요</div>
+    <textarea id="typingInput" rows="2" placeholder="시작하는 순간 타이머가 켜져요!" oninput="checkTyping()" onkeydown="if(event.key==='Enter')event.preventDefault()" style="resize:none;font-size:15px;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+      <button class="run-btn btn-c4" onclick="startTyping()">🔄 새 문장</button>
+      <button class="run-btn btn-ghost" onclick="resetTyping()">⏹ 초기화</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-val" id="statWPM" style="color:var(--c4)">0</div>
+        <div class="stat-name">WPM</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statAcc" style="color:var(--c3)">100%</div>
+        <div class="stat-name">정확도</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statTime" style="color:var(--c2)">0.0s</div>
+        <div class="stat-name">경과시간</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statChars" style="color:var(--c1)">0</div>
+        <div class="stat-name">입력 글자</div>
+      </div>
+    </div>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># 문자열 비교 + 나눗셈으로 WPM 계산</span>
+<span class="kw">import</span> time
+
+target  = <span class="st">"파이썬으로 무엇이든 만들 수 있다!"</span>
+typed   = <span class="st">"파이썬으로 무엇이든 만들 수 있다!"</span>
+elapsed = <span class="nu">5.2</span>   <span class="cm"># 경과 시간(초)</span>
+
+<span class="cm"># 정확도: 맞는 글자 수 / 전체 글자 수</span>
+correct  = <span class="fn">sum</span>(t == s <span class="kw">for</span> t, s <span class="kw">in</span> <span class="fn">zip</span>(target, typed))
+accuracy = correct / <span class="fn">len</span>(target) <span class="op">*</span> <span class="nu">100</span>
+
+<span class="cm"># WPM = (글자수 / 5) / (경과분)</span>
+wpm = (<span class="fn">len</span>(typed) / <span class="nu">5</span>) / (elapsed / <span class="nu">60</span>)
+<span class="fn">print</span>(<span class="st">f"정확도: {accuracy:.1f}%  WPM: {wpm:.0f}"</span>)</div>
+      사용 개념: <code>len()</code> · <code>/ 나눗셈</code> · <code>* 곱셈</code> · 문자열 비교 · <code>:.1f</code>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 7. 학교 ═══════ -->
+<div class="sec-header" id="sec7">
+  <div class="sec-num" style="color:var(--c3)">예제 07</div>
+  <h2 style="color:var(--c3)">🎓 졸업까지 D-day & 성적 계산기</h2>
+  <p>날짜 계산, 가중 평균, 나머지 연산으로 학교생활을 수치화!</p>
+</div>
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-stripe s-c3"></div>
+    <div class="card-title">🎓 나의 고3 대시보드</div>
+    <div class="card-sub">졸업까지 얼마나 남았는지, 내 성적 평균은? 용돈은 얼마나 남았는지!</div>
+
+    <div class="tabs">
+      <button class="tbn active" onclick="swtab(this,'cc1')">📅 D-day</button>
+      <button class="tbn" onclick="swtab(this,'cc2')">📊 성적 평균</button>
+      <button class="tbn" onclick="swtab(this,'cc3')">💰 용돈 계산</button>
+    </div>
+
+    <!-- D-day -->
+    <div class="tpn active" id="cc1">
+      <div class="input-row">
+        <div class="input-group">
+          <div class="input-label">목표 날짜</div>
+          <input type="date" id="ddayTarget">
+        </div>
+        <div class="input-group">
+          <div class="input-label">이벤트 이름</div>
+          <input type="text" id="ddayName" placeholder="예: 수능, 졸업식, 방학">
+        </div>
+      </div>
+      <button class="run-btn btn-c3" onclick="calcDday()">📅 D-day 계산</button>
+      <div class="big-result" id="ddayResult" style="display:none;color:var(--c3);"></div>
+      <div id="ddayExtra" style="display:none;">
+        <div id="ddayRows" style="display:flex;flex-direction:column;gap:0;background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;font-size:14px;margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <!-- 성적 -->
+    <div class="tpn" id="cc2">
+      <div id="gradeInputs">
+        <div class="input-row g-row" style="margin-bottom:8px;">
+          <div class="input-group"><div class="input-label">과목 1</div><input type="text" placeholder="국어" class="gname"></div>
+          <div class="input-group"><div class="input-label">점수</div><input type="number" placeholder="85" min="0" max="100" class="gscore"></div>
+          <div class="input-group"><div class="input-label">단위수</div><input type="number" placeholder="4" min="1" max="8" class="gcredit"></div>
+        </div>
+        <div class="input-row g-row" style="margin-bottom:8px;">
+          <div class="input-group"><div class="input-label">과목 2</div><input type="text" placeholder="수학" class="gname"></div>
+          <div class="input-group"><div class="input-label">점수</div><input type="number" placeholder="78" min="0" max="100" class="gscore"></div>
+          <div class="input-group"><div class="input-label">단위수</div><input type="number" placeholder="4" min="1" max="8" class="gcredit"></div>
+        </div>
+        <div class="input-row g-row" style="margin-bottom:8px;">
+          <div class="input-group"><div class="input-label">과목 3</div><input type="text" placeholder="영어" class="gname"></div>
+          <div class="input-group"><div class="input-label">점수</div><input type="number" placeholder="92" min="0" max="100" class="gscore"></div>
+          <div class="input-group"><div class="input-label">단위수</div><input type="number" placeholder="4" min="1" max="8" class="gcredit"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="run-btn btn-c3" onclick="calcGrade()">📊 평균 계산</button>
+        <button class="run-btn btn-ghost" onclick="addSubject()" style="font-size:13px;">+ 과목 추가</button>
+      </div>
+      <div id="gradeResult" style="display:none;">
+        <div class="big-result" id="gradeAvg"></div>
+        <div id="gradeDetail" style="background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;font-size:13px;display:flex;flex-direction:column;gap:0;"></div>
+      </div>
+    </div>
+
+    <!-- 용돈 -->
+    <div class="tpn" id="cc3">
+      <div class="input-row">
+        <div class="input-group">
+          <div class="input-label">한 달 용돈 (원)</div>
+          <input type="number" id="mTotal" placeholder="예: 150000">
+        </div>
+        <div class="input-group">
+          <div class="input-label">오늘이 몇 일?</div>
+          <input type="number" id="mDay" placeholder="예: 18" min="1" max="31">
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="input-group">
+          <div class="input-label">이미 쓴 돈 (원)</div>
+          <input type="number" id="mSpent" placeholder="예: 52000">
+        </div>
+        <div class="input-group">
+          <div class="input-label">한 달 총 일수</div>
+          <input type="number" id="mDays" value="30" min="28" max="31">
+        </div>
+      </div>
+      <button class="run-btn btn-c3" onclick="calcMoney()">💰 계산하기</button>
+      <div id="moneyResult" style="display:none;margin-top:16px;">
+        <div class="big-result" id="moneyRemain" style="color:var(--c2);"></div>
+        <div id="moneyDetail" style="background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;font-size:13px;display:flex;flex-direction:column;gap:0;"></div>
+      </div>
+    </div>
+
+    <div class="py-hint">
+      <div class="hint-title">🐍 이게 파이썬 코드예요!</div>
+      <div class="code-area"><span class="cm"># 날짜 차이 계산 + 가중 평균 + 정수 나눗셈(//)</span>
+
+<span class="cm"># ① D-day</span>
+<span class="kw">from</span> datetime <span class="kw">import</span> date
+today  = date.today()
+target = date(<span class="nu">2026</span>, <span class="nu">11</span>, <span class="nu">19</span>)
+diff   = (target - today).days
+<span class="fn">print</span>(<span class="st">f"수능까지 D-{diff}"</span>)
+
+<span class="cm"># ② 가중 평균 (단위수 반영)</span>
+scores  = [<span class="nu">85</span>, <span class="nu">78</span>, <span class="nu">92</span>]
+credits = [<span class="nu">4</span>,  <span class="nu">4</span>,  <span class="nu">4</span>]
+avg = <span class="fn">sum</span>(s<span class="op">*</span>c <span class="kw">for</span> s,c <span class="kw">in</span> <span class="fn">zip</span>(scores,credits)) / <span class="fn">sum</span>(credits)
+
+<span class="cm"># ③ 일일 용돈 (// 정수 나눗셈)</span>
+remain     = <span class="nu">98000</span>
+remain_days = <span class="nu">13</span>
+per_day    = remain <span class="op">//</span> remain_days
+<span class="fn">print</span>(<span class="st">f"하루 {per_day:,}원 사용 가능"</span>)</div>
+      사용 개념: <code>// 정수나눗셈</code> · <code>sum()</code> · <code>zip()</code> · <code>:.2f</code> · <code>:,</code> 천단위
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<div class="divider" style="margin-top:60px;"><hr></div>
+<div class="page-footer">
+  <p style="font-family:'Black Han Sans',sans-serif;font-size:26px;margin-bottom:12px;">
+    이게 다 <span style="color:var(--c4)">숫자형</span>이랑 <span style="color:var(--c3)">문자형</span>만으로 만든 거예요! 🐍
+  </p>
+  <p style="color:var(--sub);font-size:15px;max-width:480px;margin:0 auto 28px;line-height:1.7;">
+    <code style="font-family:'JetBrains Mono',monospace;background:var(--surf2);padding:2px 8px;border-radius:4px;">int</code> ·
+    <code style="font-family:'JetBrains Mono',monospace;background:var(--surf2);padding:2px 8px;border-radius:4px;">float</code> ·
+    <code style="font-family:'JetBrains Mono',monospace;background:var(--surf2);padding:2px 8px;border-radius:4px;">str</code>
+    — 딱 세 가지 자료형만 알아도<br>세상의 거의 모든 프로그램을 만들 수 있어요.
+  </p>
+  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+    <span class="badge" style="color:var(--c1);border-color:var(--c1);background:var(--c1l);font-size:13px;">숫자형 (int, float)</span>
+    <span style="display:flex;align-items:center;font-size:20px;">→</span>
+    <span class="badge" style="color:var(--c3);border-color:var(--c3);background:var(--c3l);font-size:13px;">문자열형 (str)</span>
+    <span style="display:flex;align-items:center;font-size:20px;">→</span>
+    <span class="badge" style="color:var(--c4);border-color:var(--c4);background:var(--c4l);font-size:13px;">🎮 게임</span>
+    <span class="badge" style="color:var(--c5);border-color:var(--c5);background:var(--c5l);font-size:13px;">📱 앱</span>
+    <span class="badge" style="color:var(--c2);border-color:var(--c2);background:var(--c2l);font-size:13px;">🤖 AI</span>
+    <span class="badge" style="color:var(--c6);border-color:var(--c6);background:var(--c6l);font-size:13px;">🌐 웹</span>
+  </div>
+</div>
+
+<script>
+/* ═══ NAV DOTS ═══ */
+const SECS = ['sec0','sec1','sec2','sec3','sec4','sec5','sec6','sec7'];
+const LABELS = ['홈','닉네임','운세','BMI','주사위','텍스트','타이핑','학교'];
+const navEl = document.getElementById('navDots');
+SECS.forEach((id,i) => {
+  const d = document.createElement('div');
+  d.className = 'ndot' + (i===0?' active':'');
+  d.title = LABELS[i];
+  d.onclick = () => document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  navEl.appendChild(d);
+});
+window.addEventListener('scroll', () => {
+  const mid = scrollY + innerHeight/2;
+  SECS.forEach((id,i) => {
+    const el = document.getElementById(id); if(!el) return;
+    const t = el.offsetTop, b = t + el.offsetHeight;
+    document.querySelectorAll('.ndot')[i].classList.toggle('active', mid>=t && mid<b);
+  });
+});
+
+/* ═══ 1. 닉네임 ═══ */
+const ADJ = ['어둠의','빛나는','전설의','폭풍','무적','냉혹한','신비한','최강','번개','천둥'];
+const NOU = ['용사','검객','마법사','암살자','궁수','기사','해커','드래곤','피닉스','울프'];
+const SUF = ['X','Pro','99','Z','King','EX','Max','Jr','GG','OP'];
+function makeNick(){
+  const name  = document.getElementById('nickName').value.trim()||'파이썬';
+  const birth = document.getElementById('nickBirth').value.trim()||'20070101';
+  const num   = parseInt(document.getElementById('nickNum').value)||7;
+  const year  = birth.length>=4 ? birth.slice(2,4):'00';
+  const month = birth.length>=6 ? birth.slice(4,6):'01';
+  const init  = name[0]||'P';
+  const seed  = name.split('').reduce((s,c)=>s+c.charCodeAt(0),0);
+  const nicks = [
+    `${init}${year}${month}_${String(num).padStart(2,'0')}`,
+    `${ADJ[seed%10]}${init}${num}`,
+    `${init}${NOU[(seed+num)%10]}`,
+    `${name.slice(0,2)}${SUF[seed%10]}${num}`,
+    `${init}_${year}${SUF[(seed+3)%10]}`,
+    `${ADJ[(seed+num)%10]}${NOU[(seed+5)%10]}`,
+    `${init.toUpperCase()}${month}${SUF[(seed+7)%10]}`,
+    `${num}번_${init}전사`,
+  ];
+  const grid = document.getElementById('nickResult');
+  grid.innerHTML='';
+  nicks.forEach(n=>{
+    const c=document.createElement('div');
+    c.className='nick-chip';c.textContent=n;
+    c.onclick=function(){grid.querySelectorAll('.nick-chip').forEach(x=>x.classList.remove('chosen'));this.classList.add('chosen');};
+    grid.appendChild(c);
+  });
+}
+
+/* ═══ 2. 운세 ═══ */
+const FMSGS=[
+  "오늘은 새로운 인연을 만날 수도 있어요! 적극적으로 다가가 보세요 ✨",
+  "공부에 집중하기 좋은 날이에요. 어려운 문제도 오늘은 풀릴 거예요 📚",
+  "소소한 행운이 가득한 날! 지갑을 조심하세요 💰",
+  "친구와의 시간이 특별해질 거예요. 연락해보는 건 어떨까요? 📱",
+  "좋아하는 것에 집중하세요. 오늘의 노력이 빛을 발할 거예요 🌟",
+  "약간 피곤할 수 있어요. 충분한 수면이 최고의 약! 😴",
+  "창의력이 폭발하는 날! 아이디어를 메모해두세요 💡",
+  "작은 것에 감사하는 하루. 좋은 일이 조용히 다가오고 있어요 🍀",
+];
+const FEMOJI=['⭐','🌟','✨','💫','🌠','🎆','🌈','🔥'];
+function calcFortune(){
+  const name=document.getElementById('fortuneName').value.trim()||'홍길동';
+  const birth=document.getElementById('fortuneBirth').value.trim()||'20070101';
+  const todayD=new Date().getDate();
+  const nameV=name.split('').reduce((s,c)=>s+c.charCodeAt(0),0);
+  const birthV=parseInt(birth.slice(4,8))||315;
+  const seed=nameV+birthV+todayD;
+  const score=seed%100;
+  const bars=[(seed*3+17)%100,(seed*7+43)%100,(seed*5+31)%100,(seed*11+59)%100].map(v=>Math.min(99,v));
+  document.getElementById('fortuneResult').style.display='block';
+  document.getElementById('fEmoji').textContent=FEMOJI[seed%FEMOJI.length];
+  const scoreEl=document.getElementById('fScore');
+  scoreEl.textContent=score;
+  const hue=(score*1.2)+30;
+  const circle=document.getElementById('fortuneCircle');
+  circle.style.borderColor=`hsl(${hue},80%,55%)`;
+  circle.style.boxShadow=`0 0 0 6px hsl(${hue},80%,92%)`;
+  scoreEl.style.color=`hsl(${hue},70%,45%)`;
+  setTimeout(()=>{
+    ['fb1','fb2','fb3','fb4'].forEach((id,i)=>{
+      document.getElementById(id).style.width=bars[i]+'%';
+      document.getElementById('fv'+(i+1)).textContent=bars[i];
+    });
+  },100);
+  document.getElementById('fortuneMsg').textContent=FMSGS[seed%FMSGS.length];
+}
+
+/* ═══ 3. BMI ═══ */
+function calcBMI(){
+  const h=parseFloat(document.getElementById('bmiH').value);
+  const w=parseFloat(document.getElementById('bmiW').value);
+  const a=parseInt(document.getElementById('bmiA').value)||18;
+  if(!h||!w){alert('키와 몸무게를 입력해주세요!');return;}
+  const hm=h/100;
+  const bmi=w/(hm**2);
+  const ideal=(h-100)*0.9;
+  const bmr=66.5+13.75*w+5.003*h-6.75*a;
+  let label,color;
+  if(bmi<18.5){label='저체중 😟';color='#2563eb';}
+  else if(bmi<23){label='정상 ✅';color='#16a34a';}
+  else if(bmi<25){label='과체중 ⚠️';color='#d97706';}
+  else if(bmi<30){label='비만 🔴';color='#dc2626';}
+  else{label='고도비만 🚨';color='#991b1b';}
+  document.getElementById('bmiResult').style.display='block';
+  const numEl=document.getElementById('bmiNum');
+  numEl.textContent=bmi.toFixed(1);numEl.style.color=color;
+  const labEl=document.getElementById('bmiLabel');
+  labEl.textContent=label;labEl.style.color=color;
+  document.getElementById('bmiCalVal').textContent=Math.round(bmr);
+  document.getElementById('bmiIdealVal').textContent=ideal.toFixed(1);
+  const pct=Math.max(2,Math.min(98,(bmi-15)/20*100));
+  setTimeout(()=>{document.getElementById('bmiMarker').style.left=pct+'%';},120);
+}
+
+/* ═══ 4. 주사위 ═══ */
+let diceN=2;
+const DF6=['','⚀','⚁','⚂','⚃','⚄','⚅'];
+const RPG=[
+  v=>v>=18?`💥 크리티컬! ${v}의 피해! 몬스터를 단숨에 처치했습니다!`:null,
+  v=>v>=13?`⚔️ 명중! ${v}의 피해를 입혔습니다!`:null,
+  v=>v>=8?`🛡️ 약한 공격... ${v}의 피해. 몬스터가 버텨냅니다.`:null,
+  v=>v>=4?`💨 빗나갔습니다! 몬스터가 비웃고 있어요.`:null,
+  v=>`😵 치명적 실패! 스스로 ${v}의 피해를 입었습니다...`,
+];
+function changeDice(d){diceN=Math.max(1,Math.min(6,diceN+d));document.getElementById('diceCount').textContent=diceN;buildDice();}
+function buildDice(){
+  const area=document.getElementById('diceArea');area.innerHTML='';
+  for(let i=0;i<diceN;i++){
+    const die=document.createElement('div');die.className='die';die.id='die'+i;
+    die.textContent='🎲';die.onclick=rollDice;area.appendChild(die);
+  }
+}
+function rollDice(){
+  const face=parseInt(document.getElementById('diceFace').value);
+  const dice=document.querySelectorAll('.die');
+  dice.forEach(d=>d.classList.add('rolling'));
+  setTimeout(()=>{
+    let total=0;
+    dice.forEach((d,i)=>{
+      d.classList.remove('rolling');
+      const v=Math.floor(Math.random()*face)+1;total+=v;
+      d.textContent=face===6?DF6[v]:v;
+    });
+    document.getElementById('diceTotal').textContent=`합계: ${total}`;
+    const rpg=document.getElementById('rpgResult');rpg.style.display='flex';
+    const fn=RPG.find(f=>f(total)!==null);
+    rpg.innerHTML=`<span>${fn(total)}</span>`;
+    rpg.classList.add('pop');setTimeout(()=>rpg.classList.remove('pop'),300);
+  },420);
+}
+buildDice();
+
+/* ═══ 5. 텍스트 ═══ */
+function applyT(type){
+  const text=document.getElementById('lyricsInput').value;
+  document.getElementById('lyricsOrig').textContent=text||'(비어있음)';
+  document.getElementById('statsBox').style.display='none';
+  document.querySelectorAll('.xbtn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  let res='',label='';
+  switch(type){
+    case 'upper':res=text.toUpperCase();label='🔠 대문자 변환';break;
+    case 'lower':res=text.toLowerCase();label='🔡 소문자 변환';break;
+    case 'title':res=text.replace(/\b\w/g,c=>c.toUpperCase());label='📝 첫글자 대문자';break;
+    case 'reverse':res=text.split('').reverse().join('');label='🔄 뒤집기';break;
+    case 'star':res=text.replace(/[a-zA-Z가-힣]/g,'★');label='⭐ 글자 → ★';break;
+    case 'shout':res=text+'!!!! 🔥🔥🔥';label='📢 외치기!';break;
+    case 'count':
+      const words=text.trim().split(/\s+/).filter(w=>w).length;
+      const chars=text.length, noSp=text.replace(/\s/g,'').length;
+      const kor=(text.match(/[가-힣]/g)||[]).length, eng=(text.match(/[a-zA-Z]/g)||[]).length;
+      res=text;label='🔢 글자 통계';
+      const sb=document.getElementById('statsBox');sb.style.display='flex';
+      sb.innerHTML=`전체 <strong>${chars}</strong>자 &nbsp;|&nbsp; 공백 제외 <strong>${noSp}</strong>자 &nbsp;|&nbsp; 단어 <strong>${words}</strong>개 &nbsp;|&nbsp; 한글 <strong>${kor}</strong>자 &nbsp;|&nbsp; 영어 <strong>${eng}</strong>자`;
+      break;
+  }
+  document.getElementById('transLabel').textContent=label;
+  document.getElementById('lyricsRes').textContent=res||'(결과 없음)';
+}
+
+/* ═══ 6. 타이핑 ═══ */
+const SENTENCES=[
+  "파이썬으로 무엇이든 만들 수 있다!",
+  "Life is too short, You need Python!",
+  "코딩은 미래를 여는 마법의 열쇠다.",
+  "Hello World! 나는 파이썬 개발자가 될 거야.",
+  "int float str — 파이썬 자료형 완전정복!",
+  "오늘 배운 코드가 내일의 앱이 된다.",
+  "버그는 두렵지 않아. 디버깅이 있으니까!",
+  "Python is awesome! 나는 할 수 있다!",
+];
+let tStart=null,tTarget='',tTimer=null,tDone=false;
+function startTyping(){
+  tTarget=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
+  renderTarget('');
+  const inp=document.getElementById('typingInput');
+  inp.value='';inp.disabled=false;inp.focus();
+  tStart=null;tDone=false;clearInterval(tTimer);
+  ['statWPM','statTime','statChars'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('statAcc').textContent='100%';
+}
+function resetTyping(){
+  clearInterval(tTimer);tStart=null;tDone=false;
+  document.getElementById('typingInput').value='';
+  document.getElementById('typingInput').disabled=false;
+  renderTarget('');
+  ['statWPM','statTime','statChars'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('statAcc').textContent='100%';
+}
+function renderTarget(typed){
+  let html='';
+  for(let i=0;i<tTarget.length;i++){
+    if(i<typed.length) html+=`<span class="${typed[i]===tTarget[i]?'correct':'wrong'}">${tTarget[i]}</span>`;
+    else if(i===typed.length) html+=`<span class="cursor"></span>${tTarget[i]}`;
+    else html+=tTarget[i];
+  }
+  if(typed.length>=tTarget.length) html+='<span class="cursor"></span>';
+  document.getElementById('typingTarget').innerHTML=html;
+}
+function checkTyping(){
+  const typed=document.getElementById('typingInput').value;
+  if(!tTarget) return;
+  if(!tStart&&typed.length>0){tStart=Date.now();tTimer=setInterval(updateStats,100);}
+  renderTarget(typed);
+  document.getElementById('statChars').textContent=typed.length;
+  const corr=[...typed].filter((c,i)=>c===tTarget[i]).length;
+  document.getElementById('statAcc').textContent=(typed.length?Math.round(corr/typed.length*100):100)+'%';
+  if(typed===tTarget&&!tDone){tDone=true;clearInterval(tTimer);document.getElementById('typingInput').disabled=true;updateStats();}
+}
+function updateStats(){
+  if(!tStart) return;
+  const el=(Date.now()-tStart)/1000;
+  const typed=document.getElementById('typingInput').value;
+  document.getElementById('statTime').textContent=el.toFixed(1)+'s';
+  if(el>0) document.getElementById('statWPM').textContent=Math.round((typed.length/5)/(el/60));
+}
+startTyping();
+
+/* ═══ 7. 학교 ═══ */
+function swtab(btn,pid){
+  document.querySelectorAll('.tbn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('.tpn').forEach(p=>p.classList.remove('active'));document.getElementById(pid).classList.add('active');
+}
+function calcDday(){
+  const ts=document.getElementById('ddayTarget').value;
+  const name=document.getElementById('ddayName').value||'목표일';
+  if(!ts){alert('날짜를 선택해주세요!');return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const target=new Date(ts);target.setHours(0,0,0,0);
+  const diff=Math.round((target-today)/(1000*60*60*24));
+  const numEl=document.getElementById('ddayResult');numEl.style.display='block';
+  let color;
+  if(diff>0){numEl.textContent=`D-${diff}`;color='var(--c3)';}
+  else if(diff===0){numEl.textContent='D-DAY!';color='var(--c2)';}
+  else{numEl.textContent=`D+${Math.abs(diff)}`;color='var(--c4)';}
+  numEl.style.color=color;
+  const extra=document.getElementById('ddayExtra');extra.style.display='block';
+  const rows=document.getElementById('ddayRows');
+  const ad=Math.abs(diff);
+  rows.innerHTML=`
+    <div class="info-row"><span>📅 <strong>${name}</strong>까지</span></div>
+    <div class="info-row"><span>📆 <strong>${ad}일</strong> = 약 ${Math.floor(ad/7)}주 = 약 ${Math.floor(ad/30)}개월</span></div>
+    <div class="info-row"><span>⏰ <strong>${(ad*24).toLocaleString()}</strong>시간 = <strong>${(ad*24*60).toLocaleString()}</strong>분</span></div>
+    <div class="info-row" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sub)"><span>💻 diff = (target - today).days  # Python datetime!</span></div>
+  `;
+}
+let subN=3;
+function addSubject(){
+  if(subN>=8)return;subN++;
+  const div=document.createElement('div');div.className='input-row g-row';div.style.marginBottom='8px';
+  div.innerHTML=`
+    <div class="input-group"><div class="input-label">과목 ${subN}</div><input type="text" placeholder="과목명" class="gname"></div>
+    <div class="input-group"><div class="input-label">점수</div><input type="number" placeholder="0~100" min="0" max="100" class="gscore"></div>
+    <div class="input-group"><div class="input-label">단위수</div><input type="number" placeholder="1~8" min="1" max="8" class="gcredit"></div>
+  `;
+  document.getElementById('gradeInputs').appendChild(div);
+}
+function calcGrade(){
+  const names=[...document.querySelectorAll('.gname')].map(i=>i.value||'과목');
+  const scores=[...document.querySelectorAll('.gscore')].map(i=>parseFloat(i.value)||0);
+  const credits=[...document.querySelectorAll('.gcredit')].map(i=>parseFloat(i.value)||1);
+  const totalC=credits.reduce((a,b)=>a+b,0);
+  const weighted=scores.reduce((s,sc,i)=>s+sc*credits[i],0);
+  const avg=weighted/totalC;
+  let grade,gc;
+  if(avg>=90){grade='A+';gc='var(--c2)';}
+  else if(avg>=80){grade='B+';gc='var(--c3)';}
+  else if(avg>=70){grade='C+';gc='var(--c4)';}
+  else if(avg>=60){grade='D+';gc='var(--c6)';}
+  else{grade='F';gc='var(--c1)';}
+  document.getElementById('gradeResult').style.display='block';
+  const ae=document.getElementById('gradeAvg');ae.textContent=`${avg.toFixed(2)}점 (${grade})`;ae.style.color=gc;
+  const det=document.getElementById('gradeDetail');
+  det.innerHTML=scores.map((s,i)=>
+    `<div class="info-row">${names[i]}: <strong>${s}점</strong> (${credits[i]}단위) → 기여도 ${(s*credits[i]/weighted*100).toFixed(1)}%</div>`
+  ).join('')+`<div class="info-row" style="color:var(--sub);font-size:12px;">총 ${totalC}단위 이수</div>`;
+}
+function calcMoney(){
+  const total=parseInt(document.getElementById('mTotal').value)||0;
+  const day=parseInt(document.getElementById('mDay').value)||1;
+  const spent=parseInt(document.getElementById('mSpent').value)||0;
+  const days=parseInt(document.getElementById('mDays').value)||30;
+  const remain=total-spent;
+  const remDays=days-day+1;
+  const perDay=remain>0?Math.floor(remain/remDays):0;
+  document.getElementById('moneyResult').style.display='block';
+  const re=document.getElementById('moneyRemain');
+  re.textContent=remain.toLocaleString()+'원';
+  re.style.color=remain>0?'var(--c3)':'var(--c1)';
+  document.getElementById('moneyDetail').innerHTML=`
+    <div class="info-row">💸 이미 쓴 돈: <strong>${spent.toLocaleString()}원</strong> (${Math.round(spent/total*100)}%)</div>
+    <div class="info-row">💰 남은 돈: <strong>${remain.toLocaleString()}원</strong></div>
+    <div class="info-row">📅 남은 기간: <strong>${remDays}일</strong></div>
+    <div class="info-row" style="color:var(--c3)">📊 하루 사용 가능: <strong>${perDay.toLocaleString()}원/일</strong></div>
+    <div class="info-row" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sub)">💻 per_day = remain // remain_days  # // 정수 나눗셈!</div>
+  `;
+}
+</script>
+</body>
+</html>
