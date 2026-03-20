@@ -1,0 +1,3371 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파이썬 리스트 📋</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f7f3ec;
+        --card: #ffffff;
+        --surf2: #f1ebe1;
+        --surf3: #e8e0d4;
+        --border: #ddd5c8;
+        --text: #1c1814;
+        --sub: #7a6e60;
+        /* 테마 컬러 — teal 계열 (리스트 단원 전용) */
+        --ac: #0d7a6e; /* 메인 teal */
+        --ac-l: #e6f7f5;
+        --ac-b: #99ddd7;
+        /* 서브 컬러 */
+        --c1: #1d4ed8;
+        --c1l: #eff6ff;
+        --c1b: #bfdbfe;
+        --c2: #15803d;
+        --c2l: #f0fdf4;
+        --c2b: #bbf7d0;
+        --c3: #b45309;
+        --c3l: #fffbeb;
+        --c3b: #fde68a;
+        --c4: #7c3aed;
+        --c4l: #f5f3ff;
+        --c4b: #ddd6fe;
+        --c5: #be123c;
+        --c5l: #fff1f2;
+        --c5b: #fecdd3;
+        --c6: #0e7490;
+        --c6l: #ecfeff;
+        --c6b: #a5f3fc;
+        /* 코드 (밝은 배경) */
+        --cbg: #f4f0e8;
+        --cbr: #ddd5c4;
+        --ckw: #b45309;
+        --cfn: #0d7a6e;
+        --cst: #15803d;
+        --cnu: #1d4ed8;
+        --ccm: #9c8d7a;
+        --cop: #7c3aed;
+        --sh: 0 2px 10px rgba(0, 0, 0, 0.06);
+        --shm: 0 6px 24px rgba(0, 0, 0, 0.1);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        font-size: 15px;
+      }
+
+      /* ── 헤더 ── */
+      .hd {
+        background: var(--text);
+        color: #f7f3ec;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      }
+      .hd-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 36px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .hd-badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--ac);
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 3px;
+        letter-spacing: 0.06em;
+      }
+      .hd-title {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 17px;
+      }
+      .hd-meta {
+        font-size: 12px;
+        color: #a09080;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .prog {
+        height: 3px;
+        background: linear-gradient(90deg, var(--ac), var(--c1));
+        width: 0%;
+        transition: width 0.2s;
+      }
+
+      /* ── 본문 ── */
+      .wrap {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      /* ── 영웅 타이틀 ── */
+      .hero {
+        text-align: center;
+        padding: 48px 20px 36px;
+        position: relative;
+      }
+      .hero-emoji {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 16px;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+      .hero h1 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: clamp(26px, 5vw, 44px);
+        line-height: 1.2;
+        margin-bottom: 12px;
+      }
+      .hero h1 .hl {
+        background: linear-gradient(120deg, var(--ac), var(--c1));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero-desc {
+        color: var(--sub);
+        font-size: 15px;
+        max-width: 480px;
+        margin: 0 auto 24px;
+      }
+      .badge-row {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .hbadge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 13px;
+        border-radius: 20px;
+        border: 1.5px solid;
+      }
+
+      /* ── 목차 ── */
+      .toc {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        padding: 22px 28px;
+        margin-bottom: 36px;
+        box-shadow: var(--sh);
+      }
+      .toc-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--sub);
+        margin-bottom: 14px;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc-item {
+        font-size: 13px;
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: var(--ac);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .toc-item:hover {
+        color: var(--c1);
+      }
+      .toc-item .toc-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--ac-l);
+        color: var(--ac);
+        padding: 1px 6px;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+
+      /* ── 섹션 헤더 ── */
+      .sh {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin: 44px 0 18px;
+      }
+      .sh-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        padding: 5px 11px;
+        border-radius: 6px;
+        white-space: nowrap;
+        margin-top: 3px;
+        flex-shrink: 0;
+      }
+      .sh h2 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 21px;
+        line-height: 1.25;
+      }
+      .sh p {
+        font-size: 13px;
+        color: var(--sub);
+        margin-top: 3px;
+      }
+
+      /* ── 카드 ── */
+      .card {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        padding: 26px 30px;
+        margin-bottom: 16px;
+        box-shadow: var(--sh);
+        position: relative;
+        overflow: hidden;
+      }
+      .card-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+      }
+      .ct-ac {
+        background: var(--ac);
+      }
+      .ct-c1 {
+        background: var(--c1);
+      }
+      .ct-c2 {
+        background: var(--c2);
+      }
+      .ct-c3 {
+        background: var(--c3);
+      }
+      .ct-c4 {
+        background: var(--c4);
+      }
+      .ct-c5 {
+        background: var(--c5);
+      }
+      .ct-c6 {
+        background: var(--c6);
+      }
+      .card-hed {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .card-icon {
+        font-size: 20px;
+      }
+      .card-name {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 17px;
+      }
+      .card-sub {
+        font-size: 13px;
+        color: var(--sub);
+        margin-top: 2px;
+      }
+
+      /* ── 개념박스 ── */
+      .concept {
+        background: var(--surf2);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      .concept code,
+      .ic {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        background: var(--card);
+        padding: 1px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+      .concept strong {
+        font-weight: 700;
+      }
+
+      /* ── 팁/경고 박스 ── */
+      .tip {
+        border-radius: 10px;
+        padding: 13px 18px;
+        margin: 12px 0;
+        font-size: 13.5px;
+        line-height: 1.75;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .tip-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .tip.blue {
+        background: var(--c1l);
+        border-left: 4px solid var(--c1);
+      }
+      .tip.green {
+        background: var(--c2l);
+        border-left: 4px solid var(--c2);
+      }
+      .tip.orange {
+        background: var(--c3l);
+        border-left: 4px solid var(--c3);
+      }
+      .tip.red {
+        background: var(--c5l);
+        border-left: 4px solid var(--c5);
+      }
+      .tip.teal {
+        background: var(--ac-l);
+        border-left: 4px solid var(--ac);
+      }
+
+      /* ── 코드 블록 (밝은 배경) ── */
+      .cb {
+        background: var(--cbg);
+        border: 1.5px solid var(--cbr);
+        border-radius: 10px;
+        margin: 12px 0 16px;
+        overflow: hidden;
+      }
+      .cb-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7px 14px;
+        background: var(--surf3);
+        border-bottom: 1px solid var(--cbr);
+      }
+      .cb-dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .dr {
+        background: #ff5f57;
+      }
+      .dy {
+        background: #febc2e;
+      }
+      .dg {
+        background: #28c840;
+      }
+      .cb-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--sub);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+      pre {
+        padding: 16px 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.95;
+        color: var(--text);
+        background: transparent;
+      }
+      .kw {
+        color: var(--ckw);
+        font-weight: 700;
+      }
+      .fn {
+        color: var(--cfn);
+        font-weight: 600;
+      }
+      .st {
+        color: var(--cst);
+      }
+      .nu {
+        color: var(--cnu);
+        font-weight: 600;
+      }
+      .cm {
+        color: var(--ccm);
+        font-style: italic;
+      }
+      .op {
+        color: var(--cop);
+      }
+      .out {
+        color: #155e75;
+        font-weight: 600;
+      }
+
+      /* ── 리스트 시각화 ── */
+      .lv-wrap {
+        overflow-x: auto;
+        padding: 4px 0 10px;
+        margin: 12px 0;
+      }
+      .lv {
+        display: flex;
+        align-items: stretch;
+        min-width: max-content;
+      }
+      .lv-br {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        color: var(--sub);
+        display: flex;
+        align-items: center;
+        padding: 0 4px;
+      }
+      .lv-cell {
+        min-width: 66px;
+        text-align: center;
+        border: 1.5px solid var(--cbr);
+        background: var(--cbg);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .lv-cell:hover {
+        background: var(--ac-l);
+        border-color: var(--ac);
+      }
+      .lv-cell.sel {
+        background: var(--ac-l);
+        border-color: var(--ac);
+      }
+      .lv-cell.hl {
+        background: var(--c1l);
+        border-color: var(--c1);
+      }
+      .lv-cell:first-of-type {
+        border-radius: 8px 0 0 8px;
+      }
+      .lv-cell:last-of-type {
+        border-radius: 0 8px 8px 0;
+      }
+      .lv-idx {
+        padding: 4px 3px;
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--ac);
+        border-bottom: 1px solid var(--cbr);
+        font-weight: 700;
+      }
+      .lv-val {
+        padding: 10px 6px;
+        font-size: 14px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .lv-neg {
+        padding: 4px 3px;
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--c4);
+        border-top: 1px solid var(--cbr);
+      }
+      .lv-info {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--ac);
+        font-weight: 700;
+        min-height: 22px;
+        margin: 4px 0 8px;
+      }
+
+      /* ── 인풋/버튼 ── */
+      .ir {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .ig {
+        flex: 1;
+        min-width: 100px;
+      }
+      .il {
+        font-size: 11px;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+        color: var(--sub);
+        margin-bottom: 5px;
+      }
+      input,
+      select,
+      textarea {
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 14px;
+        color: var(--text);
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 14px;
+        width: 100%;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--ac);
+        background: #fff;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 22px;
+        border: none;
+        border-radius: 8px;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.18s;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+      .bac {
+        background: var(--ac);
+        color: #fff;
+      }
+      .b1 {
+        background: var(--c1);
+        color: #fff;
+      }
+      .b2 {
+        background: var(--c2);
+        color: #fff;
+      }
+      .b3 {
+        background: var(--c3);
+        color: #fff;
+      }
+      .b4 {
+        background: var(--c4);
+        color: #fff;
+      }
+      .b5 {
+        background: var(--c5);
+        color: #fff;
+      }
+      .b6 {
+        background: var(--c6);
+        color: #fff;
+      }
+      .bg {
+        background: var(--surf2);
+        color: var(--sub);
+        border: 1.5px solid var(--border);
+        box-shadow: none;
+      }
+      .bg:hover {
+        background: var(--surf3);
+        box-shadow: none;
+      }
+
+      /* ── 결과창 ── */
+      .res {
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        line-height: 1.6;
+      }
+      .res.pop {
+        animation: pop 0.3s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.98);
+        }
+        60% {
+          transform: scale(1.02);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .rl {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--sub);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-family: "JetBrains Mono", monospace;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .rv {
+        font-size: 14px;
+        font-weight: 700;
+        word-break: break-all;
+        color: var(--text);
+      }
+
+      /* ── 퀴즈 ── */
+      .qbox {
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 12px;
+      }
+      .qq {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        line-height: 1.6;
+      }
+      .qq code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        background: var(--card);
+        padding: 1px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+      .qr-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .qr-row input {
+        width: 160px;
+        flex: none;
+      }
+      .qans {
+        font-size: 13px;
+        font-family: "JetBrains Mono", monospace;
+        margin-top: 8px;
+        min-height: 20px;
+      }
+      .ok {
+        color: var(--c2);
+        font-weight: 700;
+      }
+      .ng {
+        color: var(--c5);
+        font-weight: 700;
+      }
+
+      /* ── 메서드 그리드 ── */
+      .mc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        gap: 10px;
+        margin: 14px 0 18px;
+      }
+      .mc {
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 13px 15px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .mc:hover {
+        border-color: var(--ac);
+        background: var(--ac-l);
+        transform: translateY(-2px);
+        box-shadow: var(--shm);
+      }
+      .mc.act {
+        border-color: var(--ac);
+        background: var(--ac-l);
+      }
+      .mc-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ac);
+        margin-bottom: 3px;
+      }
+      .mc-desc {
+        font-size: 12px;
+        color: var(--sub);
+      }
+      .mc-tag {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        margin-top: 4px;
+      }
+      .mt-mod {
+        background: var(--c3l);
+        color: var(--c3);
+        border: 1px solid var(--c3b);
+      }
+      .mt-ret {
+        background: var(--c1l);
+        color: var(--c1);
+        border: 1px solid var(--c1b);
+      }
+
+      /* ── 요약 표 ── */
+      .sum-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin: 14px 0;
+      }
+      .sum-table th {
+        background: var(--text);
+        color: #f7f3ec;
+        padding: 9px 14px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+      }
+      .sum-table td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .sum-table tr:hover td {
+        background: var(--surf2);
+      }
+      .sum-table td code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--ac);
+        background: var(--surf2);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+
+      /* ── 구분선 ── */
+      hr.div {
+        border: none;
+        border-top: 1.5px dashed var(--border);
+        margin: 36px 0;
+      }
+
+      /* ── 투두 앱 UI ── */
+      .todo-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin: 12px 0;
+      }
+      .todo-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 15px;
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        transition: all 0.15s;
+      }
+      .todo-item.done {
+        opacity: 0.5;
+        text-decoration: line-through;
+        background: var(--surf3);
+      }
+      .todo-cb {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        border: 2px solid var(--border);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.15s;
+        font-size: 14px;
+      }
+      .todo-cb.checked {
+        background: var(--c2);
+        border-color: var(--c2);
+        color: #fff;
+      }
+      .todo-text {
+        flex: 1;
+        font-size: 14px;
+      }
+      .todo-del {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: var(--sub);
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+      }
+      .todo-del:hover {
+        background: var(--c5l);
+        color: var(--c5);
+      }
+
+      /* ── 플레이리스트 ── */
+      .track {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 7px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .track:hover {
+        border-color: var(--ac);
+        background: var(--ac-l);
+      }
+      .track.playing {
+        border-color: var(--ac);
+        background: var(--ac-l);
+      }
+      .track-n {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--sub);
+        width: 20px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .track-info {
+        flex: 1;
+      }
+      .track-title {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .track-artist {
+        font-size: 12px;
+        color: var(--sub);
+      }
+
+      /* ── 차트 바 ── */
+      .chart-wrap {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 160px;
+        padding: 0 4px;
+        margin: 16px 0 8px;
+        flex-wrap: wrap;
+      }
+      .bar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+        min-width: 50px;
+      }
+      .bar {
+        width: 100%;
+        border-radius: 6px 6px 0 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 5px;
+        transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .bar-score {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+        color: #fff;
+      }
+      .bar-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--sub);
+      }
+      .score-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .score-input {
+        text-align: center;
+        padding: 8px;
+      }
+
+      /* ── 주사위 ── */
+      .dice-area {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 16px 0;
+      }
+      .die {
+        width: 72px;
+        height: 72px;
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        cursor: pointer;
+        box-shadow: var(--sh);
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .die:hover {
+        transform: scale(1.06);
+        box-shadow: var(--shm);
+      }
+      .die.rolling {
+        animation: ra 0.45s ease;
+      }
+      @keyframes ra {
+        30% {
+          transform: rotate(-15deg) scale(0.9);
+        }
+        70% {
+          transform: rotate(15deg) scale(1.08);
+        }
+        100% {
+          transform: rotate(0) scale(1);
+        }
+      }
+      .hist-chip {
+        padding: 5px 12px;
+        background: var(--surf2);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      @media (max-width: 600px) {
+        .hd-inner {
+          padding: 12px 18px;
+        }
+        .hd-meta {
+          display: none;
+        }
+        .wrap {
+          padding: 28px 14px 60px;
+        }
+        .card {
+          padding: 20px 16px;
+        }
+        .ir {
+          flex-direction: column;
+        }
+        .toc-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero {
+          padding: 32px 14px 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <header class="hd">
+      <div class="hd-inner">
+        <span class="hd-badge">Python · 02-3</span>
+        <span class="hd-title">리스트 자료형 </span>
+        <span class="hd-meta">list [ ]</span>
+      </div>
+      <div class="prog" id="prog"></div>
+    </header>
+
+    <div class="wrap">
+      <!-- ── 영웅 타이틀 ── -->
+      <div class="hero">
+        <span class="hero-emoji">📋</span>
+        <h1>파이썬 <span class="hl">리스트(List)</span></h1>
+        <p class="hero-desc">
+          여러 개의 값을 하나에 담는 상자 — 리스트를<br />차근차근 알아봅니다.
+        </p>
+        <div class="badge-row">
+          <span
+            class="hbadge"
+            style="
+              color: var(--ac);
+              border-color: var(--ac);
+              background: var(--ac-l);
+            "
+            >list 생성</span
+          >
+          <span
+            class="hbadge"
+            style="
+              color: var(--c1);
+              border-color: var(--c1);
+              background: var(--c1l);
+            "
+            >인덱싱</span
+          >
+          <span
+            class="hbadge"
+            style="
+              color: var(--c2);
+              border-color: var(--c2);
+              background: var(--c2l);
+            "
+            >추가 · 삭제</span
+          >
+          <span
+            class="hbadge"
+            style="
+              color: var(--c3);
+              border-color: var(--c3);
+              background: var(--c3l);
+            "
+            >정렬 · 통계</span
+          >
+          <span
+            class="hbadge"
+            style="
+              color: var(--c4);
+              border-color: var(--c4);
+              background: var(--c4l);
+            "
+            >실전 예제</span
+          >
+        </div>
+      </div>
+
+      <!-- ── 목차 ── -->
+      <div class="toc">
+        <div class="toc-title">📚 학습 순서</div>
+        <div class="toc-grid">
+          <a class="toc-item" href="#s1"
+            ><span class="toc-num">01</span> 리스트란 무엇인가?</a
+          >
+          <a class="toc-item" href="#s5"
+            ><span class="toc-num">05</span> 리스트 메서드 실험실</a
+          >
+          <a class="toc-item" href="#s2"
+            ><span class="toc-num">02</span> 인덱싱 — 꺼내기</a
+          >
+          <a class="toc-item" href="#s6"
+            ><span class="toc-num">06</span> 실전① 할 일 관리 앱</a
+          >
+          <a class="toc-item" href="#s3"
+            ><span class="toc-num">03</span> 슬라이싱 — 잘라내기</a
+          >
+          <a class="toc-item" href="#s7"
+            ><span class="toc-num">07</span> 실전② 성적 분석기</a
+          >
+          <a class="toc-item" href="#s4"
+            ><span class="toc-num">04</span> 리스트 연산</a
+          >
+          <a class="toc-item" href="#s8"
+            ><span class="toc-num">08</span> 핵심 요약</a
+          >
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+     01. 리스트란?
+════════════════════════════════ -->
+      <div class="sh" id="s1">
+        <span class="sh-num" style="background: var(--ac)">01</span>
+        <div>
+          <h2>리스트(List)란?</h2>
+          <p>여러 값을 하나의 변수에 담는 자료형</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-ac"></div>
+        <div class="card-hed">
+          <span class="card-icon">📦</span>
+          <div><div class="card-name">리스트 = 마법 상자</div></div>
+        </div>
+
+        <div class="concept">
+          리스트는 <strong>대괄호 [ ]</strong> 로 만들고, 값들을
+          <strong>쉼표(,)</strong> 로 구분해요.<br />
+          숫자, 문자열, 심지어 다른 리스트도 담을 수 있어요!
+        </div>
+
+        <div class="cb">
+          <div class="cb-hd">
+            <div class="cb-dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cb-label">리스트 생성</span>
+          </div>
+          <pre><span class="cm"># 빈 리스트</span>
+a = []
+
+<span class="cm"># 숫자 리스트</span>
+scores = [<span class="nu">85</span>, <span class="nu">92</span>, <span class="nu">78</span>, <span class="nu">96</span>, <span class="nu">70</span>]
+
+<span class="cm"># 문자열 리스트</span>
+fruits = [<span class="st">'사과'</span>, <span class="st">'바나나'</span>, <span class="st">'포도'</span>, <span class="st">'딸기'</span>]
+
+<span class="cm"># 혼합 가능!</span>
+info = [<span class="st">'홍길동'</span>, <span class="nu">18</span>, <span class="kw">True</span>]
+
+<span class="fn">print</span>(<span class="fn">len</span>(scores))   <span class="out"># → 5  (요소 개수)</span>
+<span class="fn">print</span>(<span class="fn">type</span>(scores))  <span class="out"># → &lt;class 'list'&gt;</span></pre>
+        </div>
+
+        <div class="tip teal">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>리스트가 필요한 이유</strong><br />
+            학생 5명의 점수를 저장한다면?<br />
+            <code>s1=85, s2=92, s3=78...</code> 변수 5개 → 불편!<br />
+            <code>scores=[85, 92, 78, 96, 70]</code> 리스트 1개 → 깔끔! ✅
+          </div>
+        </div>
+
+        <!-- 체험 -->
+        <div class="ir">
+          <div class="ig">
+            <div class="il">리스트 입력 (쉼표로 구분)</div>
+            <input type="text" id="new_list" value="85, 92, 78, 96, 70" />
+          </div>
+        </div>
+        <button class="btn bac" onclick="showListInfo()">
+          📋 리스트 정보 확인
+        </button>
+        <div class="res" id="r_listinfo">
+          <span class="rl">결과</span
+          ><span class="rv" style="color: var(--sub)"
+            >위 값을 바꾸고 눌러보세요</span
+          >
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+     02. 인덱싱
+════════════════════════════════ -->
+      <div class="sh" id="s2">
+        <span class="sh-num" style="background: var(--c1)">02</span>
+        <div>
+          <h2>인덱싱 — 하나씩 꺼내기</h2>
+          <p>리스트에서 원하는 요소를 꺼내는 방법</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-c1"></div>
+        <div class="card-hed">
+          <span class="card-icon">🔍</span>
+          <div><div class="card-name">인덱스는 0부터 시작!</div></div>
+        </div>
+
+        <div class="concept">
+          파이썬은 <strong>0부터</strong> 셉니다. <code>a[0]</code>이 첫 번째
+          요소예요.<br />
+          <strong>음수 인덱스</strong>는 뒤에서부터: <code>a[-1]</code> = 마지막
+          요소
+        </div>
+
+        <!-- 인터랙티브 시각화 -->
+        <div
+          style="
+            font-size: 12px;
+            color: var(--sub);
+            margin-bottom: 6px;
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+          "
+        >
+          👆 아래 요소를 클릭해보세요!
+        </div>
+        <div class="lv-wrap"><div class="lv" id="idxVis"></div></div>
+        <div class="lv-info" id="idxInfo">
+          요소를 클릭하면 인덱스 정보가 나타납니다
+        </div>
+
+        <div class="cb">
+          <div class="cb-hd">
+            <div class="cb-dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cb-label">인덱싱 예제</span>
+          </div>
+          <pre>fruits = [<span class="st">'사과'</span>, <span class="st">'바나나'</span>, <span class="st">'포도'</span>, <span class="st">'딸기'</span>, <span class="st">'망고'</span>]
+
+<span class="fn">print</span>(fruits[<span class="nu">0</span>])    <span class="out"># → '사과'   (첫 번째)</span>
+<span class="fn">print</span>(fruits[<span class="nu">2</span>])    <span class="out"># → '포도'   (세 번째)</span>
+<span class="fn">print</span>(fruits[<span class="op">-</span><span class="nu">1</span>])   <span class="out"># → '망고'   (마지막)</span>
+<span class="fn">print</span>(fruits[<span class="op">-</span><span class="nu">2</span>])   <span class="out"># → '딸기'   (뒤에서 두 번째)</span></pre>
+        </div>
+
+        <div class="tip orange">
+          <span class="tip-icon">⚠️</span>
+          <div>
+            <strong>리스트는 수정 가능! (문자열과 다르게)</strong><br />
+            <code>fruits[0] = '수박'</code> → ✅ 가능!<br />
+            인덱스 범위를 벗어나면 <code>IndexError</code> 가 발생해요.
+          </div>
+        </div>
+
+        <div class="ir">
+          <div class="ig">
+            <div class="il">리스트</div>
+            <input
+              type="text"
+              id="idx_list"
+              value="사과, 바나나, 포도, 딸기, 망고"
+            />
+          </div>
+          <div class="ig">
+            <div class="il">인덱스 번호</div>
+            <input type="number" id="idx_n" value="0" />
+          </div>
+        </div>
+        <button class="btn b1" onclick="doIdx()">🔍 꺼내기</button>
+        <div class="res" id="r_idx">
+          <span class="rl">결과</span
+          ><span class="rv" style="color: var(--sub)"
+            >인덱스를 입력하고 눌러보세요</span
+          >
+        </div>
+      </div>
+
+      <!-- 인덱싱 퀴즈 -->
+      <div class="card">
+        <div class="card-top ct-c2"></div>
+        <div class="card-hed">
+          <span class="card-icon">✏️</span>
+          <div><div class="card-name">인덱싱 퀴즈</div></div>
+        </div>
+
+        <div class="qbox">
+          <div class="qq">
+            Q1. <code>a = [10, 20, 30, 40, 50]</code> 일 때,
+            <code>a[2]</code> 의 값은?
+          </div>
+          <div class="qr-row">
+            <input type="text" id="q1" placeholder="답 입력" />
+            <button class="btn b2" onclick="chk(1, '30')">확인</button>
+          </div>
+          <div class="qans" id="qa1"></div>
+        </div>
+
+        <div class="qbox">
+          <div class="qq">
+            Q2. <code>a = ['월', '화', '수', '목', '금']</code> 일 때,
+            <code>a[-1]</code> 의 값은?
+          </div>
+          <div class="qr-row">
+            <input type="text" id="q2" placeholder="답 입력" />
+            <button class="btn b2" onclick="chk(2, '금')">확인</button>
+          </div>
+          <div class="qans" id="qa2"></div>
+        </div>
+
+        <div class="qbox">
+          <div class="qq">
+            Q3. <code>a = [1, 2, 3]</code> 일 때, <code>len(a)</code> 의 값은?
+          </div>
+          <div class="qr-row">
+            <input type="text" id="q3" placeholder="답 입력" />
+            <button class="btn b2" onclick="chk(3, '3')">확인</button>
+          </div>
+          <div class="qans" id="qa3"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+     03. 슬라이싱
+════════════════════════════════ -->
+      <div class="sh" id="s3">
+        <span class="sh-num" style="background: var(--c3)">03</span>
+        <div>
+          <h2>슬라이싱 — 잘라내기</h2>
+          <p>리스트의 일부를 한번에 꺼내는 방법</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-c3"></div>
+        <div class="card-hed">
+          <span class="card-icon">✂️</span>
+          <div>
+            <div class="card-name">a[시작 : 끝] — 끝은 포함 안 됨!</div>
+          </div>
+        </div>
+
+        <div class="concept">
+          <code>a[1:4]</code> → 1번, 2번, 3번 (4번은 미포함!)<br />
+          <code>a[:3]</code> → 처음부터 2번까지 &nbsp;|&nbsp;
+          <code>a[2:]</code> → 2번부터 끝까지
+        </div>
+
+        <div class="cb">
+          <div class="cb-hd">
+            <div class="cb-dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cb-label">슬라이싱 예제</span>
+          </div>
+          <pre>a = [<span class="st">'월'</span>, <span class="st">'화'</span>, <span class="st">'수'</span>, <span class="st">'목'</span>, <span class="st">'금'</span>, <span class="st">'토'</span>, <span class="st">'일'</span>]
+
+<span class="fn">print</span>(a[<span class="nu">0</span>:<span class="nu">5</span>])   <span class="out"># → ['월', '화', '수', '목', '금']  평일!</span>
+<span class="fn">print</span>(a[<span class="nu">5</span>:])    <span class="out"># → ['토', '일']  주말!</span>
+<span class="fn">print</span>(a[:<span class="nu">3</span>])    <span class="out"># → ['월', '화', '수']</span>
+<span class="fn">print</span>(a[::<span class="op">-</span><span class="nu">1</span>])  <span class="out"># → ['일', '토', ... '월']  뒤집기!</span></pre>
+        </div>
+
+        <!-- 슬라이싱 체험 -->
+        <div class="ir">
+          <div class="ig">
+            <div class="il">리스트 (쉼표 구분)</div>
+            <input
+              type="text"
+              id="sl_list"
+              value="월, 화, 수, 목, 금, 토, 일"
+            />
+          </div>
+          <div class="ig">
+            <div class="il">시작</div>
+            <input type="number" id="sl_s" value="0" />
+          </div>
+          <div class="ig">
+            <div class="il">끝</div>
+            <input type="number" id="sl_e" value="5" />
+          </div>
+        </div>
+        <button class="btn b3" onclick="doSlice()">✂️ 슬라이싱!</button>
+        <div class="res" id="r_slice">
+          <span class="rl">결과</span
+          ><span class="rv" style="color: var(--sub)"
+            >값을 입력하고 눌러보세요</span
+          >
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+     04. 리스트 연산
+════════════════════════════════ -->
+      <div class="sh" id="s4">
+        <span class="sh-num" style="background: var(--c4)">04</span>
+        <div>
+          <h2>리스트 연산</h2>
+          <p>더하기, 곱하기, 그리고 유용한 내장 함수들</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-c4"></div>
+        <div class="card-hed">
+          <span class="card-icon">➕</span>
+          <div><div class="card-name">+ 연결 · * 반복 · in 포함 확인</div></div>
+        </div>
+
+        <div class="cb">
+          <div class="cb-hd">
+            <div class="cb-dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cb-label">리스트 연산</span>
+          </div>
+          <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]
+b = [<span class="nu">4</span>, <span class="nu">5</span>, <span class="nu">6</span>]
+
+<span class="fn">print</span>(a <span class="op">+</span> b)          <span class="out"># → [1, 2, 3, 4, 5, 6]  연결!</span>
+<span class="fn">print</span>(a <span class="op">*</span> <span class="nu">3</span>)          <span class="out"># → [1, 2, 3, 1, 2, 3, 1, 2, 3]  반복!</span>
+<span class="fn">print</span>(<span class="nu">3</span> <span class="kw">in</span> a)          <span class="out"># → True  (포함 확인)</span>
+<span class="fn">print</span>(<span class="nu">9</span> <span class="kw">not in</span> a)      <span class="out"># → True  (없음 확인)</span>
+
+<span class="cm"># 통계 함수</span>
+scores = [<span class="nu">85</span>, <span class="nu">92</span>, <span class="nu">78</span>, <span class="nu">96</span>, <span class="nu">70</span>]
+<span class="fn">print</span>(<span class="fn">len</span>(scores))     <span class="out"># → 5      개수</span>
+<span class="fn">print</span>(<span class="fn">sum</span>(scores))     <span class="out"># → 421    합계</span>
+<span class="fn">print</span>(<span class="fn">max</span>(scores))     <span class="out"># → 96     최대</span>
+<span class="fn">print</span>(<span class="fn">min</span>(scores))     <span class="out"># → 70     최소</span></pre>
+        </div>
+
+        <div class="ir">
+          <div class="ig">
+            <div class="il">숫자 리스트 (쉼표 구분)</div>
+            <input type="text" id="op_list" value="85, 92, 78, 96, 70" />
+          </div>
+        </div>
+        <button class="btn b4" onclick="doOps()">📊 통계 계산</button>
+        <div class="res" id="r_ops">
+          <span class="rl">결과</span
+          ><span class="rv" style="color: var(--sub)"
+            >숫자 리스트를 입력하고 눌러보세요</span
+          >
+        </div>
+
+        <!-- 퀴즈 -->
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+          "
+        >
+          <div class="qbox">
+            <div class="qq">
+              Q4. <code>a = [1, 2, 3]; b = [4, 5]; print(a + b)</code> 의
+              결과는?
+            </div>
+            <div class="qr-row">
+              <input type="text" id="q4" placeholder="답 입력" />
+              <button class="btn b4" onclick="chk(4, ['[1, 2, 3, 4, 5]'])">
+                확인
+              </button>
+            </div>
+            <div class="qans" id="qa4"></div>
+          </div>
+          <div class="qbox">
+            <div class="qq">
+              Q5. <code>a = [10, 20, 30]; print(max(a))</code> 의 결과는?
+            </div>
+            <div class="qr-row">
+              <input type="text" id="q5" placeholder="답 입력" />
+              <button class="btn b4" onclick="chk(5, '30')">확인</button>
+            </div>
+            <div class="qans" id="qa5"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+     05. 메서드 실험실
+════════════════════════════════ -->
+      <div class="sh" id="s5">
+        <span class="sh-num" style="background: var(--ac)">05</span>
+        <div>
+          <h2>리스트 메서드 실험실 🧪</h2>
+          <p>카드를 클릭해서 각 메서드의 결과를 직접 확인해봐요!</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-ac"></div>
+        <div class="card-hed">
+          <span class="card-icon">🧪</span>
+          <div><div class="card-name">직접 눌러서 결과 확인!</div></div>
+        </div>
+
+        <div class="ir">
+          <div class="ig" style="flex: 2">
+            <div class="il">실험할 리스트</div>
+            <input type="text" id="lab_list" value="3, 1, 4, 1, 5, 9, 2, 6" />
+          </div>
+          <div class="ig">
+            <div class="il">추가/검색 값</div>
+            <input type="text" id="lab_val" value="7" />
+          </div>
+        </div>
+
+        <div class="mc-grid" id="mcGrid"></div>
+
+        <div id="lab_out" style="display: none">
+          <div
+            style="
+              font-size: 13px;
+              font-weight: 700;
+              color: var(--ac);
+              margin-bottom: 6px;
+            "
+            id="lab_method_name"
+          ></div>
+          <div class="cb">
+            <div class="cb-hd">
+              <div class="cb-dots">
+                <div class="dot dr"></div>
+                <div class="dot dy"></div>
+                <div class="dot dg"></div>
+              </div>
+              <span class="cb-label" id="lab_cb_label">결과</span>
+            </div>
+            <pre id="lab_code" style="color: var(--text)"></pre>
+          </div>
+        </div>
+
+        <div class="tip blue" style="margin-top: 8px">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>원본 변경 vs 새 리스트 반환</strong><br />
+            <code
+              style="
+                background: var(--c3l);
+                color: var(--c3);
+                border: 1px solid var(--c3b);
+              "
+              >원본변경</code
+            >
+            — 리스트 자체가 바뀜 (append, sort, reverse…)<br />
+            <code
+              style="
+                background: var(--c1l);
+                color: var(--c1);
+                border: 1px solid var(--c1b);
+              "
+              >값반환</code
+            >
+            — 원본은 그대로, 결과만 반환 (sorted, index, count…)
+          </div>
+        </div>
+      </div>
+
+      <hr class="div" />
+
+      <!-- ════════════════════════════════
+     06. 실전① 할 일 관리 앱
+════════════════════════════════ -->
+      <div class="sh" id="s6">
+        <span class="sh-num" style="background: var(--c2)">06</span>
+        <div>
+          <h2>실전① 할 일 관리 앱 ✅</h2>
+          <p>append · remove · sort — 실제 앱처럼!</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-c2"></div>
+        <div class="card-hed">
+          <span class="card-icon">✅</span>
+          <div>
+            <div class="card-name">나만의 To-do List</div>
+            <div class="card-sub">리스트로 만드는 할 일 앱!</div>
+          </div>
+        </div>
+
+        <div class="cb">
+          <div class="cb-hd">
+            <div class="cb-dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cb-label">핵심 코드</span>
+          </div>
+          <pre>todo = [<span class="st">'파이썬 공부'</span>, <span class="st">'운동하기'</span>, <span class="st">'장보기'</span>]
+
+todo.<span class="fn">append</span>(<span class="st">'독서'</span>)          <span class="cm"># 추가</span>
+todo.<span class="fn">remove</span>(<span class="st">'운동하기'</span>)      <span class="cm"># 삭제</span>
+todo.<span class="fn">sort</span>()               <span class="cm"># 정렬</span>
+<span class="fn">print</span>(<span class="st">f"남은 할 일: {len(todo)}개"</span>)</pre>
+        </div>
+
+        <ul class="todo-list" id="todoList"></ul>
+        <div class="ir" style="margin-top: 8px">
+          <div class="ig">
+            <input
+              type="text"
+              id="todoInput"
+              placeholder="새 할 일 입력..."
+              onkeydown="if (event.key === 'Enter') addTodo();"
+            />
+          </div>
+          <button class="btn b2" onclick="addTodo()">+ 추가</button>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px">
+          <button class="btn bg" style="font-size: 13px" onclick="sortTodo()">
+            🔤 가나다 정렬
+          </button>
+          <button
+            class="btn bg"
+            style="font-size: 13px"
+            onclick="reverseTodo()"
+          >
+            🔄 순서 뒤집기
+          </button>
+          <button class="btn bg" style="font-size: 13px" onclick="clearDone()">
+            🗑️ 완료 삭제
+          </button>
+        </div>
+        <div
+          class="res"
+          id="r_todo"
+          style="
+            margin-top: 12px;
+            font-family: &quot;Noto Sans KR&quot;, sans-serif;
+          "
+        >
+          할 일을 추가해보세요!
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+     07. 실전② 성적 분석기
+════════════════════════════════ -->
+      <div class="sh" id="s7">
+        <span class="sh-num" style="background: var(--c3)">07</span>
+        <div>
+          <h2>실전② 성적 분석기 📊</h2>
+          <p>sum · max · min · sorted — 리스트로 만드는 통계!</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-c3"></div>
+        <div class="card-hed">
+          <span class="card-icon">📊</span>
+          <div>
+            <div class="card-name">내 성적 분석기</div>
+            <div class="card-sub">점수를 입력하면 통계와 차트가 나와요!</div>
+          </div>
+        </div>
+
+        <div class="cb">
+          <div class="cb-hd">
+            <div class="cb-dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cb-label">핵심 코드</span>
+          </div>
+          <pre>scores = [<span class="nu">85</span>, <span class="nu">92</span>, <span class="nu">78</span>, <span class="nu">96</span>, <span class="nu">70</span>]
+
+avg    = <span class="fn">sum</span>(scores) / <span class="fn">len</span>(scores)
+best   = <span class="fn">max</span>(scores)
+worst  = <span class="fn">min</span>(scores)
+ranked = <span class="fn">sorted</span>(scores, reverse=<span class="kw">True</span>)
+
+<span class="fn">print</span>(<span class="st">f"평균: {avg:.1f}점"</span>)
+<span class="fn">print</span>(<span class="st">f"1위: {ranked[0]}점"</span>)</pre>
+        </div>
+
+        <div class="score-row">
+          <div>
+            <div class="il">국어</div>
+            <input
+              type="number"
+              class="score-input"
+              data-subj="국어"
+              value="85"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div>
+            <div class="il">수학</div>
+            <input
+              type="number"
+              class="score-input"
+              data-subj="수학"
+              value="78"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div>
+            <div class="il">영어</div>
+            <input
+              type="number"
+              class="score-input"
+              data-subj="영어"
+              value="92"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div>
+            <div class="il">과학</div>
+            <input
+              type="number"
+              class="score-input"
+              data-subj="과학"
+              value="88"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div>
+            <div class="il">사회</div>
+            <input
+              type="number"
+              class="score-input"
+              data-subj="사회"
+              value="74"
+              min="0"
+              max="100"
+            />
+          </div>
+        </div>
+        <button class="btn b3" onclick="analyzeScores()">📊 분석하기</button>
+
+        <div class="chart-wrap" id="chartWrap"></div>
+
+        <div id="score_stats" style="display: none">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 10px;
+              margin-top: 8px;
+            "
+          >
+            <div
+              style="
+                background: var(--surf2);
+                border: 1.5px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+              "
+            >
+              <div
+                style="
+                  font-size: 11px;
+                  color: var(--sub);
+                  margin-bottom: 3px;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  text-transform: uppercase;
+                "
+              >
+                평균
+              </div>
+              <div
+                style="
+                  font-family: &quot;Black Han Sans&quot;, sans-serif;
+                  font-size: 22px;
+                "
+                id="sc_avg"
+              ></div>
+            </div>
+            <div
+              style="
+                background: var(--surf2);
+                border: 1.5px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+              "
+            >
+              <div
+                style="
+                  font-size: 11px;
+                  color: var(--sub);
+                  margin-bottom: 3px;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  text-transform: uppercase;
+                "
+              >
+                최고
+              </div>
+              <div
+                style="
+                  font-family: &quot;Black Han Sans&quot;, sans-serif;
+                  font-size: 22px;
+                  color: var(--c2);
+                "
+                id="sc_max"
+              ></div>
+            </div>
+            <div
+              style="
+                background: var(--surf2);
+                border: 1.5px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+              "
+            >
+              <div
+                style="
+                  font-size: 11px;
+                  color: var(--sub);
+                  margin-bottom: 3px;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  text-transform: uppercase;
+                "
+              >
+                최저
+              </div>
+              <div
+                style="
+                  font-family: &quot;Black Han Sans&quot;, sans-serif;
+                  font-size: 22px;
+                  color: var(--c5);
+                "
+                id="sc_min"
+              ></div>
+            </div>
+            <div
+              style="
+                background: var(--surf2);
+                border: 1.5px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+              "
+            >
+              <div
+                style="
+                  font-size: 11px;
+                  color: var(--sub);
+                  margin-bottom: 3px;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  text-transform: uppercase;
+                "
+              >
+                등급
+              </div>
+              <div
+                style="
+                  font-family: &quot;Black Han Sans&quot;, sans-serif;
+                  font-size: 22px;
+                "
+                id="sc_grade"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="res"
+            id="r_score"
+            style="
+              margin-top: 12px;
+              font-family: &quot;Noto Sans KR&quot;, sans-serif;
+              font-size: 13.5px;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <hr class="div" />
+
+      <!-- ════════════════════════════════
+     08. 핵심 요약
+════════════════════════════════ -->
+      <div class="sh" id="s8">
+        <span class="sh-num" style="background: var(--c4)">08</span>
+        <div>
+          <h2>핵심 요약 정리 📌</h2>
+          <p>시험 전 꼭 기억해야 할 것들만!</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top ct-c4"></div>
+        <div class="card-hed">
+          <span class="card-icon">📌</span>
+          <div><div class="card-name">리스트 한눈에 보기</div></div>
+        </div>
+
+        <table class="sum-table">
+          <thead>
+            <tr>
+              <th>기능</th>
+              <th>코드</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>생성</td>
+              <td><code>[1, 2, 3]</code></td>
+              <td>대괄호 + 쉼표로 생성</td>
+            </tr>
+            <tr>
+              <td>인덱싱</td>
+              <td><code>a[0]</code> / <code>a[-1]</code></td>
+              <td>0부터 시작 / 음수는 뒤에서</td>
+            </tr>
+            <tr>
+              <td>슬라이싱</td>
+              <td><code>a[1:4]</code></td>
+              <td>끝 인덱스는 미포함!</td>
+            </tr>
+            <tr>
+              <td>추가</td>
+              <td><code>a.append(x)</code></td>
+              <td>맨 끝에 x 추가</td>
+            </tr>
+            <tr>
+              <td>삽입</td>
+              <td><code>a.insert(i, x)</code></td>
+              <td>i번 자리에 x 삽입</td>
+            </tr>
+            <tr>
+              <td>삭제</td>
+              <td><code>a.remove(x)</code></td>
+              <td>첫 번째 x 삭제</td>
+            </tr>
+            <tr>
+              <td>꺼내기</td>
+              <td><code>a.pop()</code></td>
+              <td>마지막 요소 꺼내고 반환</td>
+            </tr>
+            <tr>
+              <td>정렬</td>
+              <td><code>a.sort()</code></td>
+              <td>원본 오름차순 정렬</td>
+            </tr>
+            <tr>
+              <td>정렬(보존)</td>
+              <td><code>sorted(a)</code></td>
+              <td>새 정렬 리스트 반환</td>
+            </tr>
+            <tr>
+              <td>뒤집기</td>
+              <td><code>a.reverse()</code></td>
+              <td>순서 뒤집기</td>
+            </tr>
+            <tr>
+              <td>개수</td>
+              <td><code>len(a)</code></td>
+              <td>요소 개수</td>
+            </tr>
+            <tr>
+              <td>통계</td>
+              <td><code>sum / max / min</code></td>
+              <td>합 / 최대 / 최소</td>
+            </tr>
+            <tr>
+              <td>포함확인</td>
+              <td><code>x in a</code></td>
+              <td>True / False 반환</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip red" style="margin-top: 4px">
+          <span class="tip-icon">⚠️</span>
+          <div>
+            <strong>sort() vs sorted() — 꼭 구분하세요!</strong><br />
+            <code>a.sort()</code> → 원본 직접 변경, 반환값 없음 (None)<br />
+            <code>sorted(a)</code> → 원본 유지, 정렬된 새 리스트 반환
+          </div>
+        </div>
+
+        <!-- 최종 퀴즈 -->
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+          "
+        >
+          <div
+            style="
+              font-family: &quot;Black Han Sans&quot;, sans-serif;
+              font-size: 16px;
+              margin-bottom: 14px;
+            "
+          >
+            🎯 최종 확인 퀴즈
+          </div>
+
+          <div class="qbox">
+            <div class="qq">
+              Q6. <code>a = [5, 3, 1, 4, 2]; a.sort(); print(a[0])</code> 의
+              결과는?
+            </div>
+            <div class="qr-row">
+              <input type="text" id="q6" placeholder="답 입력" />
+              <button class="btn bac" onclick="chk(6, '1')">확인</button>
+            </div>
+            <div class="qans" id="qa6"></div>
+          </div>
+
+          <div class="qbox">
+            <div class="qq">
+              Q7. <code>a = [1, 2, 3]; a.append(4); print(len(a))</code> 의
+              결과는?
+            </div>
+            <div class="qr-row">
+              <input type="text" id="q7" placeholder="답 입력" />
+              <button class="btn bac" onclick="chk(7, '4')">확인</button>
+            </div>
+            <div class="qans" id="qa7"></div>
+          </div>
+
+          <div class="qbox">
+            <div class="qq">
+              Q8. <code>a = [10, 20, 30]; del a[1]; print(a)</code> 의 결과는?
+            </div>
+            <div class="qr-row">
+              <input type="text" id="q8" placeholder="답 입력" />
+              <button class="btn bac" onclick="chk(8, ['[10, 30]'])">
+                확인
+              </button>
+            </div>
+            <div class="qans" id="qa8"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /wrap -->
+
+    <script>
+      /* ── 진행 바 ── */
+      window.addEventListener("scroll", () => {
+        const t = document.body.scrollHeight - window.innerHeight;
+        document.getElementById("prog").style.width =
+          (t > 0 ? Math.round((scrollY / t) * 100) : 0) + "%";
+      });
+
+      /* ── 결과 표시 ── */
+      function show(id, html, color) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = `<span class="rl">결과</span><span class="rv" style="color:${color || "var(--text)"}">${html}</span>`;
+        el.classList.add("pop");
+        setTimeout(() => el.classList.remove("pop"), 300);
+      }
+
+      /* ── Enter 퀴즈 ── */
+      document.querySelectorAll(".qr-row input").forEach((inp) => {
+        inp.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") inp.nextElementSibling.click();
+        });
+      });
+
+      /* ── 파싱 ── */
+      function parseList(str) {
+        return str
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s !== "")
+          .map((s) => {
+            const n = Number(s);
+            return isNaN(n) ? s : n;
+          });
+      }
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   01. 리스트 정보
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function showListInfo() {
+        const raw = document.getElementById("new_list").value;
+        const a = parseList(raw);
+        const nums = a.filter((x) => typeof x === "number");
+        let stats = `type: <strong>list</strong> &nbsp;|&nbsp; 길이: <strong>${a.length}</strong>개`;
+        if (nums.length > 0) {
+          stats += `<br>합계: <strong>${nums.reduce((s, v) => s + v, 0)}</strong> &nbsp;|&nbsp; 평균: <strong>${(nums.reduce((s, v) => s + v, 0) / nums.length).toFixed(1)}</strong> &nbsp;|&nbsp; 최대: <strong>${Math.max(...nums)}</strong> &nbsp;|&nbsp; 최소: <strong>${Math.min(...nums)}</strong>`;
+        }
+        show("r_listinfo", stats, "var(--ac)");
+      }
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   02. 인덱싱 시각화
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      const VIS_ITEMS = ["사과", "바나나", "포도", "딸기", "망고"];
+      function buildIdxVis(items) {
+        const wrap = document.getElementById("idxVis");
+        wrap.innerHTML = '<div class="lv-br">[</div>';
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex;";
+        items.forEach((v, i) => {
+          const c = document.createElement("div");
+          c.className = "lv-cell";
+          c.innerHTML = `<div class="lv-idx">${i}</div><div class="lv-val">${v}</div><div class="lv-neg">${i - items.length}</div>`;
+          c.onclick = () => {
+            wrap
+              .querySelectorAll(".lv-cell")
+              .forEach((x) => x.classList.remove("sel"));
+            c.classList.add("sel");
+            document.getElementById("idxInfo").textContent =
+              `a[${i}] = '${v}'   /   a[${i - items.length}] = '${v}'`;
+          };
+          row.appendChild(c);
+        });
+        wrap.appendChild(row);
+        wrap.innerHTML += '<div class="lv-br">]</div>';
+      }
+      buildIdxVis(VIS_ITEMS);
+
+      function doIdx() {
+        const raw = document.getElementById("idx_list").value;
+        const a = parseList(raw);
+        const n = parseInt(document.getElementById("idx_n").value) || 0;
+        const idx = n < 0 ? a.length + n : n;
+        if (idx < 0 || idx >= a.length) {
+          show("r_idx", "⚠️ 범위 초과! IndexError 발생", "var(--c5)");
+          return;
+        }
+        show(
+          "r_idx",
+          `a[${n}]  →  <strong>'${a[idx]}'</strong> &nbsp; (총 ${a.length}개 중 ${idx + 1}번째)`,
+          "var(--c1)",
+        );
+        buildIdxVis(a);
+        setTimeout(() => {
+          const cells = document.querySelectorAll("#idxVis .lv-cell");
+          cells.forEach((c, i) => {
+            c.classList.remove("sel");
+            if (i === idx) c.classList.add("sel");
+          });
+          document.getElementById("idxInfo").textContent =
+            `a[${n}] = '${a[idx]}'`;
+        }, 50);
+      }
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   03. 슬라이싱
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function doSlice() {
+        const a = parseList(document.getElementById("sl_list").value);
+        const s = parseInt(document.getElementById("sl_s").value) || 0;
+        const e = parseInt(document.getElementById("sl_e").value);
+        const result = a.slice(
+          s < 0 ? Math.max(0, a.length + s) : s,
+          e < 0 ? Math.max(0, a.length + e) : e,
+        );
+        const display = result
+          .map((v) => (typeof v === "string" ? `'${v}'` : v))
+          .join(", ");
+        show(
+          "r_slice",
+          `a[${s}:${e}]  →  <strong>[${display}]</strong>  (${result.length}개)`,
+          "var(--c3)",
+        );
+      }
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   04. 리스트 연산
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function doOps() {
+        const a = parseList(document.getElementById("op_list").value);
+        const nums = a.filter((x) => typeof x === "number");
+        if (!nums.length) {
+          show("r_ops", "숫자 리스트를 입력해주세요!", "var(--c5)");
+          return;
+        }
+        const s = nums.reduce((t, v) => t + v, 0);
+        const avg = s / nums.length;
+        show(
+          "r_ops",
+          `len: <strong>${nums.length}</strong> &nbsp;|&nbsp; sum: <strong>${s}</strong> &nbsp;|&nbsp; avg: <strong>${avg.toFixed(1)}</strong><br>max: <strong>${Math.max(...nums)}</strong> &nbsp;|&nbsp; min: <strong>${Math.min(...nums)}</strong>`,
+          "var(--c4)",
+        );
+      }
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   05. 메서드 실험실
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      const METHODS = [
+        {
+          name: ".append(x)",
+          desc: "끝에 추가",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const r = [...a, isNaN(Number(v)) ? v : Number(v)];
+            return `a = ${fmt(a)}\na.append(${fv(v)})\nprint(a)  # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".insert(0,x)",
+          desc: "맨 앞에 삽입",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const r = [isNaN(Number(v)) ? v : Number(v), ...a];
+            return `a = ${fmt(a)}\na.insert(0, ${fv(v)})\nprint(a)  # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".remove(x)",
+          desc: "첫 x 삭제",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const val = isNaN(Number(v)) ? v : Number(v);
+            const r = [...a];
+            const i = r.indexOf(val);
+            if (i >= 0) r.splice(i, 1);
+            return `a = ${fmt(a)}\na.remove(${fv(v)})\nprint(a)  # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".pop()",
+          desc: "마지막 꺼내기",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const r = [...a];
+            const p = r.pop();
+            return `a = ${fmt(a)}\nval = a.pop()\nprint(val)  # → ${fv(p)}\nprint(a)    # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".sort()",
+          desc: "오름차순 정렬",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const r = [...a].sort((x, y) =>
+              typeof x === "number" && typeof y === "number"
+                ? x - y
+                : String(x).localeCompare(String(y)),
+            );
+            return `a = ${fmt(a)}\na.sort()\nprint(a)  # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".sort(↓)",
+          desc: "내림차순 정렬",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const r = [...a].sort((x, y) =>
+              typeof x === "number" && typeof y === "number"
+                ? y - x
+                : String(y).localeCompare(String(x)),
+            );
+            return `a = ${fmt(a)}\na.sort(reverse=True)\nprint(a)  # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".reverse()",
+          desc: "순서 뒤집기",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            const r = [...a].reverse();
+            return `a = ${fmt(a)}\na.reverse()\nprint(a)  # → ${fmt(r)}`;
+          },
+        },
+        {
+          name: ".index(x)",
+          desc: "x의 위치",
+          tag: "mt-ret",
+          fn: (a, v) => {
+            const val = isNaN(Number(v)) ? v : Number(v);
+            const i = a.indexOf(val);
+            return `a = ${fmt(a)}\nprint(a.index(${fv(v)}))  # → ${i >= 0 ? i : "ValueError!"}`;
+          },
+        },
+        {
+          name: ".count(x)",
+          desc: "x 개수 세기",
+          tag: "mt-ret",
+          fn: (a, v) => {
+            const val = isNaN(Number(v)) ? v : Number(v);
+            const c = a.filter((x) => x === val).length;
+            return `a = ${fmt(a)}\nprint(a.count(${fv(v)}))  # → ${c}`;
+          },
+        },
+        {
+          name: "sorted(a)",
+          desc: "정렬 새 리스트",
+          tag: "mt-ret",
+          fn: (a, v) => {
+            const r = [...a].sort((x, y) =>
+              typeof x === "number" && typeof y === "number" ? x - y : 0,
+            );
+            return `a = ${fmt(a)}\nb = sorted(a)\nprint(b)  # → ${fmt(r)}\nprint(a)  # → ${fmt(a)}  원본 그대로!`;
+          },
+        },
+        {
+          name: "max/min/sum",
+          desc: "최대·최소·합계",
+          tag: "mt-ret",
+          fn: (a, v) => {
+            const nums = a.filter((x) => typeof x === "number");
+            if (!nums.length)
+              return "nums = [1, 2, 3] 처럼 숫자 리스트가 필요해요!";
+            return `a = ${fmt(a)}\nprint(max(a))  # → ${Math.max(...nums)}\nprint(min(a))  # → ${Math.min(...nums)}\nprint(sum(a))  # → ${nums.reduce((s, x) => s + x, 0)}`;
+          },
+        },
+        {
+          name: ".clear()",
+          desc: "전체 삭제",
+          tag: "mt-mod",
+          fn: (a, v) => {
+            return `a = ${fmt(a)}\na.clear()\nprint(a)  # → []`;
+          },
+        },
+      ];
+      function fmt(arr) {
+        return (
+          "[" +
+          arr.map((v) => (typeof v === "string" ? `'${v}'` : v)).join(", ") +
+          "]"
+        );
+      }
+      function fv(v) {
+        return isNaN(Number(v)) ? `'${v}'` : v;
+      }
+
+      function buildMcGrid() {
+        const g = document.getElementById("mcGrid");
+        g.innerHTML = "";
+        METHODS.forEach((m, i) => {
+          const c = document.createElement("div");
+          c.className = "mc";
+          c.innerHTML = `<div class="mc-name">${m.name}</div><div class="mc-desc">${m.desc}</div><span class="mc-tag ${m.tag}">${m.tag === "mt-mod" ? "원본변경" : "값반환"}</span>`;
+          c.onclick = () => {
+            document
+              .querySelectorAll(".mc")
+              .forEach((x) => x.classList.remove("act"));
+            c.classList.add("act");
+            const a = parseList(document.getElementById("lab_list").value);
+            const v = document.getElementById("lab_val").value.trim();
+            const code = m.fn(a, v);
+            document.getElementById("lab_out").style.display = "block";
+            document.getElementById("lab_method_name").textContent =
+              `${m.name} — ${m.desc}`;
+            document.getElementById("lab_cb_label").textContent = m.name;
+            document.getElementById("lab_code").textContent = code;
+          };
+          g.appendChild(c);
+        });
+      }
+      buildMcGrid();
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   06. 할 일 앱
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      let todos = [
+        { text: "파이썬 공부하기", done: false },
+        { text: "운동 30분", done: false },
+        { text: "친구에게 연락하기", done: true },
+      ];
+      function renderTodo() {
+        const ul = document.getElementById("todoList");
+        ul.innerHTML = "";
+        todos.forEach((t, i) => {
+          const li = document.createElement("li");
+          li.className = "todo-item" + (t.done ? " done" : "");
+          li.innerHTML = `<div class="todo-cb ${t.done ? "checked" : ""}" onclick="toggleTodo(${i})">${t.done ? "✓" : ""}</div>
+      <span class="todo-text">${t.text}</span>
+      <button class="todo-del" onclick="delTodo(${i})">✕</button>`;
+          ul.appendChild(li);
+        });
+        const done = todos.filter((t) => t.done).length;
+        const el = document.getElementById("r_todo");
+        el.innerHTML = `<span class="rl">상태</span><span class="rv" style="font-family:'Noto Sans KR',sans-serif;font-weight:500">총 <strong>${todos.length}</strong>개 &nbsp;|&nbsp; 완료 <strong style="color:var(--c2)">${done}</strong>개 &nbsp;|&nbsp; 남은 것 <strong style="color:var(--c5)">${todos.length - done}</strong>개</span>`;
+      }
+      function addTodo() {
+        const v = document.getElementById("todoInput").value.trim();
+        if (!v) return;
+        todos.push({ text: v, done: false });
+        document.getElementById("todoInput").value = "";
+        renderTodo();
+      }
+      function toggleTodo(i) {
+        todos[i].done = !todos[i].done;
+        renderTodo();
+      }
+      function delTodo(i) {
+        todos.splice(i, 1);
+        renderTodo();
+      }
+      function sortTodo() {
+        todos.sort((a, b) => a.text.localeCompare(b.text));
+        renderTodo();
+      }
+      function reverseTodo() {
+        todos.reverse();
+        renderTodo();
+      }
+      function clearDone() {
+        todos = todos.filter((t) => !t.done);
+        renderTodo();
+      }
+      renderTodo();
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   07. 성적 분석
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      const COLORS = ["#1d4ed8", "#15803d", "#b45309", "#7c3aed", "#0e7490"];
+      function analyzeScores() {
+        const inputs = document.querySelectorAll(".score-input");
+        const scores = [],
+          subjects = [];
+        inputs.forEach((inp) => {
+          scores.push(parseInt(inp.value) || 0);
+          subjects.push(inp.dataset.subj);
+        });
+        const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
+        const best = Math.max(...scores),
+          worst = Math.min(...scores);
+
+        const wrap = document.getElementById("chartWrap");
+        wrap.innerHTML = "";
+        const maxH = 140;
+        scores.forEach((sc, i) => {
+          const h = Math.round((sc / 100) * maxH);
+          const col = document.createElement("div");
+          col.className = "bar-col";
+          col.innerHTML = `<div class="bar" style="height:${h}px;background:${COLORS[i]};max-width:80px;width:100%;"><span class="bar-score">${sc}</span></div><span class="bar-label">${subjects[i]}</span>`;
+          wrap.appendChild(col);
+        });
+
+        let grade, gc;
+        if (avg >= 90) {
+          grade = "A";
+          gc = "var(--c2)";
+        } else if (avg >= 80) {
+          grade = "B";
+          gc = "var(--c1)";
+        } else if (avg >= 70) {
+          grade = "C";
+          gc = "var(--c3)";
+        } else {
+          grade = "D";
+          gc = "var(--c5)";
+        }
+
+        document.getElementById("score_stats").style.display = "block";
+        document.getElementById("sc_avg").textContent = avg.toFixed(1);
+        document.getElementById("sc_max").textContent = best + "점";
+        document.getElementById("sc_min").textContent = worst + "점";
+        const grEl = document.getElementById("sc_grade");
+        grEl.textContent = grade;
+        grEl.style.color = gc;
+
+        const ranked = [...scores].sort((a, b) => b - a);
+        const passed = scores.filter((s) => s >= 80).length;
+        const el = document.getElementById("r_score");
+        el.innerHTML = `<span class="rl">분석</span><span class="rv" style="font-family:'Noto Sans KR',sans-serif;font-weight:500">80점 이상 <strong>${passed}</strong>과목 &nbsp;|&nbsp; 정렬결과: <strong>[${ranked.join(", ")}]</strong></span>`;
+      }
+
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   퀴즈 채점 + 제출 준비
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      const QUIZ_ANSWERS = {
+        1: "30",
+        2: "금",
+        3: "3",
+        4: "[1, 2, 3, 4, 5]",
+        5: "30",
+        6: "1",
+        7: "4",
+        8: "[10, 30]",
+      };
+      const QUIZ_TEXTS = {
+        1: "a=[10,20,30,40,50], a[2]=?",
+        2: "a=['월','화','수','목','금'], a[-1]=?",
+        3: "a=[1,2,3], len(a)=?",
+        4: "a=[1,2,3]; b=[4,5]; print(a+b)=?",
+        5: "a=[10,20,30]; print(max(a))=?",
+        6: "a=[5,3,1,4,2]; a.sort(); print(a[0])=?",
+        7: "a=[1,2,3]; a.append(4); print(len(a))=?",
+        8: "a=[10,20,30]; del a[1]; print(a)=?",
+      };
+      let quizState = {}; // { 1: {ans, ok}, ... }
+
+      function chk(n, ans) {
+        const v = document.getElementById("q" + n).value.trim();
+        const el = document.getElementById("qa" + n);
+        const ok = Array.isArray(ans) ? ans.includes(v) : v === ans;
+        if (!v) {
+          el.textContent = "답을 입력해주세요.";
+          el.className = "qans";
+          return;
+        }
+        if (ok) {
+          el.textContent = "✓ 정답입니다! 🎉";
+          el.className = "qans ok";
+        } else {
+          el.textContent = "✗ 다시 생각해봐요!";
+          el.className = "qans ng";
+        }
+        quizState[n] = { ans: v, ok };
+        updateSubmitPanel();
+      }
+
+      function updateSubmitPanel() {
+        const total = Object.keys(QUIZ_ANSWERS).length;
+        const done = Object.keys(quizState).length;
+        const correct = Object.values(quizState).filter((s) => s.ok).length;
+        const pct = Math.round((correct / total) * 100);
+
+        document.getElementById("submit-done").textContent = done;
+        document.getElementById("submit-total").textContent = total;
+        document.getElementById("submit-correct").textContent = correct;
+        document.getElementById("submit-pct").textContent = pct + "%";
+
+        // 진행 바
+        const bar = document.getElementById("submit-bar");
+        bar.style.width = Math.round((done / total) * 100) + "%";
+
+        // 점수 색상
+        const pctEl = document.getElementById("submit-pct");
+        pctEl.style.color =
+          pct >= 80 ? "var(--c2)" : pct >= 60 ? "var(--c3)" : "var(--c5)";
+
+        // 제출 버튼 활성화
+        const btn = document.getElementById("submit-btn");
+        btn.disabled = done < total;
+        btn.style.opacity = done < total ? "0.45" : "1";
+
+        // 요약 테이블
+        const tbody = document.getElementById("quiz-summary-body");
+        tbody.innerHTML = "";
+        for (let i = 1; i <= total; i++) {
+          const s = quizState[i];
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+      <td style="padding:7px 12px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sub)">Q${i}</td>
+      <td style="padding:7px 12px;border-bottom:1px solid var(--border);font-size:13px;">${QUIZ_TEXTS[i]}</td>
+      <td style="padding:7px 12px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--ac)">${s ? s.ans : "—"}</td>
+      <td style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:center;font-size:16px">${s ? (s.ok ? "✅" : "❌") : "⬜"}</td>`;
+          tbody.appendChild(tr);
+        }
+      }
+
+      function openGoogleForm() {
+        /* ╔══════════════════════════════════════════════════════════╗
+     ║  ✏️  선생님 설정 영역  (여기만 수정하세요!)              ║
+     ╠══════════════════════════════════════════════════════════╣
+     ║                                                          ║
+     ║  STEP 1. Google Forms 에서 "사전 채우기 링크" 얻기       ║
+     ║   ① forms.google.com → 내 폼 열기                       ║
+     ║   ② 오른쪽 상단 ⋮ → "사전 채우기 링크 가져오기"        ║
+     ║   ③ 각 항목에 임시값 입력 후 "링크 가져오기" 클릭       ║
+     ║   ④ 복사된 URL에서 entry.XXXXXXXXX 숫자들 확인          ║
+     ║                                                          ║
+     ║  STEP 2. 아래 FORM_BASE_URL 과 ENTRY_IDS 를 교체        ║
+     ║                                                          ║
+     ╚══════════════════════════════════════════════════════════╝ */
+
+        // ── 폼 기본 URL (forms/d/e/[폼ID]/viewform 형태로 교체) ──
+        const FORM_BASE_URL =
+          "https://docs.google.com/forms/d/e/1FAIpQLSdis4vrHMWVf1L9ERtvxg3GUxy-T5IRZTZ5IJhNCLxkg3mnKA/viewform";
+
+        // ── 각 항목의 entry ID (사전 채우기 링크에서 확인한 숫자로 교체) ──
+        const ENTRY_IDS = {
+          name: "entry.643333239", // 이름 643333239
+          q1: "entry.1211070926", // Q1 답변
+          q2: "entry.917031646", // Q2 답변
+          q3: "entry.1358103839", // Q3 답변
+          q4: "entry.2134437931", // Q4 답변
+          q5: "entry.877424731", // Q5 답변
+          q6: "entry.341006598", // Q6 답변
+          q7: "entry.1222365983", // Q7 답변
+          q8: "entry.513830668", // Q8 답변
+          score: "entry.2036013807", // 총점수
+        };
+        /* ══════════════════ 설정 영역 끝 ══════════════════ */
+
+        // 이름 입력 확인
+        const name = document.getElementById("student-name").value.trim();
+        if (!name) {
+          document.getElementById("name-warn").style.display = "block";
+          document.getElementById("student-name").focus();
+          return;
+        }
+        document.getElementById("name-warn").style.display = "none";
+
+        // 점수 계산
+        const total = Object.keys(QUIZ_ANSWERS).length;
+        const correct = Object.values(quizState).filter((s) => s.ok).length;
+        const score = Math.round((correct / total) * 100);
+
+        // prefill URL 자동 생성
+        // quizState 에 없는 문항은 빈 문자열로 처리
+        const getAns = (n) => (quizState[n] ? quizState[n].ans : "");
+
+        const params = new URLSearchParams({
+          [ENTRY_IDS.name]: name,
+          [ENTRY_IDS.q1]: getAns(1),
+          [ENTRY_IDS.q2]: getAns(2),
+          [ENTRY_IDS.q3]: getAns(3),
+          [ENTRY_IDS.q4]: getAns(4),
+          [ENTRY_IDS.q5]: getAns(5),
+          [ENTRY_IDS.q6]: getAns(6),
+          [ENTRY_IDS.q7]: getAns(7),
+          [ENTRY_IDS.q8]: getAns(8),
+          [ENTRY_IDS.score]: score + "점 (" + correct + "/" + total + ")",
+        });
+        const prefillURL = FORM_BASE_URL + "?" + params.toString();
+
+        // 답변 요약 (팝업용)
+        const summary = Object.entries(quizState)
+          .sort((a, b) => Number(a[0]) - Number(b[0]))
+          .map(([n, s]) => `Q${n}: ${s.ans} (${s.ok ? "✅" : "❌"})`)
+          .join("\n");
+
+        // 결과 팝업 표시
+        const popup = document.getElementById("result-popup");
+        popup.style.display = "flex";
+        document.getElementById("popup-name").textContent = name + " 학생";
+        document.getElementById("popup-score").textContent = score + "점";
+        document.getElementById("popup-score").style.color =
+          score >= 80 ? "var(--c2)" : score >= 60 ? "var(--c3)" : "var(--c5)";
+        document.getElementById("popup-correct").textContent =
+          correct + " / " + total + " 정답";
+        document.getElementById("popup-summary").textContent = summary;
+
+        // 설정 완료 여부에 따라 버튼 표시 분기
+        const isConfigured = !FORM_BASE_URL.includes("여기에");
+        const formBtn = document.getElementById("popup-form-btn");
+        const configWarn = document.getElementById("popup-config-warn");
+        if (isConfigured) {
+          formBtn.style.display = "block";
+          configWarn.style.display = "none";
+          formBtn.onclick = () => {
+            window.open(prefillURL, "_blank");
+          };
+        } else {
+          formBtn.style.display = "none";
+          configWarn.style.display = "block";
+          // 미설정 시 URL만 콘솔에 출력 (개발 확인용)
+          console.log("[prefill URL 미리보기]\n" + prefillURL);
+        }
+      }
+
+      function closePopup() {
+        document.getElementById("result-popup").style.display = "none";
+      }
+    </script>
+
+    <!-- ════════════ 퀴즈 제출 패널 ════════════ -->
+    <div
+      style="max-width: 820px; margin: 0 auto; padding: 0 20px 80px"
+      id="submit-section"
+    >
+      <!-- 진행 상황 카드 -->
+      <div
+        style="
+          background: #fff;
+          border: 1.5px solid var(--border);
+          border-radius: 14px;
+          padding: 28px 32px;
+          margin-top: 10px;
+          box-shadow: var(--sh);
+          position: relative;
+          overflow: hidden;
+        "
+      >
+        <div
+          style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--ac), var(--c1));
+          "
+        ></div>
+
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+          "
+        >
+          <span style="font-size: 22px">📊</span>
+          <div>
+            <div
+              style="
+                font-family: &quot;Black Han Sans&quot;, sans-serif;
+                font-size: 19px;
+              "
+            >
+              퀴즈 결과 제출
+            </div>
+            <div style="font-size: 13px; color: var(--sub); margin-top: 2px">
+              모든 문제를 풀고 결과를 제출해요!
+            </div>
+          </div>
+        </div>
+
+        <!-- 진행 바 -->
+        <div
+          style="
+            background: var(--surf2);
+            border-radius: 8px;
+            height: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+          "
+        >
+          <div
+            id="submit-bar"
+            style="
+              height: 100%;
+              background: linear-gradient(90deg, var(--ac), var(--c1));
+              border-radius: 8px;
+              width: 0%;
+              transition: width 0.4s;
+            "
+          ></div>
+        </div>
+
+        <!-- 점수 요약 -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+          "
+        >
+          <div
+            style="
+              background: var(--surf2);
+              border: 1.5px solid var(--border);
+              border-radius: 10px;
+              padding: 12px;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                font-size: 11px;
+                color: var(--sub);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                margin-bottom: 4px;
+              "
+            >
+              푼 문제
+            </div>
+            <div
+              style="
+                font-family: &quot;Black Han Sans&quot;, sans-serif;
+                font-size: 24px;
+                color: var(--ac);
+              "
+            >
+              <span id="submit-done">0</span> / <span id="submit-total">8</span>
+            </div>
+          </div>
+          <div
+            style="
+              background: var(--surf2);
+              border: 1.5px solid var(--border);
+              border-radius: 10px;
+              padding: 12px;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                font-size: 11px;
+                color: var(--sub);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                margin-bottom: 4px;
+              "
+            >
+              정답 수
+            </div>
+            <div
+              style="
+                font-family: &quot;Black Han Sans&quot;, sans-serif;
+                font-size: 24px;
+                color: var(--c2);
+              "
+            >
+              <span id="submit-correct">0</span>
+            </div>
+          </div>
+          <div
+            style="
+              background: var(--surf2);
+              border: 1.5px solid var(--border);
+              border-radius: 10px;
+              padding: 12px;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                font-size: 11px;
+                color: var(--sub);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                margin-bottom: 4px;
+              "
+            >
+              점수
+            </div>
+            <div
+              style="
+                font-family: &quot;Black Han Sans&quot;, sans-serif;
+                font-size: 24px;
+              "
+              id="submit-pct"
+            >
+              0%
+            </div>
+          </div>
+          <div
+            style="
+              background: var(--surf2);
+              border: 1.5px solid var(--border);
+              border-radius: 10px;
+              padding: 12px;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                font-size: 11px;
+                color: var(--sub);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                margin-bottom: 4px;
+              "
+            >
+              상태
+            </div>
+            <div style="font-size: 20px" id="submit-status-icon">⬜</div>
+          </div>
+        </div>
+
+        <!-- 답변 요약 테이블 -->
+        <div
+          style="
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--sub);
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+          "
+        >
+          📋 내 답변 현황
+        </div>
+        <div
+          style="
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+          "
+        >
+          <table
+            style="width: 100%; border-collapse: collapse; font-size: 13px"
+          >
+            <thead>
+              <tr style="background: var(--text); color: #f7f3ec">
+                <th
+                  style="
+                    padding: 8px 12px;
+                    text-align: left;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    letter-spacing: 0.04em;
+                    width: 40px;
+                  "
+                >
+                  번호
+                </th>
+                <th
+                  style="
+                    padding: 8px 12px;
+                    text-align: left;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    letter-spacing: 0.04em;
+                  "
+                >
+                  문제
+                </th>
+                <th
+                  style="
+                    padding: 8px 12px;
+                    text-align: left;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    letter-spacing: 0.04em;
+                    width: 100px;
+                  "
+                >
+                  내 답변
+                </th>
+                <th
+                  style="
+                    padding: 8px 12px;
+                    text-align: center;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 11px;
+                    letter-spacing: 0.04em;
+                    width: 50px;
+                  "
+                >
+                  결과
+                </th>
+              </tr>
+            </thead>
+            <tbody id="quiz-summary-body">
+              <tr>
+                <td
+                  colspan="4"
+                  style="
+                    padding: 16px;
+                    text-align: center;
+                    color: var(--sub);
+                    font-size: 13px;
+                  "
+                >
+                  문제를 풀면 여기에 결과가 표시됩니다
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 이름 입력 -->
+        <div style="margin-bottom: 14px">
+          <div
+            style="
+              font-size: 11px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              text-transform: uppercase;
+              letter-spacing: 0.06em;
+              font-weight: 700;
+              color: var(--sub);
+              margin-bottom: 6px;
+            "
+          >
+            이름 입력 (필수)
+          </div>
+          <input
+            type="text"
+            id="student-name"
+            placeholder="예: 홍길동"
+            style="
+              max-width: 280px;
+              background: var(--surf2);
+              border: 1.5px solid var(--border);
+              border-radius: 8px;
+              padding: 9px 14px;
+              font-size: 14px;
+              outline: none;
+            "
+            onfocus="this.style.borderColor = 'var(--ac)'"
+            onblur="this.style.borderColor = 'var(--border)'"
+          />
+          <div
+            id="name-warn"
+            style="
+              display: none;
+              color: var(--c5);
+              font-size: 12px;
+              margin-top: 5px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+            "
+          >
+            ⚠️ 이름을 먼저 입력해주세요!
+          </div>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div
+          style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"
+        >
+          <button
+            id="submit-btn"
+            onclick="openGoogleForm()"
+            disabled
+            style="
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              padding: 12px 28px;
+              background: var(--ac);
+              color: #fff;
+              border: none;
+              border-radius: 10px;
+              font-family: &quot;Black Han Sans&quot;, sans-serif;
+              font-size: 15px;
+              cursor: pointer;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+              transition: all 0.2s;
+              opacity: 0.45;
+            "
+          >
+            📤 결과 확인 및 제출
+          </button>
+          <span style="font-size: 12px; color: var(--sub)"
+            >모든 문제를 풀면 제출 버튼이 활성화됩니다</span
+          >
+        </div>
+
+        <!-- 선생님 안내 -->
+        <!-- <div
+          style="
+            margin-top: 20px;
+            background: var(--ac-l);
+            border: 1.5px solid var(--ac-b);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 13px;
+            line-height: 1.85;
+          "
+        >
+          <div
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+              font-weight: 700;
+              color: var(--ac);
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              margin-bottom: 10px;
+            "
+          >
+            🔧 선생님 설정 안내 — 답변 자동 입력 연동
+          </div>
+          <strong>① Google Forms 만들기</strong><br />
+          &nbsp;<a
+            href="https://forms.google.com"
+            target="_blank"
+            style="color: var(--c1)"
+            >forms.google.com</a
+          >
+          → 빈 양식 → 항목 추가 (단답형):<br />
+          &nbsp;<code
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 12px;
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+            "
+            >이름 / Q1~Q8 답변 / 총점수</code
+          ><br /><br />
+          <strong>② 사전 채우기 링크에서 entry ID 확인</strong><br />
+          &nbsp;폼 편집 화면 → 오른쪽 상단 <strong>⋮</strong> →
+          <strong>"사전 채우기 링크 가져오기"</strong><br />
+          &nbsp;→ 각 항목에 임시값 입력 → "링크 가져오기" 클릭<br />
+          &nbsp;→ 복사된 URL에서
+          <code
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 12px;
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+            "
+            >entry.XXXXXXXXX</code
+          >
+          숫자 확인<br /><br />
+          <strong>③ HTML 파일 수정 (JS 코드 2곳)</strong><br />
+          &nbsp;<code
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 12px;
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+            "
+            >FORM_BASE_URL</code
+          >
+          → 실제 폼 URL로 교체<br />
+          &nbsp;<code
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 12px;
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+            "
+            >ENTRY_IDS</code
+          >
+          → 각 항목의 entry 번호로 교체<br /><br />
+          <span style="color: var(--ac); font-weight: 700"
+            >✨ 설정 완료 후:</span
+          >
+          학생이 제출 버튼 클릭 →<br />
+          &nbsp;이름·점수·모든 답변이 <strong>자동으로 채워진 Forms</strong>가
+          열림 → 제출만 하면 끝!
+        </div> -->
+      </div>
+    </div>
+
+    <!-- ════════════ 결과 팝업 ════════════ -->
+    <div
+      id="result-popup"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          border-radius: 20px;
+          padding: 34px 38px;
+          max-width: 500px;
+          width: 100%;
+          box-shadow: 0 16px 60px rgba(0, 0, 0, 0.22);
+          position: relative;
+          animation: pp 0.3s ease;
+          max-height: 90vh;
+          overflow-y: auto;
+        "
+      >
+        <button
+          onclick="closePopup()"
+          style="
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--sub);
+            line-height: 1;
+          "
+        >
+          ✕
+        </button>
+
+        <!-- 상단: 완료 -->
+        <div style="text-align: center; margin-bottom: 22px">
+          <div style="font-size: 48px; margin-bottom: 8px">🎉</div>
+          <div
+            style="
+              font-family: &quot;Black Han Sans&quot;, sans-serif;
+              font-size: 21px;
+              margin-bottom: 4px;
+            "
+          >
+            퀴즈 완료!
+          </div>
+          <div style="font-size: 14px; color: var(--sub)" id="popup-name"></div>
+        </div>
+
+        <!-- 점수 -->
+        <div
+          style="
+            background: var(--surf2);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 16px;
+          "
+        >
+          <div
+            style="
+              font-family: &quot;Black Han Sans&quot;, sans-serif;
+              font-size: 54px;
+              line-height: 1;
+            "
+            id="popup-score"
+          ></div>
+          <div
+            style="font-size: 14px; color: var(--sub); margin-top: 5px"
+            id="popup-correct"
+          ></div>
+        </div>
+
+        <!-- 답변 요약 -->
+        <div
+          style="
+            background: var(--surf2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+          "
+        >
+          <div
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+              font-weight: 700;
+              color: var(--sub);
+              text-transform: uppercase;
+              letter-spacing: 0.07em;
+              margin-bottom: 8px;
+            "
+          >
+            📋 내 답변 요약
+          </div>
+          <pre
+            id="popup-summary"
+            style="
+              padding: 0;
+              background: transparent;
+              font-size: 12.5px;
+              color: var(--text);
+              line-height: 1.9;
+              white-space: pre-wrap;
+            "
+          ></pre>
+        </div>
+
+        <!-- Forms 자동 제출 안내 -->
+        <div
+          style="
+            background: var(--ac-l);
+            border: 1.5px solid var(--ac-b);
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 13px;
+            line-height: 1.75;
+            margin-bottom: 16px;
+          "
+        >
+          <strong style="color: var(--ac)">✨ 안내</strong><br />
+          아래 버튼을 누르면
+          <strong>이름·점수·답변이 입력된</strong>
+          페이지가 열립니다.<br />
+          내용을 확인하고 <strong>"제 출"</strong> 버튼을 누르세요.
+        </div>
+
+        <!-- 미설정 경고 (FORM_URL 미입력 시) -->
+        <div
+          id="popup-config-warn"
+          style="
+            display: none;
+            background: #fef3c7;
+            border: 1.5px solid #fde68a;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 13px;
+            line-height: 1.75;
+            margin-bottom: 16px;
+          "
+        >
+          <strong style="color: #92400e">⚙️ 선생님 설정 필요</strong><br />
+          HTML 파일의
+          <code
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+            "
+            >FORM_BASE_URL</code
+          >
+          과
+          <code
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              background: rgba(0, 0, 0, 0.06);
+              padding: 1px 5px;
+              border-radius: 3px;
+            "
+            >ENTRY_IDS</code
+          >
+          를<br />
+          실제 Google Forms 정보로 교체해주세요.
+        </div>
+
+        <!-- Forms 열기 버튼 -->
+        <button
+          id="popup-form-btn"
+          style="
+            display: none;
+            width: 100%;
+            padding: 13px;
+            background: var(--ac);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: &quot;Black Han Sans&quot;, sans-serif;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            margin-bottom: 10px;
+            transition: all 0.18s;
+          "
+        >
+          📤 제 출
+        </button>
+        <button
+          onclick="closePopup()"
+          style="
+            width: 100%;
+            padding: 11px;
+            background: var(--surf2);
+            color: var(--sub);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: &quot;Black Han Sans&quot;, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+          "
+        >
+          취 소
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
