@@ -692,8 +692,8 @@ students = [
   <div class="sp-title">📊 퀴즈 결과 제출</div>
   <div class="tip blue">
     <span class="ti">📋</span>
-    <div>모든 퀴즈를 풀고 제출하면 Google Forms가 <strong>답변이 자동 입력된 채로</strong> 열립니다.<br>
-    내용을 확인한 뒤 Forms에서 <strong>"제출"</strong>을 눌러 완료하세요.</div>
+    <div>모든 퀴즈를 풀고 아래버튼을 눌러
+    내용을 확인한 뒤 <strong>"제출"</strong>을 눌러 완료하세요.</div>
   </div>
 
   <!-- 진행 현황 -->
@@ -733,7 +733,7 @@ students = [
     <div id="name-warn" style="display:none;color:var(--c5);font-size:12px;margin-top:5px;font-family:'JetBrains Mono',monospace;">⚠️ 이름을 먼저 입력해주세요!</div>
   </div>
 
-  <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>📤 Google Forms로 제출하기</button>
+  <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>📤 답변 제출하기</button>
   <div style="text-align:center;font-size:12px;color:var(--sub);margin-top:8px;" id="sub-hint">
     모든 퀴즈를 풀면 제출 버튼이 활성화됩니다 (0 / 10)
   </div>
@@ -754,10 +754,10 @@ students = [
     </div>
     <div class="tip green">
       <span class="ti">✨</span>
-      <div>아래 버튼을 누르면 <strong>모든 답변이 자동 입력된</strong> Google Forms가 열립니다.<br>
-      내용 확인 후 <strong>"제출"</strong>만 누르면 완료!</div>
+      <div>아래 버튼을 눌러
+      내용 확인 후 제출하세요.</div>
     </div>
-    <button class="form-btn" id="form-btn">📤 Google Forms 열기 (답변 자동 입력)</button>
+    <button class="form-btn" id="form-btn">📤 답변 제출하기</button>
     <div class="cfg-warn" id="cfg-warn"></div>
     <button class="cancel-btn" onclick="closePopup()">닫기</button>
   </div>
@@ -836,15 +836,15 @@ function openPopup() {
      ║  ✏️ 선생님 설정 — 아래 두 곳을 실제 값으로 교체!  ║
      ║  방법: 폼 편집 → ⋮ → 사전 채우기 링크 가져오기   ║
      ╚══════════════════════════════════════════════════════╝ */
-  const FORM_BASE_URL = 'https://docs.google.com/forms/d/e/여기에_폼ID를_넣으세요/viewform';
+  const FORM_BASE_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeJWUOren6Jtk5yM3GGdW4xlLXSQ7qQfG1nE9y9QgW8qR9QWA/viewform';
   const ENTRY_IDS = {
-    name :'entry.0000000001',
-    q1   :'entry.0000000002', q2 :'entry.0000000003',
-    q3   :'entry.0000000004', q4 :'entry.0000000005',
-    q5   :'entry.0000000006', q6 :'entry.0000000007',
-    q7   :'entry.0000000008', q8 :'entry.0000000009',
-    q9   :'entry.0000000010', q10:'entry.0000000011',
-    score:'entry.0000000012',
+    name :'entry.199408721',
+    q1   :'entry.1277863974', q2 :'entry.1358094177',
+    q3   :'entry.64242244', q4 :'entry.363919091',
+    q5   :'entry.379683071', q6 :'entry.1019044496',
+    q7   :'entry.1761780074', q8 :'entry.1244442710',
+    q9   :'entry.816914109', q10:'entry.156932228',
+    score:'entry.1927240643',
   };
   /* ═══════════ 설정 끝 ═══════════ */
 
@@ -884,12 +884,12 @@ function openPopup() {
   const configured = !FORM_BASE_URL.includes('여기에');
   if (configured) {
     cw.style.display = 'none';
-    fb.textContent = '📤 Google Forms 열기 (답변 자동 입력)';
+    fb.textContent = '📤 답변 제출하기';
     fb.onclick = function() { window.open(url, '_blank'); };
   } else {
     cw.style.display = 'block';
     cw.innerHTML = '⚙️ <strong>설정 안내:</strong> FORM_BASE_URL과 ENTRY_IDS를 실제 값으로 교체하면 자동 입력됩니다.';
-    fb.textContent = '📤 Google Forms 열기';
+    fb.textContent = '📤 답변 제출하기';
     fb.onclick = function() { console.log('[Prefill URL]\n' + url); alert('FORM_BASE_URL이 아직 설정되지 않았습니다.'); };
   }
 
