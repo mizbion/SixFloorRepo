@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>리스트 & 튜플 확인하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f5f0; --card:#fff; --s2:#f1ebe1; --s3:#e8e0d3; --bdr:#ddd5c5;
+  --text:#1c1810; --sub:#7a6e5e;
+  --tl:#0d7a6e; --tll:#e6f7f5; --tlb:#99ddd7;   /* 리스트 teal */
+  --tp:#4338ca; --tpl:#eef2ff; --tpb:#c7d2fe;   /* 튜플 indigo */
+  --ok:#16a34a; --okl:#f0fdf4; --okb:#bbf7d0;
+  --ng:#dc2626; --ngl:#fef2f2; --ngb:#fecaca;
+  --wn:#d97706; --wnl:#fffbeb; --wnb:#fde68a;
+  --pu:#7c3aed; --pul:#f5f3ff;
+  --cbg:#f4f0e8; --cbr:#ddd5c2;
+  --ckw:#b45309; --cfn:#0d7a6e; --cst:#15803d; --cnu:#1d4ed8; --ccm:#9c8d78; --cop:#7c3aed;
+  --sh:0 2px 10px rgba(0,0,0,.06); --shm:0 6px 24px rgba(0,0,0,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;}
+
+/* header */
+.hd{background:var(--text);color:#f8f5f0;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18);}
+.hdi{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;max-width:960px;margin:0 auto;}
+.hbg{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:.06em;}
+.hbg.list{background:var(--tl);color:#fff;}
+.hbg.tuple{background:var(--tp);color:#fff;}
+.htl{font-family:'Black Han Sans',sans-serif;font-size:17px;}
+.hmt{font-size:12px;color:#a09078;font-family:'JetBrains Mono',monospace;}
+.prg{height:3px;background:linear-gradient(90deg,var(--tl),var(--tp));width:0%;transition:width .2s;}
+
+/* wrap */
+.wrap{max-width:840px;margin:0 auto;padding:36px 20px 80px;}
+
+/* hero */
+.hero{text-align:center;padding:48px 20px 32px;}
+.hero-em{font-size:48px;display:block;margin-bottom:16px;animation:fl 3s ease-in-out infinite;}
+@keyframes fl{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(24px,5vw,44px);line-height:1.2;margin-bottom:12px;}
+.grad{background:linear-gradient(120deg,var(--tl),var(--tp));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-desc{color:var(--sub);font-size:15px;max-width:500px;margin:0 auto 24px;line-height:1.75;}
+.brow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+.bdg{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:4px 13px;border-radius:20px;border:1.5px solid;}
+
+/* 목차 */
+.toc{background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:20px 26px;margin-bottom:32px;box-shadow:var(--sh);}
+.toc-ttl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sub);margin-bottom:12px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;}
+.toc-a{font-size:13px;padding:4px 0;display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none;transition:color .15s;}
+.toc-a:hover{opacity:.75;}
+.toc-n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;flex-shrink:0;}
+
+/* 섹션 헤더 */
+.sh{display:flex;align-items:flex-start;gap:12px;margin:40px 0 16px;}
+.sh-num{font-family:'Black Han Sans',sans-serif;font-size:12px;color:#fff;padding:5px 12px;border-radius:6px;white-space:nowrap;margin-top:2px;flex-shrink:0;}
+.sh h2{font-family:'Black Han Sans',sans-serif;font-size:20px;line-height:1.25;}
+.sh p{font-size:13px;color:var(--sub);margin-top:2px;}
+
+/* 파트 배너 */
+.part-banner{border-radius:12px;padding:16px 22px;margin:32px 0 16px;display:flex;align-items:center;gap:14px;}
+.pb-list{background:var(--tll);border:1.5px solid var(--tlb);}
+.pb-tuple{background:var(--tpl);border:1.5px solid var(--tpb);}
+.pb-icon{font-size:28px;}
+.pb-title{font-family:'Black Han Sans',sans-serif;font-size:19px;}
+.pb-sub{font-size:13px;margin-top:3px;}
+.pb-list .pb-sub{color:var(--tl);}
+.pb-tuple .pb-sub{color:var(--tp);}
+
+/* 카드 */
+.card{background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:24px 28px;margin-bottom:14px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:box-shadow .2s;}
+.card:hover{box-shadow:var(--shm);}
+.ct{position:absolute;top:0;left:0;right:0;height:4px;border-radius:14px 14px 0 0;}
+.ct-list{background:var(--tl);}  .ct-tuple{background:var(--tp);}
+.ct-ok{background:var(--ok);}    .ct-ng{background:var(--ng);}
+.ct-warn{background:var(--wn);}
+
+/* 개념 */
+.concept{background:var(--s2);border-radius:10px;padding:13px 17px;margin-bottom:13px;font-size:14px;line-height:1.8;}
+.concept code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--card);padding:1px 5px;border-radius:4px;border:1px solid var(--bdr);}
+.concept strong{font-weight:700;}
+
+/* 팁 */
+.tip{border-radius:10px;padding:12px 17px;margin:10px 0;font-size:13.5px;line-height:1.75;display:flex;gap:10px;align-items:flex-start;}
+.ti{font-size:17px;flex-shrink:0;margin-top:1px;}
+.tip.blue{background:var(--tll);border-left:4px solid var(--tl);}
+.tip.indigo{background:var(--tpl);border-left:4px solid var(--tp);}
+.tip.orange{background:var(--wnl);border-left:4px solid var(--wn);}
+.tip.red{background:var(--ngl);border-left:4px solid var(--ng);}
+.tip.green{background:var(--okl);border-left:4px solid var(--ok);}
+.tip code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px;}
+
+/* 코드 블록 */
+.cb{background:var(--cbg);border:1.5px solid var(--cbr);border-radius:10px;margin:10px 0 14px;overflow:hidden;}
+.cbh{display:flex;align-items:center;justify-content:space-between;padding:6px 13px;background:var(--s3);border-bottom:1px solid var(--cbr);}
+.cbdots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dr{background:#ff5f57;}.dy{background:#febc2e;}.dg{background:#28c840;}
+.cblbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
+pre{padding:14px 18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:var(--text);background:transparent;}
+.kw{color:var(--ckw);font-weight:700;} .fn{color:var(--cfn);font-weight:600;}
+.st{color:var(--cst);}  .nu{color:var(--cnu);font-weight:600;}
+.cm{color:var(--ccm);font-style:italic;} .op{color:var(--cop);}
+.out{color:#155e75;font-weight:600;}
+
+/* 연습 카드 */
+.practice-num{display:inline-block;font-family:'Black Han Sans',sans-serif;font-size:12px;color:#fff;padding:3px 10px;border-radius:5px;margin-bottom:10px;}
+.p-list{background:var(--tl);}  .p-tuple{background:var(--tp);}
+.p-desc{font-size:14px;line-height:1.75;margin-bottom:12px;font-weight:500;}
+.p-desc code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--s2);padding:1px 5px;border-radius:4px;border:1px solid var(--bdr);}
+
+/* 입력/버튼 */
+.ir{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;}
+.ig{flex:1;min-width:100px;}
+.il{font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--sub);margin-bottom:4px;}
+input,select,textarea{background:var(--s2);border:1.5px solid var(--bdr);border-radius:8px;padding:8px 13px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;width:100%;outline:none;transition:border-color .2s,background .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--tl);background:#fff;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border:none;border-radius:8px;font-family:'Black Han Sans',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;box-shadow:0 2px 6px rgba(0,0,0,.10);flex-shrink:0;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.14);}
+.btn:active{transform:translateY(0);}
+.btl{background:var(--tl);color:#fff;}  .btp{background:var(--tp);color:#fff;}
+.bok{background:var(--ok);color:#fff;}  .bng{background:var(--ng);color:#fff;}
+.bwn{background:var(--wn);color:#fff;}  .bpu{background:var(--pu);color:#fff;}
+
+/* 결과창 */
+.res{background:var(--s2);border:1.5px solid var(--bdr);border-radius:10px;padding:13px 17px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:13.5px;min-height:46px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.6;}
+.res.pop{animation:pop .3s ease;}
+@keyframes pop{0%{transform:scale(.98);}60%{transform:scale(1.02);}100%{transform:scale(1);}}
+.rl{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+
+/* 평가 문항 */
+.q-card{background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:22px 26px;margin-bottom:12px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
+.q-card:hover{box-shadow:var(--shm);}
+.q-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;}
+.q-list::before{background:var(--tl);}  .q-tuple::before{background:var(--tp);}
+.q-card.aok{border-color:var(--okb);background:#fafffe;}
+.q-card.aok::before{background:var(--ok)!important;}
+.q-card.ang{border-color:var(--ngb);background:#fffafa;}
+.q-card.ang::before{background:var(--ng)!important;}
+.q-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.q-no{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--sub);}
+.q-pt{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub);}
+.q-body{font-size:15px;line-height:1.75;margin-bottom:12px;}
+.q-body code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--s2);padding:1px 6px;border-radius:4px;border:1px solid var(--bdr);}
+.ans-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.ans-lb{font-size:13px;font-weight:700;color:var(--sub);white-space:nowrap;flex-shrink:0;}
+.ans-in{font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 13px;border:1.5px solid var(--bdr);border-radius:8px;background:var(--s2);color:var(--text);width:200px;outline:none;transition:border-color .2s,background .2s;}
+.ans-in:focus{border-color:var(--tl);background:#fff;}
+.ans-in.iok{border-color:var(--ok);background:var(--okl);}
+.ans-in.ing{border-color:var(--ng);background:var(--ngl);}
+.chk-btn{padding:8px 18px;border:none;border-radius:8px;font-family:'Black Han Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.10);white-space:nowrap;flex-shrink:0;}
+.chk-btn:hover{transform:translateY(-1px);}
+.chk-btn:active{transform:translateY(0);}
+.cl{background:var(--tl);color:#fff;}  .ct2{background:var(--tp);color:#fff;}
+.q-result{margin-top:8px;font-size:13px;min-height:20px;}
+.rok{color:var(--ok);font-weight:700;font-family:'JetBrains Mono',monospace;}
+.rng{color:var(--ng);font-weight:700;font-family:'JetBrains Mono',monospace;}
+.hint-box{background:var(--wnl);border:1.5px solid var(--wnb);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:13px;display:none;}
+.hint-box .ht{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--wn);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;}
+
+/* 대시보드 */
+.dashboard{background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:18px 24px;margin-bottom:18px;box-shadow:var(--sh);}
+.db-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.db-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.db-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.db-box{background:var(--s2);border:1.5px solid var(--bdr);border-radius:10px;padding:10px;text-align:center;}
+.db-lb{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin-bottom:3px;}
+.db-vl{font-family:'Black Han Sans',sans-serif;font-size:22px;}
+.ptrack{background:var(--s2);border-radius:6px;height:8px;overflow:hidden;}
+.pbar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--tl),var(--tp));width:0%;transition:width .4s cubic-bezier(.34,1.56,.64,1);}
+
+/* 제출 패널 */
+.sub-panel{background:var(--card);border:1.5px solid var(--bdr);border-radius:16px;padding:28px 32px;margin-top:14px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.sub-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--tl),var(--tp));}
+.sub-title{font-family:'Black Han Sans',sans-serif;font-size:19px;margin-bottom:16px;}
+.sum-tbl{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 18px;}
+.sum-tbl th{background:var(--text);color:#f8f5f0;padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;}
+.sum-tbl td{padding:7px 12px;border-bottom:1px solid var(--bdr);font-family:'JetBrains Mono',monospace;font-size:12px;vertical-align:middle;}
+.sum-tbl tr:hover td{background:var(--s2);}
+.tok{color:var(--ok);font-weight:700;} .tng{color:var(--ng);font-weight:700;} .tpd{color:var(--sub);}
+.sub-btn{width:100%;padding:14px;background:linear-gradient(90deg,var(--tl),var(--tp));color:#fff;border:none;border-radius:10px;font-family:'Black Han Sans',sans-serif;font-size:16px;cursor:pointer;box-shadow:0 3px 10px rgba(13,122,110,.25);transition:all .2s;margin-top:6px;}
+.sub-btn:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(13,122,110,.3);}
+.sub-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.name-row{background:var(--tll);border:1.5px solid var(--tlb);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.name-lb{font-size:14px;font-weight:700;white-space:nowrap;}
+.name-in{flex:1;border:none;border-bottom:2px solid var(--tlb);background:transparent;padding:4px 2px;font-size:16px;font-family:'Noto Sans KR',sans-serif;color:var(--text);outline:none;}
+.name-in:focus{border-bottom-color:var(--tl);}
+#nw{display:none;color:var(--ng);font-size:12px;margin-top:5px;font-family:'JetBrains Mono',monospace;}
+
+/* 팝업 */
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:300;align-items:center;justify-content:center;padding:20px;}
+.popup{background:#fff;border-radius:20px;padding:34px 38px;max-width:500px;width:100%;box-shadow:0 16px 60px rgba(0,0,0,.22);position:relative;max-height:90vh;overflow-y:auto;animation:pu .3s ease;}
+@keyframes pu{from{transform:scale(.94);opacity:0;}to{transform:scale(1);opacity:1;}}
+.pp-close{position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--sub);line-height:1;}
+.pp-score{font-family:'Black Han Sans',sans-serif;font-size:56px;line-height:1;text-align:center;margin:8px 0 4px;}
+.pp-grade{font-size:17px;font-weight:700;text-align:center;margin-bottom:16px;}
+.pp-detail{background:var(--s2);border-radius:12px;padding:15px 18px;margin-bottom:14px;}
+.ppd-row{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;padding:4px 0;border-bottom:1px solid var(--bdr);}
+.ppd-row:last-child{border:none;font-weight:700;}
+.form-btn{width:100%;padding:13px;background:linear-gradient(90deg,var(--tl),var(--tp));color:#fff;border:none;border-radius:10px;font-family:'Black Han Sans',sans-serif;font-size:15px;cursor:pointer;margin-top:10px;box-shadow:0 2px 8px rgba(13,122,110,.2);transition:all .2s;}
+.form-btn:hover{transform:translateY(-1px);}
+.cancel-btn{width:100%;padding:10px;background:var(--s2);color:var(--sub);border:1.5px solid var(--bdr);border-radius:10px;font-family:'Black Han Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:8px;}
+.cfg-warn{background:var(--wnl);border:1.5px solid var(--wnb);border-radius:10px;padding:11px 15px;font-size:13px;margin-top:10px;display:none;}
+
+hr.dv{border:none;border-top:1.5px dashed var(--bdr);margin:36px 0;}
+
+/* nav dots */
+.nav-dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:100;}
+.ndot{width:10px;height:10px;border-radius:50%;background:var(--s3);border:1.5px solid var(--bdr);cursor:pointer;transition:all .2s;}
+.ndot.active{background:var(--tl);border-color:var(--tl);transform:scale(1.35);}
+.ndot:hover:not(.active){background:var(--sub);}
+
+@keyframes shk{0%,100%{transform:translateX(0);}25%,75%{transform:translateX(-5px);}50%{transform:translateX(5px);}}
+.shake{animation:shk .32s ease;}
+
+@media(max-width:600px){
+  .hdi{padding:11px 16px;} .hmt{display:none;}
+  .wrap{padding:22px 14px 60px;} .card,.q-card{padding:18px 15px;}
+  .ir{flex-direction:column;} .toc-grid{grid-template-columns:1fr;}
+  .db-grid{grid-template-columns:1fr 1fr;} .nav-dots{display:none;}
+  .sub-panel{padding:20px 16px;} .popup{padding:24px 18px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- 헤더 -->
+<header class="hd">
+  <div class="hdi">
+    <span class="hbg list">List &amp; Tuple</span>
+    <span class="htl">리스트 &amp; 튜플 확인하기</span>
+    <span class="hmt">Python</span>
+  </div>
+  <div class="prg" id="prg"></div>
+</header>
+
+<div class="wrap">
+
+<!-- 히어로 -->
+<div class="hero" id="s0">
+  <span class="hero-em">📋🔒</span>
+  <h1><span class="grad">리스트 &amp; 튜플</span><br>헷갈리지 말자!</h1>
+  <p class="hero-desc">리스트와 튜플, 대괄호와 소괄호의 차이를 확실히 구분.<br>연습 예제와 평가</p>
+  <div class="brow">
+    <span class="bdg" style="color:var(--tl);border-color:var(--tl);background:var(--tll)">[ ] 리스트</span>
+    <span class="bdg" style="color:var(--tp);border-color:var(--tp);background:var(--tpl)">( ) 튜플</span>
+    <span class="bdg" style="color:var(--wn);border-color:var(--wn);background:var(--wnl)">[ ] 인덱싱</span>
+    <span class="bdg" style="color:var(--pu);border-color:var(--pu);background:var(--pul)">불변 immutable</span>
+  </div>
+</div>
+
+<!-- 목차 -->
+<div class="toc">
+  <div class="toc-ttl">📚 목차</div>
+  <div class="toc-grid">
+    <a class="toc-a" style="color:var(--tl)" onclick="g('s1')"><span class="toc-n" style="background:var(--tll);color:var(--tl)">01</span> 핵심 개념 — 괄호 완전 정리</a>
+    <a class="toc-a" style="color:var(--tp)" onclick="g('s5')"><span class="toc-n" style="background:var(--tpl);color:var(--tp)">05</span> 튜플 연습 예제 10개</a>
+    <a class="toc-a" style="color:var(--tl)" onclick="g('s2')"><span class="toc-n" style="background:var(--tll);color:var(--tl)">02</span> 인덱싱 — 공통 규칙</a>
+    <a class="toc-a" style="color:var(--tl)" onclick="g('s6')"><span class="toc-n" style="background:var(--tll);color:var(--tl)">06</span> 리스트 평가 10문항</a>
+    <a class="toc-a" style="color:var(--tl)" onclick="g('s3')"><span class="toc-n" style="background:var(--tll);color:var(--tl)">03</span> 리스트 연습 예제 10개</a>
+    <a class="toc-a" style="color:var(--tp)" onclick="g('s7')"><span class="toc-n" style="background:var(--tpl);color:var(--tp)">07</span> 튜플 평가 10문항</a>
+    <a class="toc-a" style="color:var(--tp)" onclick="g('s4')"><span class="toc-n" style="background:var(--tpl);color:var(--tp)">04</span> 리스트 vs 튜플 비교</a>
+    <a class="toc-a" style="color:var(--pu)" onclick="g('s8')"><span class="toc-n" style="background:var(--pul);color:var(--pu)">08</span> 답안 제출</a>
+  </div>
+</div>
+
+<!-- ═══ 01. 핵심 개념 ═══ -->
+<div class="sh" id="s1">
+  <span class="sh-num" style="background:var(--wn)">01</span>
+  <div><h2>핵심 개념 — 괄호 완전 정리 🔑</h2><p>가장 많이 헷갈리는 부분을 먼저 잡아봐요</p></div>
+</div>
+
+<div class="card">
+  <div class="ct ct-warn"></div>
+  <div class="tip orange">
+    <span class="ti">⚠️</span>
+    <div><strong>대괄호 [ ] 의 두 가지 의미 — 이것이 가장 중요!</strong><br>
+    ① <strong>리스트 생성</strong>: <code>a = [1, 2, 3]</code> → 새 리스트를 만든다<br>
+    ② <strong>인덱싱</strong>: <code>a[0]</code> &nbsp; <code>t[0]</code> → 어떤 자료형이든 요소를 꺼낼 때<br>
+    <span style="font-size:12px;margin-top:4px;display:block;">→ 인덱싱 <code>[ ]</code>은 리스트뿐 아니라 <strong>튜플·문자열에도 똑같이 사용</strong>합니다!</span></div>
+  </div>
+
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">괄호 완전 정리</span></div>
+    <pre><span class="cm"># ① 대괄호 [] — 리스트 만들기</span>
+my_list = [<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>]
+
+<span class="cm"># ② 소괄호 () — 튜플 만들기</span>
+my_tuple = (<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>)
+
+<span class="cm"># ③ 인덱싱 [] — 리스트/튜플 모두 동일!</span>
+<span class="fn">print</span>(my_list[<span class="nu">0</span>])    <span class="out"># → 10  (리스트에서 꺼내기)</span>
+<span class="fn">print</span>(my_tuple[<span class="nu">0</span>])   <span class="out"># → 10  (튜플에서 꺼내기 — 똑같이 []!)</span>
+<span class="fn">print</span>(my_tuple[<span class="nu">1</span>])   <span class="out"># → 20  (튜플도 인덱싱은 대괄호)</span></pre>
+  </div>
+
+  <div class="tip indigo">
+    <span class="ti">💡</span>
+    <div><strong>핵심 공식</strong><br>
+    <code>( )</code> → 튜플 <strong>생성</strong>할 때만 &nbsp;|&nbsp; <code>[ ]</code> → 리스트 생성 + <strong>모든 자료형</strong> 인덱싱<br>
+    <code>my_tuple[0]</code> — 소괄호로 만든 튜플에서 대괄호로 꺼낸다 ✅</div>
+  </div>
+</div>
+
+<!-- ═══ 02. 인덱싱 공통 규칙 ═══ -->
+<div class="sh" id="s2">
+  <span class="sh-num" style="background:var(--tl)">02</span>
+  <div><h2>인덱싱 — 공통 규칙</h2><p>리스트든 튜플이든 꺼내는 방법은 같다!</p></div>
+</div>
+
+<div class="card">
+  <div class="ct ct-list"></div>
+  <div class="concept">
+    <strong>인덱싱</strong>은 <code>자료형[번호]</code> 형태로 요소를 꺼냅니다.<br>
+    번호는 <strong>0부터</strong> 시작하고, <strong>음수</strong>(-1, -2...)는 뒤에서부터 셉니다.
+  </div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">인덱싱 공통 규칙</span></div>
+    <pre>fruits = [<span class="st">'사과'</span>, <span class="st">'바나나'</span>, <span class="st">'포도'</span>]   <span class="cm"># 리스트</span>
+week   = (<span class="st">'월'</span>, <span class="st">'화'</span>, <span class="st">'수'</span>)          <span class="cm"># 튜플</span>
+
+<span class="cm"># 두 자료형 모두 인덱싱은 대괄호 []!</span>
+<span class="fn">print</span>(fruits[<span class="nu">0</span>])    <span class="out"># → '사과'</span>
+<span class="fn">print</span>(week[<span class="nu">0</span>])      <span class="out"># → '월'  ← 튜플도 인덱싱은 []</span>
+<span class="fn">print</span>(fruits[<span class="op">-</span><span class="nu">1</span>])   <span class="out"># → '포도'</span>
+<span class="fn">print</span>(week[<span class="op">-</span><span class="nu">1</span>])     <span class="out"># → '수'</span></pre>
+  </div>
+  <div class="tip orange">
+    <span class="ti">⚠️</span>
+    <div><strong>자주 하는 실수!</strong><br>
+    <code>week(0)</code> → ❌ 소괄호로 인덱싱하면 오류 (함수 호출 문법)<br>
+    <code>week[0]</code> → ✅ 인덱싱은 반드시 <strong>대괄호</strong></div>
+  </div>
+
+  <!-- 인터랙티브 체험 -->
+  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--bdr);">
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--tl);">🔍 직접 체험해봐요</div>
+    <div class="ir">
+      <div class="ig"><div class="il">자료형 선택</div>
+        <select id="idx_type">
+          <option value="list">리스트 [ ]</option>
+          <option value="tuple">튜플 ( )</option>
+        </select>
+      </div>
+      <div class="ig"><div class="il">값 (쉼표 구분)</div><input type="text" id="idx_data" value="사과, 바나나, 포도, 딸기"></div>
+      <div class="ig"><div class="il">인덱스 번호</div><input type="number" id="idx_n" value="0"></div>
+    </div>
+    <button class="btn btl" onclick="doIdx()">🔍 인덱싱 결과 보기</button>
+    <div class="res" id="r_idx"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+  </div>
+</div>
+
+<!-- ═══ 03. 리스트 연습 ═══ -->
+<div class="sh" id="s3">
+  <span class="sh-num" style="background:var(--tl)">03</span>
+  <div><h2>📋 리스트 연습 예제 10개</h2><p>예제마다 직접 입력하고 결과를 확인해봐요</p></div>
+</div>
+
+<div class="part-banner pb-list">
+  <span class="pb-icon">📋</span>
+  <div><div class="pb-title">리스트 (List) — [ ]</div>
+  <div class="pb-sub">생성 · 인덱싱 · 추가 · 삭제 · 정렬 · 통계</div></div>
+</div>
+
+<div class="card" id="lp1">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L1</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">리스트 만들기 & 길이</div>
+  <div class="p-desc">리스트를 만들고 요소 개수를 확인해봐요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>, <span class="nu">40</span>, <span class="nu">50</span>]
+<span class="fn">print</span>(<span class="fn">len</span>(a))   <span class="out"># → 5</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv1" value="10, 20, 30, 40, 50"></div>
+  </div>
+  <button class="btn btl" onclick="runList(1)">▶ 실행해보기</button>
+  <div class="res" id="lr1"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp2">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L2</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">인덱싱 — 앞에서</div>
+  <div class="p-desc"><code>a[번호]</code>로 꺼내요. 번호는 0부터 시작!</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="st">'사과'</span>, <span class="st">'바나나'</span>, <span class="st">'포도'</span>]
+<span class="fn">print</span>(a[<span class="nu">0</span>])   <span class="out"># → '사과'</span>
+<span class="fn">print</span>(a[<span class="nu">2</span>])   <span class="out"># → '포도'</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv2" value="사과, 바나나, 포도"></div>
+  </div>
+  <button class="btn btl" onclick="runList(2)">▶ 실행해보기</button>
+  <div class="res" id="lr2"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp3">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L3</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">인덱싱 — 뒤에서 (음수)</div>
+  <div class="p-desc"><code>a[-1]</code>은 마지막, <code>a[-2]</code>는 뒤에서 두 번째예요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="st">'월'</span>, <span class="st">'화'</span>, <span class="st">'수'</span>, <span class="st">'목'</span>, <span class="st">'금'</span>]
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">1</span>])   <span class="out"># → '금'</span>
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">2</span>])   <span class="out"># → '목'</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv3" value="월, 화, 수, 목, 금"></div>
+  </div>
+  <button class="btn btl" onclick="runList(3)">▶ 실행해보기</button>
+  <div class="res" id="lr3"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp4">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L4</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">슬라이싱</div>
+  <div class="p-desc"><code>a[시작:끝]</code> — 끝 인덱스는 포함되지 않아요!</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>]
+<span class="fn">print</span>(a[<span class="nu">1</span>:<span class="nu">4</span>])   <span class="out"># → [2, 3, 4]</span>
+<span class="fn">print</span>(a[:<span class="nu">3</span>])    <span class="out"># → [1, 2, 3]</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv4" value="1, 2, 3, 4, 5"></div>
+  </div>
+  <button class="btn btl" onclick="runList(4)">▶ 실행해보기</button>
+  <div class="res" id="lr4"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp5">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L5</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">append — 끝에 추가</div>
+  <div class="p-desc"><code>.append(값)</code>으로 리스트 맨 끝에 요소를 추가해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]
+a.<span class="fn">append</span>(<span class="nu">4</span>)
+<span class="fn">print</span>(a)   <span class="out"># → [1, 2, 3, 4]</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv5" value="1, 2, 3"></div>
+  </div>
+  <button class="btn btl" onclick="runList(5)">▶ 실행해보기</button>
+  <div class="res" id="lr5"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp6">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L6</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">remove — 값으로 삭제</div>
+  <div class="p-desc"><code>.remove(값)</code>으로 처음 나오는 그 값을 삭제해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="st">'사과'</span>, <span class="st">'바나나'</span>, <span class="st">'포도'</span>]
+a.<span class="fn">remove</span>(<span class="st">'바나나'</span>)
+<span class="fn">print</span>(a)   <span class="out"># → ['사과', '포도']</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv6" value="사과, 바나나, 포도"></div>
+  </div>
+  <button class="btn btl" onclick="runList(6)">▶ 실행해보기</button>
+  <div class="res" id="lr6"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp7">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L7</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">sort — 정렬</div>
+  <div class="p-desc"><code>.sort()</code>는 원본을 오름차순으로 정렬해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="nu">5</span>, <span class="nu">2</span>, <span class="nu">8</span>, <span class="nu">1</span>, <span class="nu">4</span>]
+a.<span class="fn">sort</span>()
+<span class="fn">print</span>(a)   <span class="out"># → [1, 2, 4, 5, 8]</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv7" value="5, 2, 8, 1, 4"></div>
+  </div>
+  <button class="btn btl" onclick="runList(7)">▶ 실행해보기</button>
+  <div class="res" id="lr7"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp8">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L8</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">sum · max · min</div>
+  <div class="p-desc">숫자 리스트의 합계·최대·최솟값을 구해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="nu">10</span>, <span class="nu">30</span>, <span class="nu">20</span>, <span class="nu">50</span>, <span class="nu">40</span>]
+<span class="fn">print</span>(<span class="fn">sum</span>(a))    <span class="out"># → 150</span>
+<span class="fn">print</span>(<span class="fn">max</span>(a))    <span class="out"># → 50</span>
+<span class="fn">print</span>(<span class="fn">min</span>(a))    <span class="out"># → 10</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv8" value="10, 30, 20, 50, 40"></div>
+  </div>
+  <button class="btn btl" onclick="runList(8)">▶ 실행해보기</button>
+  <div class="res" id="lr8"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp9">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L9</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">리스트 연결 · 반복</div>
+  <div class="p-desc"><code>+</code>로 이어붙이고, <code>*</code>로 반복해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>]
+b = [<span class="nu">3</span>, <span class="nu">4</span>]
+<span class="fn">print</span>(a + b)    <span class="out"># → [1, 2, 3, 4]</span>
+<span class="fn">print</span>(a * <span class="nu">3</span>)    <span class="out"># → [1, 2, 1, 2, 1, 2]</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv9" value="1, 2"></div>
+  </div>
+  <button class="btn btl" onclick="runList(9)">▶ 실행해보기</button>
+  <div class="res" id="lr9"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="lp10">
+  <div class="ct ct-list"></div>
+  <span class="practice-num p-list">연습 L10</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">in — 포함 여부 확인</div>
+  <div class="p-desc"><code>값 in 리스트</code>로 그 값이 있는지 True/False로 확인해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = [<span class="st">'파이썬'</span>, <span class="st">'자바'</span>, <span class="st">'C'</span>]
+<span class="fn">print</span>(<span class="st">'파이썬'</span> <span class="kw">in</span> a)    <span class="out"># → True</span>
+<span class="fn">print</span>(<span class="st">'루비'</span> <span class="kw">in</span> a)      <span class="out"># → False</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">리스트 입력 (쉼표 구분)</div>
+      <input type="text" id="lv10" value="파이썬, 자바, C"></div>
+  </div>
+  <button class="btn btl" onclick="runList(10)">▶ 실행해보기</button>
+  <div class="res" id="lr10"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<!-- ═══ 04. 리스트 vs 튜플 ═══ -->
+<div class="sh" id="s4">
+  <span class="sh-num" style="background:var(--tp)">04</span>
+  <div><h2>리스트 vs 튜플 — 한눈에 비교</h2><p>무엇이 같고 무엇이 다른지 정리!</p></div>
+</div>
+
+<div class="card">
+  <div class="ct ct-tuple"></div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">핵심 비교</span></div>
+    <pre><span class="cm"># 리스트 — 변경 가능 (mutable)</span>
+my_list = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]
+my_list[<span class="nu">0</span>] = <span class="nu">99</span>           <span class="out"># ✅ 수정 가능</span>
+my_list.<span class="fn">append</span>(<span class="nu">4</span>)          <span class="out"># ✅ 추가 가능</span>
+
+<span class="cm"># 튜플 — 변경 불가 (immutable)</span>
+my_tuple = (<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>)
+<span class="cm"># my_tuple[0] = 99  ← ❌ TypeError!</span>
+
+<span class="cm"># 인덱싱은 둘 다 대괄호 [ ] !</span>
+<span class="fn">print</span>(my_list[<span class="nu">0</span>])    <span class="out"># → 99</span>
+<span class="fn">print</span>(my_tuple[<span class="nu">0</span>])   <span class="out"># → 1   ← 튜플도 [] 로 꺼냄!</span></pre>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
+    <div style="background:var(--tll);border:1.5px solid var(--tlb);border-radius:10px;padding:14px 16px;font-size:13px;">
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--tl);margin-bottom:8px;">📋 리스트</div>
+      <div>생성: <code>[1, 2, 3]</code></div>
+      <div>✅ 수정·추가·삭제 가능</div>
+      <div>✅ 인덱싱 <code>a[0]</code></div>
+      <div>✅ sort, append 등</div>
+    </div>
+    <div style="background:var(--tpl);border:1.5px solid var(--tpb);border-radius:10px;padding:14px 16px;font-size:13px;">
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--tp);margin-bottom:8px;">🔒 튜플</div>
+      <div>생성: <code>(1, 2, 3)</code></div>
+      <div>❌ 수정·추가·삭제 불가</div>
+      <div>✅ 인덱싱 <code>t[0]</code> ← <strong>[]</strong></div>
+      <div>✅ count, index만</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 05. 튜플 연습 ═══ -->
+<div class="sh" id="s5">
+  <span class="sh-num" style="background:var(--tp)">05</span>
+  <div><h2>🔒 튜플 연습 예제 10개</h2><p>튜플만의 특징을 직접 체험해봐요</p></div>
+</div>
+
+<div class="part-banner pb-tuple">
+  <span class="pb-icon">🔒</span>
+  <div><div class="pb-title">튜플 (Tuple) — ( )</div>
+  <div class="pb-sub">생성 · 인덱싱(대괄호!) · 언패킹 · count · index</div></div>
+</div>
+
+<div class="card" id="tp1">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T1</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">튜플 만들기 & type 확인</div>
+  <div class="p-desc">소괄호 <code>( )</code>로 만들어요. type은 'tuple'이에요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>)
+<span class="fn">print</span>(<span class="fn">type</span>(t))    <span class="out"># → &lt;class 'tuple'&gt;</span>
+<span class="fn">print</span>(<span class="fn">len</span>(t))     <span class="out"># → 3</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv1" value="10, 20, 30"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(1)">▶ 실행해보기</button>
+  <div class="res" id="tr1"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp2">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T2</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">튜플 인덱싱 — 대괄호!</div>
+  <div class="p-desc">튜플을 소괄호로 만들었어도 꺼낼 때는 반드시 <code>t[번호]</code> 대괄호!</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="st">'월'</span>, <span class="st">'화'</span>, <span class="st">'수'</span>, <span class="st">'목'</span>, <span class="st">'금'</span>)
+<span class="fn">print</span>(t[<span class="nu">0</span>])    <span class="out"># → '월'   ← [] 대괄호!</span>
+<span class="fn">print</span>(t[<span class="nu">2</span>])    <span class="out"># → '수'</span>
+<span class="fn">print</span>(t[<span class="op">-</span><span class="nu">1</span>])   <span class="out"># → '금'</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv2" value="월, 화, 수, 목, 금"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(2)">▶ 실행해보기</button>
+  <div class="res" id="tr2"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp3">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T3</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">튜플 슬라이싱</div>
+  <div class="p-desc">슬라이싱도 리스트와 똑같이 <code>t[시작:끝]</code>으로!</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>)
+<span class="fn">print</span>(t[<span class="nu">1</span>:<span class="nu">4</span>])   <span class="out"># → (2, 3, 4)</span>
+<span class="fn">print</span>(t[:<span class="nu">3</span>])    <span class="out"># → (1, 2, 3)</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv3" value="1, 2, 3, 4, 5"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(3)">▶ 실행해보기</button>
+  <div class="res" id="tr3"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp4">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T4</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">언패킹 — 여러 변수에 한꺼번에</div>
+  <div class="p-desc">튜플의 값을 변수에 나눠 담는 것을 <strong>언패킹</strong>이라고 해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="st">'홍길동'</span>, <span class="nu">18</span>, <span class="st">'서울'</span>)
+name, age, city = t     <span class="cm"># 언패킹!</span>
+<span class="fn">print</span>(name)   <span class="out"># → 홍길동</span>
+<span class="fn">print</span>(age)    <span class="out"># → 18</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv4" value="홍길동, 18, 서울"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(4)">▶ 실행해보기</button>
+  <div class="res" id="tr4"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp5">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T5</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">수정하면 오류!</div>
+  <div class="p-desc">튜플은 한 번 만들면 바꿀 수 없어요 — 이게 튜플의 핵심!</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>)
+<span class="fn">print</span>(t[<span class="nu">0</span>])   <span class="out"># → 1  (읽기는 OK)</span>
+<span class="cm"># t[0] = 99  ← TypeError 발생!</span>
+<span class="cm"># 튜플은 수정 불가 — immutable!</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv5" value="1, 2, 3"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(5)">▶ 실행해보기</button>
+  <div class="res" id="tr5"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp6">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T6</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">튜플 연결 · 반복</div>
+  <div class="p-desc">수정은 불가지만 <code>+</code>로 이어붙이거나 <code>*</code>로 반복은 돼요!</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>a = (<span class="nu">1</span>, <span class="nu">2</span>)
+b = (<span class="nu">3</span>, <span class="nu">4</span>)
+<span class="fn">print</span>(a + b)    <span class="out"># → (1, 2, 3, 4)</span>
+<span class="fn">print</span>(a * <span class="nu">3</span>)    <span class="out"># → (1, 2, 1, 2, 1, 2)</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv6" value="1, 2"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(6)">▶ 실행해보기</button>
+  <div class="res" id="tr6"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp7">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T7</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">count — 개수 세기</div>
+  <div class="p-desc"><code>.count(값)</code>으로 그 값이 몇 번 나오는지 세요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">2</span>)
+<span class="fn">print</span>(t.<span class="fn">count</span>(<span class="nu">2</span>))   <span class="out"># → 3</span>
+<span class="fn">print</span>(t.<span class="fn">count</span>(<span class="nu">1</span>))   <span class="out"># → 1</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv7" value="1, 2, 2, 3, 2"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(7)">▶ 실행해보기</button>
+  <div class="res" id="tr7"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp8">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T8</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">index — 위치 찾기</div>
+  <div class="p-desc"><code>.index(값)</code>으로 그 값이 몇 번째인지 찾아요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>, <span class="st">'D'</span>)
+<span class="fn">print</span>(t.<span class="fn">index</span>(<span class="st">'C'</span>))   <span class="out"># → 2</span>
+<span class="fn">print</span>(t.<span class="fn">index</span>(<span class="st">'A'</span>))   <span class="out"># → 0</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv8" value="A, B, C, D"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(8)">▶ 실행해보기</button>
+  <div class="res" id="tr8"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp9">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T9</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">in — 포함 확인</div>
+  <div class="p-desc"><code>값 in 튜플</code>로 포함 여부를 True/False로 확인해요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>t = (<span class="st">'파이썬'</span>, <span class="st">'자바'</span>, <span class="st">'C'</span>)
+<span class="fn">print</span>(<span class="st">'파이썬'</span> <span class="kw">in</span> t)    <span class="out"># → True</span>
+<span class="fn">print</span>(<span class="st">'루비'</span> <span class="kw">in</span> t)      <span class="out"># → False</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv9" value="파이썬, 자바, C"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(9)">▶ 실행해보기</button>
+  <div class="res" id="tr9"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<div class="card" id="tp10">
+  <div class="ct ct-tuple"></div>
+  <span class="practice-num p-tuple">연습 T10</span>
+  <div style="font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;">리스트 안에 튜플</div>
+  <div class="p-desc">리스트 안에 튜플을 넣어 여러 학생 정보를 관리할 수 있어요.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">예제</span></div>
+    <pre>students = [(<span class="st">'홍길동'</span>, <span class="nu">85</span>), (<span class="st">'김철수'</span>, <span class="nu">92</span>)]
+<span class="fn">print</span>(students[<span class="nu">0</span>])       <span class="out"># → ('홍길동', 85)</span>
+<span class="fn">print</span>(students[<span class="nu">0</span>][<span class="nu">0</span>])    <span class="out"># → '홍길동'</span></pre>
+  </div>
+  <div class="ir">
+    <div class="ig"><div class="il">튜플 입력 (쉼표 구분)</div>
+      <input type="text" id="tv10" value="홍길동, 85"></div>
+  </div>
+  <button class="btn btp" onclick="runTuple(10)">▶ 실행해보기</button>
+  <div class="res" id="tr10"><span class="rl">결과</span><span style="color:var(--sub)">값을 입력하고 눌러보세요</span></div>
+</div>
+
+<hr class="dv">
+
+<!-- ═══ 06. 리스트 평가 ═══ -->
+<div class="sh" id="s6">
+  <span class="sh-num" style="background:var(--tl)">06</span>
+  <div><h2>📋 리스트 단답형 평가 — 10문항</h2><p>직접 답을 입력하고 확인해봐요</p></div>
+</div>
+
+<div class="part-banner pb-list">
+  <span class="pb-icon">✏️</span>
+  <div><div class="pb-title">리스트 평가</div>
+  <div class="pb-sub">각 5점 · 총 50점 · 오답 시 힌트 제공</div></div>
+</div>
+
+<div class="q-card q-list" id="lqc1">
+  <div class="q-meta"><span class="q-no">L1번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>, <span class="nu">40</span>, <span class="nu">50</span>]
+<span class="fn">print</span>(a[<span class="nu">2</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la1" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(1)">
+    <button class="chk-btn cl" onclick="chkL(1)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q1"></div>
+  <div class="hint-box" id="lh1">
+    <div class="ht">💡 힌트</div>
+    <div>인덱스는 0부터 시작해요. a[2]는 세 번째 요소입니다.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc2">
+  <div class="q-meta"><span class="q-no">L2번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="st">'월'</span>, <span class="st">'화'</span>, <span class="st">'수'</span>, <span class="st">'목'</span>, <span class="st">'금'</span>]
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">1</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la2" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(2)">
+    <button class="chk-btn cl" onclick="chkL(2)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q2"></div>
+  <div class="hint-box" id="lh2">
+    <div class="ht">💡 힌트</div>
+    <div>음수 인덱스 -1은 마지막 요소를 가리켜요.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc3">
+  <div class="q-meta"><span class="q-no">L3번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]
+<span class="fn">print</span>(<span class="fn">len</span>(a))</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la3" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(3)">
+    <button class="chk-btn cl" onclick="chkL(3)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q3"></div>
+  <div class="hint-box" id="lh3">
+    <div class="ht">💡 힌트</div>
+    <div>len()은 리스트의 요소 개수를 반환해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc4">
+  <div class="q-meta"><span class="q-no">L4번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]
+b = [<span class="nu">4</span>, <span class="nu">5</span>]
+<span class="fn">print</span>(a + b)</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la4" placeholder="답 입력" style="width:240px"
+      onkeydown="if(event.key==='Enter')chkL(4)">
+    <button class="chk-btn cl" onclick="chkL(4)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q4"></div>
+  <div class="hint-box" id="lh4">
+    <div class="ht">💡 힌트</div>
+    <div>리스트 + 는 두 리스트를 이어붙여요.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc5">
+  <div class="q-meta"><span class="q-no">L5번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>]
+<span class="fn">print</span>(<span class="fn">max</span>(a))</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la5" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(5)">
+    <button class="chk-btn cl" onclick="chkL(5)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q5"></div>
+  <div class="hint-box" id="lh5">
+    <div class="ht">💡 힌트</div>
+    <div>max()는 리스트에서 가장 큰 값을 반환해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc6">
+  <div class="q-meta"><span class="q-no">L6번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">5</span>, <span class="nu">3</span>, <span class="nu">1</span>, <span class="nu">4</span>, <span class="nu">2</span>]
+a.<span class="fn">sort</span>()
+<span class="fn">print</span>(a[<span class="nu">0</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la6" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(6)">
+    <button class="chk-btn cl" onclick="chkL(6)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q6"></div>
+  <div class="hint-box" id="lh6">
+    <div class="ht">💡 힌트</div>
+    <div>sort()는 오름차순 정렬을 해요. 정렬 후 첫 번째 요소는?</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc7">
+  <div class="q-meta"><span class="q-no">L7번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]
+a.<span class="fn">append</span>(<span class="nu">4</span>)
+<span class="fn">print</span>(<span class="fn">len</span>(a))</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la7" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(7)">
+    <button class="chk-btn cl" onclick="chkL(7)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q7"></div>
+  <div class="hint-box" id="lh7">
+    <div class="ht">💡 힌트</div>
+    <div>append()로 요소를 하나 추가했어요. 길이는 몇이 될까요?</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc8">
+  <div class="q-meta"><span class="q-no">L8번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>]
+<span class="kw">del</span> a[<span class="nu">1</span>]
+<span class="fn">print</span>(a)</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la8" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(8)">
+    <button class="chk-btn cl" onclick="chkL(8)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q8"></div>
+  <div class="hint-box" id="lh8">
+    <div class="ht">💡 힌트</div>
+    <div>del a[1]은 인덱스 1(두 번째) 요소를 삭제해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc9">
+  <div class="q-meta"><span class="q-no">L9번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>]
+<span class="fn">print</span>(a[<span class="nu">1</span>:<span class="nu">4</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la9" placeholder="답 입력" style="width:220px"
+      onkeydown="if(event.key==='Enter')chkL(9)">
+    <button class="chk-btn cl" onclick="chkL(9)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q9"></div>
+  <div class="hint-box" id="lh9">
+    <div class="ht">💡 힌트</div>
+    <div>슬라이싱 a[1:4]는 인덱스 1,2,3을 꺼내요. 끝(4)은 포함 안 돼요.</div>
+  </div>
+</div>
+
+<div class="q-card q-list" id="lqc10">
+  <div class="q-meta"><span class="q-no">L10번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a = [<span class="nu">3</span>, <span class="nu">1</span>, <span class="nu">4</span>]
+a.<span class="fn">append</span>(<span class="nu">1</span>)
+a.<span class="fn">sort</span>()
+<span class="fn">print</span>(a[<span class="op">-</span><span class="nu">1</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="la10" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkL(10)">
+    <button class="chk-btn cl" onclick="chkL(10)">확인</button>
+  </div>
+  <div class="q-result" id="lr_q10"></div>
+  <div class="hint-box" id="lh10">
+    <div class="ht">💡 힌트</div>
+    <div>append 후 sort로 정렬하면 [1,1,3,4]가 돼요. a[-1]은 마지막 요소.</div>
+  </div>
+</div>
+
+<!-- ═══ 07. 튜플 평가 ═══ -->
+<div class="sh" id="s7">
+  <span class="sh-num" style="background:var(--tp)">07</span>
+  <div><h2>🔒 튜플 단답형 평가 — 10문항</h2><p>인덱싱 괄호에 특히 주목해요!</p></div>
+</div>
+
+<div class="part-banner pb-tuple">
+  <span class="pb-icon">✏️</span>
+  <div><div class="pb-title">튜플 평가</div>
+  <div class="pb-sub">각 5점 · 총 50점 · 오답 시 힌트 제공</div></div>
+</div>
+
+<div class="q-card q-tuple" id="tqc1">
+  <div class="q-meta"><span class="q-no">T1번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>)
+<span class="fn">print</span>(t[<span class="nu">1</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta1" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(1)">
+    <button class="chk-btn ct2" onclick="chkT(1)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q1"></div>
+  <div class="hint-box" id="th1">
+    <div class="ht">💡 힌트</div>
+    <div>튜플도 인덱싱은 대괄호 t[번호]! 0부터 시작해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc2">
+  <div class="q-meta"><span class="q-no">T2번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="st">'봄'</span>, <span class="st">'여름'</span>, <span class="st">'가을'</span>, <span class="st">'겨울'</span>)
+<span class="fn">print</span>(t[<span class="op">-</span><span class="nu">1</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta2" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(2)">
+    <button class="chk-btn ct2" onclick="chkT(2)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q2"></div>
+  <div class="hint-box" id="th2">
+    <div class="ht">💡 힌트</div>
+    <div>음수 인덱스 -1은 마지막 요소예요. 튜플도 동일해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc3">
+  <div class="q-meta"><span class="q-no">T3번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>)
+<span class="fn">print</span>(<span class="fn">len</span>(t))</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta3" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(3)">
+    <button class="chk-btn ct2" onclick="chkT(3)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q3"></div>
+  <div class="hint-box" id="th3">
+    <div class="ht">💡 힌트</div>
+    <div>len()은 튜플의 요소 개수를 반환해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc4">
+  <div class="q-meta"><span class="q-no">T4번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>)
+<span class="fn">print</span>(<span class="fn">type</span>(t))</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta4" placeholder="답 입력" style="width:260px"
+      onkeydown="if(event.key==='Enter')chkT(4)">
+    <button class="chk-btn ct2" onclick="chkT(4)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q4"></div>
+  <div class="hint-box" id="th4">
+    <div class="ht">💡 힌트</div>
+    <div>type()으로 자료형을 확인할 수 있어요. 소괄호로 만들면 tuple.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc5">
+  <div class="q-meta"><span class="q-no">T5번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드에서 빈칸에 들어갈 올바른 기호는? <code>t = (10, 20, 30); print(t___0)</code></div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta5" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(5)">
+    <button class="chk-btn ct2" onclick="chkT(5)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q5"></div>
+  <div class="hint-box" id="th5">
+    <div class="ht">💡 힌트</div>
+    <div>튜플은 소괄호로 만들지만 인덱싱은 반드시 대괄호[ ]를 써요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc6">
+  <div class="q-meta"><span class="q-no">T6번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>a, b, c = (<span class="nu">7</span>, <span class="nu">8</span>, <span class="nu">9</span>)
+<span class="fn">print</span>(b)</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta6" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(6)">
+    <button class="chk-btn ct2" onclick="chkT(6)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q6"></div>
+  <div class="hint-box" id="th6">
+    <div class="ht">💡 힌트</div>
+    <div>언패킹! 튜플의 값이 순서대로 변수에 들어가요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc7">
+  <div class="q-meta"><span class="q-no">T7번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="nu">3</span>, <span class="nu">3</span>, <span class="nu">1</span>, <span class="nu">3</span>, <span class="nu">2</span>)
+<span class="fn">print</span>(t.<span class="fn">count</span>(<span class="nu">3</span>))</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta7" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(7)">
+    <button class="chk-btn ct2" onclick="chkT(7)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q7"></div>
+  <div class="hint-box" id="th7">
+    <div class="ht">💡 힌트</div>
+    <div>count(값)는 그 값이 몇 번 등장하는지 세어줘요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc8">
+  <div class="q-meta"><span class="q-no">T8번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="nu">1</span>, <span class="nu">2</span>)
+<span class="fn">print</span>(t * <span class="nu">3</span>)</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta8" placeholder="답 입력" style="width:260px"
+      onkeydown="if(event.key==='Enter')chkT(8)">
+    <button class="chk-btn ct2" onclick="chkT(8)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q8"></div>
+  <div class="hint-box" id="th8">
+    <div class="ht">💡 힌트</div>
+    <div>튜플 * 숫자는 그 튜플을 반복해요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc9">
+  <div class="q-meta"><span class="q-no">T9번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>t = (<span class="nu">10</span>, <span class="nu">20</span>, <span class="nu">30</span>, <span class="nu">40</span>)
+<span class="fn">print</span>(t[<span class="nu">1</span>:<span class="nu">3</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta9" placeholder="답 입력" style="width:220px"
+      onkeydown="if(event.key==='Enter')chkT(9)">
+    <button class="chk-btn ct2" onclick="chkT(9)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q9"></div>
+  <div class="hint-box" id="th9">
+    <div class="ht">💡 힌트</div>
+    <div>슬라이싱 t[1:3]은 인덱스 1,2를 꺼내요. 결과도 튜플이에요.</div>
+  </div>
+</div>
+
+<div class="q-card q-tuple" id="tqc10">
+  <div class="q-meta"><span class="q-no">T10번</span><span class="q-pt">5점</span></div>
+  <div class="q-body">다음 코드의 출력 결과를 쓰시오.</div>
+  <div class="cb">
+    <div class="cbh"><div class="cbdots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div><span class="cblbl">코드</span></div>
+    <pre>s = [(<span class="st">'홍길동'</span>, <span class="nu">85</span>), (<span class="st">'김철수'</span>, <span class="nu">92</span>)]
+<span class="fn">print</span>(s[<span class="nu">1</span>][<span class="nu">0</span>])</pre>
+  </div>
+  <div class="ans-row">
+    <span class="ans-lb">답 :</span>
+    <input class="ans-in" id="ta10" placeholder="답 입력" style="width:200px"
+      onkeydown="if(event.key==='Enter')chkT(10)">
+    <button class="chk-btn ct2" onclick="chkT(10)">확인</button>
+  </div>
+  <div class="q-result" id="tr_q10"></div>
+  <div class="hint-box" id="th10">
+    <div class="ht">💡 힌트</div>
+    <div>s[1]은 두 번째 튜플, [0]은 그 튜플의 첫 번째 요소예요.</div>
+  </div>
+</div>
+
+<!-- ═══ 08. 제출 ═══ -->
+<div class="sh" id="s8">
+  <span class="sh-num" style="background:var(--pu)">08</span>
+  <div><h2>📤 답안 제출</h2><p>모든 문항을 풀고 결과를 제출해봐요</p></div>
+</div>
+
+<!-- 대시보드 -->
+<div class="dashboard">
+  <div class="db-head">
+    <div class="db-title">📊 진행 현황</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--sub);" id="db-pct">0 / 20 완료</div>
+  </div>
+  <div class="db-grid">
+    <div class="db-box"><div class="db-lb">리스트 정답</div><div class="db-vl" id="db-lok" style="color:var(--tl)">0</div></div>
+    <div class="db-box"><div class="db-lb">튜플 정답</div><div class="db-vl" id="db-tok" style="color:var(--tp)">0</div></div>
+    <div class="db-box"><div class="db-lb">전체 정답</div><div class="db-vl" id="db-ok" style="color:var(--ok)">0</div></div>
+    <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score" style="color:var(--pu)">—</div></div>
+  </div>
+  <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+</div>
+
+<div class="sub-panel">
+  <div class="sub-title">📤 답안 제출하기</div>
+  <div class="tip blue">
+    <span class="ti">📋</span>
+    <div>모든 문항을 풀고 제출하면 Google Forms가 <strong>답변이 자동으로 입력된 채로</strong> 열립니다.<br>
+    내용을 확인한 뒤 Forms에서 <strong>"제출"</strong>을 눌러 최종 제출하세요.</div>
+  </div>
+
+  <table class="sum-tbl">
+    <thead><tr>
+      <th style="width:60px">번호</th><th>문제 요약</th>
+      <th style="width:100px">내 답변</th>
+      <th style="width:50px;text-align:center">결과</th>
+    </tr></thead>
+    <tbody id="sum-body"></tbody>
+  </table>
+
+  <div class="name-row">
+    <span class="name-lb">✏️ 이름</span>
+    <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요"
+      oninput="document.getElementById('nw').style.display='none'">
+  </div>
+  <div id="nw">⚠️ 이름을 먼저 입력해주세요!</div>
+
+  <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+  <div style="text-align:center;font-size:12px;color:var(--sub);margin-top:8px;" id="sub-hint">
+    모든 문항(20개)을 풀면 제출 버튼이 활성화됩니다 (0 / 20)
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- 팝업 -->
+<div class="pbg" id="pbg">
+  <div class="popup">
+    <button class="pp-close" onclick="closePopup()">✕</button>
+    <div style="text-align:center;font-size:46px;margin-bottom:8px">🎉</div>
+    <div class="pp-score" id="pp-score"></div>
+    <div class="pp-grade" id="pp-grade"></div>
+    <div class="pp-detail">
+      <div class="ppd-row"><span>이름</span><strong id="pp-name"></strong></div>
+      <div class="ppd-row"><span style="color:var(--tl)">📋 리스트 (L1~L10)</span><span id="pp-list"></span></div>
+      <div class="ppd-row"><span style="color:var(--tp)">🔒 튜플 (T1~T10)</span><span id="pp-tuple"></span></div>
+      <div class="ppd-row"><span>전체 정답 / 문항</span><strong id="pp-ratio"></strong></div>
+    </div>
+    <div class="tip green">
+      <span class="ti">✨</span>
+      <div>아래 버튼을 누르면 <strong>모든 답변이 자동 입력된</strong> Google Forms가 열립니다.<br>
+      내용 확인 후 <strong>"제출"</strong>만 누르면 완료!</div>
+    </div>
+    <button class="form-btn" id="form-btn">답안 제출하기</button>
+    <div class="cfg-warn" id="cfg-warn"></div>
+    <button class="cancel-btn" onclick="closePopup()">닫기</button>
+  </div>
+</div>
+
+<script>
+/* ── 정답 & 메타 ── */
+const L_ANS = {1:'30',2:'금',3:'3',4:'[1, 2, 3, 4, 5]',5:'30',
+               6:'1',7:'4',8:'[10, 30]',9:'[2, 3, 4]',10:'4'};
+const T_ANS = {1:'20',2:'겨울',3:'5',4:"<class 'tuple'>",5:'[',
+               6:'8',7:'3',8:'(1, 2, 1, 2, 1, 2)',9:'(20, 30)',10:'김철수'};
+const L_SUM = {1:'a[2]',2:'a[-1]',3:'len(a)',4:'a+b',5:'max(a)',
+               6:'sort후 a[0]',7:'append후 len',8:'del a[1]',9:'a[1:4]',10:'append+sort+a[-1]'};
+const T_SUM = {1:'t[1]',2:'t[-1]',3:'len(t)',4:'type(t)',5:'인덱싱 기호',
+               6:'언패킹 b',7:'count(3)',8:'t*3',9:'t[1:3]',10:'s[1][0]'};
+const TOTAL = 20;
+let LS = {}, TS = {};
+
+/* ── 채점 ── */
+function chkL(n){
+  const v = document.getElementById('la'+n).value.trim();
+  if(!v){doShake(document.getElementById('la'+n));return;}
+  const ok = v === L_ANS[n];
+  LS[n]={ans:v,ok};
+  const inp=document.getElementById('la'+n);
+  inp.classList.remove('iok','ing'); inp.classList.add(ok?'iok':'ing');
+  const card=document.getElementById('lqc'+n);
+  card.classList.remove('aok','ang'); card.classList.add(ok?'aok':'ang');
+  const r=document.getElementById('lr_q'+n);
+  if(ok){ r.innerHTML='<span class="rok">✓ 정답입니다! 🎉</span>'; document.getElementById('lh'+n).style.display='none';}
+  else  { r.innerHTML='<span class="rng">✗ 오답입니다. 힌트를 확인해봐요!</span>'; document.getElementById('lh'+n).style.display='block';}
+  refresh();
+}
+function chkT(n){
+  const v = document.getElementById('ta'+n).value.trim();
+  if(!v){doShake(document.getElementById('ta'+n));return;}
+  const ok = v === T_ANS[n];
+  TS[n]={ans:v,ok};
+  const inp=document.getElementById('ta'+n);
+  inp.classList.remove('iok','ing'); inp.classList.add(ok?'iok':'ing');
+  const card=document.getElementById('tqc'+n);
+  card.classList.remove('aok','ang'); card.classList.add(ok?'aok':'ang');
+  const r=document.getElementById('tr_q'+n);
+  if(ok){ r.innerHTML='<span class="rok">✓ 정답입니다! 🎉</span>'; document.getElementById('th'+n).style.display='none';}
+  else  { r.innerHTML='<span class="rng">✗ 오답입니다. 힌트를 확인해봐요!</span>'; document.getElementById('th'+n).style.display='block';}
+  refresh();
+}
+
+function doShake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);}
+
+/* ── 대시보드 ── */
+function refresh(){
+  const lok=Object.values(LS).filter(s=>s.ok).length;
+  const tok=Object.values(TS).filter(s=>s.ok).length;
+  const done=Object.keys(LS).length+Object.keys(TS).length;
+  const ok=lok+tok;
+  const score=Math.round(ok/TOTAL*100);
+  document.getElementById('db-lok').textContent=lok;
+  document.getElementById('db-tok').textContent=tok;
+  document.getElementById('db-ok').textContent=ok;
+  document.getElementById('db-score').textContent=done>0?score+'점':'—';
+  document.getElementById('pbar').style.width=Math.round(done/TOTAL*100)+'%';
+  document.getElementById('db-pct').textContent=done+' / '+TOTAL+' 완료';
+  renderSumTable();
+  const btn=document.getElementById('sub-btn');
+  btn.disabled=done<TOTAL;
+  document.getElementById('sub-hint').textContent=
+    done<TOTAL?'모든 문항(20개)을 풀면 제출 버튼이 활성화됩니다 ('+done+' / '+TOTAL+')':
+    '✅ 제출 준비 완료!';
+}
+
+function renderSumTable(){
+  const tb=document.getElementById('sum-body');tb.innerHTML='';
+  for(let i=1;i<=10;i++){
+    const s=LS[i];const tr=document.createElement('tr');
+    tr.innerHTML='<td style="color:var(--tl);font-weight:700">L'+i+'</td>'+
+      '<td style="font-size:12px;color:var(--sub)">'+L_SUM[i]+'</td>'+
+      '<td class="'+(s?'':'tpd')+'">'+(s?s.ans:'—')+'</td>'+
+      '<td style="text-align:center" class="'+(s?(s.ok?'tok':'tng'):'tpd')+'">'+(s?(s.ok?'✅':'❌'):'⬜')+'</td>';
+    tb.appendChild(tr);
+  }
+  for(let i=1;i<=10;i++){
+    const s=TS[i];const tr=document.createElement('tr');
+    tr.innerHTML='<td style="color:var(--tp);font-weight:700">T'+i+'</td>'+
+      '<td style="font-size:12px;color:var(--sub)">'+T_SUM[i]+'</td>'+
+      '<td class="'+(s?'':'tpd')+'">'+(s?s.ans:'—')+'</td>'+
+      '<td style="text-align:center" class="'+(s?(s.ok?'tok':'tng'):'tpd')+'">'+(s?(s.ok?'✅':'❌'):'⬜')+'</td>';
+    tb.appendChild(tr);
+  }
+}
+
+/* ── Google Forms 제출 (prefill URL) ── */
+function openPopup(){
+  /* ╔══════════════════════════════════════════════════════╗
+     ║ 선생님 설정: 아래 두 곳을 실제 값으로 교체하세요   ║
+     ║ 방법: 폼 편집 → ⋮ → 사전 채우기 링크 가져오기    ║
+     ╚══════════════════════════════════════════════════════╝ */
+  const FORM_BASE_URL='https://docs.google.com/forms/d/e/1FAIpQLSf2vnHi2KuBKIIM6q3TPOBGeoc0zkp_HZs4fE_-Yf4J-7MauA/viewform';
+  const EID={
+    name:'entry.935111361',
+    l1:'entry.1411968405',  l2:'entry.534436976',  l3:'entry.1948397509',
+    l4:'entry.1750351810',  l5:'entry.738911780',  l6:'entry.956006431',
+    l7:'entry.522823629',  l8:'entry.535789136',  l9:'entry.1048033442',
+    l10:'entry.828137324',
+    t1:'entry.922573397',  t2:'entry.1146897819',  t3:'entry.42173377',
+    t4:'entry.577359462',  t5:'entry.460163276',  t6:'entry.19429222',
+    t7:'entry.1287733861',  t8:'entry.636957337',  t9:'entry.15878747',
+    t10:'entry.484144834', score:'entry.1160172236',
+  };
+  /* ═══════════════ 설정 끝 ═══════════════ */
+
+  const name=document.getElementById('stu-name').value.trim();
+  if(!name){document.getElementById('nw').style.display='block';document.querySelector('.sub-panel').scrollIntoView({behavior:'smooth'});return;}
+  document.getElementById('nw').style.display='none';
+
+  const lok=Object.values(LS).filter(s=>s.ok).length;
+  const tok=Object.values(TS).filter(s=>s.ok).length;
+  const ok=lok+tok; const score=Math.round(ok/TOTAL*100);
+
+  // 팝업
+  const ps=document.getElementById('pp-score');
+  ps.textContent=score+'점';
+  ps.style.color=score>=90?'var(--ok)':score>=70?'var(--tl)':score>=60?'var(--wn)':'var(--ng)';
+  document.getElementById('pp-grade').textContent=
+    score>=90?'🏆 A등급 — 우수!':score>=80?'🥈 B등급 — 잘했어요!':
+    score>=70?'🥉 C등급 — 조금 더!':score>=60?'📚 D등급 — 복습 필요':'💪 다시 도전!';
+  document.getElementById('pp-name').textContent=name;
+  document.getElementById('pp-list').textContent=lok+'/10 정답';
+  document.getElementById('pp-tuple').textContent=tok+'/10 정답';
+  document.getElementById('pp-ratio').textContent=ok+' / '+TOTAL;
+
+  // prefill URL 생성
+  const pa=new URLSearchParams();
+  pa.set(EID.name,name);
+  for(let i=1;i<=10;i++){pa.set(EID['l'+i],(LS[i]&&LS[i].ans)||'');pa.set(EID['t'+i],(TS[i]&&TS[i].ans)||'');}
+  pa.set(EID.score,score+'점 ('+ok+'/'+TOTAL+')');
+  const url=FORM_BASE_URL+'?'+pa.toString();
+
+  const fb=document.getElementById('form-btn');
+  const cw=document.getElementById('cfg-warn');
+  fb.style.display='block';
+  const configured=!FORM_BASE_URL.includes('여기에');
+  if(configured){
+    cw.style.display='none';
+    fb.textContent='답안 제출하기';
+    fb.onclick=function(){window.open(url,'_blank');};
+  } else {
+    cw.style.display='block';
+    cw.innerHTML='⚙️ <strong>설정 필요:</strong> FORM_BASE_URL과 EID를 실제 Google Forms 값으로 교체해주세요.';
+    fb.textContent='답안 제출하기';
+    fb.onclick=function(){console.log('[Prefill URL]\n'+url);alert('FORM_BASE_URL이 아직 설정되지 않았습니다.');};
+  }
+  document.getElementById('pbg').style.display='flex';
+}
+function closePopup(){document.getElementById('pbg').style.display='none';}
+document.getElementById('pbg').addEventListener('click',function(e){if(e.target===this)closePopup();});
+
+/* ── 연습 예제 실행 ── */
+function parseArr(str){return str.split(',').map(s=>s.trim()).filter(s=>s!=='').map(s=>{const n=Number(s);return isNaN(n)?s:n;});}
+function fmtArr(a,isTuple){const body=a.map(v=>typeof v==='string'?"'"+v+"'":v).join(', ');return isTuple?'('+body+')':'['+body+']';}
+function showRes(id,html,color){const el=document.getElementById(id);if(!el)return;el.innerHTML='<span class="rl">결과</span><span style="color:'+(color||'var(--text)')+'">'+html+'</span>';el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),300);}
+
+// 리스트 연습 실행
+const L_RUNNERS = {
+  1:(a)=>'type: list &nbsp;|&nbsp; len: <strong>'+a.length+'</strong>',
+  2:(a)=>'a[0]=<strong>\''+a[0]+'\'</strong> &nbsp;|&nbsp; a[2]=<strong>\''+a[2]+'\'</strong>',
+  3:(a)=>'a[-1]=<strong>\''+a[a.length-1]+'\'</strong> &nbsp;|&nbsp; a[-2]=<strong>\''+a[a.length-2]+'\'</strong>',
+  4:(a)=>{const s=a.slice(1,4);return 'a[1:4]=[<strong>'+s.join(', ')+'</strong>] &nbsp;|&nbsp; a[:3]=[<strong>'+a.slice(0,3).join(', ')+'</strong>]';},
+  5:(a)=>{const r=[...a,a[a.length-1]+1||4];return 'append 후: [<strong>'+r.join(', ')+'</strong>] &nbsp;|&nbsp; len=<strong>'+r.length+'</strong>';},
+  6:(a)=>{const r=[...a];if(r.length>1)r.splice(1,1);return 'remove 후: [<strong>'+r.map(v=>typeof v==='string'?"'"+v+"'":v).join(', ')+'</strong>]';},
+  7:(a)=>{const nums=a.filter(x=>typeof x==='number');if(!nums.length)return '숫자 리스트를 입력해주세요';const r=[...nums].sort((a,b)=>a-b);return 'sort 후: [<strong>'+r.join(', ')+'</strong>] &nbsp;|&nbsp; a[0]=<strong>'+r[0]+'</strong>';},
+  8:(a)=>{const nums=a.filter(x=>typeof x==='number');if(!nums.length)return '숫자 리스트를 입력해주세요';return 'sum=<strong>'+nums.reduce((s,v)=>s+v,0)+'</strong> &nbsp;|&nbsp; max=<strong>'+Math.max(...nums)+'</strong> &nbsp;|&nbsp; min=<strong>'+Math.min(...nums)+'</strong>';},
+  9:(a)=>'a+a=[<strong>'+[...a,...a].map(v=>typeof v==='string'?"'"+v+"'":v).join(', ')+'</strong>]',
+  10:(a)=>'\'' + a[0] + '\' in a → <strong>' + (a.length > 0 ? 'True' : 'False') + '</strong> &nbsp;|&nbsp; \'없는값\' in a → <strong>False</strong>',
+};
+function runList(n){
+  const raw=document.getElementById('lv'+n).value;
+  const a=parseArr(raw);
+  const fn=L_RUNNERS[n];
+  if(fn) showRes('lr'+n, fn(a), 'var(--tl)');
+}
+
+// 튜플 연습 실행
+const T_RUNNERS = {
+  1:(t)=>'type: tuple &nbsp;|&nbsp; len: <strong>'+t.length+'</strong>',
+  2:(t)=>'t[0]=<strong>\''+t[0]+'\'</strong> &nbsp;|&nbsp; t[2]=<strong>\''+t[2]+'\'</strong> &nbsp;|&nbsp; t[-1]=<strong>\''+t[t.length-1]+'\'</strong>',
+  3:(t)=>{const s=t.slice(1,4);return 't[1:4]=('+s.map(v=>typeof v==='string'?'\''
++v+'\'' : v).join(', ')+') &nbsp;|&nbsp; t[:3]=('+t.slice(0,3).map(v=>typeof v==='string'?'\''
++v+'\'' : v).join(', ')+')';},
+  4:(t)=>'name=<strong>\''+t[0]+'\'</strong> &nbsp;|&nbsp; val2=<strong>'+t[1]+'</strong> &nbsp;|&nbsp; val3=<strong>\''+t[2]+'\'</strong>',
+  5:(t)=>'t[0]=<strong>'+t[0]+'</strong> (읽기 OK) &nbsp;|&nbsp; t[0]=99 → <strong style="color:var(--ng)">TypeError!</strong>',
+  6:(t)=>{const r=[...t,...t];return fmtArr(t,true)+' + '+fmtArr(t,true)+' = (<strong>'+r.map(v=>typeof v==='string'?"'"+v+"'":v).join(', ')+'</strong>)';},
+  7:(t)=>{const nums=t.filter(x=>typeof x==='number');if(!nums.length)return '숫자 튜플을 입력해주세요';const v=nums[0];const cnt=nums.filter(x=>x===v).length;return 'count('+v+'): <strong>'+cnt+'</strong> &nbsp;|&nbsp; 첫번째값: '+v;},
+  8:(t)=>{const nums=t.filter((_,i)=>i<2).map(v=>typeof v==='number'?v:0);return 'index('+t[0]+'): <strong>0</strong>';},
+  9:(t)=>'\''+t[0]+'\' in t → <strong>True</strong> &nbsp;|&nbsp; \'없는값\' in t → <strong>False</strong>',
+  10:(t)=>'students[0]=(<strong>\''+t[0]+'\', '+t[1]+'</strong>) &nbsp;|&nbsp; [0][0]=<strong>\''+t[0]+'\'</strong>',
+};
+function runTuple(n){
+  const raw=document.getElementById('tv'+n).value;
+  const t=parseArr(raw);
+  const fn=T_RUNNERS[n];
+  if(fn) showRes('tr'+n, fn(t), 'var(--tp)');
+}
+
+/* ── 인덱싱 체험 ── */
+function doIdx(){
+  const type=document.getElementById('idx_type').value;
+  const raw=document.getElementById('idx_data').value;
+  const n=parseInt(document.getElementById('idx_n').value)||0;
+  const a=parseArr(raw);
+  const idx=n<0?a.length+n:n;
+  const isTuple=type==='tuple';
+  const bracket=isTuple?'( )':'[ ]';
+  if(idx<0||idx>=a.length){showRes('r_idx','⚠️ 범위 초과! IndexError 발생','var(--ng)');return;}
+  const val=a[idx];
+  showRes('r_idx',
+    (isTuple?'t':'a')+'['+n+'] = <strong>'+(typeof val==='string'?"'"+val+"'":val)+'</strong><br>'+
+    '<span style="font-size:12px;color:var(--sub)">'+bracket+' '+type+'에서 대괄호 <strong>[ ]</strong>로 인덱싱 → 규칙은 동일!</span>',
+    isTuple?'var(--tp)':'var(--tl)');
+}
+
+/* ── 네비 도트 ── */
+const SECS=['s0','s1','s2','s3','s4','s5','s6','s7','s8'];
+const LABELS=['홈','괄호 정리','인덱싱','리스트 연습','비교','튜플 연습','리스트 평가','튜플 평가','제출'];
+const nav=document.getElementById('navDots');
+SECS.forEach((id,i)=>{
+  const d=document.createElement('div');d.className='ndot';d.title=LABELS[i];
+  d.onclick=()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+  nav.appendChild(d);
+});
+window.addEventListener('scroll',()=>{
+  const mid=scrollY+innerHeight/2;
+  SECS.forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    document.querySelectorAll('.ndot')[i].classList.toggle('active',mid>=el.offsetTop&&mid<el.offsetTop+el.offsetHeight);
+  });
+  const t=document.body.scrollHeight-innerHeight;
+  document.getElementById('prg').style.width=(t>0?Math.round(scrollY/t*100):0)+'%';
+});
+function g(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
+
+/* 초기 */
+renderSumTable();
+</script>
+</body>
+</html>
