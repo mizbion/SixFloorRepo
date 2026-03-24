@@ -1,0 +1,37 @@
+name: Update index.html
+
+on:
+  push:
+    paths:
+      - 'py/**/*.html'
+      - 'ai/**/*.html'
+      - 'web/**/*.html'
+    branches:
+      - main
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 전체 히스토리 필요 (push된 파일 감지용)
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run index updater
+        run: python scripts/update_index.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && echo "변경 없음, 스킵" || \
+          git commit -m "auto: index.html 갱신 [skip ci]"
+          git push
