@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+  <!-- meta:unit=0. 웹 기초 -->
+  <!-- meta:title=웹의 작동 원리와 기초 개념 -->
+  <!-- meta:desc=인터넷/웹 차이, 브라우저, 서버/클라이언트, HTTP, URL, HTML/CSS/JS 역할 -->
+  <!-- meta:date=2026-03-25 -->
+  <title>웹의 작동 원리와 기초 개념 | 웹개발</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:  #f0fdf4;
+      --card:#ffffff;
+      --s2:  #dcfce7;
+      --s3:  #bbf7d0;
+      --bdr: #86efac;
+      --text:#052e16;
+      --sub: #3d7a57;
+      --ac:  #15803d;
+      --acl: #f0fdf4;
+      --acb: #86efac;
+      --c1:#b45309;--c1l:#fffbeb;--c1b:#fde68a;
+      --c2:#1d4ed8;--c2l:#eff6ff;--c2b:#bfdbfe;
+      --c3:#7c3aed;--c3l:#f5f3ff;--c3b:#ddd6fe;
+      --c4:#be185d;--c4l:#fdf2f8;--c4b:#fbcfe8;
+      --c5:#0e7490;--c5l:#ecfeff;--c5b:#a5f3fc;
+      --c6:#9a3412;--c6l:#fff7ed;--c6b:#fed7aa;
+      --sh:0 2px 14px rgba(21,128,61,.10);
+      --shm:0 6px 28px rgba(21,128,61,.18);
+      --ok:#15803d; --ng:#be185d;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;line-height:1.7;}
+
+    /* 헤더 */
+    #hdr{position:sticky;top:0;z-index:100;background:#071a0e;color:#fff;
+      display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;gap:12px;}
+    .hbadge{background:var(--ac);color:#fff;font-family:'Black Han Sans',sans-serif;
+      font-size:12px;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+    .htitle{font-family:'Black Han Sans',sans-serif;font-size:16px;flex:1;text-align:center;}
+    .hmeta{font-size:12px;color:#9ca;white-space:nowrap;}
+    #prog{position:absolute;bottom:0;left:0;height:3px;
+      background:linear-gradient(90deg,var(--ac),#4ade80);width:0%;transition:width .2s;}
+
+    /* 히어로 */
+    .hero{text-align:center;padding:60px 24px 48px;background:linear-gradient(160deg,#e8faf0 55%,#d1fae5);}
+    .hero-emoji{font-size:72px;display:block;margin-bottom:16px;animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(24px,5vw,42px);
+      background:linear-gradient(135deg,var(--ac),#4ade80);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+    .hero p{color:var(--sub);font-size:16px;margin-bottom:24px;}
+    .badge-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+    .cbadge{background:var(--card);border:1.5px solid var(--bdr);border-radius:20px;
+      padding:4px 14px;font-size:13px;font-weight:500;color:var(--ac);}
+
+    /* 목차 */
+    .toc-wrap{max-width:900px;margin:0 auto;padding:0 24px 40px;}
+    .toc{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:28px;border:1px solid var(--bdr);}
+    .toc h2{font-family:'Black Han Sans',sans-serif;font-size:18px;margin-bottom:16px;color:var(--ac);}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .toc-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;
+      background:var(--s2);border:1px solid var(--bdr);cursor:pointer;transition:all .2s;
+      text-decoration:none;color:var(--text);}
+    .toc-item:hover{background:var(--acl);border-color:var(--ac);transform:translateX(3px);}
+    .toc-num{width:26px;height:26px;border-radius:50%;background:var(--ac);color:#fff;
+      font-family:'Black Han Sans',sans-serif;font-size:12px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .toc-label{font-size:14px;font-weight:500;}
+
+    /* 본문 */
+    .main{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+    .sec-hdr{display:flex;align-items:center;gap:14px;margin:52px 0 20px;}
+    .sec-num{width:38px;height:38px;border-radius:50%;background:var(--ac);color:#fff;
+      font-family:'Black Han Sans',sans-serif;font-size:16px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .sec-hdr h2{font-family:'Black Han Sans',sans-serif;font-size:22px;}
+    .sec-sub{font-size:13px;color:var(--sub);font-weight:400;}
+
+    /* 카드 — 절대 card 안에 card 없음 */
+    .card{background:var(--card);border-radius:12px;border:1px solid var(--bdr);
+      box-shadow:var(--sh);padding:24px;margin-bottom:16px;border-top:4px solid var(--ac);}
+    .card h3{font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:14px;color:var(--ac);}
+    .card p,.card li{font-size:14px;line-height:1.9;}
+    .card ul,.card ol{padding-left:20px;}
+    .card ul li,.card ol li{margin-bottom:6px;}
+
+    /* 2열 그리드 — 내부엔 ibox만 */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+    .ibox{background:var(--s2);border:1px solid var(--bdr);border-radius:10px;padding:16px;}
+    .ibox-title{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--ac);margin-bottom:8px;}
+    .ibox p,.ibox li{font-size:13px;line-height:1.8;}
+    .ibox ul{padding-left:16px;}
+
+    .concept{background:var(--s2);border-radius:10px;padding:16px 20px;margin:12px 0;
+      border-left:4px solid var(--ac);font-size:14px;line-height:1.9;}
+    code{font-family:'JetBrains Mono',monospace;background:var(--s3);
+      padding:1px 6px;border-radius:4px;font-size:13px;color:var(--ac);font-weight:600;}
+
+    .tip{border-radius:10px;padding:14px 18px;margin:12px 0;font-size:14px;
+      display:flex;gap:10px;align-items:flex-start;line-height:1.8;}
+    .tip.blue  {background:var(--c2l);border-left:4px solid var(--c2);}
+    .tip.green {background:var(--acl);border-left:4px solid var(--ac);}
+    .tip.orange{background:var(--c1l);border-left:4px solid var(--c1);}
+    .tip.purple{background:var(--c3l);border-left:4px solid var(--c3);}
+    .tip.teal  {background:var(--c5l);border-left:4px solid var(--c5);}
+    .tip-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+
+    /* ── 타임라인 ── */
+    .timeline{margin:14px 0;display:flex;flex-direction:column;gap:0;}
+    .tl-item{display:flex;gap:0;position:relative;}
+    .tl-item:not(:last-child)::after{content:'';position:absolute;
+      left:19px;top:42px;bottom:0;width:2px;background:var(--bdr);z-index:0;}
+    .tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:40px;z-index:1;}
+    .tl-dot{width:38px;height:38px;border-radius:50%;background:var(--ac);color:#fff;
+      font-family:'Black Han Sans',sans-serif;font-size:11px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      border:3px solid var(--bg);}
+    .tl-body{flex:1;padding:8px 0 24px 16px;}
+    .tl-year{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--ac);margin-bottom:4px;}
+    .tl-desc{font-size:14px;line-height:1.8;color:var(--text);}
+    .tl-desc strong{color:var(--ac);}
+    .tl-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;
+      margin-left:6px;vertical-align:middle;font-family:'JetBrains Mono',monospace;}
+
+    /* ── 흐름도 (요청-응답) ── */
+    .flow{display:flex;align-items:center;justify-content:center;
+      flex-wrap:wrap;gap:0;margin:14px 0;}
+    .flow-node{border-radius:10px;padding:14px 18px;text-align:center;min-width:110px;}
+    .flow-arrow{font-size:22px;color:var(--sub);padding:0 6px;align-self:center;}
+    .fn-client{background:var(--c2l);border:2px solid var(--c2b);}
+    .fn-net   {background:var(--s2); border:2px solid var(--bdr);}
+    .fn-server{background:var(--c6l);border:2px solid var(--c6b);}
+    .fn-title{font-family:'Black Han Sans',sans-serif;font-size:13px;margin-bottom:4px;}
+    .fn-sub  {font-size:11px;color:var(--sub);}
+    .fn-client .fn-title{color:var(--c2);}
+    .fn-server .fn-title{color:var(--c6);}
+
+    /* ── 용어 카드 그리드 ── */
+    .term-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+      gap:12px;margin:14px 0;}
+    .term-card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;
+      border-top:3px solid var(--ac);}
+    .term-word{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;
+      color:var(--ac);margin-bottom:4px;}
+    .term-ko  {font-size:12px;color:var(--sub);margin-bottom:8px;}
+    .term-desc{font-size:13px;line-height:1.7;color:var(--text);}
+
+    /* ── 역할 비교 (HTML/CSS/JS) ── */
+    .role-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0;}
+    .role-card{border-radius:12px;padding:18px;text-align:center;}
+    .rc-html{background:var(--c6l);border:2px solid var(--c6b);}
+    .rc-css {background:var(--c2l);border:2px solid var(--c2b);}
+    .rc-js  {background:var(--c1l);border:2px solid var(--c1b);}
+    .role-emoji{font-size:32px;margin-bottom:8px;}
+    .role-name{font-family:'Black Han Sans',sans-serif;font-size:16px;margin-bottom:6px;}
+    .rc-html .role-name{color:var(--c6);}
+    .rc-css  .role-name{color:var(--c2);}
+    .rc-js   .role-name{color:var(--c1);}
+    .role-desc{font-size:13px;line-height:1.7;color:var(--text);}
+    .role-ex{font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;
+      padding:4px 8px;border-radius:6px;display:inline-block;}
+    .rc-html .role-ex{background:var(--c6b);color:var(--c6);}
+    .rc-css  .role-ex{background:var(--c2b);color:var(--c2);}
+    .rc-js   .role-ex{background:var(--c1b);color:var(--c1);}
+
+    /* ── URL 해부 ── */
+    .url-anatomy{display:flex;flex-wrap:wrap;gap:2px;margin:14px 0;
+      font-family:'JetBrains Mono',monospace;font-size:14px;}
+    .ua-part{padding:10px 12px;text-align:center;border-radius:6px;}
+    .ua-part small{display:block;font-size:10px;margin-top:4px;
+      font-family:'Noto Sans KR',sans-serif;font-weight:700;}
+    .ua-proto{background:var(--c3l);border:2px solid var(--c3b);color:var(--c3);}
+    .ua-proto small{color:var(--c3);}
+    .ua-domain{background:var(--c2l);border:2px solid var(--c2b);color:var(--c2);}
+    .ua-domain small{color:var(--c2);}
+    .ua-path{background:var(--c2l);border:2px dashed var(--c2b);color:var(--c2);}
+    .ua-path small{color:var(--c2);}
+    .ua-sep{background:var(--s2);border:2px solid var(--bdr);color:var(--sub);min-width:28px;}
+    .ua-sep small{color:var(--sub);}
+
+    /* ── 비교 표 ── */
+    .cmp-tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+    .cmp-tbl th{background:var(--s3);padding:10px 14px;text-align:left;
+      border-bottom:2px solid var(--bdr);font-family:'Black Han Sans',sans-serif;font-size:13px;}
+    .cmp-tbl td{padding:10px 14px;border-bottom:1px solid var(--bdr);vertical-align:top;}
+    .cmp-tbl tr:last-child td{border-bottom:none;}
+    .cmp-tbl tr:hover td{background:var(--s2);}
+
+    /* ── 브라우저 렌더링 단계 ── */
+    .render-steps{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:14px 0;}
+    .rs-step{background:var(--s2);border:1.5px solid var(--bdr);border-radius:8px;
+      padding:10px 14px;text-align:center;flex:1;min-width:100px;}
+    .rs-arrow{color:var(--sub);font-size:20px;padding:0 4px;flex-shrink:0;}
+    .rs-num{font-family:'Black Han Sans',sans-serif;font-size:11px;color:var(--ac);margin-bottom:4px;}
+    .rs-label{font-size:12px;font-weight:700;color:var(--text);}
+    .rs-sub{font-size:10px;color:var(--sub);margin-top:2px;}
+
+    /* ── 퀴즈 ── */
+    .quiz-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+      padding:20px;margin:12px 0;border-left:4px solid var(--ac);}
+    .qmeta{font-size:12px;color:var(--sub);margin-bottom:8px;}
+    .qq{font-size:14px;font-weight:500;margin-bottom:12px;line-height:1.8;}
+    .qrow{display:flex;gap:8px;}
+    .qinput{flex:1;background:var(--s2);border:1.5px solid var(--bdr);border-radius:8px;
+      padding:8px 12px;font-family:'Noto Sans KR',sans-serif;font-size:13px;
+      color:var(--text);outline:none;transition:border-color .2s;}
+    .qinput:focus{border-color:var(--ac);background:#fff;}
+    .qinput:disabled{opacity:.5;}
+    .qinput.iok{border-color:var(--ok);background:#f0fdf4;}
+    .qinput.ing{border-color:var(--ng);background:#fdf2f8;}
+    .qbtn{background:var(--ac);color:#fff;border:none;border-radius:8px;
+      padding:8px 16px;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:13px;transition:all .2s;}
+    .qbtn:hover:not(:disabled){transform:translateY(-1px);}
+    .qbtn:disabled{opacity:.4;cursor:default;}
+    .qfb{margin-top:10px;font-size:13px;font-weight:500;min-height:22px;}
+    .ok{color:var(--ok);}.ng{color:var(--ng);}
+
+    /* 대시보드 */
+    .dashboard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+      padding:24px;margin-bottom:16px;box-shadow:var(--sh);}
+    .db-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .db-title{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--ac);}
+    .db-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+    .db-box{background:var(--s2);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--bdr);}
+    .db-lb{font-size:11px;color:var(--sub);margin-bottom:4px;}
+    .db-vl{font-family:'Black Han Sans',sans-serif;font-size:22px;}
+    .ptrack{background:var(--s3);border-radius:10px;height:8px;overflow:hidden;}
+    .pbar{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#4ade80);
+      border-radius:10px;transition:width .4s;}
+
+    /* 제출 패널 */
+    .sub-panel{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+      padding:28px;margin-bottom:16px;box-shadow:var(--sh);}
+    .sub-title{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--ac);margin-bottom:16px;}
+    .sum-tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+    .sum-tbl th{background:var(--s3);padding:9px 12px;text-align:left;
+      border-bottom:2px solid var(--bdr);font-family:'Black Han Sans',sans-serif;font-size:12px;}
+    .sum-tbl td{padding:9px 12px;border-bottom:1px solid var(--bdr);}
+    .sum-tbl tr:last-child td{border-bottom:none;}
+    .tok{color:var(--ok);font-weight:700;}.tng{color:var(--ng);font-weight:700;}.tpd{color:var(--sub);font-style:italic;}
+    .name-row{display:flex;align-items:center;gap:12px;margin:18px 0 8px;}
+    .name-lb{font-weight:700;font-size:14px;white-space:nowrap;}
+    .name-in{flex:1;background:var(--s2);border:1.5px solid var(--bdr);border-radius:8px;
+      padding:10px 14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;
+      color:var(--text);outline:none;transition:border-color .2s;}
+    .name-in:focus{border-color:var(--ac);background:#fff;}
+    #nw{color:var(--ng);font-size:13px;margin-bottom:8px;display:none;}
+    .sub-btn{display:block;width:100%;padding:14px;background:var(--ac);color:#fff;
+      border:none;border-radius:10px;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:16px;transition:all .2s;margin-top:16px;}
+    .sub-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:var(--shm);}
+    .sub-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+    /* 팝업 */
+    .pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;
+      align-items:center;justify-content:center;padding:20px;}
+    .popup{background:#fff;border-radius:20px;padding:34px 38px;max-width:500px;width:100%;
+      box-shadow:0 16px 60px rgba(0,0,0,.25);position:relative;max-height:90vh;
+      overflow-y:auto;animation:pu .3s ease;}
+    @keyframes pu{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+    .pp-close{position:absolute;top:16px;right:16px;background:var(--s2);border:none;
+      border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:14px;color:var(--sub);}
+    .pp-score{font-family:'Black Han Sans',sans-serif;font-size:56px;line-height:1;
+      text-align:center;margin:8px 0 4px;}
+    .pp-grade{text-align:center;font-size:16px;font-weight:700;margin-bottom:16px;}
+    .pp-detail{background:var(--s2);border-radius:10px;padding:14px 18px;margin:14px 0;}
+    .ppd-row{display:flex;justify-content:space-between;padding:6px 0;
+      border-bottom:1px solid var(--bdr);font-size:14px;}
+    .ppd-row:last-child{border-bottom:none;}
+    .form-btn{display:block;width:100%;padding:14px;background:var(--ac);color:#fff;
+      border:none;border-radius:10px;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:15px;transition:all .2s;margin:16px 0 8px;}
+    .form-btn:hover:not(:disabled){transform:translateY(-2px);}
+    .form-btn:disabled{opacity:.6;cursor:not-allowed;}
+    .cancel-btn{display:block;width:100%;padding:10px;background:var(--s2);color:var(--sub);
+      border:1px solid var(--bdr);border-radius:10px;cursor:pointer;
+      font-family:'Noto Sans KR',sans-serif;font-size:14px;}
+    .cfg-warn{display:none;font-size:12px;color:var(--ng);background:var(--c4l);
+      border-radius:8px;padding:10px 14px;margin-top:8px;}
+
+    /* 네비 도트 */
+    #navdot{position:fixed;right:16px;top:50%;transform:translateY(-50%);
+      display:flex;flex-direction:column;gap:8px;z-index:99;}
+    .ndot{width:10px;height:10px;border-radius:50%;background:var(--bdr);cursor:pointer;transition:all .2s;}
+    .ndot.active{background:var(--ac);transform:scale(1.3);}
+    .ndot:hover{background:var(--ac);opacity:.7;}
+
+    @media(max-width:640px){
+      .toc-grid,.two-col,.role-row{grid-template-columns:1fr;}
+      .render-steps{flex-direction:column;}
+      .rs-arrow{transform:rotate(90deg);}
+      .db-grid{grid-template-columns:repeat(2,1fr);}
+      .url-anatomy{font-size:12px;}
+      #navdot{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<header id="hdr">
+  <span class="hbadge">0.5차시 · 웹 기초</span>
+  <span class="htitle">🌐 웹의 작동 원리</span>
+  <span class="hmeta">웹개발 입문</span>
+  <div id="prog"></div>
+</header>
+
+<nav id="navdot">
+  <div class="ndot active" onclick="goSec(0)"></div>
+  <div class="ndot" onclick="goSec(1)"></div>
+  <div class="ndot" onclick="goSec(2)"></div>
+  <div class="ndot" onclick="goSec(3)"></div>
+  <div class="ndot" onclick="goSec(4)"></div>
+  <div class="ndot" onclick="goSec(5)"></div>
+  <div class="ndot" onclick="goSec(6)"></div>
+  <div class="ndot" onclick="goSec(7)"></div>
+  <div class="ndot" onclick="goSec(8)"></div>
+</nav>
+
+<section class="hero" id="s0">
+  <span class="hero-emoji">🌐</span>
+  <h1>웹의 작동 원리와 기초 개념</h1>
+  <p>HTML을 배우기 전에 꼭 알아야 할 웹의 세계</p>
+  <div class="badge-row">
+    <span class="cbadge">📡 인터넷 vs 웹</span>
+    <span class="cbadge">🖥️ 서버 & 클라이언트</span>
+    <span class="cbadge">🔗 URL & HTTP</span>
+    <span class="cbadge">🏗️ HTML·CSS·JS 역할</span>
+    <span class="cbadge">🌍 웹의 역사</span>
+  </div>
+</section>
+
+<div class="toc-wrap">
+  <div class="toc">
+    <h2>📋 목차</h2>
+    <div class="toc-grid">
+      <a class="toc-item" onclick="goSec(1)"><div class="toc-num">1</div><span class="toc-label">인터넷 vs 웹 — 같은 걸까?</span></a>
+      <a class="toc-item" onclick="goSec(2)"><div class="toc-num">2</div><span class="toc-label">웹의 역사 (타임라인)</span></a>
+      <a class="toc-item" onclick="goSec(3)"><div class="toc-num">3</div><span class="toc-label">서버와 클라이언트</span></a>
+      <a class="toc-item" onclick="goSec(4)"><div class="toc-num">4</div><span class="toc-label">URL & HTTP 이해하기</span></a>
+      <a class="toc-item" onclick="goSec(5)"><div class="toc-num">5</div><span class="toc-label">HTML · CSS · JS 역할</span></a>
+      <a class="toc-item" onclick="goSec(6)"><div class="toc-num">6</div><span class="toc-label">브라우저는 어떻게 작동하나?</span></a>
+      <a class="toc-item" onclick="goSec(7)"><div class="toc-num">7</div><span class="toc-label">꼭 알아야 할 웹 용어 사전</span></a>
+      <a class="toc-item" onclick="goSec(8)"><div class="toc-num">8</div><span class="toc-label">✏️ 확인 퀴즈 & 제출</span></a>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- ══ 1: 인터넷 vs 웹 ══ -->
+  <div class="sec-hdr" id="s1">
+    <div class="sec-num">1</div>
+    <div><h2>인터넷 vs 웹 — 같은 걸까?</h2><span class="sec-sub">헷갈리기 쉬운 두 개념의 차이</span></div>
+  </div>
+
+  <div class="card">
+    <h3>🤔 인터넷과 웹, 어떻게 다를까?</h3>
+    <div class="concept">
+      많은 사람들이 <strong>인터넷</strong>과 <strong>웹(World Wide Web)</strong>을 같은 말로 씁니다.<br>
+      하지만 둘은 엄연히 다른 개념이에요!
+    </div>
+    <div class="two-col">
+      <div class="ibox" style="border-top:3px solid var(--c2);background:var(--c2l);border-color:var(--c2b);">
+        <div class="ibox-title" style="color:var(--c2);font-size:16px">📡 인터넷 (Internet)</div>
+        <p style="margin-bottom:8px"><strong>전 세계 컴퓨터들을 연결하는 거대한 네트워크 인프라</strong>입니다.</p>
+        <ul>
+          <li>케이블, 라우터, 서버들의 물리적 연결망</li>
+          <li>이메일, 웹, 파일 전송 등 모두 인터넷 위에서 동작</li>
+          <li>1969년 미국 군사망 ARPANET에서 시작</li>
+        </ul>
+        <div style="margin-top:10px;font-size:13px;color:var(--c2)">🏗️ 비유: <strong>도로망 (고속도로·국도)</strong></div>
+      </div>
+      <div class="ibox" style="border-top:3px solid var(--ac);background:var(--acl);border-color:var(--acb);">
+        <div class="ibox-title" style="color:var(--ac);font-size:16px">🌐 웹 (Web)</div>
+        <p style="margin-bottom:8px"><strong>인터넷 위에서 작동하는 서비스 중 하나</strong>입니다.</p>
+        <ul>
+          <li>HTML 문서들이 링크로 연결된 정보 공간</li>
+          <li>브라우저로 접속해서 사용</li>
+          <li>1991년 팀 버너스리가 발명</li>
+        </ul>
+        <div style="margin-top:10px;font-size:13px;color:var(--ac)">🚗 비유: <strong>도로 위를 달리는 자동차</strong></div>
+      </div>
+    </div>
+    <div class="tip blue">
+      <span class="tip-icon">💡</span>
+      <div>인터넷 위에서 작동하는 서비스: <strong>웹(http)</strong>, 이메일(email), 파일전송(FTP), 온라인게임 등. 웹은 그 중 하나예요!</div>
+    </div>
+  </div>
+
+  <!-- ══ 2: 역사 타임라인 ══ -->
+  <div class="sec-hdr" id="s2">
+    <div class="sec-num">2</div>
+    <div><h2>웹의 역사</h2><span class="sec-sub">30년 만에 세상을 바꾼 기술</span></div>
+  </div>
+
+  <div class="card">
+    <h3>📅 웹 기술 핵심 타임라인</h3>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">1969</div></div>
+        <div class="tl-body">
+          <div class="tl-year">1969 — ARPANET 탄생</div>
+          <div class="tl-desc">미국 국방부가 핵전쟁에도 살아남는 통신망을 만들기 위해 개발. 최초의 인터넷 프로토타입으로, <strong>4개 대학</strong>의 컴퓨터를 처음 연결했습니다.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">1991</div></div>
+        <div class="tl-body">
+          <div class="tl-year">1991 — WWW 탄생 <span class="tl-tag" style="background:var(--acl);color:var(--ac)">HTML 1.0</span></div>
+          <div class="tl-desc">영국 과학자 <strong>팀 버너스리(Tim Berners-Lee)</strong>가 CERN(유럽핵물리연구소)에서 발명. "모든 사람이 정보를 쉽게 공유할 수 있어야 한다"는 생각에서 출발했어요. 오늘날 우리가 쓰는 웹의 직접적인 시작입니다.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">1993</div></div>
+        <div class="tl-body">
+          <div class="tl-year">1993 — 모자이크 브라우저 등장</div>
+          <div class="tl-desc">최초로 <strong>이미지를 텍스트와 함께</strong> 보여주는 브라우저 등장. 일반인도 웹을 쉽게 사용하게 되면서 웹이 폭발적으로 성장하기 시작했습니다.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">1995</div></div>
+        <div class="tl-body">
+          <div class="tl-year">1995 — CSS & JavaScript 탄생 <span class="tl-tag" style="background:var(--c2l);color:var(--c2)">CSS</span> <span class="tl-tag" style="background:var(--c1l);color:var(--c1)">JS</span></div>
+          <div class="tl-desc">같은 해에 두 언어가 모두 등장했습니다. CSS로 웹페이지를 꾸밀 수 있게 되었고, Netscape의 개발자 <strong>브렌던 아이크</strong>가 단 10일 만에 JavaScript를 만들어 웹에 동작을 추가했습니다.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">2004</div></div>
+        <div class="tl-body">
+          <div class="tl-year">2004 — Web 2.0 시대 & Gmail 등장</div>
+          <div class="tl-desc">사용자가 직접 콘텐츠를 만들고 공유하는 <strong>참여형 웹</strong>의 시작. YouTube(2005), Facebook(2004) 등 SNS가 등장하며 웹이 단순 정보 조회를 넘어 <strong>소통의 공간</strong>이 됩니다.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">2007</div></div>
+        <div class="tl-body">
+          <div class="tl-year">2007 — 아이폰 출시 → 모바일 웹 시대</div>
+          <div class="tl-desc">스마트폰이 대중화되면서 <strong>작은 화면에서도 잘 보이는 웹</strong>이 중요해졌습니다. 이것이 나중에 배울 <strong>반응형 웹</strong>의 출발점입니다.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">2014</div></div>
+        <div class="tl-body">
+          <div class="tl-year">2014 — HTML5 공식 표준 확정</div>
+          <div class="tl-desc">동영상, 음악, 그래픽을 별도 플러그인 없이 브라우저에서 바로 재생. 지금 우리가 쓰는 <strong>HTML의 버전</strong>이 바로 HTML5입니다. <code>&lt;!DOCTYPE html&gt;</code>이 이 버전을 선언하는 코드예요.</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot">NOW</div></div>
+        <div class="tl-body">
+          <div class="tl-year">현재 — AI가 웹을 만드는 시대</div>
+          <div class="tl-desc">ChatGPT, Claude 같은 AI가 코드를 생성해주는 시대가 왔습니다. 하지만 <strong>기초 원리를 아는 사람</strong>이 AI를 훨씬 잘 활용할 수 있어요. 여러분이 지금 배우는 이유입니다!</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 3: 서버와 클라이언트 ══ -->
+  <div class="sec-hdr" id="s3">
+    <div class="sec-num">3</div>
+    <div><h2>서버와 클라이언트</h2><span class="sec-sub">웹의 요청-응답 구조</span></div>
+  </div>
+
+  <div class="card">
+    <h3>🍽️ 식당으로 이해하는 서버-클라이언트</h3>
+    <div class="concept">
+      웹은 항상 <strong>요청(Request)</strong>과 <strong>응답(Response)</strong>으로 작동합니다.<br>
+      식당에 비유하면: 손님(클라이언트)이 주문하면 주방(서버)이 음식을 내어주는 것과 같아요.
+    </div>
+    <div class="flow">
+      <div class="flow-node fn-client">
+        <div class="fn-title">클라이언트</div>
+        <div style="font-size:22px;margin:6px 0">💻</div>
+        <div class="fn-sub">내 컴퓨터/스마트폰<br>크롬, 사파리 등 브라우저</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 8px;">
+        <div style="font-size:11px;color:var(--c2);font-weight:700">① 요청 (Request)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-arrow">←</div>
+        <div style="font-size:11px;color:var(--ac);font-weight:700">② 응답 (Response)</div>
+      </div>
+      <div class="flow-node fn-net">
+        <div class="fn-title" style="color:var(--sub)">인터넷</div>
+        <div style="font-size:22px;margin:6px 0">📡</div>
+        <div class="fn-sub">데이터가 이동하는<br>고속도로</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 8px;">
+        <div class="flow-arrow">→</div>
+        <div class="flow-arrow">←</div>
+      </div>
+      <div class="flow-node fn-server">
+        <div class="fn-title">서버</div>
+        <div style="font-size:22px;margin:6px 0">🗄️</div>
+        <div class="fn-sub">항상 켜져 있는 컴퓨터<br>HTML 파일 저장·전달</div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:14px">
+      <div class="ibox">
+        <div class="ibox-title">💻 클라이언트 (Client)</div>
+        <ul>
+          <li>서비스를 <strong>요청</strong>하는 쪽</li>
+          <li>내 컴퓨터, 스마트폰, 태블릿</li>
+          <li>브라우저가 서버에 페이지 요청</li>
+          <li>받은 HTML/CSS/JS를 화면에 표시</li>
+        </ul>
+      </div>
+      <div class="ibox" style="background:var(--c6l);border-color:var(--c6b)">
+        <div class="ibox-title" style="color:var(--c6)">🗄️ 서버 (Server)</div>
+        <ul>
+          <li>서비스를 <strong>제공</strong>하는 쪽</li>
+          <li>항상 켜져 있는 강력한 컴퓨터</li>
+          <li>요청을 받으면 HTML 파일을 전송</li>
+          <li>Google, Naver의 컴퓨터들</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip green">
+      <span class="tip-icon">💡</span>
+      <div>GitHub Pages를 쓰면 <strong>GitHub의 서버</strong>가 우리 HTML 파일을 저장하고 방문자에게 전달해줍니다. 그래서 전 세계 어디서나 접속 가능한 거예요!</div>
+    </div>
+  </div>
+
+  <!-- ══ 4: URL & HTTP ══ -->
+  <div class="sec-hdr" id="s4">
+    <div class="sec-num">4</div>
+    <div><h2>URL &amp; HTTP 이해하기</h2><span class="sec-sub">웹 주소의 구조와 통신 규약</span></div>
+  </div>
+
+  <div class="card">
+    <h3>🔗 URL 주소 해부하기</h3>
+    <div class="concept">
+      <strong>URL</strong>(Uniform Resource Locator)은 인터넷에서 특정 자원(페이지, 이미지 등)의 <strong>정확한 위치 주소</strong>입니다.
+    </div>
+    <div style="font-size:12px;color:var(--sub);margin-bottom:8px;font-family:'JetBrains Mono',monospace">URL 구조 예시</div>
+    <div class="url-anatomy">
+      <div class="ua-part ua-proto">https<small>프로토콜</small></div>
+      <div class="ua-part ua-sep">://<small>&nbsp;</small></div>
+      <div class="ua-part ua-domain">www.naver.com<small>도메인</small></div>
+      <div class="ua-part ua-sep">/<small>&nbsp;</small></div>
+      <div class="ua-part ua-path">news/main.html<small>경로(path)</small></div>
+    </div>
+    <div style="margin-top:16px">
+      <table class="cmp-tbl">
+        <tr><th>부분</th><th>설명</th><th>예시</th></tr>
+        <tr>
+          <td><code>https://</code></td>
+          <td><strong>프로토콜</strong> — 어떤 방식으로 통신할지. https는 암호화된 안전한 통신</td>
+          <td>http:// 또는 https://</td>
+        </tr>
+        <tr>
+          <td><code>www.naver.com</code></td>
+          <td><strong>도메인</strong> — 서버의 이름. 숫자로 된 IP 주소를 사람이 읽기 쉽게 변환한 것</td>
+          <td>google.com, youtube.com</td>
+        </tr>
+        <tr>
+          <td><code>/news/main.html</code></td>
+          <td><strong>경로(Path)</strong> — 서버 안에서 어떤 파일인지 위치</td>
+          <td>/index.html, /about</td>
+        </tr>
+      </table>
+    </div>
+    <div class="tip orange">
+      <span class="tip-icon">⚠️</span>
+      <div><code>http://</code>는 데이터가 암호화되지 않아 위험합니다. 현재는 <code>https://</code>가 표준이에요. 주소창에 🔒 자물쇠가 없으면 주의하세요!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📮 HTTP — 웹의 통신 규칙</h3>
+    <div class="concept">
+      <strong>HTTP</strong>(HyperText Transfer Protocol)는 클라이언트와 서버가 <strong>대화하는 방식의 약속</strong>입니다.<br>
+      택배 규정처럼, 어떤 형식으로 요청하고 응답할지 정해놓은 규칙이에요.
+    </div>
+    <div class="two-col">
+      <div class="ibox">
+        <div class="ibox-title">📤 요청 메서드 (Method)</div>
+        <ul>
+          <li><code>GET</code> — 페이지 가져오기 (가장 기본)</li>
+          <li><code>POST</code> — 데이터 전송 (로그인, 글 작성)</li>
+          <li><code>PUT</code> — 데이터 수정</li>
+          <li><code>DELETE</code> — 데이터 삭제</li>
+        </ul>
+      </div>
+      <div class="ibox">
+        <div class="ibox-title">📬 응답 상태 코드 (Status Code)</div>
+        <ul>
+          <li><code>200</code> OK — 성공적으로 응답</li>
+          <li><code>404</code> Not Found — 페이지가 없음</li>
+          <li><code>403</code> Forbidden — 접근 권한 없음</li>
+          <li><code>500</code> Server Error — 서버 오류</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip teal">
+      <span class="tip-icon">🔢</span>
+      <div>GitHub Pages에서 없는 페이지에 접속하면 <strong>404 오류</strong>가 뜨는 이유가 바로 이 상태 코드 때문이에요. 이제 오류 메시지가 이해될 거예요!</div>
+    </div>
+  </div>
+
+  <!-- ══ 5: HTML · CSS · JS 역할 ══ -->
+  <div class="sec-hdr" id="s5">
+    <div class="sec-num">5</div>
+    <div><h2>HTML · CSS · JS 역할</h2><span class="sec-sub">웹을 만드는 3가지 언어</span></div>
+  </div>
+
+  <div class="card">
+    <h3>🏠 집 짓기로 이해하는 세 언어</h3>
+    <div class="role-row">
+      <div class="role-card rc-html">
+        <div class="role-emoji">🏗️</div>
+        <div class="role-name">HTML</div>
+        <div class="role-desc"><strong>구조(뼈대)</strong><br>어디에 무엇이 있는지 정의<br><br>제목, 단락, 이미지, 링크의 위치와 의미</div>
+        <div class="role-ex">&lt;h1&gt;, &lt;p&gt;, &lt;img&gt;</div>
+      </div>
+      <div class="role-card rc-css">
+        <div class="role-emoji">🎨</div>
+        <div class="role-name">CSS</div>
+        <div class="role-desc"><strong>디자인(꾸미기)</strong><br>어떻게 보일지 결정<br><br>색상, 크기, 위치, 폰트, 애니메이션</div>
+        <div class="role-ex">color, font-size, flex</div>
+      </div>
+      <div class="role-card rc-js">
+        <div class="role-emoji">⚡</div>
+        <div class="role-name">JavaScript</div>
+        <div class="role-desc"><strong>동작(기능)</strong><br>어떻게 움직일지 결정<br><br>버튼 클릭, 데이터 전송, 팝업, 실시간 업데이트</div>
+        <div class="role-ex">onClick, fetch, DOM</div>
+      </div>
+    </div>
+    <div class="tip blue">
+      <span class="tip-icon">💡</span>
+      <div>
+        세 언어는 분리되어 있지만 <strong>함께 작동</strong>합니다.<br>
+        유튜브를 예로 들면 → HTML: 영상·제목·댓글 배치 / CSS: 빨간 버튼·어두운 배경 / JS: 동영상 재생·좋아요 클릭 처리
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 HTML · CSS · JS 비교표</h3>
+    <table class="cmp-tbl">
+      <tr><th>항목</th><th style="color:var(--c6)">HTML</th><th style="color:var(--c2)">CSS</th><th style="color:var(--c1)">JavaScript</th></tr>
+      <tr>
+        <td><strong>탄생 연도</strong></td>
+        <td>1991년</td>
+        <td>1996년</td>
+        <td>1995년</td>
+      </tr>
+      <tr>
+        <td><strong>역할</strong></td>
+        <td>구조 · 내용</td>
+        <td>디자인 · 스타일</td>
+        <td>동작 · 기능</td>
+      </tr>
+      <tr>
+        <td><strong>파일 확장자</strong></td>
+        <td><code>.html</code></td>
+        <td><code>.css</code></td>
+        <td><code>.js</code></td>
+      </tr>
+      <tr>
+        <td><strong>없으면?</strong></td>
+        <td>아무것도 표시 안 됨</td>
+        <td>못생긴 페이지</td>
+        <td>클릭해도 반응 없음</td>
+      </tr>
+      <tr>
+        <td><strong>비유</strong></td>
+        <td>집의 골조·벽</td>
+        <td>인테리어·페인트</td>
+        <td>전기·수도·엘리베이터</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ══ 6: 브라우저 작동 원리 ══ -->
+  <div class="sec-hdr" id="s6">
+    <div class="sec-num">6</div>
+    <div><h2>브라우저는 어떻게 작동하나?</h2><span class="sec-sub">주소창에 입력하면 화면이 뜨는 과정</span></div>
+  </div>
+
+  <div class="card">
+    <h3>🔍 주소창에 naver.com을 입력하면...</h3>
+    <div class="render-steps">
+      <div class="rs-step">
+        <div class="rs-num">STEP 1</div>
+        <div class="rs-label">DNS 조회</div>
+        <div class="rs-sub">naver.com →<br>IP 주소 변환</div>
+      </div>
+      <div class="rs-arrow">→</div>
+      <div class="rs-step">
+        <div class="rs-num">STEP 2</div>
+        <div class="rs-label">서버에 요청</div>
+        <div class="rs-sub">HTTP GET 요청<br>파일 달라고!</div>
+      </div>
+      <div class="rs-arrow">→</div>
+      <div class="rs-step">
+        <div class="rs-num">STEP 3</div>
+        <div class="rs-label">파일 수신</div>
+        <div class="rs-sub">HTML, CSS, JS,<br>이미지 파일 받음</div>
+      </div>
+      <div class="rs-arrow">→</div>
+      <div class="rs-step">
+        <div class="rs-num">STEP 4</div>
+        <div class="rs-label">HTML 파싱</div>
+        <div class="rs-sub">태그를 읽어<br>DOM 트리 생성</div>
+      </div>
+      <div class="rs-arrow">→</div>
+      <div class="rs-step">
+        <div class="rs-num">STEP 5</div>
+        <div class="rs-label">화면 렌더링</div>
+        <div class="rs-sub">CSS 입혀서<br>화면에 표시!</div>
+      </div>
+    </div>
+    <div class="tip green">
+      <span class="tip-icon">⚡</span>
+      <div>이 모든 과정이 보통 <strong>1초 이내</strong>에 일어납니다. 브라우저는 정말 빠르고 복잡한 소프트웨어예요!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🌐 주요 브라우저 비교</h3>
+    <table class="cmp-tbl">
+      <tr><th>브라우저</th><th>만든 회사</th><th>특징</th><th>점유율(2025)</th></tr>
+      <tr>
+        <td><strong>Chrome</strong></td>
+        <td>Google</td>
+        <td>가장 빠름, 개발자 도구 강력, 점유율 1위</td>
+        <td>약 65%</td>
+      </tr>
+      <tr>
+        <td><strong>Safari</strong></td>
+        <td>Apple</td>
+        <td>Mac·iPhone 기본, 배터리 효율 좋음</td>
+        <td>약 18%</td>
+      </tr>
+      <tr>
+        <td><strong>Edge</strong></td>
+        <td>Microsoft</td>
+        <td>Windows 기본, Chromium 기반</td>
+        <td>약 5%</td>
+      </tr>
+      <tr>
+        <td><strong>Firefox</strong></td>
+        <td>Mozilla</td>
+        <td>오픈소스, 개인정보 보호 강조</td>
+        <td>약 3%</td>
+      </tr>
+    </table>
+    <div class="tip orange">
+      <span class="tip-icon">💡</span>
+      <div>웹개발 시에는 <strong>Chrome</strong>을 사용하세요. 개발자 도구(<code>F12</code>)가 가장 강력하고 표준 지원이 잘 됩니다.</div>
+    </div>
+  </div>
+
+  <!-- ══ 7: 용어 사전 ══ -->
+  <div class="sec-hdr" id="s7">
+    <div class="sec-num">7</div>
+    <div><h2>꼭 알아야 할 웹 용어 사전</h2><span class="sec-sub">수업에서 계속 나오는 핵심 용어들</span></div>
+  </div>
+
+  <div class="card">
+    <h3>📚 기본 용어</h3>
+    <div class="term-grid">
+      <div class="term-card">
+        <div class="term-word">HTML</div>
+        <div class="term-ko">HyperText Markup Language</div>
+        <div class="term-desc">웹페이지의 구조와 내용을 만드는 언어. 태그로 요소를 정의합니다.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">CSS</div>
+        <div class="term-ko">Cascading Style Sheets</div>
+        <div class="term-desc">HTML 요소의 디자인(색상, 크기, 위치)을 꾸미는 언어.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">JavaScript</div>
+        <div class="term-ko">줄여서 JS</div>
+        <div class="term-desc">웹페이지에 동작을 추가하는 프로그래밍 언어. 버튼 클릭, 데이터 처리 등.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">Browser</div>
+        <div class="term-ko">브라우저 / 웹 브라우저</div>
+        <div class="term-desc">웹페이지를 보여주는 프로그램. 크롬, 사파리, 엣지 등.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">Server</div>
+        <div class="term-ko">서버</div>
+        <div class="term-desc">파일을 저장하고 요청이 오면 내어주는 컴퓨터. 항상 켜져 있어야 합니다.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">Client</div>
+        <div class="term-ko">클라이언트</div>
+        <div class="term-desc">서비스를 요청하는 쪽. 내 컴퓨터나 스마트폰(브라우저).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">URL</div>
+        <div class="term-ko">Uniform Resource Locator</div>
+        <div class="term-desc">웹 자원의 주소. https://naver.com처럼 프로토콜+도메인+경로로 구성.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-word">HTTP/HTTPS</div>
+        <div class="term-ko">통신 프로토콜</div>
+        <div class="term-desc">클라이언트-서버 통신 규약. S가 붙으면 암호화된 안전한 통신.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📚 개발 도구 & 환경 용어</h3>
+    <div class="term-grid">
+      <div class="term-card" style="border-top-color:var(--c2)">
+        <div class="term-word" style="color:var(--c2)">IDE</div>
+        <div class="term-ko">Integrated Development Environment</div>
+        <div class="term-desc">코드 편집기 + 디버거 등이 통합된 개발 환경. VS Code가 대표적.</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c2)">
+        <div class="term-word" style="color:var(--c2)">Git</div>
+        <div class="term-ko">버전 관리 시스템</div>
+        <div class="term-desc">코드의 변경 이력을 저장하고 관리. 실수해도 이전 버전으로 돌아갈 수 있음.</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c2)">
+        <div class="term-word" style="color:var(--c2)">GitHub</div>
+        <div class="term-ko">깃허브</div>
+        <div class="term-desc">Git 저장소를 인터넷에 올려두는 서비스. Pages 기능으로 무료 웹 호스팅 가능.</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c2)">
+        <div class="term-word" style="color:var(--c2)">Hosting</div>
+        <div class="term-ko">호스팅 / 웹 호스팅</div>
+        <div class="term-desc">서버에 파일을 올려 인터넷에서 접근 가능하게 하는 서비스.</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c3)">
+        <div class="term-word" style="color:var(--c3)">Frontend</div>
+        <div class="term-ko">프론트엔드</div>
+        <div class="term-desc">사용자가 직접 보는 화면 쪽. HTML, CSS, JS를 다룸. 우리가 배우는 영역!</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c3)">
+        <div class="term-word" style="color:var(--c3)">Backend</div>
+        <div class="term-ko">백엔드</div>
+        <div class="term-desc">서버, 데이터베이스 등 뒷단 처리. Python, Java, Node.js 등을 사용.</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c1)">
+        <div class="term-word" style="color:var(--c1)">DOM</div>
+        <div class="term-ko">Document Object Model</div>
+        <div class="term-desc">브라우저가 HTML을 읽어 만드는 트리 구조. JS로 이 구조를 조작해 화면을 변경.</div>
+      </div>
+      <div class="term-card" style="border-top-color:var(--c1)">
+        <div class="term-word" style="color:var(--c1)">API</div>
+        <div class="term-ko">Application Programming Interface</div>
+        <div class="term-desc">프로그램들이 서로 소통하는 창구. 날씨 앱이 기상청 API로 날씨 데이터를 가져오는 것처럼.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 8: 퀴즈 & 제출 ══ -->
+  <div class="sec-hdr" id="s8">
+    <div class="sec-num">8</div>
+    <div><h2>✏️ 확인 퀴즈</h2><span class="sec-sub">10문항 · 각 10점 · 총 100점</span></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q1 · 10점</div>
+    <div class="qq">인터넷 위에서 작동하는 서비스로, HTML 문서들이 링크로 연결된 정보 공간을 무엇이라 하나요? (영어 약자로)</div>
+    <div class="qrow">
+      <input class="qinput" id="q1" placeholder="영어 약자 입력" onkeydown="if(event.key==='Enter')chk(1,'WWW')">
+      <button class="qbtn" onclick="chk(1,'WWW')">확인</button>
+    </div>
+    <div class="qfb" id="qf1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q2 · 10점</div>
+    <div class="qq">World Wide Web을 발명한 과학자의 이름은? (성만 입력)</div>
+    <div class="qrow">
+      <input class="qinput" id="q2" placeholder="성(Last name) 입력" onkeydown="if(event.key==='Enter')chk(2,'버너스리')">
+      <button class="qbtn" onclick="chk(2,'버너스리')">확인</button>
+    </div>
+    <div class="qfb" id="qf2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q3 · 10점</div>
+    <div class="qq">웹에서 서비스를 요청하는 쪽(내 컴퓨터·브라우저)을 무엇이라 하나요?</div>
+    <div class="qrow">
+      <input class="qinput" id="q3" placeholder="영어로 입력" onkeydown="if(event.key==='Enter')chk(3,'클라이언트')">
+      <button class="qbtn" onclick="chk(3,'클라이언트')">확인</button>
+    </div>
+    <div class="qfb" id="qf3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q4 · 10점</div>
+    <div class="qq">URL에서 <code>https://</code> 부분처럼 어떤 방식으로 통신할지 정하는 규약을 무엇이라 하나요?</div>
+    <div class="qrow">
+      <input class="qinput" id="q4" placeholder="용어 입력" onkeydown="if(event.key==='Enter')chk(4,'프로토콜')">
+      <button class="qbtn" onclick="chk(4,'프로토콜')">확인</button>
+    </div>
+    <div class="qfb" id="qf4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q5 · 10점</div>
+    <div class="qq">웹페이지를 요청했는데 해당 페이지가 없을 때 나타나는 HTTP 상태 코드는?</div>
+    <div class="qrow">
+      <input class="qinput" id="q5" placeholder="숫자 입력" onkeydown="if(event.key==='Enter')chk(5,'404')">
+      <button class="qbtn" onclick="chk(5,'404')">확인</button>
+    </div>
+    <div class="qfb" id="qf5"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q6 · 10점</div>
+    <div class="qq">웹페이지의 구조(뼈대)를 담당하는 언어는?</div>
+    <div class="qrow">
+      <input class="qinput" id="q6" placeholder="언어 이름 입력" onkeydown="if(event.key==='Enter')chk(6,'HTML')">
+      <button class="qbtn" onclick="chk(6,'HTML')">확인</button>
+    </div>
+    <div class="qfb" id="qf6"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q7 · 10점</div>
+    <div class="qq">웹페이지의 색상, 크기, 위치 등 디자인을 담당하는 언어는?</div>
+    <div class="qrow">
+      <input class="qinput" id="q7" placeholder="언어 이름 입력" onkeydown="if(event.key==='Enter')chk(7,'CSS')">
+      <button class="qbtn" onclick="chk(7,'CSS')">확인</button>
+    </div>
+    <div class="qfb" id="qf7"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q8 · 10점</div>
+    <div class="qq">현재 우리가 쓰는 HTML의 버전은 HTML 몇인가요?</div>
+    <div class="qrow">
+      <input class="qinput" id="q8" placeholder="숫자 입력" onkeydown="if(event.key==='Enter')chk(8,'5')">
+      <button class="qbtn" onclick="chk(8,'5')">확인</button>
+    </div>
+    <div class="qfb" id="qf8"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q9 · 10점</div>
+    <div class="qq">사용자가 직접 보는 화면 쪽(HTML, CSS, JS)을 개발하는 것을 무엇이라 하나요?</div>
+    <div class="qrow">
+      <input class="qinput" id="q9" placeholder="영어로 입력" onkeydown="if(event.key==='Enter')chk(9,'프론트엔드')">
+      <button class="qbtn" onclick="chk(9,'프론트엔드')">확인</button>
+    </div>
+    <div class="qfb" id="qf9"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="qmeta">Q10 · 10점</div>
+    <div class="qq">브라우저가 HTML을 읽어서 만드는 트리 구조로, JavaScript로 조작하여 화면을 변경할 수 있는 것은?</div>
+    <div class="qrow">
+      <input class="qinput" id="q10" placeholder="영어 약자 입력" onkeydown="if(event.key==='Enter')chk(10,'DOM')">
+      <button class="qbtn" onclick="chk(10,'DOM')">확인</button>
+    </div>
+    <div class="qfb" id="qf10"></div>
+  </div>
+
+  <!-- 대시보드 & 제출 -->
+  <div style="margin-top:40px">
+    <div class="dashboard">
+      <div class="db-head">
+        <div class="db-title">📊 진행 현황</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--sub)" id="db-pct">0 / 10 완료</div>
+      </div>
+      <div class="db-grid">
+        <div class="db-box"><div class="db-lb">정답</div><div class="db-vl" id="db-ok" style="color:var(--ok)">0</div></div>
+        <div class="db-box"><div class="db-lb">오답</div><div class="db-vl" id="db-ng" style="color:var(--ng)">0</div></div>
+        <div class="db-box"><div class="db-lb">완료</div><div class="db-vl" id="db-done" style="color:var(--ac)">0</div></div>
+        <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score" style="color:var(--ac)">—</div></div>
+      </div>
+      <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+    </div>
+
+    <div class="sub-panel">
+      <div class="sub-title">📤 답안 제출하기</div>
+      <div class="tip blue">
+        <span class="tip-icon">📋</span>
+        <div>모든 문항을 풀고 이름을 입력한 뒤 제출 버튼을 눌러주세요.</div>
+      </div>
+      <table class="sum-tbl">
+        <thead><tr>
+          <th style="width:60px">번호</th>
+          <th>문제 요약</th>
+          <th style="width:140px">내 답변</th>
+          <th style="width:54px;text-align:center">결과</th>
+        </tr></thead>
+        <tbody id="sum-body"></tbody>
+      </table>
+      <div class="name-row">
+        <span class="name-lb">✏️ 이름</span>
+        <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요"
+          oninput="document.getElementById('nw').style.display='none'">
+      </div>
+      <div id="nw">⚠️ 이름을 먼저 입력해주세요!</div>
+      <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+      <div style="text-align:center;font-size:12px;color:var(--sub);margin-top:8px" id="sub-hint">
+        모든 문항(10개)을 풀면 제출 버튼이 활성화됩니다 (0 / 10)
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 팝업 -->
+<div class="pbg" id="pbg">
+  <div class="popup">
+    <button class="pp-close" onclick="closePopup()">✕</button>
+    <div style="text-align:center;font-size:46px;margin-bottom:8px">🎉</div>
+    <div class="pp-score" id="pp-score"></div>
+    <div class="pp-grade" id="pp-grade"></div>
+    <div class="pp-detail">
+      <div class="ppd-row"><span>이름</span><strong id="pp-name"></strong></div>
+      <div class="ppd-row"><span>정답 / 전체</span><strong id="pp-ratio"></strong></div>
+    </div>
+    <div class="tip green">
+      <span class="tip-icon">✨</span>
+      <div>아래 버튼을 누르면 결과가 선생님께 자동 전송됩니다.</div>
+    </div>
+    <button class="form-btn" id="form-btn">📤 답안 전송하기</button>
+    <div class="cfg-warn" id="cfg-warn"></div>
+    <button class="cancel-btn" onclick="closePopup()">닫기</button>
+  </div>
+</div>
+
+<script>
+const ANS  = {1:'WWW',2:'버너스리',3:'클라이언트',4:'프로토콜',5:'404',
+               6:'HTML',7:'CSS',8:'5',9:'프론트엔드',10:'DOM'};
+const QSUM = {1:'웹의 영어 약자',2:'웹 발명자 성',3:'요청하는 쪽 명칭',
+              4:'통신 규약 이름',5:'페이지 없음 상태코드',6:'구조 담당 언어',
+              7:'디자인 담당 언어',8:'현재 HTML 버전',9:'화면쪽 개발 명칭',10:'브라우저 트리 구조'};
+const TOTAL = 10;
+let QS = {};
+
+const SEC_IDS = ['s0','s1','s2','s3','s4','s5','s6','s7','s8'];
+window.addEventListener('scroll', () => {
+  const p = scrollY / (document.body.scrollHeight - innerHeight) * 100;
+  document.getElementById('prog').style.width = p + '%';
+  const dots = document.querySelectorAll('.ndot');
+  let cur = 0;
+  SEC_IDS.forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 130) cur = i;
+  });
+  dots.forEach((d,i) => d.classList.toggle('active', i === cur));
+});
+function goSec(i) {
+  document.getElementById(SEC_IDS[i])?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function chk(n, ans) {
+  const inp = document.getElementById('q'+n);
+  const fb  = document.getElementById('qf'+n);
+  const v   = inp.value.trim();
+  if (!v) { fb.innerHTML='<span style="color:var(--wn,#b45309)">❓ 답을 입력하세요!</span>'; return; }
+  const ok = v === ans;
+  QS[n] = {ans:v, ok};
+  inp.classList.remove('iok','ing');
+  inp.classList.add(ok ? 'iok' : 'ing');
+  if (ok) {
+    fb.innerHTML = '<span class="ok">✓ 정답입니다! 🎉</span>';
+    inp.disabled = true;
+    inp.closest('.quiz-card').querySelector('.qbtn').disabled = true;
+  } else {
+    fb.innerHTML = '<span class="ng">✗ 다시 한번 생각해보세요!</span>';
+  }
+  refresh();
+}
+
+function refresh() {
+  const done  = Object.keys(QS).length;
+  const ok    = Object.values(QS).filter(s=>s.ok).length;
+  const score = ok * 10;
+  document.getElementById('db-ok').textContent    = ok;
+  document.getElementById('db-ng').textContent    = done - ok;
+  document.getElementById('db-done').textContent  = done;
+  document.getElementById('db-score').textContent = done > 0 ? score+'점' : '—';
+  document.getElementById('pbar').style.width     = Math.round(done/TOTAL*100)+'%';
+  document.getElementById('db-pct').textContent   = done+' / '+TOTAL+' 완료';
+  renderSumTable();
+  const btn = document.getElementById('sub-btn');
+  btn.disabled = done < TOTAL;
+  document.getElementById('sub-hint').textContent =
+    done < TOTAL
+      ? `모든 문항(${TOTAL}개)을 풀면 제출 버튼이 활성화됩니다 (${done} / ${TOTAL})`
+      : '✅ 제출 준비 완료!';
+}
+
+function renderSumTable() {
+  const tb = document.getElementById('sum-body');
+  tb.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const s = QS[i];
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td style="font-weight:700;color:var(--ac)">Q${i}</td>`+
+      `<td style="font-size:12px;color:var(--sub)">${QSUM[i]}</td>`+
+      `<td class="${s?'':'tpd'}">${s?s.ans:'—'}</td>`+
+      `<td style="text-align:center" class="${s?(s.ok?'tok':'tng'):'tpd'}">${s?(s.ok?'✅':'❌'):'⬜'}</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║ 선생님 설정 — LESSON_ID만 파일마다 변경     ║
+   ╚══════════════════════════════════════════════╝ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec';
+const LESSON_ID   = 'web/00-0_web_basics';
+/* ═════════════════════════════════════════════ */
+
+function collectAnswers() {
+  return Array.from({length:TOTAL}, (_,i) => QS[i+1] ? String(QS[i+1].ans) : '');
+}
+function openPopup() {
+  const name = document.getElementById('stu-name').value.trim();
+  if (!name) {
+    document.getElementById('nw').style.display = 'block';
+    document.querySelector('.sub-panel').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  document.getElementById('nw').style.display = 'none';
+  const ok    = Object.values(QS).filter(s=>s.ok).length;
+  const score = ok * 10;
+  const ps = document.getElementById('pp-score');
+  ps.textContent = score+'점';
+  ps.style.color = score>=90?'var(--ok)':score>=70?'#b45309':score>=60?'#b45309':'var(--ng)';
+  document.getElementById('pp-grade').textContent =
+    score>=90?'🏆 A등급 — 우수!':score>=80?'🥈 B등급 — 잘했어요!':
+    score>=70?'🥉 C등급 — 조금 더!':score>=60?'📚 D등급 — 복습 필요':'💪 다시 도전!';
+  document.getElementById('pp-name').textContent  = name;
+  document.getElementById('pp-ratio').textContent = ok+' / '+TOTAL;
+  const fb = document.getElementById('form-btn');
+  fb.disabled = false; fb.style.background = '';
+  fb.textContent = '📤 답안 전송하기';
+  fb.onclick = function(){ submitToSheets(name, score); };
+  document.getElementById('pbg').style.display = 'flex';
+}
+async function submitToSheets(name, score) {
+  const fb = document.getElementById('form-btn');
+  const cw = document.getElementById('cfg-warn');
+  if (WEB_APP_URL.includes('여기에')) {
+    cw.style.display = 'block';
+    cw.innerHTML = '⚙️ <strong>설정 필요:</strong> WEB_APP_URL을 Apps Script 배포 URL로 교체해주세요.';
+    return;
+  }
+  cw.style.display = 'none';
+  fb.disabled = true; fb.textContent = '전송 중...';
+  const ok = Object.values(QS).filter(s=>s.ok).length;
+  try {
+    await fetch(WEB_APP_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({lesson:LESSON_ID, name, answers:collectAnswers(),
+        score:score+'점 ('+ok+'/'+TOTAL+')'})
+    });
+    fb.textContent = '✅ 제출 완료!';
+    fb.style.background = 'var(--ok)';
+  } catch(err) {
+    fb.disabled = false; fb.textContent = '다시 시도';
+    cw.style.display = 'block';
+    cw.innerHTML = '⚠️ 전송 오류: '+err.message;
+  }
+}
+function closePopup(){ document.getElementById('pbg').style.display='none'; }
+document.getElementById('pbg').addEventListener('click',function(e){
+  if(e.target===this)closePopup();
+});
+renderSumTable();
+</script>
+</body>
+</html>
