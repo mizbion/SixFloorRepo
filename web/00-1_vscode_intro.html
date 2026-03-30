@@ -1,0 +1,2199 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- meta:subject=웹개발 -->
+    <!-- meta:unit=0. 환경 준비 -->
+    <!-- meta:title=VS Code 소개 & 환경 설정 -->
+    <!-- meta:desc=설치, 확장프로그램, 단축키, Live Preview -->
+    <!-- meta:date=2026-03-25 -->
+    <title>VS Code 소개 & 환경 설정 | 웹개발</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f0fdf4;
+        --card: #ffffff;
+        --s2: #dcfce7;
+        --s3: #bbf7d0;
+        --bdr: #86efac;
+        --text: #052e16;
+        --sub: #3d7a57;
+
+        --ac: #15803d;
+        --acl: #f0fdf4;
+        --acb: #86efac;
+
+        --c1: #b45309;
+        --c1l: #fffbeb;
+        --c1b: #fde68a;
+        --c2: #1d4ed8;
+        --c2l: #eff6ff;
+        --c2b: #bfdbfe;
+        --c3: #7c3aed;
+        --c3l: #f5f3ff;
+        --c3b: #ddd6fe;
+        --c4: #be185d;
+        --c4l: #fdf2f8;
+        --c4b: #fbcfe8;
+        --c5: #0e7490;
+        --c5l: #ecfeff;
+        --c5b: #a5f3fc;
+        --c6: #9a3412;
+        --c6l: #fff7ed;
+        --c6b: #fed7aa;
+
+        --cbg: #e8faf0;
+        --cbr: #6ee7b7;
+
+        --ckw: #15803d;
+        --cfn: #0e7490;
+        --cst: #b45309;
+        --cnu: #1d4ed8;
+        --ccm: #6b9e82;
+        --cop: #7c3aed;
+        --cout: #155e75;
+
+        --sh: 0 2px 14px rgba(21, 128, 61, 0.1);
+        --shm: 0 6px 28px rgba(21, 128, 61, 0.18);
+        --ok: #15803d;
+        --ng: #be185d;
+        --wn: #b45309;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Noto Sans KR", sans-serif;
+        line-height: 1.7;
+      }
+
+      /* ── 헤더 ── */
+      #hdr {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #071a0e;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        height: 54px;
+        gap: 12px;
+      }
+      .badge {
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .htitle {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        flex: 1;
+        text-align: center;
+      }
+      .meta {
+        font-size: 12px;
+        color: #9ca;
+        white-space: nowrap;
+      }
+      #prog {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--ac), #4ade80);
+        width: 0%;
+        transition: width 0.2s;
+      }
+
+      /* ── 히어로 ── */
+      .hero {
+        text-align: center;
+        padding: 60px 24px 48px;
+        background: linear-gradient(160deg, #e8faf0 55%, #d1fae5);
+      }
+      .hero-emoji {
+        font-size: 72px;
+        display: block;
+        margin-bottom: 16px;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .hero h1 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: clamp(26px, 5vw, 44px);
+        background: linear-gradient(135deg, var(--ac), #4ade80);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 12px;
+      }
+      .hero p {
+        color: var(--sub);
+        font-size: 16px;
+        margin-bottom: 24px;
+      }
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+      .cbadge {
+        background: var(--card);
+        border: 1.5px solid var(--bdr);
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ac);
+      }
+
+      /* ── 목차 ── */
+      .toc-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 40px;
+      }
+      .toc {
+        background: var(--card);
+        border-radius: 14px;
+        box-shadow: var(--sh);
+        padding: 28px;
+        border: 1px solid var(--bdr);
+      }
+      .toc h2 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 18px;
+        margin-bottom: 16px;
+        color: var(--ac);
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .toc-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: var(--s2);
+        border: 1px solid var(--bdr);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .toc-item:hover {
+        background: var(--acl);
+        border-color: var(--ac);
+        transform: translateX(3px);
+      }
+      .toc-num {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .toc-label {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      /* ── 본문 ── */
+      .main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+      .sec-hdr {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 52px 0 20px;
+      }
+      .sec-num {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .sec-hdr h2 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 22px;
+      }
+      .sec-hdr .sub {
+        font-size: 13px;
+        color: var(--sub);
+        font-weight: 400;
+      }
+
+      /* 카드 */
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh);
+        padding: 24px;
+        margin-bottom: 16px;
+        border-top: 4px solid var(--ac);
+      }
+      .card h3 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        margin-bottom: 12px;
+        color: var(--ac);
+      }
+      .card p,
+      .card li {
+        font-size: 14px;
+        line-height: 1.85;
+      }
+      .card ul,
+      .card ol {
+        padding-left: 20px;
+      }
+      .card ul li,
+      .card ol li {
+        margin-bottom: 6px;
+      }
+
+      /* 2열 그리드 */
+      .card-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      /* 개념 박스 */
+      .concept {
+        background: var(--s2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin: 12px 0;
+        border-left: 4px solid var(--ac);
+        font-size: 14px;
+        line-height: 1.85;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--s3);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+        color: var(--ac);
+        font-weight: 600;
+      }
+
+      /* 팁 박스 */
+      .tip {
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 12px 0;
+        font-size: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        line-height: 1.8;
+      }
+      .tip.blue {
+        background: var(--c2l);
+        border-left: 4px solid var(--c2);
+      }
+      .tip.green {
+        background: var(--acl);
+        border-left: 4px solid var(--ac);
+      }
+      .tip.orange {
+        background: var(--c1l);
+        border-left: 4px solid var(--c1);
+      }
+      .tip.red {
+        background: var(--c4l);
+        border-left: 4px solid var(--c4);
+      }
+      .tip.purple {
+        background: var(--c3l);
+        border-left: 4px solid var(--c3);
+      }
+      .tip-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* 코드 블록 */
+      .cb {
+        background: var(--cbg);
+        border: 1.5px solid var(--cbr);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 14px 0;
+      }
+      .cbh {
+        background: var(--s3);
+        border-bottom: 1px solid var(--cbr);
+        padding: 8px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .dr {
+        background: #ff5f57;
+      }
+      .dy {
+        background: #ffbd2e;
+      }
+      .dg {
+        background: #28c840;
+      }
+      .cblbl {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--sub);
+      }
+      .cb pre {
+        padding: 16px 18px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.85;
+        color: #0a2e18;
+      }
+      .kw {
+        color: var(--ckw);
+        font-weight: 700;
+      }
+      .fn {
+        color: var(--cfn);
+      }
+      .st {
+        color: var(--cst);
+      }
+      .nu {
+        color: var(--cnu);
+      }
+      .cm {
+        color: var(--ccm);
+        font-style: italic;
+      }
+      .tg {
+        color: #0e7490;
+        font-weight: 600;
+      } /* HTML 태그 */
+      .at {
+        color: #7c3aed;
+      } /* 속성명 */
+      .av {
+        color: #b45309;
+      } /* 속성값 */
+
+      /* 비교 테이블 */
+      .cmp-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 13px;
+      }
+      .cmp-table th {
+        background: var(--s3);
+        padding: 10px 14px;
+        text-align: left;
+        border-bottom: 2px solid var(--bdr);
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 13px;
+      }
+      .cmp-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--bdr);
+        vertical-align: top;
+      }
+      .cmp-table tr:last-child td {
+        border-bottom: none;
+      }
+      .cmp-table tr:hover td {
+        background: var(--s2);
+      }
+
+      /* 단축키 표 */
+      .key-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .key-card {
+        background: var(--s2);
+        border: 1px solid var(--bdr);
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .key-badge {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+      .key {
+        background: #fff;
+        border: 1.5px solid var(--bdr);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--ac);
+        box-shadow: 0 2px 0 var(--bdr);
+        white-space: nowrap;
+      }
+      .key-desc {
+        font-size: 13px;
+        color: var(--text);
+      }
+      .key-sub {
+        font-size: 11px;
+        color: var(--sub);
+        margin-top: 2px;
+      }
+
+      /* 단계 박스 */
+      .steps {
+        counter-reset: step;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .step {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 14px 16px;
+        background: var(--s2);
+        border-radius: 10px;
+        border: 1px solid var(--bdr);
+      }
+      .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .step-body {
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      .step-body strong {
+        color: var(--ac);
+      }
+
+      /* 확장 프로그램 카드 */
+      .ext-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .ext-card {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .ext-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .ext-name {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 14px;
+        color: var(--ac);
+        margin-bottom: 4px;
+      }
+      .ext-desc {
+        font-size: 12px;
+        color: var(--sub);
+        line-height: 1.6;
+      }
+      .ext-must {
+        display: inline-block;
+        background: var(--ac);
+        color: #fff;
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 10px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+
+      /* 퀴즈 */
+      .quiz-card {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 12px 0;
+        border-left: 4px solid var(--ac);
+      }
+      .quiz-meta {
+        font-size: 12px;
+        color: var(--sub);
+        margin-bottom: 8px;
+      }
+      .quiz-q {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 12px;
+        line-height: 1.8;
+      }
+      .qrow {
+        display: flex;
+        gap: 8px;
+      }
+      .qinput {
+        flex: 1;
+        background: var(--s2);
+        border: 1.5px solid var(--bdr);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .qinput:focus {
+        border-color: var(--ac);
+        background: #fff;
+      }
+      .qinput:disabled {
+        opacity: 0.5;
+      }
+      .qinput.iok {
+        border-color: var(--ok);
+        background: #f0fdf4;
+      }
+      .qinput.ing {
+        border-color: var(--ng);
+        background: #fdf2f8;
+      }
+      .qbtn {
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+      .qbtn:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+      .qbtn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .qfb {
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        min-height: 22px;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .ng {
+        color: var(--ng);
+      }
+
+      /* 대시보드 */
+      .dashboard {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--sh);
+      }
+      .db-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .db-title {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        color: var(--ac);
+      }
+      .db-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .db-box {
+        background: var(--s2);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        border: 1px solid var(--bdr);
+      }
+      .db-lb {
+        font-size: 11px;
+        color: var(--sub);
+        margin-bottom: 4px;
+      }
+      .db-vl {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 22px;
+      }
+      .ptrack {
+        background: var(--s3);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+      }
+      .pbar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--ac), #4ade80);
+        border-radius: 10px;
+        transition: width 0.4s ease;
+      }
+
+      /* 제출 패널 */
+      .sub-panel {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 16px;
+        box-shadow: var(--sh);
+      }
+      .sub-title {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        color: var(--ac);
+        margin-bottom: 16px;
+      }
+      .sum-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 13px;
+      }
+      .sum-tbl th {
+        background: var(--s3);
+        padding: 9px 12px;
+        text-align: left;
+        border-bottom: 2px solid var(--bdr);
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+      }
+      .sum-tbl td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--bdr);
+      }
+      .sum-tbl tr:last-child td {
+        border-bottom: none;
+      }
+      .tok {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .tng {
+        color: var(--ng);
+        font-weight: 700;
+      }
+      .tpd {
+        color: var(--sub);
+        font-style: italic;
+      }
+      .name-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 18px 0 8px;
+      }
+      .name-lb {
+        font-weight: 700;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+      .name-in {
+        flex: 1;
+        background: var(--s2);
+        border: 1.5px solid var(--bdr);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .name-in:focus {
+        border-color: var(--ac);
+        background: #fff;
+      }
+      #nw {
+        color: var(--ng);
+        font-size: 13px;
+        margin-bottom: 8px;
+        display: none;
+      }
+      .sub-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        transition: all 0.2s;
+        margin-top: 16px;
+      }
+      .sub-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--shm);
+      }
+      .sub-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* 팝업 */
+      .pbg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .popup {
+        background: #fff;
+        border-radius: 20px;
+        padding: 34px 38px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.25);
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: pu 0.3s ease;
+      }
+      @keyframes pu {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .pp-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--s2);
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        font-size: 14px;
+        color: var(--sub);
+      }
+      .pp-score {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 56px;
+        line-height: 1;
+        text-align: center;
+        margin: 8px 0 4px;
+      }
+      .pp-grade {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .pp-detail {
+        background: var(--s2);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .ppd-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--bdr);
+        font-size: 14px;
+      }
+      .ppd-row:last-child {
+        border-bottom: none;
+      }
+      .form-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 15px;
+        transition: all 0.2s;
+        margin: 16px 0 8px;
+      }
+      .form-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+      }
+      .form-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .cancel-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: var(--s2);
+        color: var(--sub);
+        border: 1px solid var(--bdr);
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 14px;
+      }
+      .cfg-warn {
+        display: none;
+        font-size: 12px;
+        color: var(--ng);
+        background: var(--c4l);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-top: 8px;
+      }
+
+      /* 네비 도트 */
+      #navdot {
+        position: fixed;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 99;
+      }
+      .ndot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--bdr);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .ndot.active {
+        background: var(--ac);
+        transform: scale(1.3);
+      }
+      .ndot:hover {
+        background: var(--ac);
+        opacity: 0.7;
+      }
+
+      @media (max-width: 640px) {
+        .toc-grid,
+        .card-grid,
+        .ext-grid,
+        .key-grid {
+          grid-template-columns: 1fr;
+        }
+        .db-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        #navdot {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header id="hdr">
+      <span class="badge">0차시 · 환경 준비</span>
+      <span class="htitle">💻 VS Code 시작하기</span>
+      <span class="meta">웹개발 입문</span>
+      <div id="prog"></div>
+    </header>
+
+    <nav id="navdot">
+      <div class="ndot active" onclick="goSec(0)" title="소개"></div>
+      <div class="ndot" onclick="goSec(1)" title="메모장 vs VSCode"></div>
+      <div class="ndot" onclick="goSec(2)" title="설치"></div>
+      <div class="ndot" onclick="goSec(3)" title="기본 설정"></div>
+      <div class="ndot" onclick="goSec(4)" title="확장 프로그램"></div>
+      <div class="ndot" onclick="goSec(5)" title="단축키"></div>
+      <div class="ndot" onclick="goSec(6)" title="첫 HTML 파일"></div>
+      <div class="ndot" onclick="goSec(7)" title="퀴즈"></div>
+      <div class="ndot" onclick="goSec(8)" title="제출"></div>
+    </nav>
+
+    <section class="hero" id="s0">
+      <span class="hero-emoji">💻</span>
+      <h1>VS Code 시작하기</h1>
+      <p>프로 개발자들이 쓰는 바로 그 도구 — 설치부터 첫 웹페이지까지</p>
+      <div class="badge-row">
+        <span class="cbadge">📦 설치 & 설정</span>
+        <span class="cbadge">🔌 확장 프로그램</span>
+        <span class="cbadge">⌨️ 핵심 단축키</span>
+        <span class="cbadge">⚡ Emmet 자동완성</span>
+        <span class="cbadge">🌐 Live Preview</span>
+      </div>
+    </section>
+
+    <div class="toc-wrap">
+      <div class="toc">
+        <h2>📋 목차</h2>
+        <div class="toc-grid">
+          <a class="toc-item" onclick="goSec(1)"
+            ><div class="toc-num">1</div>
+            <span class="toc-label">메모장 vs VS Code</span></a
+          >
+          <a class="toc-item" onclick="goSec(2)"
+            ><div class="toc-num">2</div>
+            <span class="toc-label">VS Code 설치하기</span></a
+          >
+          <a class="toc-item" onclick="goSec(3)"
+            ><div class="toc-num">3</div>
+            <span class="toc-label">기본 환경 설정</span></a
+          >
+          <a class="toc-item" onclick="goSec(4)"
+            ><div class="toc-num">4</div>
+            <span class="toc-label">필수 확장 프로그램</span></a
+          >
+          <a class="toc-item" onclick="goSec(5)"
+            ><div class="toc-num">5</div>
+            <span class="toc-label">핵심 단축키 10개</span></a
+          >
+          <a class="toc-item" onclick="goSec(6)"
+            ><div class="toc-num">6</div>
+            <span class="toc-label">첫 HTML 파일 만들기</span></a
+          >
+          <a class="toc-item" onclick="goSec(7)"
+            ><div class="toc-num">7</div>
+            <span class="toc-label">✏️ 확인 퀴즈</span></a
+          >
+          <a class="toc-item" onclick="goSec(8)"
+            ><div class="toc-num">8</div>
+            <span class="toc-label">📤 답안 제출</span></a
+          >
+        </div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- ══ 섹션 1: 메모장 vs VS Code ══ -->
+      <div class="sec-hdr" id="s1">
+        <div class="sec-num">1</div>
+        <div>
+          <h2>메모장 vs VS Code</h2>
+          <div class="sub">왜 VS Code를 써야 할까?</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🤔 코딩 도구가 왜 중요할까?</h3>
+        <div class="concept">
+          HTML 파일은 사실 메모장으로도 만들 수 있습니다.<br />
+          하지만 공사할 때 맨손과 <strong>전동공구</strong> 중 어느 쪽이
+          나을까요?<br />
+          VS Code는 코딩을 위해 만들어진 <strong>전문 도구</strong>입니다.
+        </div>
+        <table class="cmp-table">
+          <tr>
+            <th style="width: 30%">항목</th>
+            <th>📝 메모장</th>
+            <th>💻 VS Code</th>
+          </tr>
+          <tr>
+            <td><strong>색상 구분</strong></td>
+            <td>전부 검정색</td>
+            <td>
+              태그·속성·값을 색으로 구분
+              <span style="color: var(--ac)">✅</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>자동완성</strong></td>
+            <td>없음</td>
+            <td>
+              태그 이름 몇 글자만 치면 자동 완성
+              <span style="color: var(--ac)">✅</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>오류 표시</strong></td>
+            <td>모름</td>
+            <td>
+              잘못된 코드에 빨간 밑줄 표시
+              <span style="color: var(--ac)">✅</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>실시간 미리보기</strong></td>
+            <td>직접 브라우저 열어야 함</td>
+            <td>
+              저장하면 바로 브라우저에 반영
+              <span style="color: var(--ac)">✅</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>가격</strong></td>
+            <td>무료</td>
+            <td>무료 <span style="color: var(--ac)">✅</span></td>
+          </tr>
+        </table>
+        <div class="tip green">
+          <span class="tip-icon">💡</span>
+          <div>
+            VS Code는 Microsoft가 만든 무료 에디터로, 전 세계 개발자의
+            <strong>70% 이상</strong>이 사용합니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 2: 설치 ══ -->
+      <div class="sec-hdr" id="s2">
+        <div class="sec-num">2</div>
+        <div>
+          <h2>VS Code 설치하기</h2>
+          <div class="sub">공식 사이트에서 무료로 다운로드</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📦 설치 순서</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              브라우저에서 <strong>code.visualstudio.com</strong> 접속<br />
+              <span style="font-size: 12px; color: var(--sub)"
+                >또는 구글에서 "VS Code 다운로드" 검색</span
+              >
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>Windows용 다운로드</strong> 버튼 클릭 → .exe 파일 실행
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              설치 옵션에서 아래 두 가지 반드시 체크<br />
+              <code>바탕화면에 아이콘 추가</code> &nbsp;
+              <code>PATH에 추가 (code 명령어 사용)</code>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              설치 완료 후 VS Code 실행 → <strong>초록색 시작 화면</strong> 확인
+            </div>
+          </div>
+        </div>
+        <div class="tip orange">
+          <span class="tip-icon">⚠️</span>
+          <div>
+            설치 중 <strong>"PATH에 추가"</strong> 옵션을 꼭 체크하세요. 나중에
+            터미널에서 <code>code .</code> 명령어로 폴더를 바로 열 수 있습니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 3: 기본 설정 ══ -->
+      <div class="sec-hdr" id="s3">
+        <div class="sec-num">3</div>
+        <div>
+          <h2>기본 환경 설정</h2>
+          <div class="sub">한국어 팩 & 테마 적용</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🌏 한국어 팩 설치</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              왼쪽 사이드바에서 <strong>블록 모양 아이콘</strong>(확장) 클릭<br />
+              또는 단축키 <code>Ctrl</code> + <code>Shift</code> +
+              <code>X</code>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              검색창에 <strong>"Korean"</strong> 입력<br />
+              <code>Korean Language Pack for VS Code</code> → Install 클릭
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              우측 하단 팝업에서
+              <strong>"Restart and Switch to Korean"</strong> 클릭
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🎨 테마(배경색) 바꾸기</h3>
+        <div class="concept">
+          테마는 에디터의 색 배경을 바꿔요. 눈이 편한 테마를 골라보세요.
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              단축키 <code>Ctrl</code> + <code>K</code> → <code>Ctrl</code> +
+              <code>T</code>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              목록에서 원하는 테마 선택<br />
+              <span style="font-size: 12px; color: var(--sub)"
+                >추천: <strong>Dark+</strong>(기본 다크) ·
+                <strong>One Dark Pro</strong>(인기) ·
+                <strong>GitHub Light</strong>(밝은 테마)</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="tip blue">
+          <span class="tip-icon">💡</span>
+          <div>
+            확장 프로그램에서 <code>One Dark Pro</code>나
+            <code>Dracula</code> 같은 유명 테마를 추가로 설치할 수도 있어요.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 4: 확장 프로그램 ══ -->
+      <div class="sec-hdr" id="s4">
+        <div class="sec-num">4</div>
+        <div>
+          <h2>필수 확장 프로그램</h2>
+          <div class="sub">웹개발을 10배 편하게 만들어주는 도구들</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔌 꼭 설치할 확장 4가지</h3>
+        <div class="ext-grid">
+          <div class="ext-card">
+            <div class="ext-icon" style="background: #dcfce7">🌐</div>
+            <div>
+              <div class="ext-name">
+                Live Preview <span class="ext-must">필수</span>
+              </div>
+              <div class="ext-desc">
+                저장할 때마다 브라우저 화면이 자동으로 새로고침됩니다. 웹개발
+                필수 도구.
+              </div>
+            </div>
+          </div>
+          <div class="ext-card">
+            <div class="ext-icon" style="background: #eff6ff">🎨</div>
+            <div>
+              <div class="ext-name">
+                Prettier <span class="ext-must">필수</span>
+              </div>
+              <div class="ext-desc">
+                저장 시 코드 들여쓰기·띄어쓰기를 자동으로 정리해 줍니다. 코드가
+                항상 깔끔하게 유지돼요.
+              </div>
+            </div>
+          </div>
+          <div class="ext-card">
+            <div class="ext-icon" style="background: #fdf2f8">🌈</div>
+            <div>
+              <div class="ext-name">Auto Rename Tag</div>
+              <div class="ext-desc">
+                여는 태그 이름을 바꾸면 닫는 태그도 자동으로 같이 바뀝니다.
+              </div>
+            </div>
+          </div>
+          <div class="ext-card">
+            <div class="ext-icon" style="background: #fff7ed">💡</div>
+            <div>
+              <div class="ext-name">HTML CSS Support</div>
+              <div class="ext-desc">
+                HTML 파일에서 CSS 클래스 이름을 자동완성해 줍니다.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip green">
+          <span class="tip-icon">✅</span>
+          <div>
+            <strong>Live Preview 설치 후 사용법:</strong> HTML 파일을 열고 우측
+            상단의 미리보기 아이콘 클릭 → 오른쪽에 브라우저 화면이 나타납니다.
+            이제 코드를 저장(<code>Ctrl+S</code>)할 때마다 자동으로 반영돼요!
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 5: 단축키 ══ -->
+      <div class="sec-hdr" id="s5">
+        <div class="sec-num">5</div>
+        <div>
+          <h2>핵심 단축키 10개</h2>
+          <div class="sub">외워두면 코딩 속도가 2배 빨라진다</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⌨️ 파일 & 편집</h3>
+        <div class="key-grid">
+          <div class="key-card">
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">S</span>
+            </div>
+            <div>
+              <div class="key-desc">저장</div>
+              <div class="key-sub">코드 수정 후 항상 저장 먼저!</div>
+            </div>
+          </div>
+          <div class="key-card">
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">Z</span>
+            </div>
+            <div>
+              <div class="key-desc">실행 취소</div>
+              <div class="key-sub">방금 한 작업 되돌리기</div>
+            </div>
+          </div>
+          <div class="key-card">
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">C</span>
+            </div>
+            <div>
+              <div class="key-desc">복사</div>
+              <div class="key-sub">선택한 텍스트 복사</div>
+            </div>
+          </div>
+          <div class="key-card">
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">V</span>
+            </div>
+            <div>
+              <div class="key-desc">붙여넣기</div>
+              <div class="key-sub">복사한 내용 붙여넣기</div>
+            </div>
+          </div>
+          <div class="key-card">
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">A</span>
+            </div>
+            <div>
+              <div class="key-desc">전체 선택</div>
+              <div class="key-sub">파일 전체 내용 선택</div>
+            </div>
+          </div>
+          <div class="key-card">
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">F</span>
+            </div>
+            <div>
+              <div class="key-desc">찾기</div>
+              <div class="key-sub">특정 단어 검색</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 20px">⌨️ VS Code 전용</h3>
+        <div class="key-grid">
+          <div
+            class="key-card"
+            style="border-color: var(--acb); background: var(--acl)"
+          >
+            <div class="key-badge">
+              <span class="key">Alt</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">↑↓</span>
+            </div>
+            <div>
+              <div class="key-desc">줄 이동</div>
+              <div class="key-sub">현재 줄을 위아래로 이동</div>
+            </div>
+          </div>
+          <div
+            class="key-card"
+            style="border-color: var(--acb); background: var(--acl)"
+          >
+            <div class="key-badge">
+              <span class="key">Shift</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">Alt</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">↓</span>
+            </div>
+            <div>
+              <div class="key-desc">줄 복사</div>
+              <div class="key-sub">현재 줄 아래에 복붙</div>
+            </div>
+          </div>
+          <div
+            class="key-card"
+            style="border-color: var(--acb); background: var(--acl)"
+          >
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">/</span>
+            </div>
+            <div>
+              <div class="key-desc">주석 처리</div>
+              <div class="key-sub">선택한 줄 한번에 주석</div>
+            </div>
+          </div>
+          <div
+            class="key-card"
+            style="border-color: var(--acb); background: var(--acl)"
+          >
+            <div class="key-badge">
+              <span class="key">Ctrl</span
+              ><span
+                style="font-size: 11px; align-self: center; color: var(--sub)"
+                >+</span
+              ><span class="key">` </span>
+            </div>
+            <div>
+              <div class="key-desc">터미널 열기</div>
+              <div class="key-sub">VS Code 안에서 터미널</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 6: 첫 HTML 파일 ══ -->
+      <div class="sec-hdr" id="s6">
+        <div class="sec-num">6</div>
+        <div>
+          <h2>첫 HTML 파일 만들기</h2>
+          <div class="sub">Emmet으로 5초 만에 기본 구조 완성</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📁 폴더 & 파일 만들기</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              바탕화면에 <strong>web-class</strong> 폴더 생성
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              VS Code 실행 → <strong>파일 → 폴더 열기</strong> → web-class 폴더
+              선택
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              왼쪽 탐색기 패널에서 <strong>새 파일</strong> 아이콘 클릭 → 파일명
+              <code>index.html</code> 입력
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⚡ Emmet — 느낌표 하나로 기본 구조 완성</h3>
+        <div class="concept">
+          <code>!</code> 를 입력하고 <code>Tab</code> 키를 누르면 HTML 기본
+          구조가 자동으로 완성됩니다.<br />
+          이게 바로 <strong>Emmet</strong> — VS Code에 내장된 HTML 단축
+          문법이에요.
+        </div>
+        <div class="card-grid">
+          <div>
+            <div
+              style="
+                font-size: 13px;
+                color: var(--sub);
+                margin-bottom: 6px;
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              입력
+            </div>
+            <div class="cb">
+              <div class="cbh">
+                <div class="dots">
+                  <div class="dot dr"></div>
+                  <div class="dot dy"></div>
+                  <div class="dot dg"></div>
+                </div>
+                <span class="cblbl">! + Tab</span>
+              </div>
+              <pre>!</pre>
+            </div>
+          </div>
+          <div>
+            <div
+              style="
+                font-size: 13px;
+                color: var(--sub);
+                margin-bottom: 6px;
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+            >
+              자동 완성 결과
+            </div>
+            <div class="cb">
+              <div class="cbh">
+                <div class="dots">
+                  <div class="dot dr"></div>
+                  <div class="dot dy"></div>
+                  <div class="dot dg"></div>
+                </div>
+                <span class="cblbl">index.html</span>
+              </div>
+              <pre><tg class="tg">&lt;!DOCTYPE html&gt;</tg>
+<tg class="tg">&lt;html</tg> <at class="at">lang</at>=<av class="av">"en"</av><tg class="tg">&gt;</tg>
+<tg class="tg">&lt;head&gt;</tg>
+  <tg class="tg">&lt;meta</tg> <at class="at">charset</at>=<av class="av">"UTF-8"</av><tg class="tg">&gt;</tg>
+  <tg class="tg">&lt;title&gt;</tg>Document<tg class="tg">&lt;/title&gt;</tg>
+<tg class="tg">&lt;/head&gt;</tg>
+<tg class="tg">&lt;body&gt;</tg>
+
+<tg class="tg">&lt;/body&gt;</tg>
+<tg class="tg">&lt;/html&gt;</tg></pre>
+            </div>
+          </div>
+        </div>
+        <div class="tip orange">
+          <span class="tip-icon">⚠️</span>
+          <div>
+            <code>lang="en"</code> 부분을 <code>lang="ko"</code>로 바꿔주세요.
+            우리 페이지는 한국어로 만들 거니까요!
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>✍️ Hello World 작성 & Live Preview 확인</h3>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">index.html — 첫 작성</span>
+          </div>
+          <pre><tg class="tg">&lt;!DOCTYPE html&gt;</tg>
+<tg class="tg">&lt;html</tg> <at class="at">lang</at>=<av class="av">"ko"</av><tg class="tg">&gt;</tg>
+<tg class="tg">&lt;head&gt;</tg>
+  <tg class="tg">&lt;meta</tg> <at class="at">charset</at>=<av class="av">"UTF-8"</av><tg class="tg">&gt;</tg>
+  <tg class="tg">&lt;title&gt;</tg>나의 첫 웹페이지<tg class="tg">&lt;/title&gt;</tg>
+<tg class="tg">&lt;/head&gt;</tg>
+<tg class="tg">&lt;body&gt;</tg>
+
+  <tg class="tg">&lt;h1&gt;</tg>안녕하세요! 👋<tg class="tg">&lt;/h1&gt;</tg>
+  <tg class="tg">&lt;p&gt;</tg>제 첫 번째 웹페이지입니다.<tg class="tg">&lt;/p&gt;</tg>
+
+<tg class="tg">&lt;/body&gt;</tg>
+<tg class="tg">&lt;/html&gt;</tg></pre>
+        </div>
+        <div class="steps" style="margin-top: 14px">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              위 코드를 입력하고 <code>Ctrl + S</code>로 저장
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              우측 상단 <strong>🌐 미리보기 아이콘</strong> 클릭 (Live Preview)
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              오른쪽에 <strong>"안녕하세요! 👋"</strong> 가 보이면 성공!
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <code>h1</code> 안의 텍스트를 내 이름으로 바꾸고 저장 → 미리보기가
+              자동으로 바뀌는지 확인
+            </div>
+          </div>
+        </div>
+        <div class="tip green">
+          <span class="tip-icon">🎉</span>
+          <div>
+            축하해요! VS Code에서 HTML 파일을 만들고 브라우저에 띄우는 데
+            성공했습니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 7: 퀴즈 ══ -->
+      <div class="sec-hdr" id="s7">
+        <div class="sec-num">7</div>
+        <div>
+          <h2>✏️ 확인 퀴즈</h2>
+          <div class="sub">10문항 · 각 10점 · 총 100점</div>
+        </div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q1 · 10점</div>
+        <div class="quiz-q">VS Code를 만든 회사는 어디인가요?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q1"
+            placeholder="회사 이름 입력"
+            onkeydown="if (event.key === 'Enter') chk(1, 'Microsoft');"
+          />
+          <button class="qbtn" onclick="chk(1, 'Microsoft')">확인</button>
+        </div>
+        <div class="qfb" id="qf1"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q2 · 10점</div>
+        <div class="quiz-q">
+          VS Code에서 파일을 저장하는 단축키는 무엇인가요?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: Ctrl+S</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q2"
+            placeholder="단축키 입력"
+            onkeydown="if (event.key === 'Enter') chk(2, 'Ctrl+S');"
+          />
+          <button class="qbtn" onclick="chk(2, 'Ctrl+S')">확인</button>
+        </div>
+        <div class="qfb" id="qf2"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q3 · 10점</div>
+        <div class="quiz-q">
+          HTML 파일에서 <code>!</code>를 입력하고 어떤 키를 누르면 기본 구조가
+          자동완성 되나요?
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q3"
+            placeholder="키 이름 입력"
+            onkeydown="if (event.key === 'Enter') chk(3, 'Tab');"
+          />
+          <button class="qbtn" onclick="chk(3, 'Tab')">확인</button>
+        </div>
+        <div class="qfb" id="qf3"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q4 · 10점</div>
+        <div class="quiz-q">
+          저장할 때마다 브라우저가 자동으로 새로고침 되는 확장 프로그램 이름은?
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q4"
+            placeholder="확장 프로그램 이름 입력"
+            onkeydown="if (event.key === 'Enter') chk(4, 'Live Preview');"
+          />
+          <button class="qbtn" onclick="chk(4, 'Live Preview')">확인</button>
+        </div>
+        <div class="qfb" id="qf4"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q5 · 10점</div>
+        <div class="quiz-q">
+          VS Code에서 확장 프로그램 패널을 여는 단축키는?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: Ctrl+Shift+X</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q5"
+            placeholder="단축키 입력"
+            onkeydown="if (event.key === 'Enter') chk(5, 'Ctrl+Shift+X');"
+          />
+          <button class="qbtn" onclick="chk(5, 'Ctrl+Shift+X')">확인</button>
+        </div>
+        <div class="qfb" id="qf5"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q6 · 10점</div>
+        <div class="quiz-q">
+          HTML 파일에서 한국어 페이지임을 나타내는 올바른 코드는?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: lang="en"</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q6"
+            placeholder='예: lang="ko"'
+            onkeydown="
+              if (event.key === 'Enter') chk(6, 'lang=&quot;ko&quot;');
+            "
+          />
+          <button class="qbtn" onclick="chk(6, 'lang=&quot;ko&quot;')">
+            확인
+          </button>
+        </div>
+        <div class="qfb" id="qf6"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q7 · 10점</div>
+        <div class="quiz-q">
+          현재 줄을 바로 아래에 복사하는 단축키는?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: Shift+Alt+↓</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q7"
+            placeholder="단축키 입력"
+            onkeydown="if (event.key === 'Enter') chk(7, 'Shift+Alt+↓');"
+          />
+          <button class="qbtn" onclick="chk(7, 'Shift+Alt+↓')">확인</button>
+        </div>
+        <div class="qfb" id="qf7"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q8 · 10점</div>
+        <div class="quiz-q">
+          코드 저장 시 들여쓰기를 자동으로 정리해주는 확장 프로그램 이름은?
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q8"
+            placeholder="확장 프로그램 이름 입력"
+            onkeydown="if (event.key === 'Enter') chk(8, 'Prettier');"
+          />
+          <button class="qbtn" onclick="chk(8, 'Prettier')">확인</button>
+        </div>
+        <div class="qfb" id="qf8"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q9 · 10점</div>
+        <div class="quiz-q">
+          VS Code에서 선택한 줄을 한 번에 주석 처리하는 단축키는?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: Ctrl+/</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q9"
+            placeholder="단축키 입력"
+            onkeydown="if (event.key === 'Enter') chk(9, 'Ctrl+/');"
+          />
+          <button class="qbtn" onclick="chk(9, 'Ctrl+/')">확인</button>
+        </div>
+        <div class="qfb" id="qf9"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">Q10 · 10점</div>
+        <div class="quiz-q">
+          HTML 파일의 웹 페이지 제목을 지정하는 태그는?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: &lt;태그명&gt;</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q10"
+            placeholder="태그 입력"
+            onkeydown="if (event.key === 'Enter') chk(10, '<title>');"
+          />
+          <button class="qbtn" onclick="chk(10, '<title>')">확인</button>
+        </div>
+        <div class="qfb" id="qf10"></div>
+      </div>
+
+      <!-- ══ 섹션 8: 제출 ══ -->
+      <div class="sec-hdr" id="s8">
+        <div class="sec-num">8</div>
+        <div>
+          <h2>📤 답안 제출</h2>
+          <div class="sub">모든 문항을 풀고 결과를 제출해봐요</div>
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="db-head">
+          <div class="db-title">📊 진행 현황</div>
+          <div
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 13px;
+              color: var(--sub);
+            "
+            id="db-pct"
+          >
+            0 / 10 완료
+          </div>
+        </div>
+        <div class="db-grid">
+          <div class="db-box">
+            <div class="db-lb">정답</div>
+            <div class="db-vl" id="db-ok" style="color: var(--ok)">0</div>
+          </div>
+          <div class="db-box">
+            <div class="db-lb">오답</div>
+            <div class="db-vl" id="db-ng" style="color: var(--ng)">0</div>
+          </div>
+          <div class="db-box">
+            <div class="db-lb">완료</div>
+            <div class="db-vl" id="db-done" style="color: var(--ac)">0</div>
+          </div>
+          <div class="db-box">
+            <div class="db-lb">예상 점수</div>
+            <div class="db-vl" id="db-score" style="color: var(--ac)">—</div>
+          </div>
+        </div>
+        <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+      </div>
+
+      <div class="sub-panel">
+        <div class="sub-title">📤 답안 제출하기</div>
+        <div class="tip blue">
+          <span class="tip-icon">📋</span>
+          <div>
+            모든 문항을 풀고 이름을 입력한 뒤 <strong>제출 버튼</strong>을
+            눌러주세요.
+          </div>
+        </div>
+        <table class="sum-tbl">
+          <thead>
+            <tr>
+              <th style="width: 60px">번호</th>
+              <th>문제 요약</th>
+              <th style="width: 130px">내 답변</th>
+              <th style="width: 54px; text-align: center">결과</th>
+            </tr>
+          </thead>
+          <tbody id="sum-body"></tbody>
+        </table>
+        <div class="name-row">
+          <span class="name-lb">✏️ 이름</span>
+          <input
+            class="name-in"
+            id="stu-name"
+            placeholder="이름을 먼저 입력하세요"
+            oninput="document.getElementById('nw').style.display = 'none'"
+          />
+        </div>
+        <div id="nw">⚠️ 이름을 먼저 입력해주세요!</div>
+        <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>
+          답안 제출하기
+        </button>
+        <div
+          style="
+            text-align: center;
+            font-size: 12px;
+            color: var(--sub);
+            margin-top: 8px;
+          "
+          id="sub-hint"
+        >
+          모든 문항(10개)을 풀면 제출 버튼이 활성화됩니다 (0 / 10)
+        </div>
+      </div>
+    </main>
+
+    <!-- 팝업 -->
+    <div class="pbg" id="pbg">
+      <div class="popup">
+        <button class="pp-close" onclick="closePopup()">✕</button>
+        <div style="text-align: center; font-size: 46px; margin-bottom: 8px">
+          🎉
+        </div>
+        <div class="pp-score" id="pp-score"></div>
+        <div class="pp-grade" id="pp-grade"></div>
+        <div class="pp-detail">
+          <div class="ppd-row">
+            <span>이름</span><strong id="pp-name"></strong>
+          </div>
+          <div class="ppd-row">
+            <span>정답 / 전체</span><strong id="pp-ratio"></strong>
+          </div>
+        </div>
+        <div class="tip green">
+          <span class="tip-icon">✨</span>
+          <div>아래 버튼을 누르면 결과가 선생님께 자동 전송됩니다.</div>
+        </div>
+        <button class="form-btn" id="form-btn">📤 답안 전송하기</button>
+        <div class="cfg-warn" id="cfg-warn"></div>
+        <button class="cancel-btn" onclick="closePopup()">닫기</button>
+      </div>
+    </div>
+
+    <script>
+      const ANS = {
+        1: "Microsoft",
+        2: "Ctrl+S",
+        3: "Tab",
+        4: "Live Preview",
+        5: "Ctrl+Shift+X",
+        6: 'lang="ko"',
+        7: "Shift+Alt+↓",
+        8: "Prettier",
+        9: "Ctrl+/",
+        10: "<title>",
+      };
+      const QSUM = {
+        1: "VS Code 제조사",
+        2: "파일 저장 단축키",
+        3: "Emmet 자동완성 키",
+        4: "자동 새로고침 확장",
+        5: "확장 패널 단축키",
+        6: "한국어 lang 속성",
+        7: "줄 복사 단축키",
+        8: "코드 자동 정렬 확장",
+        9: "주석 처리 단축키",
+        10: "페이지 제목 태그",
+      };
+      const TOTAL = 10;
+      let QS = {};
+
+      /* 스크롤 & 네비 */
+      const SEC_IDS = ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"];
+      window.addEventListener("scroll", () => {
+        const p = (scrollY / (document.body.scrollHeight - innerHeight)) * 100;
+        document.getElementById("prog").style.width = p + "%";
+        const dots = document.querySelectorAll(".ndot");
+        let cur = 0;
+        SEC_IDS.forEach((id, i) => {
+          const el = document.getElementById(id);
+          if (el && el.getBoundingClientRect().top < 130) cur = i;
+        });
+        dots.forEach((d, i) => d.classList.toggle("active", i === cur));
+      });
+      function goSec(i) {
+        document
+          .getElementById(SEC_IDS[i])
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      /* 퀴즈 채점 */
+      function chk(n, ans) {
+        const inp = document.getElementById("q" + n);
+        const fb = document.getElementById("qf" + n);
+        const userAns = inp.value.trim();
+        if (!userAns) {
+          fb.innerHTML =
+            '<span style="color:var(--wn)">❓ 답을 입력하세요!</span>';
+          return;
+        }
+        const ok = userAns === ans;
+        QS[n] = { ans: userAns, ok };
+        inp.classList.remove("iok", "ing");
+        inp.classList.add(ok ? "iok" : "ing");
+        if (ok) {
+          fb.innerHTML = '<span class="ok">✓ 정답입니다! 🎉</span>';
+          inp.disabled = true;
+          inp.closest(".quiz-card").querySelector(".qbtn").disabled = true;
+        } else {
+          fb.innerHTML = '<span class="ng">✗ 다시 한번 생각해보세요!</span>';
+        }
+        refresh();
+      }
+
+      /* 대시보드 */
+      function refresh() {
+        const done = Object.keys(QS).length;
+        const ok = Object.values(QS).filter((s) => s.ok).length;
+        const score = ok * 10;
+        document.getElementById("db-ok").textContent = ok;
+        document.getElementById("db-ng").textContent = done - ok;
+        document.getElementById("db-done").textContent = done;
+        document.getElementById("db-score").textContent =
+          done > 0 ? score + "점" : "—";
+        document.getElementById("pbar").style.width =
+          Math.round((done / TOTAL) * 100) + "%";
+        document.getElementById("db-pct").textContent =
+          done + " / " + TOTAL + " 완료";
+        renderSumTable();
+        const btn = document.getElementById("sub-btn");
+        btn.disabled = done < TOTAL;
+        document.getElementById("sub-hint").textContent =
+          done < TOTAL
+            ? `모든 문항(${TOTAL}개)을 풀면 제출 버튼이 활성화됩니다 (${done} / ${TOTAL})`
+            : "✅ 제출 준비 완료!";
+      }
+
+      function renderSumTable() {
+        const tb = document.getElementById("sum-body");
+        tb.innerHTML = "";
+        for (let i = 1; i <= TOTAL; i++) {
+          const s = QS[i];
+          const tr = document.createElement("tr");
+          tr.innerHTML =
+            `<td style="font-weight:700;color:var(--ac)">Q${i}</td>` +
+            `<td style="font-size:12px;color:var(--sub)">${QSUM[i]}</td>` +
+            `<td class="${s ? "" : "tpd"}">${s ? s.ans : "—"}</td>` +
+            `<td style="text-align:center" class="${s ? (s.ok ? "tok" : "tng") : "tpd"}">${s ? (s.ok ? "✅" : "❌") : "⬜"}</td>`;
+          tb.appendChild(tr);
+        }
+      }
+
+      /* ╔══════════════════════════════════════════════════╗
+   ║ 선생님 설정 — LESSON_ID만 파일마다 변경          ║
+   ╚══════════════════════════════════════════════════╝ */
+      const WEB_APP_URL =
+        "https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec";
+      const LESSON_ID = "web/00-1_vscode_intro";
+      /* ═══════════════ 설정 끝 ══════════════════════════ */
+
+      function collectAnswers() {
+        return Array.from({ length: TOTAL }, (_, i) =>
+          QS[i + 1] ? String(QS[i + 1].ans) : "",
+        );
+      }
+
+      function openPopup() {
+        const name = document.getElementById("stu-name").value.trim();
+        if (!name) {
+          document.getElementById("nw").style.display = "block";
+          document
+            .querySelector(".sub-panel")
+            .scrollIntoView({ behavior: "smooth" });
+          return;
+        }
+        document.getElementById("nw").style.display = "none";
+        const ok = Object.values(QS).filter((s) => s.ok).length;
+        const score = ok * 10;
+        const ps = document.getElementById("pp-score");
+        ps.textContent = score + "점";
+        ps.style.color =
+          score >= 90
+            ? "var(--ok)"
+            : score >= 70
+              ? "var(--wn)"
+              : score >= 60
+                ? "var(--c1)"
+                : "var(--ng)";
+        document.getElementById("pp-grade").textContent =
+          score >= 90
+            ? "🏆 A등급 — 우수!"
+            : score >= 80
+              ? "🥈 B등급 — 잘했어요!"
+              : score >= 70
+                ? "🥉 C등급 — 조금 더!"
+                : score >= 60
+                  ? "📚 D등급 — 복습 필요"
+                  : "💪 다시 도전!";
+        document.getElementById("pp-name").textContent = name;
+        document.getElementById("pp-ratio").textContent = ok + " / " + TOTAL;
+        const fb = document.getElementById("form-btn");
+        fb.disabled = false;
+        fb.style.background = "";
+        fb.textContent = "📤 답안 전송하기";
+        fb.onclick = function () {
+          submitToSheets(name, score);
+        };
+        document.getElementById("pbg").style.display = "flex";
+      }
+
+      async function submitToSheets(name, score) {
+        const fb = document.getElementById("form-btn");
+        const cw = document.getElementById("cfg-warn");
+        if (WEB_APP_URL.includes("여기에")) {
+          cw.style.display = "block";
+          cw.innerHTML =
+            "⚙️ <strong>설정 필요:</strong> WEB_APP_URL을 Apps Script 배포 URL로 교체해주세요.";
+          return;
+        }
+        cw.style.display = "none";
+        fb.disabled = true;
+        fb.textContent = "전송 중...";
+        const ok = Object.values(QS).filter((s) => s.ok).length;
+        try {
+          await fetch(WEB_APP_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({
+              lesson: LESSON_ID,
+              name,
+              answers: collectAnswers(),
+              score: score + "점 (" + ok + "/" + TOTAL + ")",
+            }),
+          });
+          fb.textContent = "✅ 제출 완료!";
+          fb.style.background = "var(--ok)";
+        } catch (err) {
+          fb.disabled = false;
+          fb.textContent = "다시 시도";
+          cw.style.display = "block";
+          cw.innerHTML = "⚠️ 전송 오류: " + err.message;
+        }
+      }
+
+      function closePopup() {
+        document.getElementById("pbg").style.display = "none";
+      }
+      document.getElementById("pbg").addEventListener("click", function (e) {
+        if (e.target === this) closePopup();
+      });
+
+      renderSumTable();
+    </script>
+  </body>
+</html>
