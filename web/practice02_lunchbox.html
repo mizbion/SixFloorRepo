@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+  <!-- meta:unit=1. HTML 기초 -->
+  <!-- meta:title=HTML 연습3 -->
+  <!-- meta:desc= table, caption, thead, tbody, tr, th, td, colspan, rowspan, mark-->
+  <!-- meta:date=2026-04-03 -->
+  <title>2학년 3반 이번 주 급식표</title>
+</head>
+<body>
+
+  <!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  실습 파일 3 — 학급 급식표                           ║
+  ║  🎯 연습 태그                                        ║
+  ║    table             — 표 전체 감싸기                 ║
+  ║    caption           — 표 제목                        ║
+  ║    thead, tbody      — 표 머리/몸통 구분              ║
+  ║    tr                — 행 (table row)                 ║
+  ║    th                — 헤더 셀 (굵게, 가운데)         ║
+  ║    td                — 데이터 셀                      ║
+  ║    colspan, rowspan  — 셀 합치기                      ║
+  ║    strong, em, mark  — 텍스트 강조                    ║
+  ║    ul, li            — 메뉴 목록                      ║
+  ╚══════════════════════════════════════════════════════╝
+
+ 
+  ─────────────────────────────
+  STEP 1  h1 + p 제목 섹션 (3분)
+  STEP 2  table + caption 뼈대 만들기 (5분)
+          - border="1" 속성으로 선 표시 설명
+  STEP 3  thead + tr + th 로 요일 헤더 행 (8분)
+          - th 와 td 의 차이 설명
+  STEP 4  tbody + tr + td 로 월요일 행 (7분)
+          - 셀 개수와 헤더 개수 맞추기 강조
+  STEP 5  나머지 요일 행 추가 (10분)
+          - 학생이 직접 수·목·금요일 작성
+  STEP 6  colspan 으로 "이번 주 공지" 행 추가 (7분)
+          - colspan 개념 그림으로 설명
+  STEP 7  좋아하는 급식 투표 ul 목록 추가 (5분)
+  STEP 8  strong + em + mark 강조 추가 (5분)
+  STEP 9  내용 자신 것으로 수정 후 GitHub 업로드 (5분)
+  ─────────────────────────────
+ 
+
+
+  <!-- ① h1 — 대제목 -->
+  <h1>🍱 2학년 3반 이번 주 급식표</h1>
+
+  <!-- ② p — 날짜 정보 -->
+  <p>
+    <strong>기간:</strong> 2026년 3월 23일(월) ~ 3월 27일(금)<br>
+    <strong>담당:</strong> 영양사 김○○ 선생님<br>
+    <em>* 급식 메뉴는 사정에 따라 변경될 수 있습니다.</em>
+  </p>
+
+
+  <!-- ③ table — 표 시작
+       border="1" 은 임시로 선을 보이게 하는 속성
+       (나중에 CSS로 예쁘게 꾸밀 거예요!) -->
+  <table border="1">
+
+    <!-- ④ caption — 표 제목 -->
+    <caption><strong>📅 주간 급식 메뉴표</strong></caption>
+
+    <!-- ⑤ thead — 표 머리 (헤더 행) -->
+    <thead>
+      <tr>
+        <!-- ⑥ th — 헤더 셀 (자동으로 굵게 + 가운데 정렬) -->
+        <th>구분</th>
+        <th>월요일 (3/23)</th>
+        <th>화요일 (3/24)</th>
+        <th>수요일 (3/25)</th>
+        <th>목요일 (3/26)</th>
+        <th>금요일 (3/27)</th>
+      </tr>
+    </thead>
+
+    <!-- ⑦ tbody — 표 몸통 (데이터 행들) -->
+    <tbody>
+
+      <!-- ── 주식 행 ── -->
+      <tr>
+        <!-- ⑧ th — 행 헤더 -->
+        <th>주식</th>
+        <!-- ⑨ td — 데이터 셀 -->
+        <td>잡곡밥</td>
+        <td>흰쌀밥</td>
+        <td><mark>볶음밥</mark></td>
+        <td>잡곡밥</td>
+        <td>흰쌀밥</td>
+      </tr>
+
+      <!-- ── 국 행 ── -->
+      <tr>
+        <th>국</th>
+        <td>된장찌개</td>
+        <td>미역국</td>
+        <td>순두부찌개</td>
+        <td>김치찌개</td>
+        <td><em>북어국</em></td>
+      </tr>
+
+      <!-- ── 주반찬 행 ── -->
+      <tr>
+        <th>주반찬</th>
+        <td><strong>돈가스</strong> ⭐</td>
+        <td>고등어구이</td>
+        <td>제육볶음</td>
+        <td><strong>닭강정</strong> ⭐</td>
+        <td>불고기</td>
+      </tr>
+
+      <!-- ── 부반찬 행 ── -->
+      <tr>
+        <th>부반찬</th>
+        <td>콩나물무침</td>
+        <td>시금치나물</td>
+        <td>잡채</td>
+        <td>도라지무침</td>
+        <td>호박볶음</td>
+      </tr>
+
+      <!-- ── 김치 행 ── -->
+      <tr>
+        <th>김치</th>
+        <td>배추김치</td>
+        <td>깍두기</td>
+        <td>배추김치</td>
+        <td>열무김치</td>
+        <td>배추김치</td>
+      </tr>
+
+      <!-- ── 후식 행 ── -->
+      <tr>
+        <th>후식</th>
+        <td>요구르트</td>
+        <td><mark>아이스크림</mark> 🍦</td>
+        <td>우유</td>
+        <td>귤</td>
+        <td><mark>케이크</mark> 🎂</td>
+      </tr>
+
+      <!-- ⑩ colspan — 셀 합치기
+           colspan="6" → 6칸을 하나로 합침 -->
+      <tr>
+        <td colspan="6">
+          <strong>📢 이번 주 공지:</strong>
+          수요일(3/25)은 <em>학교 체육대회</em>로 인해
+          급식 시간이 <strong>오후 1시</strong>로 변경됩니다.
+        </td>
+      </tr>
+
+    </tbody>
+
+  </table>
+  <!-- table 끝 -->
+
+
+  <hr>
+
+
+  <!-- ⑪ h2 + ul — 이번 주 인기 메뉴 투표 -->
+  <h2>🗳️ 이번 주 기대되는 메뉴 BEST 3</h2>
+
+  <p>우리 반 친구들이 가장 기대하는 메뉴를 뽑았어요!</p>
+
+  <ol>
+    <li><strong>닭강정</strong> — 27표 🏆</li>
+    <li><strong>돈가스</strong> — 23표 🥈</li>
+    <li><mark>아이스크림</mark> — 21표 🥉</li>
+  </ol>
+
+
+  <hr>
+
+
+  <!-- ⑫ h2 — 알레르기 정보 -->
+  <h2>⚠️ 알레르기 유발 식품 안내</h2>
+
+  <p>아래 번호는 식품의약품안전처 알레르기 유발 식품 번호입니다.</p>
+
+  <table border="1">
+    <caption>알레르기 정보</caption>
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th>식품명</th>
+        <th>포함된 메뉴</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>난류(계란)</td>
+        <td>돈가스, 볶음밥</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>우유</td>
+        <td>우유, 케이크, 아이스크림</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>밀(글루텐)</td>
+        <td>돈가스, 닭강정, 잡채</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>돼지고기</td>
+        <td>제육볶음, 돈가스</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <em>알레르기가 있는 학생은 영양사 선생님께 미리 말씀해주세요!</em>
+  </p>
+
+
+  <hr>
+
+
+  <!-- ⑬ 마무리 -->
+  <p>
+    <em>이 페이지는 HTML만으로 만들었습니다.</em><br>
+    Made by 홍길동
+  </p>
+
+</body>
+</html>
