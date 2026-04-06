@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+  <!-- meta:unit=1. HTML 기초 -->
+  <!-- meta:title=HTML 연습4 -->
+  <!-- meta:desc= -->
+  <!-- meta:date=2006-04-06 -->
+  <title>홍길동의 맛집 추천</title>
+</head>
+<body>
+
+  <!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  실습 파일 1 — 나만의 맛집 추천 리스트              ║
+  ║  🎯 연습 태그                                        ║
+  ║    h1, h2, h3   — 제목 계층 구조                     ║
+  ║    p             — 단락                               ║
+  ║    strong, em    — 강조                               ║
+  ║    ul, ol, li    — 목록                               ║
+  ║    a             — 링크 (href, target)                ║
+  ║    img           — 이미지 (src, alt, width)           ║
+  ║    hr            — 구분선                             ║
+  ║    br            — 줄바꿈                             ║
+  ╚══════════════════════════════════════════════════════╝
+
+  👨‍🏫 수업 진행 순서 (강사용)
+  ─────────────────────────────
+  STEP 1  DOCTYPE + head 설명 (5분)
+          - title 바꿔보기
+  STEP 2  h1 대제목 + h2 소제목 작성 (5분)
+  STEP 3  p + strong + em 단락 작성 (10분)
+  STEP 4  ul 목록 작성 — 좋아하는 음식 (7분)
+  STEP 5  hr 구분선으로 맛집 구분 (3분)
+  STEP 6  h3 + p 로 맛집 3곳 소개 작성 (10분)
+  STEP 7  ol 로 가는 방법 작성 (5분)
+  STEP 8  a 링크 추가 (new tab) (5분)
+  STEP 9  img 이미지 추가 (5분)
+  STEP 10 내용 자신 것으로 바꿔 GitHub 업로드 (5분)
+  ─────────────────────────────
+  총 약 60분 수업
+  -->
+
+
+  <!-- ① h1 — 페이지 대제목 (한 페이지에 하나만!) -->
+  <h1>홍길동의 맛집 추천 리스트 🍽️</h1>
+
+
+  <!-- ② p + strong + em — 소개 단락 -->
+  <p>
+    안녕하세요! 제가 직접 가본 <strong>맛집들을 소개</strong>합니다.<br>
+    이 중에서 <em>가장 추천하는 곳</em>은 별표(⭐)로 표시했어요.
+  </p>
+
+
+  <!-- ③ h2 — 섹션 제목 -->
+  <h2>📋 내가 좋아하는 음식 종류</h2>
+
+  <!-- ④ ul — 순서 없는 목록 (좋아하는 음식) -->
+  <ul>
+    <li>🍗 치킨</li>
+    <li>🍕 피자</li>
+    <li>🍜 라멘</li>
+    <li>🥩 삼겹살</li>
+    <li>🍱 일본 가정식</li>
+  </ul>
+
+
+  <!-- ⑤ hr — 섹션 구분선 -->
+  <hr>
+
+
+  <!-- ⑥ h2 — 맛집 목록 섹션 -->
+  <h2>⭐ 추천 맛집 TOP 3</h2>
+
+
+  <!-- ── 맛집 1 ── -->
+
+  <!-- ⑦ h3 — 가게 이름 소제목 -->
+  <h3>1. 황금치킨 ⭐⭐⭐</h3>
+
+  <!-- ⑧ img — 음식 사진 (picsum으로 랜덤 이미지 사용) -->
+  <img
+    src="https://picsum.photos/seed/chicken/300/200"
+    alt="황금치킨 대표 메뉴 사진"
+    width="300"
+  >
+
+  <!-- ⑨ p + strong + em — 맛집 설명 -->
+  <p>
+    <strong>위치:</strong> 대구 중구 동성로 123<br>
+    <strong>영업시간:</strong> 오후 2시 ~ 자정<br>
+    <strong>추천 메뉴:</strong> <em>황금 후라이드 치킨</em><br>
+    <strong>평균 가격:</strong> 1인 15,000원
+  </p>
+
+  <p>
+    바삭한 튀김옷과 촉촉한 속살이 일품인 치킨 맛집입니다.
+    양념 치킨보다 <strong>후라이드</strong>가 더 맛있어요!
+    친구들과 야식으로 딱 좋습니다. 😋
+  </p>
+
+  <!-- ⑩ a — 링크 (새 탭에서 열기) -->
+  <p>
+    <a href="https://map.naver.com" target="_blank">네이버 지도에서 보기 🗺️</a>
+  </p>
+
+
+  <hr>
+
+
+  <!-- ── 맛집 2 ── -->
+  <h3>2. 돈부리 하우스 ⭐⭐⭐</h3>
+
+  <img
+    src="https://picsum.photos/seed/japanese/300/200"
+    alt="돈부리 하우스 가츠동 사진"
+    width="300"
+  >
+
+  <p>
+    <strong>위치:</strong> 대구 수성구 범어동 456<br>
+    <strong>영업시간:</strong> 오전 11시 ~ 오후 9시<br>
+    <strong>추천 메뉴:</strong> <em>가츠동, 연어덮밥</em><br>
+    <strong>평균 가격:</strong> 1인 12,000원
+  </p>
+
+  <p>
+    일본 가정식 느낌의 아늑한 식당입니다.
+    <em>가츠동</em>은 두꺼운 돈가스에 달콤짭짤한 소스가 어우러져
+    밥 한 그릇을 뚝딱 비우게 됩니다.
+  </p>
+
+  <p>
+    <a href="https://map.naver.com" target="_blank">네이버 지도에서 보기 🗺️</a>
+  </p>
+
+
+  <hr>
+
+
+  <!-- ── 맛집 3 ── -->
+  <h3>3. 삼겹살 & 냉면 ⭐⭐</h3>
+
+  <img
+    src="https://picsum.photos/seed/korean/300/200"
+    alt="삼겹살 & 냉면 대표 메뉴 사진"
+    width="300"
+  >
+
+  <p>
+    <strong>위치:</strong> 대구 달서구 상인동 789<br>
+    <strong>영업시간:</strong> 오전 11시 ~ 오후 10시<br>
+    <strong>추천 메뉴:</strong> <em>생삼겹살 + 물냉면 세트</em><br>
+    <strong>평균 가격:</strong> 1인 13,000원
+  </p>
+
+  <p>
+    고기를 구운 뒤 시원한 냉면으로 마무리하면 정말 꿀맛!
+    고기 두께가 <strong>두꺼워서</strong> 씹는 맛이 좋습니다.
+  </p>
+
+  <p>
+    <a href="https://map.naver.com" target="_blank">네이버 지도에서 보기 🗺️</a>
+  </p>
+
+
+  <hr>
+
+
+  <!-- ⑪ h2 + ol — 순서 있는 목록 (가는 방법) -->
+  <h2>🚌 황금치킨 가는 방법</h2>
+
+  <ol>
+    <li>지하철 1호선 <strong>중앙로역</strong> 하차</li>
+    <li>2번 출구로 나와 <em>동성로 방향</em>으로 직진</li>
+    <li>도보 5분 — 편의점 옆 골목 진입</li>
+    <li>황금색 간판 건물 <strong>3층</strong></li>
+  </ol>
+
+
+  <hr>
+
+
+  <!-- ⑫ h2 — 마무리 섹션 -->
+  <h2>💬 한마디</h2>
+
+  <p>
+    음식은 혼자 먹는 것보다 <strong>함께</strong> 먹을 때 더 맛있어요!<br>
+    친구들과 이 맛집들을 꼭 방문해보세요. 😊
+  </p>
+
+  <p>
+    더 많은 맛집 정보는
+    <a href="https://www.mangoplate.com" target="_blank">망고플레이트</a>
+    에서 찾아볼 수 있어요.
+  </p>
+
+  <hr>
+
+  <p>
+    <em>이 페이지는 HTML만으로 만들었습니다.</em><br>
+    Made by 홍길동
+  </p>
+
+</body>
+</html>
