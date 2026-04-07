@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- meta:subject=웹개발 -->
+    <!-- meta:unit=1. HTML 기초 -->
+    <!-- meta:title=HTML 기본 구조2 -->
+    <!-- meta:desc=-->
+    <!-- meta:date=2026-04-07 -->
+    <title>CSS 전에 꼭 알아둘 HTML 태그 | 웹개발</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ecfdf5;
+        --card: #ffffff;
+        --s2: #d1fae5;
+        --s3: #a7f3d0;
+        --bdr: #6ee7b7;
+        --text: #042f1a;
+        --sub: #1f6a4a;
+        --ac: #047857;
+        --line: #bbf7d0;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: radial-gradient(circle at top right, #d1fae5, #ecfdf5 40%);
+        color: var(--text);
+        line-height: 1.7;
+      }
+
+      header {
+        background: #052e16;
+        color: #fff;
+        padding: 22px 24px;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        border-bottom: 1px solid #14532d;
+      }
+
+      .header-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+
+      .badge {
+        display: inline-block;
+        font-size: 12px;
+        background: #10b981;
+        border-radius: 20px;
+        padding: 4px 10px;
+        margin-bottom: 8px;
+      }
+
+      h1 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: clamp(26px, 4vw, 38px);
+      }
+
+      .subtitle {
+        font-size: 14px;
+        color: #bbf7d0;
+        margin-top: 8px;
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 30px 20px 80px;
+      }
+
+      .toc,
+      .card {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 14px;
+        box-shadow: 0 3px 16px rgba(4, 120, 87, 0.12);
+      }
+
+      .toc {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .toc h2 {
+        font-family: "Black Han Sans", sans-serif;
+        color: var(--ac);
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+
+      .toc ul {
+        list-style: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .toc a {
+        text-decoration: none;
+        color: var(--text);
+        display: block;
+        padding: 10px 12px;
+        background: var(--s2);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .toc a:hover {
+        background: #ecfdf5;
+      }
+
+      .sec-title {
+        margin: 42px 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .num {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sec-title h2 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 22px;
+      }
+
+      .card {
+        padding: 22px;
+        margin-bottom: 14px;
+      }
+
+      .card h3 {
+        font-family: "Black Han Sans", sans-serif;
+        color: var(--ac);
+        font-size: 17px;
+        margin-bottom: 10px;
+      }
+
+      .concept {
+        background: var(--s2);
+        border-left: 4px solid var(--ac);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: #dcfce7;
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--ac);
+      }
+
+      pre {
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        background: #f0fdf4;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        font-size: 13px;
+        line-height: 1.75;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 9px 10px;
+        text-align: left;
+      }
+
+      th {
+        background: var(--s2);
+        font-family: "Black Han Sans", sans-serif;
+      }
+
+      .tip {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--sub);
+      }
+
+      .check {
+        list-style: none;
+      }
+
+      .check li {
+        background: #f0fdf4;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .footer-box {
+        margin-top: 26px;
+        background: #052e16;
+        color: #dcfce7;
+        border-radius: 12px;
+        padding: 18px;
+      }
+
+      @media (max-width: 760px) {
+        .toc ul,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-wrap">
+        <span class="badge">HTML 2</span>
+        <h1>HTML 태그 2</h1>
+        <p class="subtitle">
+          구조를 제대로 잡는 "의미를 담는 태그"를 익혀요. - 시맨틱 레이아웃
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <section class="toc">
+        <h2>목차</h2>
+        <ul>
+          <li><a href="#s1">1. 왜 이 태그들을 먼저 배울까?</a></li>
+          <li><a href="#s2">2. 시맨틱 레이아웃 태그</a></li>
+          <li><a href="#s3">3. 텍스트 의미 태그</a></li>
+          <li><a href="#s4">4. 표(Table) 기초 태그</a></li>
+          <li><a href="#s5">5. 폼(Form) 기초 태그</a></li>
+          <li><a href="#s6">6. CSS 전 최소 실습 과제</a></li>
+        </ul>
+      </section>
+
+      <div class="sec-title" id="s1">
+        <span class="num">1</span>
+        <h2>왜 이 태그들을 먼저 배울까?</h2>
+      </div>
+      <section class="card">
+        <h3>구조를 먼저 잡으면 CSS가 쉬워지는 이유</h3>
+        <div class="concept">
+          CSS는 "무엇을 꾸밀지"를 선택해서 적용합니다. HTML 구조가 어설프면
+          원하는 요소만 선택하기 어려워요. 그래서 <strong>시맨틱 태그</strong>
+          와 <strong>폼/표 기본 태그</strong>를 먼저 알아두면 이후 CSS 선택자,
+          레이아웃, 반응형을 훨씬 쉽게 배울 수 있습니다.
+        </div>
+        <ul class="check">
+          <li>header/nav/main/section 같은 구조 태그는 CSS 타겟을 명확하게 만듭니다.</li>
+          <li>label-input 연결을 알면 폼 디자인 전에 접근성을 확보할 수 있습니다.</li>
+          <li>table의 thead/tbody를 구분하면 표 스타일링이 훨씬 깔끔해집니다.</li>
+        </ul>
+      </section>
+
+      <div class="sec-title" id="s2">
+        <span class="num">2</span>
+        <h2>시맨틱 레이아웃 태그</h2>
+      </div>
+      <section class="card">
+        <h3>div만 쓰지 말고 의미 태그를 함께 쓰기</h3>
+        <table>
+          <tr>
+            <th>태그</th>
+            <th>의미</th>
+            <th>언제 사용?</th>
+          </tr>
+          <tr>
+            <td><code>&lt;header&gt;</code></td>
+            <td>문서/섹션의 머리말</td>
+            <td>사이트 제목, 로고, 상단 소개</td>
+          </tr>
+          <tr>
+            <td><code>&lt;nav&gt;</code></td>
+            <td>주요 이동 메뉴</td>
+            <td>메뉴 링크 묶음</td>
+          </tr>
+          <tr>
+            <td><code>&lt;main&gt;</code></td>
+            <td>문서의 핵심 본문</td>
+            <td>페이지마다 바뀌는 핵심 콘텐츠</td>
+          </tr>
+          <tr>
+            <td><code>&lt;section&gt;</code></td>
+            <td>주제별 구획</td>
+            <td>소개, 공지, 후기 등 덩어리 분리</td>
+          </tr>
+          <tr>
+            <td><code>&lt;article&gt;</code></td>
+            <td>독립적으로 읽히는 글</td>
+            <td>게시글, 뉴스 카드, 리뷰 항목</td>
+          </tr>
+          <tr>
+            <td><code>&lt;aside&gt;</code></td>
+            <td>부가 정보 영역</td>
+            <td>광고, 관련 링크, 사이드 정보</td>
+          </tr>
+          <tr>
+            <td><code>&lt;footer&gt;</code></td>
+            <td>문서/섹션의 꼬리말</td>
+            <td>저작권, 연락처, 하단 메뉴</td>
+          </tr>
+        </table>
+        <div class="tip">팁: div를 완전히 버리는 게 아니라, 의미가 분명할 때는 시맨틱 태그를 우선 사용합니다.</div>
+        <pre>&lt;body&gt;
+  &lt;header&gt;
+    &lt;h1&gt;오늘의 레시피&lt;/h1&gt;
+  &lt;/header&gt;
+
+  &lt;nav&gt;
+    &lt;a href="#soup"&gt;국물요리&lt;/a&gt;
+    &lt;a href="#rice"&gt;밥요리&lt;/a&gt;
+  &lt;/nav&gt;
+
+  &lt;main&gt;
+    &lt;section id="soup"&gt;
+      &lt;article&gt;
+        &lt;h2&gt;된장찌개&lt;/h2&gt;
+        &lt;p&gt;간단한 집밥 메뉴&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;2026 Cooking Class&lt;/footer&gt;
+&lt;/body&gt;</pre>
+      </section>
+
+      <div class="sec-title" id="s3">
+        <span class="num">3</span>
+        <h2>텍스트 의미 태그</h2>
+      </div>
+      <section class="card">
+        <h3>보이기보다 의미 전달이 중요한 태그</h3>
+        <div class="grid">
+          <div>
+            <table>
+              <tr>
+                <th>태그</th>
+                <th>포인트</th>
+              </tr>
+              <tr>
+                <td><code>&lt;mark&gt;</code></td>
+                <td>하이라이트 표시</td>
+              </tr>
+              <tr>
+                <td><code>&lt;small&gt;</code></td>
+                <td>보조/주의 문구</td>
+              </tr>
+              <tr>
+                <td><code>&lt;time&gt;</code></td>
+                <td>날짜/시간 정보</td>
+              </tr>
+              <tr>
+                <td><code>&lt;abbr&gt;</code></td>
+                <td>약어와 풀네임 제공</td>
+              </tr>
+              <tr>
+                <td><code>&lt;blockquote&gt;</code></td>
+                <td>긴 인용문</td>
+              </tr>
+              <tr>
+                <td><code>&lt;q&gt;</code></td>
+                <td>짧은 인용문</td>
+              </tr>
+              <tr>
+                <td><code>&lt;code&gt;</code></td>
+                <td>코드 조각</td>
+              </tr>
+              <tr>
+                <td><code>&lt;pre&gt;</code></td>
+                <td>공백/줄바꿈 유지</td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <pre>&lt;p&gt;오늘의 키워드: &lt;mark&gt;Semantic HTML&lt;/mark&gt;&lt;/p&gt;
+&lt;p&gt;&lt;small&gt;실습 파일은 수업 종료 후 삭제됩니다.&lt;/small&gt;&lt;/p&gt;
+&lt;p&gt;개강일: &lt;time datetime="2026-04-05"&gt;2026년 4월 5일&lt;/time&gt;&lt;/p&gt;
+&lt;p&gt;&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;은 웹 문서 언어입니다.&lt;/p&gt;
+&lt;blockquote&gt;좋은 구조는 좋은 스타일의 출발점이다.&lt;/blockquote&gt;
+&lt;p&gt;선생님이 말했어요: &lt;q&gt;태그 의미부터 생각하자.&lt;/q&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;section&amp;gt;&lt;/code&gt; 태그를 기억하세요.&lt;/p&gt;</pre>
+          </div>
+        </div>
+      </section>
+
+      <div class="sec-title" id="s4">
+        <span class="num">4</span>
+        <h2>표(Table) 기초 태그</h2>
+      </div>
+      <section class="card">
+        <h3>표를 만들 때 최소한 이 구조는 기억하기</h3>
+        <div class="concept">
+          <code>&lt;table&gt;</code> 안에 제목은 <code>&lt;caption&gt;</code>,
+          헤더 행은 <code>&lt;thead&gt;</code>, 데이터 본문은
+          <code>&lt;tbody&gt;</code>로 나누면 CSS에서 스타일을 주기 훨씬
+          쉽습니다.
+        </div>
+        <pre>&lt;table&gt;
+  &lt;caption&gt;주간 학습 계획&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;요일&lt;/th&gt;
+      &lt;th&gt;학습 내용&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;월&lt;/td&gt;
+      &lt;td&gt;HTML 복습&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;화&lt;/td&gt;
+      &lt;td&gt;CSS 선택자 시작&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+      </section>
+
+      <div class="sec-title" id="s5">
+        <span class="num">5</span>
+        <h2>폼(Form) 기초 태그</h2>
+      </div>
+      <section class="card">
+        <h3>CSS 전에 꼭 잡아야 하는 폼 구조</h3>
+        <div class="grid">
+          <div>
+            <table>
+              <tr>
+                <th>태그</th>
+                <th>핵심 역할</th>
+              </tr>
+              <tr>
+                <td><code>&lt;form&gt;</code></td>
+                <td>입력 묶음 전체</td>
+              </tr>
+              <tr>
+                <td><code>&lt;label&gt;</code></td>
+                <td>입력칸 설명 연결</td>
+              </tr>
+              <tr>
+                <td><code>&lt;input&gt;</code></td>
+                <td>한 줄 입력</td>
+              </tr>
+              <tr>
+                <td><code>&lt;textarea&gt;</code></td>
+                <td>여러 줄 입력</td>
+              </tr>
+              <tr>
+                <td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td>
+                <td>선택 목록</td>
+              </tr>
+              <tr>
+                <td><code>&lt;button&gt;</code></td>
+                <td>동작 실행 버튼</td>
+              </tr>
+              <tr>
+                <td><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code></td>
+                <td>관련 입력 그룹화</td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <pre>&lt;form&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;수강 신청&lt;/legend&gt;
+
+    &lt;label for="name"&gt;이름&lt;/label&gt;
+    &lt;input id="name" type="text" /&gt;
+
+    &lt;label for="track"&gt;트랙&lt;/label&gt;
+    &lt;select id="track"&gt;
+      &lt;option&gt;프론트엔드&lt;/option&gt;
+      &lt;option&gt;백엔드&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;label for="memo"&gt;메모&lt;/label&gt;
+    &lt;textarea id="memo" rows="3"&gt;&lt;/textarea&gt;
+
+    &lt;button type="submit"&gt;제출&lt;/button&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</pre>
+          </div>
+        </div>
+        <div class="tip">팁: label의 for 값과 input의 id 값을 맞추면 클릭 영역이 넓어져 사용성이 좋아집니다.</div>
+      </section>
+
+      <div class="sec-title" id="s6">
+        <span class="num">6</span>
+        <h2>CSS 전 최소 실습 과제</h2>
+      </div>
+      <section class="card">
+        <h3>아래 조건을 만족하는 HTML만 먼저 작성해보기</h3>
+        <ul class="check">
+          <li>header, nav, main, section, footer를 각각 1회 이상 사용</li>
+          <li>글 안에 mark, time, abbr 중 2개 이상 사용</li>
+          <li>table에 caption, thead, tbody를 포함</li>
+          <li>form에 label-input 연결(for/id) 최소 2개 이상</li>
+          <li>button 1개와 textarea 1개 포함</li>
+        </ul>
+        <pre>&lt;!-- 목표: CSS 없이도 구조가 읽히는 HTML 만들기 --&gt;
+&lt;header&gt;...&lt;/header&gt;
+&lt;nav&gt;...&lt;/nav&gt;
+&lt;main&gt;
+  &lt;section&gt;...&lt;/section&gt;
+  &lt;section&gt;
+    &lt;table&gt;...&lt;/table&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;form&gt;...&lt;/form&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
+&lt;footer&gt;...&lt;/footer&gt;</pre>
+      </section>
+
+      <div class="footer-box">
+        다음 단계: 이 구조를 바탕으로 CSS에서 선택자(tag, class, id)를 적용해
+        레이아웃과 디자인을 입혀봅시다.
+      </div>
+    </main>
+  </body>
+</html>
