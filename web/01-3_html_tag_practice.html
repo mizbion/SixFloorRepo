@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+  <!-- meta:unit=1. HTML 기초 -->
+  <!-- meta:title=HTML 태그 연습 교안 -->
+  <!-- meta:desc=h1~h6, p, a, img, ul/ol, div/span, 시맨틱, mark/time/abbr/blockquote, table, form -->
+  <!-- meta:date=2026-04-08 -->
+  <title>HTML 태그 연습 교안 | 웹개발</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:  #ecfdf5;
+      --card:#ffffff;
+      --s2:  #d1fae5;
+      --s3:  #a7f3d0;
+      --bdr: #6ee7b7;
+      --text:#042f1a;
+      --sub: #1f6a4a;
+      --ac:  #047857;
+      --acl: #ecfdf5;
+      --acb: #6ee7b7;
+      --c1:#b45309;--c1l:#fffbeb;--c1b:#fde68a;
+      --c2:#1d4ed8;--c2l:#eff6ff;--c2b:#bfdbfe;
+      --c3:#7c3aed;--c3l:#f5f3ff;--c3b:#ddd6fe;
+      --c4:#be185d;--c4l:#fdf2f8;--c4b:#fbcfe8;
+      --cbg:#f0fdf4; --cbr:#a7f3d0;
+      /* HTML 신택스 */
+      --tg:#0e7490; --at:#7c3aed; --av:#b45309; --tx:#047857; --cm:#6b9e82;
+      --sh:0 2px 14px rgba(4,120,87,.10);
+      --shm:0 6px 28px rgba(4,120,87,.18);
+      --ok:#047857; --ng:#be185d; --wn:#b45309;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;line-height:1.7;}
+
+    /* 헤더 */
+    #hdr{position:sticky;top:0;z-index:100;background:#052e16;color:#fff;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 24px;height:54px;gap:12px;}
+    .hbadge{background:var(--ac);color:#fff;font-family:'Black Han Sans',sans-serif;
+      font-size:12px;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+    .htitle{font-family:'Black Han Sans',sans-serif;font-size:16px;flex:1;text-align:center;}
+    .hmeta{font-size:12px;color:#a7f3d0;white-space:nowrap;}
+    #prog{position:absolute;bottom:0;left:0;height:3px;
+      background:linear-gradient(90deg,var(--ac),#34d399);width:0%;transition:width .2s;}
+
+    /* 히어로 */
+    .hero{text-align:center;padding:56px 24px 44px;
+      background:linear-gradient(160deg,#d1fae5 50%,#a7f3d0 100%);}
+    .hero-emoji{font-size:68px;display:block;margin-bottom:14px;
+      animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(24px,5vw,40px);
+      background:linear-gradient(135deg,var(--ac),#34d399);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;margin-bottom:10px;}
+    .hero p{color:var(--sub);font-size:15px;margin-bottom:20px;}
+    .badge-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+    .cbadge{background:var(--card);border:1.5px solid var(--bdr);border-radius:20px;
+      padding:4px 14px;font-size:12px;font-weight:500;color:var(--ac);}
+
+    /* 목차 */
+    .toc-wrap{max-width:960px;margin:0 auto;padding:0 24px 36px;}
+    .toc{background:var(--card);border-radius:14px;box-shadow:var(--sh);
+      padding:24px;border:1px solid var(--bdr);}
+    .toc-title{font-family:'Black Han Sans',sans-serif;font-size:17px;
+      color:var(--ac);margin-bottom:14px;}
+    .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+    .toc-item{display:flex;align-items:center;gap:8px;padding:9px 12px;
+      border-radius:8px;background:var(--s2);border:1px solid var(--bdr);
+      cursor:pointer;transition:all .2s;text-decoration:none;color:var(--text);}
+    .toc-item:hover{background:var(--acl);border-color:var(--ac);transform:translateX(2px);}
+    .toc-num{width:24px;height:24px;border-radius:50%;background:var(--ac);color:#fff;
+      font-family:'Black Han Sans',sans-serif;font-size:11px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .toc-label{font-size:13px;font-weight:500;}
+
+    /* 본문 */
+    .main{max-width:960px;margin:0 auto;padding:0 24px 80px;}
+    .sec-hdr{display:flex;align-items:center;gap:14px;margin:52px 0 18px;}
+    .sec-num{width:36px;height:36px;border-radius:50%;background:var(--ac);color:#fff;
+      font-family:'Black Han Sans',sans-serif;font-size:15px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .sec-hdr h2{font-family:'Black Han Sans',sans-serif;font-size:21px;}
+    .sec-sub{font-size:13px;color:var(--sub);font-weight:400;}
+
+    /* 연습 카드 */
+    .ex-card{background:var(--card);border-radius:12px;border:1px solid var(--bdr);
+      box-shadow:var(--sh);margin-bottom:20px;overflow:hidden;border-top:4px solid var(--ac);}
+    .ex-head{padding:14px 20px 0;}
+    .ex-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--ac);margin-bottom:6px;}
+    .ex-desc{font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px;}
+    .ex-desc code{font-family:'JetBrains Mono',monospace;background:var(--s2);
+      padding:1px 5px;border-radius:4px;font-size:12px;color:var(--ac);font-weight:600;}
+
+    /* 코드 + 결과 2열 */
+    .split{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bdr);}
+    .split-code{background:var(--cbg);border-right:1px solid var(--cbr);
+      display:flex;flex-direction:column;}
+    .split-preview{background:#fff;display:flex;flex-direction:column;}
+    .split-hdr{padding:7px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;
+      color:var(--sub);border-bottom:1px solid;flex-shrink:0;}
+    .sh-code{background:var(--s3);border-color:var(--cbr);}
+    .sh-prev{background:var(--s2);border-color:var(--bdr);}
+    .dots{display:flex;gap:5px;}
+    .dot{width:10px;height:10px;border-radius:50%;}
+    .dr{background:#ff5f57;}.dy{background:#ffbd2e;}.dg{background:#28c840;}
+    textarea.code-in{flex:1;background:transparent;border:none;outline:none;
+      font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.85;
+      color:var(--text);resize:none;padding:14px 16px;min-height:160px;}
+    .run-btn{background:var(--ac);color:#fff;border:none;padding:8px;
+      font-family:'Black Han Sans',sans-serif;font-size:12px;
+      cursor:pointer;flex-shrink:0;transition:opacity .2s;}
+    .run-btn:hover{opacity:.85;}
+    .prev-out{flex:1;padding:14px 16px;min-height:160px;overflow:auto;
+      font-size:14px;line-height:1.8;}
+
+    /* 전체 코드 토글 */
+    .full-code-wrap{border-top:1px solid var(--bdr);}
+    .full-code-toggle{width:100%;padding:10px 20px;background:var(--s2);
+      border:none;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:13px;color:var(--ac);text-align:left;
+      display:flex;align-items:center;gap:8px;transition:background .2s;}
+    .full-code-toggle:hover{background:var(--s3);}
+    .toggle-arrow{transition:transform .2s;font-size:11px;}
+    .toggle-arrow.open{transform:rotate(90deg);}
+    .full-code-body{display:none;background:var(--cbg);border-top:1px solid var(--cbr);}
+    .full-code-body.open{display:block;}
+    .full-code-body pre{padding:16px 18px;font-family:'JetBrains Mono',monospace;
+      font-size:12px;line-height:1.85;color:#1e293b;overflow-x:auto;}
+
+    /* 신택스 — span 전용 */
+    .tg{color:var(--tg);font-weight:600;}
+    .at{color:var(--at);}
+    .av{color:var(--av);}
+    .tx{color:var(--tx);}
+    .cm{color:var(--cm);font-style:italic;}
+
+    /* 개념 박스 */
+    .concept{background:var(--s2);border-radius:8px;padding:12px 16px;margin:10px 20px;
+      border-left:4px solid var(--ac);font-size:13px;line-height:1.85;}
+    .concept code{font-family:'JetBrains Mono',monospace;background:var(--s3);
+      padding:1px 5px;border-radius:4px;font-size:12px;color:var(--ac);font-weight:600;}
+
+    /* 팁 */
+    .tip{border-radius:8px;padding:10px 16px;margin:10px 20px 14px;font-size:13px;
+      display:flex;gap:8px;align-items:flex-start;line-height:1.8;}
+    .tip.orange{background:var(--c1l);border-left:4px solid var(--c1);}
+    .tip.blue  {background:var(--c2l);border-left:4px solid var(--c2);}
+    .tip.green {background:var(--acl);border-left:4px solid var(--ac);}
+    .tip.purple{background:var(--c3l);border-left:4px solid var(--c3);}
+    .tip-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+
+    /* 속성 표 */
+    .attr-tbl{width:calc(100% - 40px);margin:10px 20px 14px;border-collapse:collapse;font-size:13px;}
+    .attr-tbl th{background:var(--s3);padding:8px 12px;text-align:left;
+      border-bottom:2px solid var(--bdr);font-family:'Black Han Sans',sans-serif;font-size:12px;}
+    .attr-tbl td{padding:8px 12px;border-bottom:1px solid var(--bdr);vertical-align:top;}
+    .attr-tbl tr:last-child td{border-bottom:none;}
+    .attr-tbl code{font-family:'JetBrains Mono',monospace;background:var(--s2);
+      padding:1px 5px;border-radius:3px;font-size:11px;color:var(--ac);}
+
+    /* 퀴즈 */
+    .quiz-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+      padding:18px;margin:10px 0;border-left:4px solid var(--ac);box-shadow:var(--sh);}
+    .qmeta{font-size:12px;color:var(--sub);margin-bottom:8px;}
+    .qq{font-size:14px;font-weight:500;margin-bottom:10px;line-height:1.8;}
+    .qrow{display:flex;gap:8px;}
+    .qinput{flex:1;background:var(--s2);border:1.5px solid var(--bdr);border-radius:7px;
+      padding:7px 11px;font-family:'JetBrains Mono',monospace;font-size:13px;
+      color:var(--text);outline:none;transition:border-color .2s;}
+    .qinput:focus{border-color:var(--ac);background:#fff;}
+    .qinput:disabled{opacity:.5;}
+    .qinput.iok{border-color:var(--ok);background:#f0fdf4;}
+    .qinput.ing{border-color:var(--ng);background:#fdf2f8;}
+    .qbtn{background:var(--ac);color:#fff;border:none;border-radius:7px;
+      padding:7px 16px;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:13px;transition:all .2s;}
+    .qbtn:hover:not(:disabled){transform:translateY(-1px);}
+    .qbtn:disabled{opacity:.4;cursor:default;}
+    .qfb{margin-top:9px;font-size:13px;font-weight:500;min-height:20px;}
+    .ok{color:var(--ok);}.ng{color:var(--ng);}
+
+    /* 대시보드 */
+    .dashboard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+      padding:22px;margin-bottom:14px;box-shadow:var(--sh);}
+    .db-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .db-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--ac);}
+    .db-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+    .db-box{background:var(--s2);border-radius:10px;padding:11px;text-align:center;border:1px solid var(--bdr);}
+    .db-lb{font-size:11px;color:var(--sub);margin-bottom:3px;}
+    .db-vl{font-family:'Black Han Sans',sans-serif;font-size:20px;}
+    .ptrack{background:var(--s3);border-radius:10px;height:8px;overflow:hidden;}
+    .pbar{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),#34d399);
+      border-radius:10px;transition:width .4s;}
+
+    /* 제출 패널 */
+    .sub-panel{background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+      padding:26px;margin-bottom:14px;box-shadow:var(--sh);}
+    .sub-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--ac);margin-bottom:14px;}
+    .sum-tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+    .sum-tbl th{background:var(--s3);padding:9px 12px;text-align:left;
+      border-bottom:2px solid var(--bdr);font-family:'Black Han Sans',sans-serif;font-size:12px;}
+    .sum-tbl td{padding:9px 12px;border-bottom:1px solid var(--bdr);}
+    .sum-tbl tr:last-child td{border-bottom:none;}
+    .tok{color:var(--ok);font-weight:700;}.tng{color:var(--ng);font-weight:700;}.tpd{color:var(--sub);font-style:italic;}
+    .name-row{display:flex;align-items:center;gap:12px;margin:16px 0 8px;}
+    .name-lb{font-weight:700;font-size:14px;white-space:nowrap;}
+    .name-in{flex:1;background:var(--s2);border:1.5px solid var(--bdr);border-radius:8px;
+      padding:9px 13px;font-family:'Noto Sans KR',sans-serif;font-size:14px;
+      color:var(--text);outline:none;transition:border-color .2s;}
+    .name-in:focus{border-color:var(--ac);background:#fff;}
+    #nw{color:var(--ng);font-size:13px;margin-bottom:8px;display:none;}
+    .sub-btn{display:block;width:100%;padding:13px;background:var(--ac);color:#fff;
+      border:none;border-radius:10px;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:15px;transition:all .2s;margin-top:14px;}
+    .sub-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:var(--shm);}
+    .sub-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+    /* 팝업 */
+    .pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;
+      align-items:center;justify-content:center;padding:20px;}
+    .popup{background:#fff;border-radius:20px;padding:32px 36px;max-width:480px;width:100%;
+      box-shadow:0 16px 60px rgba(0,0,0,.25);position:relative;max-height:90vh;
+      overflow-y:auto;animation:pu .3s ease;}
+    @keyframes pu{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+    .pp-close{position:absolute;top:14px;right:14px;background:var(--s2);border:none;
+      border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:13px;color:var(--sub);}
+    .pp-score{font-family:'Black Han Sans',sans-serif;font-size:52px;line-height:1;
+      text-align:center;margin:8px 0 4px;}
+    .pp-grade{text-align:center;font-size:15px;font-weight:700;margin-bottom:14px;}
+    .pp-detail{background:var(--s2);border-radius:10px;padding:12px 16px;margin:12px 0;}
+    .ppd-row{display:flex;justify-content:space-between;padding:5px 0;
+      border-bottom:1px solid var(--bdr);font-size:13px;}
+    .ppd-row:last-child{border-bottom:none;}
+    .form-btn{display:block;width:100%;padding:13px;background:var(--ac);color:#fff;
+      border:none;border-radius:10px;cursor:pointer;font-family:'Black Han Sans',sans-serif;
+      font-size:14px;transition:all .2s;margin:14px 0 8px;}
+    .form-btn:hover:not(:disabled){transform:translateY(-2px);}
+    .form-btn:disabled{opacity:.6;cursor:not-allowed;}
+    .cancel-btn{display:block;width:100%;padding:9px;background:var(--s2);color:var(--sub);
+      border:1px solid var(--bdr);border-radius:10px;cursor:pointer;
+      font-family:'Noto Sans KR',sans-serif;font-size:13px;}
+    .cfg-warn{display:none;font-size:12px;color:var(--ng);background:var(--c4l);
+      border-radius:8px;padding:9px 13px;margin-top:8px;}
+
+    /* 네비 도트 */
+    #navdot{position:fixed;right:14px;top:50%;transform:translateY(-50%);
+      display:flex;flex-direction:column;gap:7px;z-index:99;}
+    .ndot{width:9px;height:9px;border-radius:50%;background:var(--bdr);
+      cursor:pointer;transition:all .2s;}
+    .ndot.active{background:var(--ac);transform:scale(1.4);}
+    .ndot:hover{background:var(--ac);opacity:.7;}
+
+    @media(max-width:640px){
+      .split,.toc-grid{grid-template-columns:1fr;}
+      .split-code{border-right:none;border-bottom:1px solid var(--cbr);}
+      .db-grid{grid-template-columns:repeat(2,1fr);}
+      #navdot{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<header id="hdr">
+  <span class="hbadge">HTML 태그 연습</span>
+  <span class="htitle">🏷️ HTML 태그 연습 교안</span>
+  
+  <div id="prog"></div>
+</header>
+
+<nav id="navdot">
+  <div class="ndot active" onclick="goSec(0)" title="소개"></div>
+  <div class="ndot" onclick="goSec(1)" title="기본 태그"></div>
+  <div class="ndot" onclick="goSec(2)" title="시맨틱"></div>
+  <div class="ndot" onclick="goSec(3)" title="텍스트 의미"></div>
+  <div class="ndot" onclick="goSec(4)" title="table"></div>
+  <div class="ndot" onclick="goSec(5)" title="form"></div>
+  <div class="ndot" onclick="goSec(6)" title="종합"></div>
+  <div class="ndot" onclick="goSec(7)" title="퀴즈"></div>
+</nav>
+
+<section class="hero" id="s0">
+  <span class="hero-emoji">🏷️</span>
+  <h1>HTML 태그 연습 교안</h1>
+  
+  <div class="badge-row">
+    <span class="cbadge">h1~h6 · p · a · img</span>
+    <span class="cbadge">시맨틱 레이아웃</span>
+    <span class="cbadge">mark · time · abbr · blockquote</span>
+    <span class="cbadge">table</span>
+    <span class="cbadge">form</span>
+    <span class="cbadge">실습과 퀴즈</span>
+  </div>
+</section>
+
+<div class="toc-wrap">
+  <div class="toc">
+    <div class="toc-title">📋 목차</div>
+    <div class="toc-grid">
+      <a class="toc-item" onclick="goSec(1)"><div class="toc-num">1</div><span class="toc-label">기본 태그 (01-1)</span></a>
+      <a class="toc-item" onclick="goSec(2)"><div class="toc-num">2</div><span class="toc-label">시맨틱 레이아웃 (01-2)</span></a>
+      <a class="toc-item" onclick="goSec(3)"><div class="toc-num">3</div><span class="toc-label">텍스트 의미 태그 (01-2)</span></a>
+      <a class="toc-item" onclick="goSec(4)"><div class="toc-num">4</div><span class="toc-label">표(Table) (01-2)</span></a>
+      <a class="toc-item" onclick="goSec(5)"><div class="toc-num">5</div><span class="toc-label">폼(Form) (01-2)</span></a>
+      <a class="toc-item" onclick="goSec(6)"><div class="toc-num">6</div><span class="toc-label">★ 실습</span></a>
+      <a class="toc-item" onclick="goSec(7)"><div class="toc-num">7</div><span class="toc-label">✏️ 확인 퀴즈</span></a>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- ══════════════════════════════
+     섹션 1: 기본 태그 (01-1)
+══════════════════════════════ -->
+<div class="sec-hdr" id="s1">
+  <div class="sec-num">1</div>
+  <div><h2>기본 태그</h2><span class="sec-sub">h1~h6 · p · br · strong · em · a · img · ul/ol · div · span</span></div>
+</div>
+
+<!-- 예제 1-1: 제목+단락+강조 -->
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 1-1 — 제목·단락·강조</div>
+    <div class="ex-desc">
+      <code>&lt;h1&gt;~&lt;h3&gt;</code>로 제목 계층을 만들고,
+      <code>&lt;p&gt;</code>로 단락을 쓰고,
+      <code>&lt;strong&gt;</code>·<code>&lt;em&gt;</code>으로 강조해보세요.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c1_1" spellcheck="false">&lt;h1&gt;나의 버킷리스트&lt;/h1&gt;
+&lt;h2&gt;올해 안에 꼭 해보고 싶은 것들&lt;/h2&gt;
+&lt;h3&gt;여행 편&lt;/h3&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;제주도&lt;/strong&gt;에 혼자 여행 가기.
+  한라산 등반은 &lt;em&gt;선택 사항&lt;/em&gt;이지만
+  꼭 도전해보고 싶다.
+&lt;/p&gt;
+
+&lt;p&gt;
+  첫 줄 작성.&lt;br&gt;
+  br 태그로 줄이 바뀐다.
+&lt;/p&gt;</textarea>
+      <button class="run-btn" onclick="run('c1_1','p1_1')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p1_1"></div>
+    </div>
+  </div>
+  <div class="tip orange" style="margin-top:0">
+    <span class="tip-icon">💡</span>
+    <div><code>&lt;strong&gt;</code>은 "중요한 내용", <code>&lt;em&gt;</code>은 "강조·뉘앙스" — 둘 다 의미를 담습니다. 단순히 굵게/기울임만 원하면 CSS를 씁니다.</div>
+  </div>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc1_1')">
+      <span class="toggle-arrow" id="arr_fc1_1">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc1_1">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">나의 버킷리스트</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;h1&gt;</span><span class="tx">나의 버킷리스트</span><span class="tg">&lt;/h1&gt;</span>
+  <span class="tg">&lt;h2&gt;</span><span class="tx">올해 안에 꼭 해보고 싶은 것들</span><span class="tg">&lt;/h2&gt;</span>
+  <span class="tg">&lt;h3&gt;</span><span class="tx">여행 편</span><span class="tg">&lt;/h3&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span>
+    <span class="tg">&lt;strong&gt;</span><span class="tx">제주도</span><span class="tg">&lt;/strong&gt;</span><span class="tx">에 혼자 여행 가기.</span>
+    <span class="tx">한라산 등반은 </span><span class="tg">&lt;em&gt;</span><span class="tx">선택 사항</span><span class="tg">&lt;/em&gt;</span><span class="tx">이지만</span>
+    <span class="tx">꼭 도전해보고 싶다.</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span>
+    <span class="tx">첫 줄 작성.</span><span class="tg">&lt;br&gt;</span>
+    <span class="tx">br 태그로 줄이 바뀐다.</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- 예제 1-2: 링크+이미지 -->
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 1-2 — 링크 · 이미지</div>
+    <div class="ex-desc">
+      <code>&lt;a href="…"&gt;</code>로 링크를,
+      <code>&lt;img src="…" alt="…"&gt;</code>로 이미지를 삽입합니다.
+      <code>target="_blank"</code>는 새 탭에서 열기.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c1_2" spellcheck="false">&lt;p&gt;
+  &lt;a href="https://www.naver.com" target="_blank"&gt;
+    네이버 바로가기
+  &lt;/a&gt;
+&lt;/p&gt;
+
+&lt;img
+  src="https://picsum.photos/seed/nature/280/160"
+  alt="자연 풍경 사진"
+  width="280"
+&gt;
+
+&lt;p&gt;
+  &lt;a href="mailto:test@example.com"&gt;이메일 보내기&lt;/a&gt;
+&lt;/p&gt;</textarea>
+      <button class="run-btn" onclick="run('c1_2','p1_2')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p1_2"></div>
+    </div>
+  </div>
+  <table class="attr-tbl">
+    <tr><th>속성</th><th>설명</th><th>예시</th></tr>
+    <tr><td><code>href</code></td><td>이동할 주소</td><td><code>https://naver.com</code></td></tr>
+    <tr><td><code>target="_blank"</code></td><td>새 탭에서 열기</td><td></td></tr>
+    <tr><td><code>src</code></td><td>이미지 파일 경로</td><td><code>photo.jpg</code></td></tr>
+    <tr><td><code>alt</code></td><td>이미지 설명 (필수!)</td><td><code>"내 사진"</code></td></tr>
+    <tr><td><code>width</code></td><td>가로 크기(px)</td><td><code>300</code></td></tr>
+  </table>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc1_2')">
+      <span class="toggle-arrow" id="arr_fc1_2">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc1_2">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">링크와 이미지</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span>
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"https://www.naver.com"</span> <span class="at">target</span>=<span class="av">"_blank"</span><span class="tg">&gt;</span>
+      <span class="tx">네이버 바로가기</span>
+    <span class="tg">&lt;/a&gt;</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+  <span class="tg">&lt;img</span>
+    <span class="at">src</span>=<span class="av">"https://picsum.photos/seed/nature/280/160"</span>
+    <span class="at">alt</span>=<span class="av">"자연 풍경 사진"</span>
+    <span class="at">width</span>=<span class="av">"280"</span>
+  <span class="tg">&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span>
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"mailto:test@example.com"</span><span class="tg">&gt;</span><span class="tx">이메일 보내기</span><span class="tg">&lt;/a&gt;</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- 예제 1-3: ul/ol/li + div/span -->
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 1-3 — 목록 · div · span</div>
+    <div class="ex-desc">
+      <code>&lt;ul&gt;</code>은 불릿 목록, <code>&lt;ol&gt;</code>은 번호 목록.
+      <code>&lt;div&gt;</code>는 블록(줄 전체), <code>&lt;span&gt;</code>은 인라인(줄 안).
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c1_3" spellcheck="false">&lt;h2&gt;좋아하는 음식&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;🍗 치킨&lt;/li&gt;
+  &lt;li&gt;🍕 피자&lt;/li&gt;
+  &lt;li&gt;🍜 라멘&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;웹 배우는 순서&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;HTML&lt;/li&gt;
+  &lt;li&gt;CSS&lt;/li&gt;
+  &lt;li&gt;JavaScript&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div style="background:lightblue; padding:8px;"&gt;div 박스&lt;/div&gt;
+&lt;div style="background:lightgreen; padding:8px;"&gt;또 다른 div&lt;/div&gt;
+
+&lt;p&gt;날씨: &lt;span style="color:red"&gt;맑음 ☀️&lt;/span&gt;&lt;/p&gt;</textarea>
+      <button class="run-btn" onclick="run('c1_3','p1_3')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p1_3"></div>
+    </div>
+  </div>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc1_3')">
+      <span class="toggle-arrow" id="arr_fc1_3">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc1_3">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">목록과 컨테이너</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;h2&gt;</span><span class="tx">좋아하는 음식</span><span class="tg">&lt;/h2&gt;</span>
+  <span class="tg">&lt;ul&gt;</span>
+    <span class="tg">&lt;li&gt;</span><span class="tx">🍗 치킨</span><span class="tg">&lt;/li&gt;</span>
+    <span class="tg">&lt;li&gt;</span><span class="tx">🍕 피자</span><span class="tg">&lt;/li&gt;</span>
+    <span class="tg">&lt;li&gt;</span><span class="tx">🍜 라멘</span><span class="tg">&lt;/li&gt;</span>
+  <span class="tg">&lt;/ul&gt;</span>
+
+  <span class="tg">&lt;h2&gt;</span><span class="tx">웹 배우는 순서</span><span class="tg">&lt;/h2&gt;</span>
+  <span class="tg">&lt;ol&gt;</span>
+    <span class="tg">&lt;li&gt;</span><span class="tx">HTML</span><span class="tg">&lt;/li&gt;</span>
+    <span class="tg">&lt;li&gt;</span><span class="tx">CSS</span><span class="tg">&lt;/li&gt;</span>
+    <span class="tg">&lt;li&gt;</span><span class="tx">JavaScript</span><span class="tg">&lt;/li&gt;</span>
+  <span class="tg">&lt;/ol&gt;</span>
+
+  <span class="tg">&lt;div</span> <span class="at">style</span>=<span class="av">"background:lightblue; padding:8px;"</span><span class="tg">&gt;</span><span class="tx">div 박스</span><span class="tg">&lt;/div&gt;</span>
+  <span class="tg">&lt;div</span> <span class="at">style</span>=<span class="av">"background:lightgreen; padding:8px;"</span><span class="tg">&gt;</span><span class="tx">또 다른 div</span><span class="tg">&lt;/div&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span><span class="tx">날씨: </span><span class="tg">&lt;span</span> <span class="at">style</span>=<span class="av">"color:red"</span><span class="tg">&gt;</span><span class="tx">맑음 ☀️</span><span class="tg">&lt;/span&gt;&lt;/p&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     섹션 2: 시맨틱 레이아웃 (01-2)
+══════════════════════════════ -->
+<div class="sec-hdr" id="s2">
+  <div class="sec-num">2</div>
+  <div><h2>시맨틱 레이아웃 태그</h2><span class="sec-sub">header · nav · main · section · article · aside · footer</span></div>
+</div>
+
+<div class="concept">
+  <strong>시맨틱(Semantic)</strong> = "의미가 있는". <code>&lt;div&gt;</code>만 쓰는 것보다 용도에 맞는 태그를 쓰면
+  코드를 읽기 쉽고 CSS 선택자도 깔끔해집니다.
+</div>
+
+<!-- 예제 2-1: 시맨틱 구조 -->
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 2-1 — 시맨틱 페이지 뼈대</div>
+    <div class="ex-desc">
+      실제 페이지에서 <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>,
+      <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;aside&gt;</code>,
+      <code>&lt;footer&gt;</code>가 어떻게 배치되는지 확인해보세요.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c2_1" spellcheck="false">&lt;header style="background:#052e16;color:white;padding:12px"&gt;
+  &lt;h1&gt;오늘의 레시피 🍳&lt;/h1&gt;
+&lt;/header&gt;
+
+&lt;nav style="background:#d1fae5;padding:8px"&gt;
+  &lt;a href="#soup"&gt;국물요리&lt;/a&gt; |
+  &lt;a href="#rice"&gt;밥요리&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;main&gt;
+  &lt;section id="soup"&gt;
+    &lt;h2&gt;국물요리&lt;/h2&gt;
+    &lt;article style="border:1px solid #ccc;padding:8px;margin:6px 0"&gt;
+      &lt;h3&gt;된장찌개&lt;/h3&gt;
+      &lt;p&gt;간단한 집밥 메뉴&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+  &lt;aside style="background:#fffbeb;padding:8px"&gt;
+    💡 오늘의 팁: 육수는 다시마를 넣으면 깊은 맛!
+  &lt;/aside&gt;
+&lt;/main&gt;
+
+&lt;footer style="background:#052e16;color:white;padding:8px;text-align:center"&gt;
+  © 2026 Cooking Class
+&lt;/footer&gt;</textarea>
+      <button class="run-btn" onclick="run('c2_1','p2_1')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p2_1"></div>
+    </div>
+  </div>
+  <table class="attr-tbl">
+    <tr><th>태그</th><th>의미</th><th>주로 쓰는 곳</th></tr>
+    <tr><td><code>&lt;header&gt;</code></td><td>머리말</td><td>로고, 사이트 제목, 상단 소개</td></tr>
+    <tr><td><code>&lt;nav&gt;</code></td><td>이동 메뉴</td><td>메뉴 링크 묶음</td></tr>
+    <tr><td><code>&lt;main&gt;</code></td><td>핵심 본문</td><td>페이지마다 바뀌는 콘텐츠</td></tr>
+    <tr><td><code>&lt;section&gt;</code></td><td>주제별 구획</td><td>소개·공지·후기 등 덩어리</td></tr>
+    <tr><td><code>&lt;article&gt;</code></td><td>독립적인 글</td><td>게시글, 뉴스 카드, 리뷰</td></tr>
+    <tr><td><code>&lt;aside&gt;</code></td><td>부가 정보</td><td>광고, 관련 링크, 사이드 정보</td></tr>
+    <tr><td><code>&lt;footer&gt;</code></td><td>꼬리말</td><td>저작권, 연락처, 하단 메뉴</td></tr>
+  </table>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc2_1')">
+      <span class="toggle-arrow" id="arr_fc2_1">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc2_1">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">오늘의 레시피</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;header&gt;</span>
+    <span class="tg">&lt;h1&gt;</span><span class="tx">오늘의 레시피 🍳</span><span class="tg">&lt;/h1&gt;</span>
+  <span class="tg">&lt;/header&gt;</span>
+
+  <span class="tg">&lt;nav&gt;</span>
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"#soup"</span><span class="tg">&gt;</span><span class="tx">국물요리</span><span class="tg">&lt;/a&gt;</span>
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"#rice"</span><span class="tg">&gt;</span><span class="tx">밥요리</span><span class="tg">&lt;/a&gt;</span>
+  <span class="tg">&lt;/nav&gt;</span>
+
+  <span class="tg">&lt;main&gt;</span>
+    <span class="tg">&lt;section</span> <span class="at">id</span>=<span class="av">"soup"</span><span class="tg">&gt;</span>
+      <span class="tg">&lt;h2&gt;</span><span class="tx">국물요리</span><span class="tg">&lt;/h2&gt;</span>
+      <span class="tg">&lt;article&gt;</span>
+        <span class="tg">&lt;h3&gt;</span><span class="tx">된장찌개</span><span class="tg">&lt;/h3&gt;</span>
+        <span class="tg">&lt;p&gt;</span><span class="tx">간단한 집밥 메뉴</span><span class="tg">&lt;/p&gt;</span>
+      <span class="tg">&lt;/article&gt;</span>
+    <span class="tg">&lt;/section&gt;</span>
+    <span class="tg">&lt;aside&gt;</span>
+      <span class="tx">💡 오늘의 팁: 육수는 다시마를 넣으면 깊은 맛!</span>
+    <span class="tg">&lt;/aside&gt;</span>
+  <span class="tg">&lt;/main&gt;</span>
+
+  <span class="tg">&lt;footer&gt;</span>
+    <span class="tx">© 2026 Cooking Class</span>
+  <span class="tg">&lt;/footer&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     섹션 3: 텍스트 의미 태그 (01-2)
+══════════════════════════════ -->
+<div class="sec-hdr" id="s3">
+  <div class="sec-num">3</div>
+  <div><h2>텍스트 의미 태그</h2><span class="sec-sub">mark · small · time · abbr · blockquote · q · code · pre</span></div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 3-1 — 텍스트 의미 태그 모음</div>
+    <div class="ex-desc">
+      각 태그의 시각적 결과와 <strong>의미</strong>를 같이 확인해보세요.
+      브라우저 기본 스타일이 적용됩니다.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c3_1" spellcheck="false">&lt;!-- mark: 형광펜 강조 --&gt;
+&lt;p&gt;오늘의 키워드: &lt;mark&gt;Semantic HTML&lt;/mark&gt;&lt;/p&gt;
+
+&lt;!-- small: 보조/주의 문구 --&gt;
+&lt;p&gt;&lt;small&gt;* 실습 파일은 수업 종료 후 삭제됩니다.&lt;/small&gt;&lt;/p&gt;
+
+&lt;!-- time: 날짜/시간 --&gt;
+&lt;p&gt;개강일: &lt;time datetime="2026-04-05"&gt;2026년 4월 5일&lt;/time&gt;&lt;/p&gt;
+
+&lt;!-- abbr: 약어 + 풀네임 (마우스 올리면 표시) --&gt;
+&lt;p&gt;&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;은 웹 언어입니다.&lt;/p&gt;
+
+&lt;!-- blockquote: 긴 인용문 --&gt;
+&lt;blockquote&gt;좋은 구조는 좋은 스타일의 출발점이다.&lt;/blockquote&gt;
+
+&lt;!-- q: 짧은 인라인 인용 --&gt;
+&lt;p&gt;선생님이 말했어요: &lt;q&gt;태그 의미부터 생각하자.&lt;/q&gt;&lt;/p&gt;
+
+&lt;!-- code + pre: 코드 표시 --&gt;
+&lt;p&gt;인라인 코드: &lt;code&gt;color: red;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;
+pre 안에서는
+  공백과 줄바꿈이
+    그대로 유지됩니다!
+&lt;/pre&gt;</textarea>
+      <button class="run-btn" onclick="run('c3_1','p3_1')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p3_1"></div>
+    </div>
+  </div>
+  <div class="tip blue">
+    <span class="tip-icon">💡</span>
+    <div><code>&lt;abbr title="풀네임"&gt;</code>는 마우스를 올리면 풀네임이 툴팁으로 보입니다. <code>&lt;time datetime="YYYY-MM-DD"&gt;</code>의 <code>datetime</code> 속성은 기계(검색엔진 등)가 읽는 표준 형식이에요.</div>
+  </div>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc3_1')">
+      <span class="toggle-arrow" id="arr_fc3_1">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc3_1">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">텍스트 의미 태그</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span><span class="tx">오늘의 키워드: </span><span class="tg">&lt;mark&gt;</span><span class="tx">Semantic HTML</span><span class="tg">&lt;/mark&gt;&lt;/p&gt;</span>
+
+  <span class="tg">&lt;p&gt;&lt;small&gt;</span><span class="tx">* 실습 파일은 수업 종료 후 삭제됩니다.</span><span class="tg">&lt;/small&gt;&lt;/p&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span><span class="tx">개강일: </span>
+    <span class="tg">&lt;time</span> <span class="at">datetime</span>=<span class="av">"2026-04-05"</span><span class="tg">&gt;</span><span class="tx">2026년 4월 5일</span><span class="tg">&lt;/time&gt;</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span>
+    <span class="tg">&lt;abbr</span> <span class="at">title</span>=<span class="av">"HyperText Markup Language"</span><span class="tg">&gt;</span><span class="tx">HTML</span><span class="tg">&lt;/abbr&gt;</span>
+    <span class="tx">은 웹 언어입니다.</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+  <span class="tg">&lt;blockquote&gt;</span>
+    <span class="tx">좋은 구조는 좋은 스타일의 출발점이다.</span>
+  <span class="tg">&lt;/blockquote&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span><span class="tx">선생님이 말했어요: </span>
+    <span class="tg">&lt;q&gt;</span><span class="tx">태그 의미부터 생각하자.</span><span class="tg">&lt;/q&gt;</span>
+  <span class="tg">&lt;/p&gt;</span>
+
+  <span class="tg">&lt;p&gt;</span><span class="tx">인라인 코드: </span><span class="tg">&lt;code&gt;</span><span class="tx">color: red;</span><span class="tg">&lt;/code&gt;&lt;/p&gt;</span>
+
+  <span class="tg">&lt;pre&gt;</span>
+<span class="tx">pre 안에서는
+  공백과 줄바꿈이
+    그대로 유지됩니다!</span>
+  <span class="tg">&lt;/pre&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     섹션 4: table (01-2)
+══════════════════════════════ -->
+<div class="sec-hdr" id="s4">
+  <div class="sec-num">4</div>
+  <div><h2>표(Table)</h2><span class="sec-sub">table · caption · thead · tbody · tr · th · td · colspan</span></div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 4-1 — 주간 학습 계획표</div>
+    <div class="ex-desc">
+      <code>&lt;caption&gt;</code>으로 표 제목을,
+      <code>&lt;thead&gt;</code>로 헤더 행을,
+      <code>&lt;tbody&gt;</code>로 데이터 행을 구분합니다.
+      <code>colspan</code>으로 셀을 가로로 합칩니다.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c4_1" spellcheck="false">&lt;table border="1"&gt;
+  &lt;caption&gt;주간 학습 계획&lt;/caption&gt;
+
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;요일&lt;/th&gt;
+      &lt;th&gt;오전&lt;/th&gt;
+      &lt;th&gt;오후&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;월요일&lt;/td&gt;
+      &lt;td&gt;HTML 복습&lt;/td&gt;
+      &lt;td&gt;CSS 선택자&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;화요일&lt;/td&gt;
+      &lt;td&gt;박스모델&lt;/td&gt;
+      &lt;td&gt;Flexbox&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;수요일&lt;/td&gt;
+      &lt;td colspan="2"&gt;미니 프로젝트 (오전+오후 합반)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</textarea>
+      <button class="run-btn" onclick="run('c4_1','p4_1')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p4_1"></div>
+    </div>
+  </div>
+  <div class="tip orange">
+    <span class="tip-icon">⚠️</span>
+    <div><code>border="1"</code>은 임시로 선을 보이게 하는 HTML 속성입니다. 나중에 CSS의 <code>border-collapse: collapse</code>와 <code>border</code>로 교체합니다.</div>
+  </div>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc4_1')">
+      <span class="toggle-arrow" id="arr_fc4_1">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc4_1">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">주간 학습 계획</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;table</span> <span class="at">border</span>=<span class="av">"1"</span><span class="tg">&gt;</span>
+    <span class="tg">&lt;caption&gt;</span><span class="tx">주간 학습 계획</span><span class="tg">&lt;/caption&gt;</span>
+
+    <span class="tg">&lt;thead&gt;</span>
+      <span class="tg">&lt;tr&gt;</span>
+        <span class="tg">&lt;th&gt;</span><span class="tx">요일</span><span class="tg">&lt;/th&gt;</span>
+        <span class="tg">&lt;th&gt;</span><span class="tx">오전</span><span class="tg">&lt;/th&gt;</span>
+        <span class="tg">&lt;th&gt;</span><span class="tx">오후</span><span class="tg">&lt;/th&gt;</span>
+      <span class="tg">&lt;/tr&gt;</span>
+    <span class="tg">&lt;/thead&gt;</span>
+
+    <span class="tg">&lt;tbody&gt;</span>
+      <span class="tg">&lt;tr&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">월요일</span><span class="tg">&lt;/td&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">HTML 복습</span><span class="tg">&lt;/td&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">CSS 선택자</span><span class="tg">&lt;/td&gt;</span>
+      <span class="tg">&lt;/tr&gt;</span>
+      <span class="tg">&lt;tr&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">화요일</span><span class="tg">&lt;/td&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">박스모델</span><span class="tg">&lt;/td&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">Flexbox</span><span class="tg">&lt;/td&gt;</span>
+      <span class="tg">&lt;/tr&gt;</span>
+      <span class="tg">&lt;tr&gt;</span>
+        <span class="tg">&lt;td&gt;</span><span class="tx">수요일</span><span class="tg">&lt;/td&gt;</span>
+        <span class="tg">&lt;td</span> <span class="at">colspan</span>=<span class="av">"2"</span><span class="tg">&gt;</span>
+          <span class="tx">미니 프로젝트 (오전+오후 합반)</span>
+        <span class="tg">&lt;/td&gt;</span>
+      <span class="tg">&lt;/tr&gt;</span>
+    <span class="tg">&lt;/tbody&gt;</span>
+  <span class="tg">&lt;/table&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     섹션 5: form (01-2)
+══════════════════════════════ -->
+<div class="sec-hdr" id="s5">
+  <div class="sec-num">5</div>
+  <div><h2>폼(Form)</h2><span class="sec-sub">form · fieldset · legend · label · input · textarea · select · button</span></div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-head">
+    <div class="ex-title">예제 5-1 — 수강 신청 폼</div>
+    <div class="ex-desc">
+      <code>&lt;label for="…"&gt;</code>의 <code>for</code> 값과
+      <code>&lt;input id="…"&gt;</code>의 <code>id</code> 값을 같게 연결합니다.
+      클릭 영역이 넓어지고 접근성이 좋아집니다.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 코드 수정 후 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c5_1" spellcheck="false">&lt;form&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;수강 신청&lt;/legend&gt;
+
+    &lt;p&gt;
+      &lt;label for="name"&gt;이름&lt;/label&gt;&lt;br&gt;
+      &lt;input id="name" type="text" placeholder="홍길동"&gt;
+    &lt;/p&gt;
+
+    &lt;p&gt;
+      &lt;label for="email"&gt;이메일&lt;/label&gt;&lt;br&gt;
+      &lt;input id="email" type="email" placeholder="test@example.com"&gt;
+    &lt;/p&gt;
+
+    &lt;p&gt;
+      &lt;label for="track"&gt;트랙 선택&lt;/label&gt;&lt;br&gt;
+      &lt;select id="track"&gt;
+        &lt;option&gt;프론트엔드&lt;/option&gt;
+        &lt;option&gt;백엔드&lt;/option&gt;
+        &lt;option&gt;풀스택&lt;/option&gt;
+      &lt;/select&gt;
+    &lt;/p&gt;
+
+    &lt;p&gt;
+      &lt;label for="memo"&gt;지원 동기&lt;/label&gt;&lt;br&gt;
+      &lt;textarea id="memo" rows="3" placeholder="간단히 작성해주세요"&gt;&lt;/textarea&gt;
+    &lt;/p&gt;
+
+    &lt;button type="submit"&gt;제출하기&lt;/button&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</textarea>
+      <button class="run-btn" onclick="run('c5_1','p5_1')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p5_1"></div>
+    </div>
+  </div>
+  <table class="attr-tbl">
+    <tr><th>태그</th><th>핵심 역할</th><th>주요 속성</th></tr>
+    <tr><td><code>&lt;form&gt;</code></td><td>입력 묶음 전체</td><td><code>action</code>, <code>method</code></td></tr>
+    <tr><td><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code></td><td>관련 입력 그룹화</td><td></td></tr>
+    <tr><td><code>&lt;label&gt;</code></td><td>입력칸 설명 연결</td><td><code>for</code> ← id 와 일치!</td></tr>
+    <tr><td><code>&lt;input&gt;</code></td><td>한 줄 입력</td><td><code>type</code>, <code>id</code>, <code>placeholder</code></td></tr>
+    <tr><td><code>&lt;textarea&gt;</code></td><td>여러 줄 입력</td><td><code>rows</code>, <code>cols</code></td></tr>
+    <tr><td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td><td>선택 목록</td><td></td></tr>
+    <tr><td><code>&lt;button&gt;</code></td><td>동작 실행</td><td><code>type="submit"</code></td></tr>
+  </table>
+  <div class="tip green">
+    <span class="tip-icon">💡</span>
+    <div><code>type="text"</code> 외에도 <code>type="email"</code>(이메일 형식 검사), <code>type="password"</code>(별표 표시), <code>type="number"</code>, <code>type="checkbox"</code> 등 다양합니다.</div>
+  </div>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc5_1')">
+      <span class="toggle-arrow" id="arr_fc5_1">▶</span> 전체 코드 보기
+    </button>
+    <div class="full-code-body" id="fc5_1">
+      <pre><span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">수강 신청</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;form&gt;</span>
+    <span class="tg">&lt;fieldset&gt;</span>
+      <span class="tg">&lt;legend&gt;</span><span class="tx">수강 신청</span><span class="tg">&lt;/legend&gt;</span>
+
+      <span class="tg">&lt;p&gt;</span>
+        <span class="tg">&lt;label</span> <span class="at">for</span>=<span class="av">"name"</span><span class="tg">&gt;</span><span class="tx">이름</span><span class="tg">&lt;/label&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;input</span> <span class="at">id</span>=<span class="av">"name"</span> <span class="at">type</span>=<span class="av">"text"</span> <span class="at">placeholder</span>=<span class="av">"홍길동"</span><span class="tg">&gt;</span>
+      <span class="tg">&lt;/p&gt;</span>
+
+      <span class="tg">&lt;p&gt;</span>
+        <span class="tg">&lt;label</span> <span class="at">for</span>=<span class="av">"email"</span><span class="tg">&gt;</span><span class="tx">이메일</span><span class="tg">&lt;/label&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;input</span> <span class="at">id</span>=<span class="av">"email"</span> <span class="at">type</span>=<span class="av">"email"</span> <span class="at">placeholder</span>=<span class="av">"test@example.com"</span><span class="tg">&gt;</span>
+      <span class="tg">&lt;/p&gt;</span>
+
+      <span class="tg">&lt;p&gt;</span>
+        <span class="tg">&lt;label</span> <span class="at">for</span>=<span class="av">"track"</span><span class="tg">&gt;</span><span class="tx">트랙 선택</span><span class="tg">&lt;/label&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;select</span> <span class="at">id</span>=<span class="av">"track"</span><span class="tg">&gt;</span>
+          <span class="tg">&lt;option&gt;</span><span class="tx">프론트엔드</span><span class="tg">&lt;/option&gt;</span>
+          <span class="tg">&lt;option&gt;</span><span class="tx">백엔드</span><span class="tg">&lt;/option&gt;</span>
+          <span class="tg">&lt;option&gt;</span><span class="tx">풀스택</span><span class="tg">&lt;/option&gt;</span>
+        <span class="tg">&lt;/select&gt;</span>
+      <span class="tg">&lt;/p&gt;</span>
+
+      <span class="tg">&lt;p&gt;</span>
+        <span class="tg">&lt;label</span> <span class="at">for</span>=<span class="av">"memo"</span><span class="tg">&gt;</span><span class="tx">지원 동기</span><span class="tg">&lt;/label&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;textarea</span> <span class="at">id</span>=<span class="av">"memo"</span> <span class="at">rows</span>=<span class="av">"3"</span>
+          <span class="at">placeholder</span>=<span class="av">"간단히 작성해주세요"</span><span class="tg">&gt;&lt;/textarea&gt;</span>
+      <span class="tg">&lt;/p&gt;</span>
+
+      <span class="tg">&lt;button</span> <span class="at">type</span>=<span class="av">"submit"</span><span class="tg">&gt;</span><span class="tx">제출하기</span><span class="tg">&lt;/button&gt;</span>
+    <span class="tg">&lt;/fieldset&gt;</span>
+  <span class="tg">&lt;/form&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     섹션 6: 종합 실습
+══════════════════════════════ -->
+<div class="sec-hdr" id="s6">
+  <div class="sec-num" style="background:#15803d">★</div>
+  <div><h2>종합 실습</h2><span class="sec-sub">배운 태그를 모두 사용해 완성하기</span></div>
+</div>
+
+<div class="ex-card" style="border-top-color:#15803d">
+  <div class="ex-head">
+    <div class="ex-title" style="color:#15803d">🏆 나의 수업 소개 페이지 만들기</div>
+    <div class="ex-desc">
+      지금까지 배운 태그를 모두 써서 하나의 완성된 HTML 파일을 만들어보세요.
+      <strong>시맨틱 구조 + 텍스트 의미 태그 + 표 + 폼</strong>을 모두 포함해야 합니다.
+    </div>
+  </div>
+  <div class="split">
+    <div class="split-code">
+      <div class="split-hdr sh-code">
+        <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        &nbsp;✏️ 완성하고 ▶ 실행
+      </div>
+      <textarea class="code-in" id="c6_1" spellcheck="false" style="min-height:340px">&lt;header&gt;
+  &lt;h1&gt;웹개발 입문 수업 소개&lt;/h1&gt;
+  &lt;p&gt;개강일: &lt;time datetime="2026-04-05"&gt;2026년 4월 5일&lt;/time&gt;&lt;/p&gt;
+&lt;/header&gt;
+
+&lt;nav&gt;
+  &lt;a href="#info"&gt;수업 정보&lt;/a&gt; |
+  &lt;a href="#plan"&gt;커리큘럼&lt;/a&gt; |
+  &lt;a href="#apply"&gt;수강 신청&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;main&gt;
+  &lt;section id="info"&gt;
+    &lt;h2&gt;수업 소개&lt;/h2&gt;
+    &lt;p&gt;
+      &lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;과
+      &lt;mark&gt;CSS&lt;/mark&gt;를 처음부터 배우는 입문 과정입니다.
+    &lt;/p&gt;
+    &lt;blockquote&gt;구조를 먼저 잡으면 디자인이 쉬워진다.&lt;/blockquote&gt;
+  &lt;/section&gt;
+
+  &lt;section id="plan"&gt;
+    &lt;h2&gt;커리큘럼&lt;/h2&gt;
+    &lt;table border="1"&gt;
+      &lt;caption&gt;주차별 학습 계획&lt;/caption&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;&lt;th&gt;주차&lt;/th&gt;&lt;th&gt;내용&lt;/th&gt;&lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;1주&lt;/td&gt;&lt;td&gt;HTML 기초&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;2주&lt;/td&gt;&lt;td&gt;CSS 기초&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;3주&lt;/td&gt;&lt;td&gt;Flexbox&lt;/td&gt;&lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/section&gt;
+
+  &lt;section id="apply"&gt;
+    &lt;h2&gt;수강 신청&lt;/h2&gt;
+    &lt;form&gt;
+      &lt;label for="sname"&gt;이름&lt;/label&gt;&lt;br&gt;
+      &lt;input id="sname" type="text"&gt;&lt;br&gt;&lt;br&gt;
+      &lt;label for="smemo"&gt;각오 한마디&lt;/label&gt;&lt;br&gt;
+      &lt;textarea id="smemo" rows="2"&gt;&lt;/textarea&gt;&lt;br&gt;&lt;br&gt;
+      &lt;button type="submit"&gt;신청하기&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+  &lt;small&gt;© 2026 웹개발 수업. All rights reserved.&lt;/small&gt;
+&lt;/footer&gt;</textarea>
+      <button class="run-btn" style="background:#15803d" onclick="run('c6_1','p6_1')">▶ 실행하기</button>
+    </div>
+    <div class="split-preview">
+      <div class="split-hdr sh-prev">🌐 결과 미리보기</div>
+      <div class="prev-out" id="p6_1"></div>
+    </div>
+  </div>
+  <div class="tip green">
+    <span class="tip-icon">✅</span>
+    <div>
+      <strong>완성 체크리스트</strong><br>
+      ☐ header / nav / main / section / footer 사용<br>
+      ☐ abbr, mark, time, blockquote 중 2개 이상<br>
+      ☐ table에 caption + thead + tbody 포함<br>
+      ☐ form에 label-input 연결(for/id) 2개 이상<br>
+      ☐ button + textarea 포함
+    </div>
+  </div>
+  <div class="full-code-wrap">
+    <button class="full-code-toggle" onclick="toggleCode('fc6_1')">
+      <span class="toggle-arrow" id="arr_fc6_1">▶</span> 전체 코드 보기 (완성 답안)
+    </button>
+    <div class="full-code-body" id="fc6_1">
+      <pre><span class="cm">&lt;!-- 종합 실습 완성 답안 —— 전체 파일 --&gt;</span>
+<span class="cm">&lt;!DOCTYPE html&gt;</span>
+<span class="tg">&lt;html</span> <span class="at">lang</span>=<span class="av">"ko"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;head&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">charset</span>=<span class="av">"UTF-8"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;meta</span> <span class="at">name</span>=<span class="av">"viewport"</span> <span class="at">content</span>=<span class="av">"width=device-width, initial-scale=1.0"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;title&gt;</span><span class="tx">웹개발 입문 수업 소개</span><span class="tg">&lt;/title&gt;</span>
+<span class="tg">&lt;/head&gt;</span>
+<span class="tg">&lt;body&gt;</span>
+
+  <span class="tg">&lt;header&gt;</span>
+    <span class="tg">&lt;h1&gt;</span><span class="tx">웹개발 입문 수업 소개</span><span class="tg">&lt;/h1&gt;</span>
+    <span class="tg">&lt;p&gt;</span><span class="tx">개강일: </span>
+      <span class="tg">&lt;time</span> <span class="at">datetime</span>=<span class="av">"2026-04-05"</span><span class="tg">&gt;</span><span class="tx">2026년 4월 5일</span><span class="tg">&lt;/time&gt;</span>
+    <span class="tg">&lt;/p&gt;</span>
+  <span class="tg">&lt;/header&gt;</span>
+
+  <span class="tg">&lt;nav&gt;</span>
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"#info"</span><span class="tg">&gt;</span><span class="tx">수업 정보</span><span class="tg">&lt;/a&gt;</span> |
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"#plan"</span><span class="tg">&gt;</span><span class="tx">커리큘럼</span><span class="tg">&lt;/a&gt;</span> |
+    <span class="tg">&lt;a</span> <span class="at">href</span>=<span class="av">"#apply"</span><span class="tg">&gt;</span><span class="tx">수강 신청</span><span class="tg">&lt;/a&gt;</span>
+  <span class="tg">&lt;/nav&gt;</span>
+
+  <span class="tg">&lt;main&gt;</span>
+
+    <span class="tg">&lt;section</span> <span class="at">id</span>=<span class="av">"info"</span><span class="tg">&gt;</span>
+      <span class="tg">&lt;h2&gt;</span><span class="tx">수업 소개</span><span class="tg">&lt;/h2&gt;</span>
+      <span class="tg">&lt;p&gt;</span>
+        <span class="tg">&lt;abbr</span> <span class="at">title</span>=<span class="av">"HyperText Markup Language"</span><span class="tg">&gt;</span><span class="tx">HTML</span><span class="tg">&lt;/abbr&gt;</span>
+        <span class="tx">과 </span><span class="tg">&lt;mark&gt;</span><span class="tx">CSS</span><span class="tg">&lt;/mark&gt;</span><span class="tx">를 처음부터 배우는 입문 과정입니다.</span>
+      <span class="tg">&lt;/p&gt;</span>
+      <span class="tg">&lt;blockquote&gt;</span>
+        <span class="tx">구조를 먼저 잡으면 디자인이 쉬워진다.</span>
+      <span class="tg">&lt;/blockquote&gt;</span>
+    <span class="tg">&lt;/section&gt;</span>
+
+    <span class="tg">&lt;section</span> <span class="at">id</span>=<span class="av">"plan"</span><span class="tg">&gt;</span>
+      <span class="tg">&lt;h2&gt;</span><span class="tx">커리큘럼</span><span class="tg">&lt;/h2&gt;</span>
+      <span class="tg">&lt;table</span> <span class="at">border</span>=<span class="av">"1"</span><span class="tg">&gt;</span>
+        <span class="tg">&lt;caption&gt;</span><span class="tx">주차별 학습 계획</span><span class="tg">&lt;/caption&gt;</span>
+        <span class="tg">&lt;thead&gt;</span>
+          <span class="tg">&lt;tr&gt;&lt;th&gt;</span><span class="tx">주차</span><span class="tg">&lt;/th&gt;&lt;th&gt;</span><span class="tx">내용</span><span class="tg">&lt;/th&gt;&lt;/tr&gt;</span>
+        <span class="tg">&lt;/thead&gt;</span>
+        <span class="tg">&lt;tbody&gt;</span>
+          <span class="tg">&lt;tr&gt;&lt;td&gt;</span><span class="tx">1주</span><span class="tg">&lt;/td&gt;&lt;td&gt;</span><span class="tx">HTML 기초</span><span class="tg">&lt;/td&gt;&lt;/tr&gt;</span>
+          <span class="tg">&lt;tr&gt;&lt;td&gt;</span><span class="tx">2주</span><span class="tg">&lt;/td&gt;&lt;td&gt;</span><span class="tx">CSS 기초</span><span class="tg">&lt;/td&gt;&lt;/tr&gt;</span>
+          <span class="tg">&lt;tr&gt;&lt;td&gt;</span><span class="tx">3주</span><span class="tg">&lt;/td&gt;&lt;td&gt;</span><span class="tx">Flexbox</span><span class="tg">&lt;/td&gt;&lt;/tr&gt;</span>
+        <span class="tg">&lt;/tbody&gt;</span>
+      <span class="tg">&lt;/table&gt;</span>
+    <span class="tg">&lt;/section&gt;</span>
+
+    <span class="tg">&lt;section</span> <span class="at">id</span>=<span class="av">"apply"</span><span class="tg">&gt;</span>
+      <span class="tg">&lt;h2&gt;</span><span class="tx">수강 신청</span><span class="tg">&lt;/h2&gt;</span>
+      <span class="tg">&lt;form&gt;</span>
+        <span class="tg">&lt;label</span> <span class="at">for</span>=<span class="av">"sname"</span><span class="tg">&gt;</span><span class="tx">이름</span><span class="tg">&lt;/label&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;input</span> <span class="at">id</span>=<span class="av">"sname"</span> <span class="at">type</span>=<span class="av">"text"</span><span class="tg">&gt;&lt;br&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;label</span> <span class="at">for</span>=<span class="av">"smemo"</span><span class="tg">&gt;</span><span class="tx">각오 한마디</span><span class="tg">&lt;/label&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;textarea</span> <span class="at">id</span>=<span class="av">"smemo"</span> <span class="at">rows</span>=<span class="av">"2"</span><span class="tg">&gt;&lt;/textarea&gt;&lt;br&gt;&lt;br&gt;</span>
+        <span class="tg">&lt;button</span> <span class="at">type</span>=<span class="av">"submit"</span><span class="tg">&gt;</span><span class="tx">신청하기</span><span class="tg">&lt;/button&gt;</span>
+      <span class="tg">&lt;/form&gt;</span>
+    <span class="tg">&lt;/section&gt;</span>
+
+  <span class="tg">&lt;/main&gt;</span>
+
+  <span class="tg">&lt;footer&gt;</span>
+    <span class="tg">&lt;small&gt;</span><span class="tx">© 2026 웹개발 수업. All rights reserved.</span><span class="tg">&lt;/small&gt;</span>
+  <span class="tg">&lt;/footer&gt;</span>
+
+<span class="tg">&lt;/body&gt;</span>
+<span class="tg">&lt;/html&gt;</span></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     섹션 7: 퀴즈
+══════════════════════════════ -->
+<div class="sec-hdr" id="s7">
+  <div class="sec-num">7</div>
+  <div><h2>✏️ 확인 퀴즈</h2><span class="sec-sub">10문항 · 각 10점</span></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q1 · 10점</div>
+  <div class="qq">페이지 탐색 링크(메뉴)를 묶을 때 쓰는 시맨틱 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q1" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(1,'<nav>')">
+    <button class="qbtn" onclick="chk(1,'<nav>')">확인</button>
+  </div>
+  <div class="qfb" id="qf1"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q2 · 10점</div>
+  <div class="qq">게시글·뉴스 카드처럼 <strong>독립적으로 읽힐 수 있는</strong> 글 하나를 감싸는 시맨틱 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q2" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(2,'<article>')">
+    <button class="qbtn" onclick="chk(2,'<article>')">확인</button>
+  </div>
+  <div class="qfb" id="qf2"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q3 · 10점</div>
+  <div class="qq">텍스트를 형광펜처럼 강조(하이라이트)하는 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q3" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(3,'<mark>')">
+    <button class="qbtn" onclick="chk(3,'<mark>')">확인</button>
+  </div>
+  <div class="qfb" id="qf3"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q4 · 10점</div>
+  <div class="qq">약어(HTML, CSS 등)의 풀네임을 제공하는 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q4" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(4,'<abbr>')">
+    <button class="qbtn" onclick="chk(4,'<abbr>')">확인</button>
+  </div>
+  <div class="qfb" id="qf4"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q5 · 10점</div>
+  <div class="qq">표 안에서 <strong>헤더 행 영역</strong>을 감싸는 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q5" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(5,'<thead>')">
+    <button class="qbtn" onclick="chk(5,'<thead>')">확인</button>
+  </div>
+  <div class="qfb" id="qf5"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q6 · 10점</div>
+  <div class="qq">표 셀을 <strong>가로로 2칸 합치려면</strong> td에 어떤 속성을 추가하나요? <span style="font-size:12px;color:var(--sub)">(예: 속성="값")</span></div>
+  <div class="qrow">
+    <input class="qinput" id="q6" placeholder='예: colspan="2"' onkeydown='if(event.key==="Enter")chk(6,"colspan=\"2\"")'>
+    <button class="qbtn" onclick='chk(6,"colspan=\"2\"")'>확인</button>
+  </div>
+  <div class="qfb" id="qf6"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q7 · 10점</div>
+  <div class="qq"><code>&lt;label for="name"&gt;</code>과 연결되는 input 태그의 속성은?</div>
+  <div class="qrow">
+    <input class="qinput" id="q7" placeholder="속성명 입력" onkeydown="if(event.key==='Enter')chk(7,'id')">
+    <button class="qbtn" onclick="chk(7,'id')">확인</button>
+  </div>
+  <div class="qfb" id="qf7"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q8 · 10점</div>
+  <div class="qq">여러 줄 텍스트를 입력받는 폼 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q8" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(8,'<textarea>')">
+    <button class="qbtn" onclick="chk(8,'<textarea>')">확인</button>
+  </div>
+  <div class="qfb" id="qf8"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q9 · 10점</div>
+  <div class="qq">공백과 줄바꿈을 <strong>그대로 유지</strong>해서 표시하는 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q9" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(9,'<pre>')">
+    <button class="qbtn" onclick="chk(9,'<pre>')">확인</button>
+  </div>
+  <div class="qfb" id="qf9"></div>
+</div>
+
+<div class="quiz-card">
+  <div class="qmeta">Q10 · 10점</div>
+  <div class="qq">관련된 폼 입력들을 하나의 그룹으로 묶고, <code>&lt;legend&gt;</code>로 제목을 붙이는 태그는?</div>
+  <div class="qrow">
+    <input class="qinput" id="q10" placeholder="태그 입력" onkeydown="if(event.key==='Enter')chk(10,'<fieldset>')">
+    <button class="qbtn" onclick="chk(10,'<fieldset>')">확인</button>
+  </div>
+  <div class="qfb" id="qf10"></div>
+</div>
+
+<!-- 대시보드 & 제출 -->
+<div style="margin-top:36px">
+  <div class="dashboard">
+    <div class="db-head">
+      <div class="db-title">📊 진행 현황</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--sub)" id="db-pct">0 / 10 완료</div>
+    </div>
+    <div class="db-grid">
+      <div class="db-box"><div class="db-lb">정답</div><div class="db-vl" id="db-ok" style="color:var(--ok)">0</div></div>
+      <div class="db-box"><div class="db-lb">오답</div><div class="db-vl" id="db-ng" style="color:var(--ng)">0</div></div>
+      <div class="db-box"><div class="db-lb">완료</div><div class="db-vl" id="db-done" style="color:var(--ac)">0</div></div>
+      <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score" style="color:var(--ac)">—</div></div>
+    </div>
+    <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+  </div>
+  <div class="sub-panel">
+    <div class="sub-title">📤 답안 제출하기</div>
+    <table class="sum-tbl">
+      <thead><tr>
+        <th style="width:56px">번호</th><th>문제 요약</th>
+        <th style="width:150px">내 답변</th>
+        <th style="width:52px;text-align:center">결과</th>
+      </tr></thead>
+      <tbody id="sum-body"></tbody>
+    </table>
+    <div class="name-row">
+      <span class="name-lb">✏️ 이름</span>
+      <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요"
+        oninput="document.getElementById('nw').style.display='none'">
+    </div>
+    <div id="nw">⚠️ 이름을 먼저 입력해주세요!</div>
+    <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+    <div style="text-align:center;font-size:12px;color:var(--sub);margin-top:8px" id="sub-hint">
+      모든 문항(10개)을 풀면 제출 버튼이 활성화됩니다 (0 / 10)
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- 팝업 -->
+<div class="pbg" id="pbg">
+  <div class="popup">
+    <button class="pp-close" onclick="closePopup()">✕</button>
+    <div style="text-align:center;font-size:44px;margin-bottom:8px">🎉</div>
+    <div class="pp-score" id="pp-score"></div>
+    <div class="pp-grade" id="pp-grade"></div>
+    <div class="pp-detail">
+      <div class="ppd-row"><span>이름</span><strong id="pp-name"></strong></div>
+      <div class="ppd-row"><span>정답 / 전체</span><strong id="pp-ratio"></strong></div>
+    </div>
+    <button class="form-btn" id="form-btn">📤 답안 전송하기</button>
+    <div class="cfg-warn" id="cfg-warn"></div>
+    <button class="cancel-btn" onclick="closePopup()">닫기</button>
+  </div>
+</div>
+
+<script>
+/* ── 라이브 에디터 ── */
+function run(cid, pid) {
+  document.getElementById(pid).innerHTML = document.getElementById(cid).value;
+}
+window.addEventListener('DOMContentLoaded', () => {
+  ['c1_1','c1_2','c1_3','c2_1','c3_1','c4_1','c5_1','c6_1']
+    .forEach(id => run(id, id.replace('c','p')));
+});
+
+/* ── 토글 ── */
+function toggleCode(id) {
+  const body = document.getElementById(id);
+  const arr  = document.getElementById('arr_' + id);
+  const open = body.classList.toggle('open');
+  arr.classList.toggle('open', open);
+  arr.textContent = open ? '▼' : '▶';
+}
+
+/* ── 스크롤 & 네비 ── */
+const SECS = ['s0','s1','s2','s3','s4','s5','s6','s7'];
+window.addEventListener('scroll', () => {
+  const p = scrollY / (document.body.scrollHeight - innerHeight) * 100;
+  document.getElementById('prog').style.width = p + '%';
+  const dots = document.querySelectorAll('.ndot');
+  let cur = 0;
+  SECS.forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 130) cur = i;
+  });
+  dots.forEach((d,i) => d.classList.toggle('active', i === cur));
+});
+function goSec(i) {
+  document.getElementById(SECS[i])?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── 퀴즈 ── */
+const ANS  = {1:'<nav>',2:'<article>',3:'<mark>',4:'<abbr>',5:'<thead>',
+               6:'colspan="2"',7:'id',8:'<textarea>',9:'<pre>',10:'<fieldset>'};
+const QSUM = {1:'nav 태그',2:'article 태그',3:'형광펜 태그',4:'약어 태그',
+              5:'표 헤더 영역',6:'셀 가로 합치기',7:'label 연결 속성',
+              8:'여러 줄 입력',9:'공백 유지 태그',10:'폼 그룹화 태그'};
+const TOTAL = 10;
+let QS = {};
+
+function chk(n, ans) {
+  const inp = document.getElementById('q'+n);
+  const fb  = document.getElementById('qf'+n);
+  const v   = inp.value.trim();
+  if (!v) { fb.innerHTML='<span style="color:var(--wn)">❓ 답을 입력하세요!</span>'; return; }
+  const ok = v === ans;
+  QS[n] = {ans:v, ok};
+  inp.classList.remove('iok','ing');
+  inp.classList.add(ok ? 'iok' : 'ing');
+  if (ok) {
+    fb.innerHTML = '<span class="ok">✓ 정답입니다! 🎉</span>';
+    inp.disabled = true;
+    inp.closest('.quiz-card').querySelector('.qbtn').disabled = true;
+  } else {
+    fb.innerHTML = '<span class="ng">✗ 다시 한번 생각해보세요!</span>';
+  }
+  refresh();
+}
+
+function refresh() {
+  const done  = Object.keys(QS).length;
+  const ok    = Object.values(QS).filter(s=>s.ok).length;
+  const score = ok * 10;
+  document.getElementById('db-ok').textContent    = ok;
+  document.getElementById('db-ng').textContent    = done - ok;
+  document.getElementById('db-done').textContent  = done;
+  document.getElementById('db-score').textContent = done > 0 ? score+'점' : '—';
+  document.getElementById('pbar').style.width     = Math.round(done/TOTAL*100)+'%';
+  document.getElementById('db-pct').textContent   = done+' / '+TOTAL+' 완료';
+  renderSumTable();
+  const btn = document.getElementById('sub-btn');
+  btn.disabled = done < TOTAL;
+  document.getElementById('sub-hint').textContent =
+    done < TOTAL
+      ? `모든 문항(${TOTAL}개)을 풀면 제출 버튼이 활성화됩니다 (${done} / ${TOTAL})`
+      : '✅ 제출 준비 완료!';
+}
+
+function renderSumTable() {
+  const tb = document.getElementById('sum-body');
+  tb.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const s = QS[i];
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td style="font-weight:700;color:var(--ac)">Q${i}</td>`+
+      `<td style="font-size:12px;color:var(--sub)">${QSUM[i]}</td>`+
+      `<td class="${s?'':'tpd'}">${s?s.ans:'—'}</td>`+
+      `<td style="text-align:center" class="${s?(s.ok?'tok':'tng'):'tpd'}">${s?(s.ok?'✅':'❌'):'⬜'}</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+/* ╔══════════════════════════════════════╗
+   ║ 선생님 설정                           ║
+   ╚══════════════════════════════════════╝ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec';
+const LESSON_ID   = 'web/01-3_html_tag_practice';
+/* ════════════════════════════════════ */
+
+function collectAnswers() {
+  return Array.from({length:TOTAL}, (_,i) => QS[i+1] ? String(QS[i+1].ans) : '');
+}
+function openPopup() {
+  const name = document.getElementById('stu-name').value.trim();
+  if (!name) {
+    document.getElementById('nw').style.display = 'block';
+    document.querySelector('.sub-panel').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  document.getElementById('nw').style.display = 'none';
+  const ok    = Object.values(QS).filter(s=>s.ok).length;
+  const score = ok * 10;
+  const ps = document.getElementById('pp-score');
+  ps.textContent = score+'점';
+  ps.style.color = score>=90?'var(--ok)':score>=70?'var(--wn)':score>=60?'var(--c1)':'var(--ng)';
+  document.getElementById('pp-grade').textContent =
+    score>=90?'🏆 A등급 — 우수!':score>=80?'🥈 B등급 — 잘했어요!':
+    score>=70?'🥉 C등급 — 조금 더!':score>=60?'📚 D등급 — 복습 필요':'💪 다시 도전!';
+  document.getElementById('pp-name').textContent  = name;
+  document.getElementById('pp-ratio').textContent = ok+' / '+TOTAL;
+  const fb = document.getElementById('form-btn');
+  fb.disabled = false; fb.style.background = '';
+  fb.textContent = '📤 답안 전송하기';
+  fb.onclick = function(){ submitToSheets(name, score); };
+  document.getElementById('pbg').style.display = 'flex';
+}
+async function submitToSheets(name, score) {
+  const fb = document.getElementById('form-btn');
+  const cw = document.getElementById('cfg-warn');
+  cw.style.display = 'none';
+  fb.disabled = true; fb.textContent = '전송 중...';
+  const ok = Object.values(QS).filter(s=>s.ok).length;
+  try {
+    await fetch(WEB_APP_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({lesson:LESSON_ID, name, answers:collectAnswers(),
+        score:score+'점 ('+ok+'/'+TOTAL+')'})
+    });
+    fb.textContent = '✅ 제출 완료!';
+    fb.style.background = 'var(--ok)';
+  } catch(err) {
+    fb.disabled = false; fb.textContent = '다시 시도';
+    cw.style.display = 'block';
+    cw.innerHTML = '⚠️ 전송 오류: '+err.message;
+  }
+}
+function closePopup(){ document.getElementById('pbg').style.display='none'; }
+document.getElementById('pbg').addEventListener('click',function(e){
+  if(e.target===this)closePopup();
+});
+renderSumTable();
+</script>
+</body>
+</html>
