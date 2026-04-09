@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+  <!-- meta:unit=1. HTML 기초 -->
+  <!-- meta:title=표와 폼 태그 집중 연습 -->
+  <!-- meta:desc=table, caption, thead, tbody, tr, th, td, colspan, form, label, input, select, textarea, fieldset, legend -->
+  <!-- meta:date=2026-04-09 -->
+  <title>표와 폼 태그 집중 연습 | 웹개발</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#fff8eb;
+      --card:#ffffff;
+      --s2:#fff1d6;
+      --s3:#ffe2ad;
+      --bdr:#f4c97f;
+      --text:#3b2511;
+      --sub:#8b5e34;
+      --ac:#b45309;
+      --acl:#fffbeb;
+      --acb:#fcd34d;
+      --c1:#1d4ed8;
+      --c1l:#eff6ff;
+      --c2:#15803d;
+      --c2l:#f0fdf4;
+      --c3:#7c3aed;
+      --c3l:#f5f3ff;
+      --cbg:#fffaf0;
+      --cbr:#edd7ac;
+      --sh:0 2px 14px rgba(180, 83, 9, .10);
+      --shm:0 8px 26px rgba(180, 83, 9, .18);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;line-height:1.7;}
+
+    #hdr{position:sticky;top:0;z-index:100;background:#4a2c0f;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;gap:12px;}
+    .hbadge{background:var(--ac);padding:4px 10px;border-radius:999px;font-family:'Black Han Sans',sans-serif;font-size:12px;white-space:nowrap;}
+    .htitle{font-family:'Black Han Sans',sans-serif;font-size:16px;flex:1;text-align:center;}
+    .hmeta{font-size:12px;color:#fde68a;white-space:nowrap;}
+    #prog{position:absolute;left:0;bottom:0;height:3px;width:0;background:linear-gradient(90deg,var(--ac),#f59e0b);transition:width .2s;}
+
+    .hero{padding:60px 24px 42px;text-align:center;background:radial-gradient(circle at top,#fff7df 0%,#ffe8bf 58%,#ffdca0 100%);}
+    .hero-emoji{display:block;font-size:66px;margin-bottom:14px;animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+    .hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(26px,5vw,42px);margin-bottom:10px;background:linear-gradient(135deg,var(--ac),#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero p{max-width:760px;margin:0 auto 18px;color:var(--sub);font-size:15px;}
+    .badge-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;}
+    .cbadge{padding:5px 14px;border:1.5px solid var(--bdr);border-radius:999px;background:#fff;font-size:12px;font-weight:600;color:var(--ac);}
+
+    .toc-wrap{max-width:980px;margin:0 auto;padding:0 24px 36px;}
+    .toc{margin-top:-18px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;box-shadow:var(--sh);padding:22px;}
+    .toc-title{font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--ac);margin-bottom:14px;}
+    .toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+    .toc-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--acl);border:1px solid var(--bdr);border-radius:10px;color:var(--text);text-decoration:none;cursor:pointer;transition:transform .2s, border-color .2s, background .2s;}
+    .toc-item:hover{transform:translateX(2px);border-color:var(--ac);background:#fff;}
+    .toc-num{width:26px;height:26px;border-radius:50%;background:var(--ac);color:#fff;font-family:'Black Han Sans',sans-serif;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .toc-label{font-size:13px;font-weight:600;}
+
+    .main{max-width:980px;margin:0 auto;padding:0 24px 80px;}
+    .sec-hdr{display:flex;align-items:center;gap:14px;margin:52px 0 18px;}
+    .sec-num{width:38px;height:38px;border-radius:50%;background:var(--ac);color:#fff;font-family:'Black Han Sans',sans-serif;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .sec-hdr h2{font-family:'Black Han Sans',sans-serif;font-size:22px;}
+    .sec-sub{font-size:13px;color:var(--sub);}
+
+    .concept{background:var(--s2);border-left:4px solid var(--ac);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:14px;}
+    .concept code,.tip code,.attr-tbl code,.pcard-desc code,.mission li code{font-family:'JetBrains Mono',monospace;background:#fff7df;border-radius:4px;padding:1px 5px;font-size:12px;color:var(--ac);font-weight:600;}
+
+    .pcard{background:var(--card);border:1px solid var(--bdr);border-top:4px solid var(--ac);border-radius:14px;box-shadow:var(--sh);margin-bottom:18px;overflow:hidden;}
+    .pcard-head{padding:16px 20px 0;}
+    .pcard-title{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--ac);margin-bottom:6px;}
+    .pcard-desc{font-size:13px;color:var(--sub);margin-bottom:14px;line-height:1.85;}
+
+    .practice-wrap{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bdr);}
+    .code-side{background:var(--cbg);border-right:1px solid var(--cbr);display:flex;flex-direction:column;}
+    .preview-side{background:#fff;display:flex;flex-direction:column;}
+    .side-hdr{padding:8px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--sub);display:flex;align-items:center;gap:8px;border-bottom:1px solid;}
+    .code-hdr{background:var(--s3);border-color:var(--cbr);}
+    .prev-hdr{background:var(--s2);border-color:var(--bdr);}
+    .dots{display:flex;gap:5px;}
+    .dot{width:10px;height:10px;border-radius:50%;}
+    .dr{background:#ff5f57;}
+    .dy{background:#ffbd2e;}
+    .dg{background:#28c840;}
+    .code-in{flex:1;min-height:220px;padding:14px 16px;background:transparent;border:none;outline:none;resize:vertical;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.85;}
+    .run-btn{background:var(--ac);color:#fff;border:none;padding:9px;font-family:'Black Han Sans',sans-serif;font-size:12px;cursor:pointer;transition:opacity .2s;}
+    .run-btn:hover{opacity:.86;}
+    .prev-out{flex:1;min-height:220px;padding:16px;overflow:auto;font-size:14px;line-height:1.8;}
+
+    .attr-box{padding:0 20px 18px;}
+    .attr-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+    .attr-tbl th{background:var(--s3);padding:8px 12px;text-align:left;border-bottom:2px solid var(--bdr);font-family:'Black Han Sans',sans-serif;font-size:12px;}
+    .attr-tbl td{padding:8px 12px;border-bottom:1px solid var(--bdr);vertical-align:top;}
+    .attr-tbl tr:last-child td{border-bottom:none;}
+
+    .tip{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;margin:12px 20px 18px;border-radius:10px;font-size:13px;line-height:1.8;}
+    .tip.blue{background:var(--c1l);border-left:4px solid var(--c1);}
+    .tip.green{background:var(--c2l);border-left:4px solid var(--c2);}
+    .tip.purple{background:var(--c3l);border-left:4px solid var(--c3);}
+    .tip-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+    .mission{background:linear-gradient(180deg,#fffdf7 0%,#fff6df 100%);border:1px dashed var(--bdr);border-radius:12px;padding:18px 20px;margin-top:18px;}
+    .mission h3{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--ac);margin-bottom:8px;}
+    .mission ul{padding-left:18px;}
+    .mission li{margin:6px 0;font-size:14px;}
+
+    .status{background:var(--card);border:1px solid var(--bdr);border-radius:14px;box-shadow:var(--sh);padding:18px 20px;margin-top:26px;}
+    .status-title{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--ac);margin-bottom:12px;}
+    .status-track{width:100%;height:10px;border-radius:999px;background:var(--s3);overflow:hidden;margin-bottom:10px;}
+    .status-bar{height:100%;width:0;background:linear-gradient(90deg,var(--ac),#f59e0b);transition:width .4s ease;}
+    .status-text{font-size:13px;color:var(--sub);text-align:right;}
+    .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:14px;}
+    .status-item{padding:10px 12px;text-align:center;border:1px solid var(--bdr);border-radius:10px;background:var(--acl);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sub);}
+    .status-item.done{background:var(--c2l);border-color:#86efac;color:#166534;font-weight:700;}
+
+    #navdot{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;z-index:99;}
+    .ndot{width:10px;height:10px;border-radius:50%;background:var(--bdr);cursor:pointer;transition:transform .2s, background .2s;}
+    .ndot.active{background:var(--ac);transform:scale(1.35);}
+
+    @media (max-width:700px){
+      .practice-wrap,.toc-grid{grid-template-columns:1fr;}
+      .code-side{border-right:none;border-bottom:1px solid var(--cbr);}
+      #navdot{display:none;}
+      #hdr{padding:0 14px;}
+      .hmeta{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<header id="hdr">
+  <span class="hbadge">HTML 태그 연습</span>
+  <span class="htitle">📋 표와 폼 집중 연습</span>
+  <span class="hmeta">table · form · fieldset</span>
+  <div id="prog"></div>
+</header>
+
+<nav id="navdot">
+  <div class="ndot active" onclick="goSec(0)" title="소개"></div>
+  <div class="ndot" onclick="goSec(1)" title="표 기본"></div>
+  <div class="ndot" onclick="goSec(2)" title="표 응용"></div>
+  <div class="ndot" onclick="goSec(3)" title="폼 기본"></div>
+  <div class="ndot" onclick="goSec(4)" title="fieldset"></div>
+  <div class="ndot" onclick="goSec(5)" title="종합 미션"></div>
+</nav>
+
+<section class="hero" id="s0">
+  <span class="hero-emoji">🧾</span>
+  <h1>표와 폼 태그만 다시 연습하기</h1>
+  <p>이 파일은 <code>table</code>과 <code>form</code> 태그만 집중해서 연습하도록 만든 실습판입니다. 왼쪽 코드를 수정하고, 아래 버튼을 눌러 오른쪽 결과 화면을 바로 확인해보세요.</p>
+  <div class="badge-row">
+    <span class="cbadge">table</span>
+    <span class="cbadge">thead · tbody · tr · th · td</span>
+    <span class="cbadge">form · label · input</span>
+    <span class="cbadge">select · textarea</span>
+    <span class="cbadge">fieldset · legend</span>
+  </div>
+</section>
+
+<div class="toc-wrap">
+  <div class="toc">
+    <div class="toc-title">📌 이번 파일 구성</div>
+    <div class="toc-grid">
+      <a class="toc-item" onclick="goSec(1)"><div class="toc-num">1</div><span class="toc-label">기본 표 만들기</span></a>
+      <a class="toc-item" onclick="goSec(2)"><div class="toc-num">2</div><span class="toc-label">시간표 표 만들기</span></a>
+      <a class="toc-item" onclick="goSec(3)"><div class="toc-num">3</div><span class="toc-label">기본 폼 만들기</span></a>
+      <a class="toc-item" onclick="goSec(4)"><div class="toc-num">4</div><span class="toc-label">fieldset 폼 만들기</span></a>
+      <a class="toc-item" onclick="goSec(5)"><div class="toc-num">5</div><span class="toc-label">종합 수정 미션</span></a>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="sec-hdr" id="s1">
+    <div class="sec-num">1</div>
+    <div>
+      <h2>표 기본 연습</h2>
+      <div class="sec-sub">caption · thead · tbody · tr · th · td</div>
+    </div>
+  </div>
+
+  <div class="concept">
+    표는 <code>&lt;table&gt;</code> 안에서 행은 <code>&lt;tr&gt;</code>, 제목 칸은 <code>&lt;th&gt;</code>, 내용 칸은 <code>&lt;td&gt;</code>로 만듭니다. 제목이 있는 표라면 <code>&lt;caption&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>까지 같이 써보는 연습이 좋습니다.
+  </div>
+
+  <div class="pcard">
+    <div class="pcard-head">
+      <div class="pcard-title">예제 1-1. 간식 가격표</div>
+      <div class="pcard-desc">기본 표 구조를 가장 단순하게 연습하는 예제입니다. 항목을 바꾸거나 행을 1개 더 추가해 보세요.</div>
+    </div>
+    <div class="practice-wrap">
+      <div class="code-side">
+        <div class="side-hdr code-hdr"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>✏️ 코드 수정 후 실행</div>
+        <textarea class="code-in" id="c1">&lt;table border="1" style="border-collapse:collapse; width:100%; text-align:center;"&gt;
+  &lt;caption&gt;매점 인기 간식&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;메뉴&lt;/th&gt;
+      &lt;th&gt;가격&lt;/th&gt;
+      &lt;th&gt;남은 수량&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;핫도그&lt;/td&gt;
+      &lt;td&gt;2000원&lt;/td&gt;
+      &lt;td&gt;12개&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;주스&lt;/td&gt;
+      &lt;td&gt;1500원&lt;/td&gt;
+      &lt;td&gt;8개&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</textarea>
+        <button class="run-btn" onclick="run('c1','p1','step1')">▶ 실행하기</button>
+      </div>
+      <div class="preview-side">
+        <div class="side-hdr prev-hdr">🌐 결과 화면</div>
+        <div class="prev-out" id="p1"></div>
+      </div>
+    </div>
+    <div class="attr-box">
+      <table class="attr-tbl">
+        <tr><th>태그</th><th>역할</th><th>포인트</th></tr>
+        <tr><td><code>caption</code></td><td>표 제목</td><td>표가 무엇을 나타내는지 먼저 알려줍니다.</td></tr>
+        <tr><td><code>thead</code></td><td>표 머리글 영역</td><td>보통 제목 행을 넣습니다.</td></tr>
+        <tr><td><code>tbody</code></td><td>표 본문 영역</td><td>실제 데이터 행을 넣습니다.</td></tr>
+      </table>
+    </div>
+    <div class="tip blue"><span class="tip-icon">💡</span><div><code>th</code>는 제목 칸이라 기본적으로 굵게 보이고, <code>td</code>는 일반 데이터 칸입니다.</div></div>
+  </div>
+
+  <div class="sec-hdr" id="s2">
+    <div class="sec-num">2</div>
+    <div>
+      <h2>표 응용 연습</h2>
+      <div class="sec-sub">colspan 으로 칸 합치기</div>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="pcard-head">
+      <div class="pcard-title">예제 2-1. 동아리 활동 시간표</div>
+      <div class="pcard-desc"><code>colspan</code>을 사용해 한 칸이 여러 칸을 차지하도록 만들어 보세요. 시간을 바꾸거나 과목 이름을 다른 활동으로 바꿔보면 좋습니다.</div>
+    </div>
+    <div class="practice-wrap">
+      <div class="code-side">
+        <div class="side-hdr code-hdr"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>✏️ 코드 수정 후 실행</div>
+        <textarea class="code-in" id="c2">&lt;table border="1" style="border-collapse:collapse; width:100%; text-align:center;"&gt;
+  &lt;caption&gt;금요일 동아리 활동표&lt;/caption&gt;
+  &lt;tr&gt;
+    &lt;th&gt;시간&lt;/th&gt;
+    &lt;th&gt;1교시&lt;/th&gt;
+    &lt;th&gt;2교시&lt;/th&gt;
+    &lt;th&gt;3교시&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th&gt;활동&lt;/th&gt;
+    &lt;td&gt;기획 회의&lt;/td&gt;
+    &lt;td colspan="2"&gt;영상 촬영&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th&gt;준비물&lt;/th&gt;
+    &lt;td&gt;노트북&lt;/td&gt;
+    &lt;td&gt;카메라&lt;/td&gt;
+    &lt;td&gt;삼각대&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</textarea>
+        <button class="run-btn" onclick="run('c2','p2','step2')">▶ 실행하기</button>
+      </div>
+      <div class="preview-side">
+        <div class="side-hdr prev-hdr">🌐 결과 화면</div>
+        <div class="prev-out" id="p2"></div>
+      </div>
+    </div>
+    <div class="tip green"><span class="tip-icon">🧩</span><div><code>colspan="2"</code>는 가로로 2칸을 합친다는 뜻입니다. 한 칸을 크게 써야 할 때 자주 사용합니다.</div></div>
+  </div>
+
+  <div class="sec-hdr" id="s3">
+    <div class="sec-num">3</div>
+    <div>
+      <h2>폼 기본 연습</h2>
+      <div class="sec-sub">form · label · input · select · textarea</div>
+    </div>
+  </div>
+
+  <div class="concept">
+    폼은 사용자 입력을 받는 영역입니다. 입력칸 이름을 알려주는 <code>&lt;label&gt;</code>을 같이 쓰면 훨씬 읽기 좋은 구조가 됩니다.
+  </div>
+
+  <div class="pcard">
+    <div class="pcard-head">
+      <div class="pcard-title">예제 3-1. 상담 신청 폼</div>
+      <div class="pcard-desc">텍스트 입력, 날짜 선택, 드롭다운, 긴 글 입력을 한 번에 연습합니다. <code>placeholder</code>나 <code>option</code> 값을 바꿔보세요.</div>
+    </div>
+    <div class="practice-wrap">
+      <div class="code-side">
+        <div class="side-hdr code-hdr"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>✏️ 코드 수정 후 실행</div>
+        <textarea class="code-in" id="c3">&lt;form&gt;
+  &lt;p&gt;
+    &lt;label for="student"&gt;이름&lt;/label&gt;&lt;br&gt;
+    &lt;input type="text" id="student" placeholder="이름 입력"&gt;
+  &lt;/p&gt;
+
+  &lt;p&gt;
+    &lt;label for="day"&gt;희망 날짜&lt;/label&gt;&lt;br&gt;
+    &lt;input type="date" id="day"&gt;
+  &lt;/p&gt;
+
+  &lt;p&gt;
+    &lt;label for="topic"&gt;상담 주제&lt;/label&gt;&lt;br&gt;
+    &lt;select id="topic"&gt;
+      &lt;option&gt;진로&lt;/option&gt;
+      &lt;option&gt;프로젝트&lt;/option&gt;
+      &lt;option&gt;자격증&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/p&gt;
+
+  &lt;p&gt;
+    &lt;label for="memo"&gt;미리 전할 말&lt;/label&gt;&lt;br&gt;
+    &lt;textarea id="memo" rows="4" cols="30" placeholder="궁금한 점을 적어보세요."&gt;&lt;/textarea&gt;
+  &lt;/p&gt;
+
+  &lt;button type="submit"&gt;신청하기&lt;/button&gt;
+&lt;/form&gt;</textarea>
+        <button class="run-btn" onclick="run('c3','p3','step3')">▶ 실행하기</button>
+      </div>
+      <div class="preview-side">
+        <div class="side-hdr prev-hdr">🌐 결과 화면</div>
+        <div class="prev-out" id="p3"></div>
+      </div>
+    </div>
+    <div class="attr-box">
+      <table class="attr-tbl">
+        <tr><th>태그</th><th>언제 쓰나</th><th>예시</th></tr>
+        <tr><td><code>label</code></td><td>입력칸 이름 붙일 때</td><td><code>&lt;label for="student"&gt;</code></td></tr>
+        <tr><td><code>input</code></td><td>짧은 입력 받을 때</td><td><code>type="text"</code>, <code>type="date"</code></td></tr>
+        <tr><td><code>select</code></td><td>목록에서 하나 고를 때</td><td><code>&lt;option&gt;</code>과 함께 사용</td></tr>
+        <tr><td><code>textarea</code></td><td>여러 줄 입력 받을 때</td><td>문의 내용, 자기소개</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-hdr" id="s4">
+    <div class="sec-num">4</div>
+    <div>
+      <h2>fieldset 포함 폼 연습</h2>
+      <div class="sec-sub">fieldset · legend · radio · checkbox</div>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="pcard-head">
+      <div class="pcard-title">예제 4-1. 동아리 신청서</div>
+      <div class="pcard-desc"><code>fieldset</code>은 관련 입력을 한 덩어리로 묶을 때 씁니다. 덩어리의 제목은 <code>legend</code>에 씁니다.</div>
+    </div>
+    <div class="practice-wrap">
+      <div class="code-side">
+        <div class="side-hdr code-hdr"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>✏️ 코드 수정 후 실행</div>
+        <textarea class="code-in" id="c4">&lt;form&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;기본 정보&lt;/legend&gt;
+    &lt;p&gt;
+      &lt;label for="name"&gt;이름&lt;/label&gt;&lt;br&gt;
+      &lt;input type="text" id="name"&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;label for="grade"&gt;학년&lt;/label&gt;&lt;br&gt;
+      &lt;select id="grade"&gt;
+        &lt;option&gt;1학년&lt;/option&gt;
+        &lt;option&gt;2학년&lt;/option&gt;
+        &lt;option&gt;3학년&lt;/option&gt;
+      &lt;/select&gt;
+    &lt;/p&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;희망 활동&lt;/legend&gt;
+    &lt;p&gt;
+      &lt;label&gt;&lt;input type="radio" name="club"&gt; 방송부&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;&lt;input type="radio" name="club"&gt; 코딩부&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;&lt;input type="radio" name="club"&gt; 디자인부&lt;/label&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;label&gt;&lt;input type="checkbox"&gt; 방과 후 참여 가능&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;&lt;input type="checkbox"&gt; 주말 행사 참여 가능&lt;/label&gt;
+    &lt;/p&gt;
+  &lt;/fieldset&gt;
+
+  &lt;button type="submit"&gt;동아리 신청 완료&lt;/button&gt;
+&lt;/form&gt;</textarea>
+        <button class="run-btn" onclick="run('c4','p4','step4')">▶ 실행하기</button>
+      </div>
+      <div class="preview-side">
+        <div class="side-hdr prev-hdr">🌐 결과 화면</div>
+        <div class="prev-out" id="p4"></div>
+      </div>
+    </div>
+    <div class="tip purple"><span class="tip-icon">📦</span><div><code>fieldset</code>은 입력들을 그룹으로 묶고, <code>legend</code>는 그 그룹의 이름표 역할을 합니다. 긴 신청서나 설문지에서 특히 유용합니다.</div></div>
+  </div>
+
+  <div class="sec-hdr" id="s5">
+    <div class="sec-num">5</div>
+    <div>
+      <h2>종합 수정 미션</h2>
+      <div class="sec-sub">표와 폼 태그를 같이 손봐보기</div>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="pcard-head">
+      <div class="pcard-title">미션 5-1. 체험 부스 예약 페이지 일부 완성하기</div>
+      <div class="pcard-desc">아래 코드를 직접 수정해서 예약 가능한 부스 목록과 신청 영역을 더 풍부하게 만들어 보세요. 정답은 하나가 아닙니다.</div>
+    </div>
+    <div class="practice-wrap">
+      <div class="code-side">
+        <div class="side-hdr code-hdr"><div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>✏️ 코드 수정 후 실행</div>
+        <textarea class="code-in" id="c5">&lt;h3&gt;체험 부스 안내&lt;/h3&gt;
+
+&lt;table border="1" style="border-collapse:collapse; width:100%; text-align:center; margin-bottom:16px;"&gt;
+  &lt;tr&gt;
+    &lt;th&gt;부스명&lt;/th&gt;
+    &lt;th&gt;장소&lt;/th&gt;
+    &lt;th&gt;남은 자리&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;3D 펜 만들기&lt;/td&gt;
+    &lt;td&gt;실습실 A&lt;/td&gt;
+    &lt;td&gt;5자리&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;form&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;예약 정보&lt;/legend&gt;
+    &lt;label for="team"&gt;이름&lt;/label&gt;&lt;br&gt;
+    &lt;input type="text" id="team"&gt;&lt;br&gt;&lt;br&gt;
+
+    &lt;label for="booth"&gt;희망 부스&lt;/label&gt;&lt;br&gt;
+    &lt;select id="booth"&gt;
+      &lt;option&gt;3D 펜 만들기&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/fieldset&gt;
+
+  &lt;p&gt;
+    &lt;button type="submit"&gt;예약하기&lt;/button&gt;
+  &lt;/p&gt;
+&lt;/form&gt;</textarea>
+        <button class="run-btn" onclick="run('c5','p5','step5')">▶ 실행하기</button>
+      </div>
+      <div class="preview-side">
+        <div class="side-hdr prev-hdr">🌐 결과 화면</div>
+        <div class="prev-out" id="p5"></div>
+      </div>
+    </div>
+    <div class="mission">
+      <h3>수정 아이디어</h3>
+      <ul>
+        <li>표에 새 행을 추가하고 <code>caption</code>을 붙여보세요.</li>
+        <li>폼에 <code>textarea</code>를 넣어 요청 사항을 적게 해보세요.</li>
+        <li><code>checkbox</code>나 <code>radio</code>를 추가해 선택 항목을 만들어보세요.</li>
+        <li><code>fieldset</code>을 2개로 나누어 기본 정보와 선택 정보를 구분해보세요.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="status">
+    <div class="status-title">실습 진행 상황</div>
+    <div class="status-track"><div class="status-bar" id="statusBar"></div></div>
+    <div class="status-text" id="statusText">0 / 5 실행 완료</div>
+    <div class="status-grid">
+      <div class="status-item" id="step1">표 기본</div>
+      <div class="status-item" id="step2">표 응용</div>
+      <div class="status-item" id="step3">폼 기본</div>
+      <div class="status-item" id="step4">fieldset 폼</div>
+      <div class="status-item" id="step5">종합 미션</div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const sections = [...document.querySelectorAll('[id^="s"]')];
+  const dots = [...document.querySelectorAll('.ndot')];
+  const solved = new Set();
+
+  function run(codeId, previewId, stepId) {
+    const html = document.getElementById(codeId).value;
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = html;
+
+    if (stepId && !solved.has(stepId)) {
+      solved.add(stepId);
+      document.getElementById(stepId).classList.add('done');
+      updateStatus();
+    }
+  }
+
+  function updateStatus() {
+    const total = 5;
+    const count = solved.size;
+    document.getElementById('statusBar').style.width = (count / total) * 100 + '%';
+    document.getElementById('statusText').textContent = count + ' / ' + total + ' 실행 완료';
+  }
+
+  function goSec(index) {
+    sections[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function updateScroll() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('prog').style.width = progress + '%';
+
+    let activeIndex = 0;
+    sections.forEach((section, index) => {
+      if (scrollTop >= section.offsetTop - 120) activeIndex = index;
+    });
+
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === activeIndex);
+    });
+  }
+
+  ['c1', 'c2', 'c3', 'c4', 'c5'].forEach((id, index) => {
+    run(id, 'p' + (index + 1));
+  });
+
+  window.addEventListener('scroll', updateScroll);
+  updateScroll();
+</script>
+
+</body>
+</html>
