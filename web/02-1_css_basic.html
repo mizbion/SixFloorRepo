@@ -1,0 +1,2287 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- meta:subject=웹개발 -->
+    <!-- meta:unit=2. CSS 기초 -->
+    <!-- meta:title=CSS 기초 스타일링 -->
+    <!-- meta:desc=선택자, 색상, 폰트, 텍스트, 박스모델, margin/padding/border -->
+    <!-- meta:date=2026-04-13 -->
+    <title>CSS 기초 스타일링 | 웹개발</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f0f7ff;
+        --card: #ffffff;
+        --s2: #dbeafe;
+        --s3: #bfdbfe;
+        --bdr: #93c5fd;
+        --text: #0c1a2e;
+        --sub: #3a5a8a;
+        --ac: #1d4ed8;
+        --acl: #eff6ff;
+        --acb: #bfdbfe;
+        --c1: #b45309;
+        --c1l: #fffbeb;
+        --c1b: #fde68a;
+        --c2: #15803d;
+        --c2l: #f0fdf4;
+        --c2b: #86efac;
+        --c3: #7c3aed;
+        --c3l: #f5f3ff;
+        --c3b: #ddd6fe;
+        --c4: #be185d;
+        --c4l: #fdf2f8;
+        --c4b: #fbcfe8;
+        --cbg: #e8f2ff;
+        --cbr: #93c5fd;
+        --sh: 0 2px 14px rgba(29, 78, 216, 0.1);
+        --shm: 0 6px 28px rgba(29, 78, 216, 0.18);
+        --ok: #15803d;
+        --ng: #be185d;
+        --wn: #b45309;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Noto Sans KR", sans-serif;
+        line-height: 1.7;
+      }
+
+      #hdr {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #060e1c;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        height: 54px;
+        gap: 12px;
+      }
+      .hbadge {
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .htitle {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        flex: 1;
+        text-align: center;
+      }
+      .hmeta {
+        font-size: 12px;
+        color: #aac;
+        white-space: nowrap;
+      }
+      #prog {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--ac), #60a5fa);
+        width: 0%;
+        transition: width 0.2s;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 60px 24px 48px;
+        background: linear-gradient(160deg, #e8f2ff 55%, #dbeafe);
+      }
+      .hero-emoji {
+        font-size: 72px;
+        display: block;
+        margin-bottom: 16px;
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .hero h1 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: clamp(26px, 5vw, 44px);
+        background: linear-gradient(135deg, var(--ac), #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 12px;
+      }
+      .hero p {
+        color: var(--sub);
+        font-size: 16px;
+        margin-bottom: 24px;
+      }
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+      .cbadge {
+        background: var(--card);
+        border: 1.5px solid var(--bdr);
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ac);
+      }
+
+      .toc-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 40px;
+      }
+      .toc {
+        background: var(--card);
+        border-radius: 14px;
+        box-shadow: var(--sh);
+        padding: 28px;
+        border: 1px solid var(--bdr);
+      }
+      .toc h2 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 18px;
+        margin-bottom: 16px;
+        color: var(--ac);
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .toc-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: var(--s2);
+        border: 1px solid var(--bdr);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .toc-item:hover {
+        background: var(--acl);
+        border-color: var(--ac);
+        transform: translateX(3px);
+      }
+      .toc-num {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .toc-label {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+      .sec-hdr {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 52px 0 20px;
+      }
+      .sec-num {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--ac);
+        color: #fff;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .sec-hdr h2 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 22px;
+      }
+      .sec-sub {
+        font-size: 13px;
+        color: var(--sub);
+        font-weight: 400;
+      }
+
+      /* ── 카드 — card 안에 절대 card 중첩 금지 ── */
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh);
+        padding: 24px;
+        margin-bottom: 16px;
+        border-top: 4px solid var(--ac);
+      }
+      .card h3 {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        margin-bottom: 14px;
+        color: var(--ac);
+      }
+      .card p,
+      .card li {
+        font-size: 14px;
+        line-height: 1.85;
+      }
+      .card ul,
+      .card ol {
+        padding-left: 20px;
+      }
+      .card ul li,
+      .card ol li {
+        margin-bottom: 5px;
+      }
+
+      /* 2열 그리드 — 내부엔 .ibox (단순 div) 사용 */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin: 14px 0;
+      }
+      .ibox {
+        background: var(--s2);
+        border: 1px solid var(--bdr);
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      .ibox-title {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 14px;
+        color: var(--ac);
+        margin-bottom: 8px;
+      }
+      .ibox p {
+        font-size: 13px;
+        line-height: 1.8;
+        margin: 0;
+      }
+
+      .concept {
+        background: var(--s2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin: 12px 0;
+        border-left: 4px solid var(--ac);
+        font-size: 14px;
+        line-height: 1.85;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--s3);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+        color: var(--ac);
+        font-weight: 600;
+      }
+
+      .tip {
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 12px 0;
+        font-size: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        line-height: 1.8;
+      }
+      .tip.blue {
+        background: var(--acl);
+        border-left: 4px solid var(--ac);
+      }
+      .tip.green {
+        background: var(--c2l);
+        border-left: 4px solid var(--c2);
+      }
+      .tip.orange {
+        background: var(--c1l);
+        border-left: 4px solid var(--c1);
+      }
+      .tip.purple {
+        background: var(--c3l);
+        border-left: 4px solid var(--c3);
+      }
+      .tip-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .cb {
+        background: var(--cbg);
+        border: 1.5px solid var(--cbr);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 12px 0;
+      }
+      .cbh {
+        background: var(--s3);
+        border-bottom: 1px solid var(--cbr);
+        padding: 8px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .dr {
+        background: #ff5f57;
+      }
+      .dy {
+        background: #ffbd2e;
+      }
+      .dg {
+        background: #28c840;
+      }
+      .cblbl {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--sub);
+      }
+      .cb pre {
+        padding: 16px 18px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.9;
+        color: #1e293b;
+      }
+
+      /* 신택스 — span 전용 */
+      .cs {
+        color: #1d4ed8;
+        font-weight: 700;
+      }
+      .cp {
+        color: #be185d;
+      }
+      .cv {
+        color: #15803d;
+      }
+      .cc {
+        color: #6b8cb8;
+        font-style: italic;
+      }
+      .ck {
+        color: #64748b;
+      }
+      .ht {
+        color: #0e7490;
+        font-weight: 600;
+      }
+      .ha {
+        color: #7c3aed;
+      }
+      .hv {
+        color: #b45309;
+      }
+
+      /* CSS 문법 해부 */
+      .anatomy {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: stretch;
+        margin: 14px 0;
+      }
+      .an {
+        padding: 10px 14px;
+        border-radius: 8px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        font-weight: 700;
+        min-width: 56px;
+      }
+      .an small {
+        display: block;
+        font-size: 10px;
+        font-weight: 400;
+        margin-top: 4px;
+        font-family: "Noto Sans KR", sans-serif;
+        white-space: nowrap;
+      }
+      .an-sel {
+        background: var(--acl);
+        border: 2px solid var(--acb);
+        color: var(--ac);
+      }
+      .an-br {
+        background: var(--s2);
+        border: 2px solid var(--bdr);
+        color: var(--sub);
+        min-width: 36px;
+      }
+      .an-prop {
+        background: var(--c4l);
+        border: 2px solid var(--c4b);
+        color: var(--c4);
+      }
+      .an-col {
+        background: var(--s2);
+        border: 2px solid var(--bdr);
+        color: var(--sub);
+        min-width: 32px;
+      }
+      .an-val {
+        background: var(--c2l);
+        border: 2px solid var(--c2b);
+        color: var(--c2);
+      }
+      .an-sc {
+        background: var(--s2);
+        border: 2px solid var(--bdr);
+        color: var(--sub);
+        min-width: 32px;
+      }
+
+      /* 선택자 표 */
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 13px;
+      }
+      .tbl th {
+        background: var(--s3);
+        padding: 10px 14px;
+        text-align: left;
+        border-bottom: 2px solid var(--bdr);
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 13px;
+      }
+      .tbl td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--bdr);
+        vertical-align: middle;
+      }
+      .tbl tr:last-child td {
+        border-bottom: none;
+      }
+      .tbl tr:hover td {
+        background: var(--s2);
+      }
+      .sbadge {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+      .sb-tag {
+        background: var(--ac);
+        color: #fff;
+      }
+      .sb-cls {
+        background: var(--c2);
+        color: #fff;
+      }
+      .sb-id {
+        background: var(--c3);
+        color: #fff;
+      }
+
+      /* 색상 팔레트 */
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .swatch {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .sw-box {
+        height: 44px;
+      }
+      .sw-name {
+        background: #fff;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        padding: 4px 6px;
+        color: #374151;
+        text-align: center;
+      }
+
+      /* 속성 카드 그리드 */
+      .prop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .prop-card {
+        background: var(--s2);
+        border: 1px solid var(--bdr);
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .pn {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 700;
+        color: #be185d;
+        margin-bottom: 5px;
+      }
+      .pd {
+        font-size: 12px;
+        color: var(--sub);
+        line-height: 1.6;
+        margin-bottom: 6px;
+      }
+      .pe {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        background: var(--s3);
+        padding: 3px 8px;
+        border-radius: 4px;
+        color: var(--ac);
+        display: inline-block;
+      }
+
+      /* 박스모델 시각화 */
+      .bm-margin {
+        background: #fef9c3;
+        border: 2px dashed #ca8a04;
+        border-radius: 10px;
+        padding: 18px;
+        margin: 14px 0;
+      }
+      .bm-border {
+        background: #fee2e2;
+        border: 2px solid #f87171;
+        border-radius: 8px;
+        padding: 14px;
+      }
+      .bm-padding {
+        background: #dcfce7;
+        border: 2px dashed #4ade80;
+        border-radius: 6px;
+        padding: 14px;
+      }
+      .bm-content {
+        background: #dbeafe;
+        border: 2px solid #60a5fa;
+        border-radius: 4px;
+        padding: 12px 20px;
+        text-align: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ac);
+      }
+      .bm-tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: "JetBrains Mono", monospace;
+        padding: 2px 7px;
+        border-radius: 4px;
+        margin-bottom: 8px;
+      }
+      .t-mg {
+        background: #ca8a04;
+        color: #fff;
+      }
+      .t-bd {
+        background: #ef4444;
+        color: #fff;
+      }
+      .t-pd {
+        background: #16a34a;
+        color: #fff;
+      }
+
+      /* border 미리보기 */
+      .border-demo {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      .bd-box {
+        padding: 10px 18px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        border-radius: 6px;
+      }
+
+      /* 라이브 에디터 */
+      .live-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin: 14px 0;
+      }
+      .live-editor {
+        background: var(--cbg);
+        border: 1.5px solid var(--cbr);
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .live-preview {
+        background: #fff;
+        border: 1.5px solid var(--bdr);
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .live-hdr {
+        padding: 8px 14px;
+        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--sub);
+        border-bottom: 1px solid var(--cbr);
+        background: var(--s3);
+        flex-shrink: 0;
+      }
+      .live-prev-hdr {
+        padding: 8px 14px;
+        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--sub);
+        border-bottom: 1px solid var(--bdr);
+        background: var(--s2);
+        flex-shrink: 0;
+      }
+      textarea.live-in {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        line-height: 1.8;
+        color: var(--text);
+        resize: none;
+        min-height: 200px;
+        padding: 14px 16px;
+      }
+      .run-btn {
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        padding: 9px;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 13px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .run-btn:hover {
+        opacity: 0.85;
+      }
+      .prev-body {
+        flex: 1;
+        padding: 14px;
+        min-height: 200px;
+        overflow: auto;
+      }
+
+      /* 퀴즈 */
+      .quiz-card {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 12px 0;
+        border-left: 4px solid var(--ac);
+      }
+      .qmeta {
+        font-size: 12px;
+        color: var(--sub);
+        margin-bottom: 8px;
+      }
+      .qq {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 12px;
+        line-height: 1.8;
+      }
+      .qrow {
+        display: flex;
+        gap: 8px;
+      }
+      .qinput {
+        flex: 1;
+        background: var(--s2);
+        border: 1.5px solid var(--bdr);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .qinput:focus {
+        border-color: var(--ac);
+        background: #fff;
+      }
+      .qinput:disabled {
+        opacity: 0.5;
+      }
+      .qinput.iok {
+        border-color: var(--ok);
+        background: #f0fdf4;
+      }
+      .qinput.ing {
+        border-color: var(--ng);
+        background: #fdf2f8;
+      }
+      .qbtn {
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+      .qbtn:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+      .qbtn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .qfb {
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        min-height: 22px;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .ng {
+        color: var(--ng);
+      }
+
+      /* 대시보드 */
+      .dashboard {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: var(--sh);
+      }
+      .db-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .db-title {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        color: var(--ac);
+      }
+      .db-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .db-box {
+        background: var(--s2);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        border: 1px solid var(--bdr);
+      }
+      .db-lb {
+        font-size: 11px;
+        color: var(--sub);
+        margin-bottom: 4px;
+      }
+      .db-vl {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 22px;
+      }
+      .ptrack {
+        background: var(--s3);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+      }
+      .pbar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--ac), #60a5fa);
+        border-radius: 10px;
+        transition: width 0.4s;
+      }
+
+      /* 제출 패널 */
+      .sub-panel {
+        background: var(--card);
+        border: 1px solid var(--bdr);
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 16px;
+        box-shadow: var(--sh);
+      }
+      .sub-title {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        color: var(--ac);
+        margin-bottom: 16px;
+      }
+      .sum-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 13px;
+      }
+      .sum-tbl th {
+        background: var(--s3);
+        padding: 9px 12px;
+        text-align: left;
+        border-bottom: 2px solid var(--bdr);
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 12px;
+      }
+      .sum-tbl td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--bdr);
+      }
+      .sum-tbl tr:last-child td {
+        border-bottom: none;
+      }
+      .tok {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .tng {
+        color: var(--ng);
+        font-weight: 700;
+      }
+      .tpd {
+        color: var(--sub);
+        font-style: italic;
+      }
+      .name-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 18px 0 8px;
+      }
+      .name-lb {
+        font-weight: 700;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+      .name-in {
+        flex: 1;
+        background: var(--s2);
+        border: 1.5px solid var(--bdr);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .name-in:focus {
+        border-color: var(--ac);
+        background: #fff;
+      }
+      #nw {
+        color: var(--ng);
+        font-size: 13px;
+        margin-bottom: 8px;
+        display: none;
+      }
+      .sub-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 16px;
+        transition: all 0.2s;
+        margin-top: 16px;
+      }
+      .sub-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--shm);
+      }
+      .sub-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* 팝업 */
+      .pbg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .popup {
+        background: #fff;
+        border-radius: 20px;
+        padding: 34px 38px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.25);
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: pu 0.3s ease;
+      }
+      @keyframes pu {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .pp-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--s2);
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        font-size: 14px;
+        color: var(--sub);
+      }
+      .pp-score {
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 56px;
+        line-height: 1;
+        text-align: center;
+        margin: 8px 0 4px;
+      }
+      .pp-grade {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .pp-detail {
+        background: var(--s2);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .ppd-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--bdr);
+        font-size: 14px;
+      }
+      .ppd-row:last-child {
+        border-bottom: none;
+      }
+      .form-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: var(--ac);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Black Han Sans", sans-serif;
+        font-size: 15px;
+        transition: all 0.2s;
+        margin: 16px 0 8px;
+      }
+      .form-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+      }
+      .form-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .cancel-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: var(--s2);
+        color: var(--sub);
+        border: 1px solid var(--bdr);
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 14px;
+      }
+      .cfg-warn {
+        display: none;
+        font-size: 12px;
+        color: var(--ng);
+        background: var(--c4l);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-top: 8px;
+      }
+
+      #navdot {
+        position: fixed;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 99;
+      }
+      .ndot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--bdr);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .ndot.active {
+        background: var(--ac);
+        transform: scale(1.3);
+      }
+      .ndot:hover {
+        background: var(--ac);
+        opacity: 0.7;
+      }
+
+      @media (max-width: 640px) {
+        .toc-grid,
+        .two-col,
+        .live-wrap {
+          grid-template-columns: 1fr;
+        }
+        .db-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        #navdot {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header id="hdr">
+      <span class="hbadge">3차시 · CSS 기초</span>
+      <span class="htitle">🎨 CSS 기초 스타일링</span>
+      <span class="hmeta">웹개발 입문</span>
+      <div id="prog"></div>
+    </header>
+
+    <nav id="navdot">
+      <div class="ndot active" onclick="goSec(0)"></div>
+      <div class="ndot" onclick="goSec(1)"></div>
+      <div class="ndot" onclick="goSec(2)"></div>
+      <div class="ndot" onclick="goSec(3)"></div>
+      <div class="ndot" onclick="goSec(4)"></div>
+      <div class="ndot" onclick="goSec(5)"></div>
+      <div class="ndot" onclick="goSec(6)"></div>
+      <div class="ndot" onclick="goSec(7)"></div>
+    </nav>
+
+    <section class="hero" id="s0">
+      <span class="hero-emoji">🎨</span>
+      <h1>CSS 기초 스타일링</h1>
+      <p>HTML 뼈대에 색과 옷을 입히는 방법</p>
+      <div class="badge-row">
+        <span class="cbadge">🎯 선택자</span>
+        <span class="cbadge">🌈 색상 & 폰트</span>
+        <span class="cbadge">📦 박스모델</span>
+        <span class="cbadge">↔️ margin / padding</span>
+        <span class="cbadge">🖼️ border</span>
+      </div>
+    </section>
+
+    <div class="toc-wrap">
+      <div class="toc">
+        <h2>📋 목차</h2>
+        <div class="toc-grid">
+          <a class="toc-item" onclick="goSec(1)"
+            ><div class="toc-num">1</div>
+            <span class="toc-label">CSS란? & 연결 방법</span></a
+          >
+          <a class="toc-item" onclick="goSec(2)"
+            ><div class="toc-num">2</div>
+            <span class="toc-label">선택자 (Selector)</span></a
+          >
+          <a class="toc-item" onclick="goSec(3)"
+            ><div class="toc-num">3</div>
+            <span class="toc-label">색상 & 폰트 & 텍스트</span></a
+          >
+          <a class="toc-item" onclick="goSec(4)"
+            ><div class="toc-num">4</div>
+            <span class="toc-label">박스모델 (margin/padding/border)</span></a
+          >
+          <a class="toc-item" onclick="goSec(5)"
+            ><div class="toc-num">5</div>
+            <span class="toc-label">🎮 라이브 에디터 실습</span></a
+          >
+          <a class="toc-item" onclick="goSec(6)"
+            ><div class="toc-num">6</div>
+            <span class="toc-label">✏️ 확인 퀴즈</span></a
+          >
+          <a class="toc-item" onclick="goSec(7)"
+            ><div class="toc-num">7</div>
+            <span class="toc-label">📤 답안 제출</span></a
+          >
+        </div>
+      </div>
+    </div>
+
+    <main class="main">
+      <!-- ══ 섹션 1: CSS란? ══ -->
+      <div class="sec-hdr" id="s1">
+        <div class="sec-num">1</div>
+        <div>
+          <h2>CSS란? &amp; 연결 방법</h2>
+          <span class="sec-sub">HTML에 스타일을 입히는 언어</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🎨 CSS = 웹페이지의 옷</h3>
+        <div class="concept">
+          <strong>CSS</strong>(Cascading Style Sheets)는 HTML 요소의
+          <strong>색상, 크기, 위치, 폰트</strong> 등 모양을 정의합니다.<br />
+          HTML이 <em>"여기에 제목이 있다"</em>고 하면, CSS는
+          <em>"그 제목은 파란색, 24px, 가운데 정렬"</em>이라고 말해요.
+        </div>
+        <div
+          style="
+            font-size: 12px;
+            color: var(--sub);
+            margin-bottom: 8px;
+            font-family: &quot;JetBrains Mono&quot;, monospace;
+          "
+        >
+          CSS 문법 구조
+        </div>
+        <div class="anatomy">
+          <div class="an an-sel">h1<small>선택자(누구에게)</small></div>
+          <div class="an an-br">{<small>&nbsp;</small></div>
+          <div class="an an-prop">color<small>속성(무엇을)</small></div>
+          <div class="an an-col">:<small>&nbsp;</small></div>
+          <div class="an an-val">blue<small>값(어떻게)</small></div>
+          <div class="an an-sc">;<small>&nbsp;</small></div>
+          <div class="an an-br">}<small>&nbsp;</small></div>
+        </div>
+        <div class="tip blue">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>선택자</strong>: 스타일 적용 대상 &nbsp;|&nbsp;
+            <strong>속성</strong>: 바꾸고 싶은 것 &nbsp;|&nbsp;
+            <strong>값</strong>: 어떻게 바꿀지
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔗 CSS 연결하는 3가지 방법</h3>
+        <div class="two-col">
+          <div>
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--c2);
+                margin-bottom: 6px;
+              "
+            >
+              ① 외부 파일 연결 ⭐ 추천
+            </div>
+            <div class="cb">
+              <div class="cbh">
+                <div class="dots">
+                  <div class="dot dr"></div>
+                  <div class="dot dy"></div>
+                  <div class="dot dg"></div>
+                </div>
+                <span class="cblbl">HTML &lt;head&gt; 안에 작성</span>
+              </div>
+              <pre><span class="ht">&lt;link</span> <span class="ha">rel</span>=<span class="hv">"stylesheet"</span>
+     <span class="ha">href</span>=<span class="hv">"style.css"</span><span class="ht">&gt;</span></pre>
+            </div>
+            <p style="font-size: 13px; color: var(--sub); margin-top: 6px">
+              HTML과 CSS 분리 — 실무 표준
+            </p>
+          </div>
+          <div>
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--sub);
+                margin-bottom: 6px;
+              "
+            >
+              ② &lt;style&gt; 태그 (수업에서 주로 사용)
+            </div>
+            <div class="cb">
+              <div class="cbh">
+                <div class="dots">
+                  <div class="dot dr"></div>
+                  <div class="dot dy"></div>
+                  <div class="dot dg"></div>
+                </div>
+                <span class="cblbl">head 안에 직접 작성</span>
+              </div>
+              <pre><span class="ht">&lt;style&gt;</span>
+  <span class="cs">h1</span> <span class="ck">{</span>
+    <span class="cp">color</span><span class="ck">:</span> <span class="cv">blue</span><span class="ck">;</span>
+  <span class="ck">}</span>
+<span class="ht">&lt;/style&gt;</span></pre>
+            </div>
+          </div>
+        </div>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">③ 인라인 스타일 — 태그에 직접 (테스트용)</span>
+          </div>
+          <pre><span class="ht">&lt;h1</span> <span class="ha">style</span>=<span class="hv">"color: blue; font-size: 24px;"</span><span class="ht">&gt;</span>제목<span class="ht">&lt;/h1&gt;</span></pre>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 2: 선택자 ══ -->
+      <div class="sec-hdr" id="s2">
+        <div class="sec-num">2</div>
+        <div>
+          <h2>선택자 (Selector)</h2>
+          <span class="sec-sub">어떤 요소에 스타일을 적용할지 지정</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🎯 3가지 핵심 선택자</h3>
+        <table class="tbl">
+          <tr>
+            <th>선택자</th>
+            <th>사용법</th>
+            <th>적용 대상</th>
+            <th>언제 쓰나?</th>
+          </tr>
+          <tr>
+            <td><span class="sbadge sb-tag">태그</span></td>
+            <td><code>h1 { }</code></td>
+            <td>모든 &lt;h1&gt; 태그</td>
+            <td>전체 태그에 동일 스타일</td>
+          </tr>
+          <tr>
+            <td><span class="sbadge sb-cls">클래스</span></td>
+            <td><code>.card { }</code></td>
+            <td>class="card" 인 요소</td>
+            <td>여러 요소에 같은 스타일 ⭐ 자주 사용</td>
+          </tr>
+          <tr>
+            <td><span class="sbadge sb-id">아이디</span></td>
+            <td><code>#header { }</code></td>
+            <td>id="header" 인 요소</td>
+            <td>페이지에서 딱 하나인 요소</td>
+          </tr>
+        </table>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">선택자 비교 예제</span>
+          </div>
+          <pre><span class="cc">/* ① 태그 선택자 */</span>
+<span class="cs">p</span> <span class="ck">{</span> <span class="cp">color</span><span class="ck">:</span> <span class="cv">gray</span><span class="ck">; }</span>
+
+<span class="cc">/* ② 클래스 선택자 */</span>
+<span class="cs">.highlight</span> <span class="ck">{</span> <span class="cp">background</span><span class="ck">:</span> <span class="cv">yellow</span><span class="ck">; }</span>
+
+<span class="cc">/* ③ 아이디 선택자 */</span>
+<span class="cs">#title</span> <span class="ck">{</span> <span class="cp">font-size</span><span class="ck">:</span> <span class="cv">32px</span><span class="ck">; }</span></pre>
+        </div>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">HTML에 클래스·아이디 적용하기</span>
+          </div>
+          <pre><span class="ht">&lt;p</span> <span class="ha">class</span>=<span class="hv">"highlight"</span><span class="ht">&gt;</span>노란 배경이 됩니다<span class="ht">&lt;/p&gt;</span>
+<span class="ht">&lt;p</span> <span class="ha">class</span>=<span class="hv">"highlight"</span><span class="ht">&gt;</span>이것도 노란 배경<span class="ht">&lt;/p&gt;</span>
+<span class="ht">&lt;h1</span> <span class="ha">id</span>=<span class="hv">"title"</span><span class="ht">&gt;</span>32px 제목<span class="ht">&lt;/h1&gt;</span></pre>
+        </div>
+        <div class="tip purple">
+          <span class="tip-icon">💜</span>
+          <div>
+            클래스(.)는 <strong>여러 요소</strong>에 적용 가능, 아이디(#)는
+            <strong>페이지에 딱 하나</strong>만. 실무에서는 클래스를 훨씬 많이
+            씁니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 3: 색상 & 폰트 ══ -->
+      <div class="sec-hdr" id="s3">
+        <div class="sec-num">3</div>
+        <div>
+          <h2>색상 &amp; 폰트 &amp; 텍스트</h2>
+          <span class="sec-sub">가장 자주 쓰는 CSS 속성들</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🌈 색상 지정하는 3가지 방법</h3>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">색상 표기 방법</span>
+          </div>
+          <pre><span class="cc">/* ① 색상 이름 */</span>
+<span class="cp">color</span><span class="ck">:</span> <span class="cv">red</span><span class="ck">;</span>        <span class="cp">color</span><span class="ck">:</span> <span class="cv">skyblue</span><span class="ck">;</span>
+
+<span class="cc">/* ② HEX 코드 (가장 많이 씀) */</span>
+<span class="cp">color</span><span class="ck">:</span> <span class="cv">#1d4ed8</span><span class="ck">;</span>    <span class="cc">/* 파랑 */</span>
+<span class="cp">color</span><span class="ck">:</span> <span class="cv">#ff5733</span><span class="ck">;</span>    <span class="cc">/* 주황 */</span>
+
+<span class="cc">/* ③ RGB */</span>
+<span class="cp">color</span><span class="ck">:</span> <span class="cv">rgb(255, 87, 51)</span><span class="ck">;</span></pre>
+        </div>
+        <div
+          style="
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--sub);
+            margin-bottom: 8px;
+          "
+        >
+          색상 팔레트 예시
+        </div>
+        <div class="palette">
+          <div class="swatch">
+            <div class="sw-box" style="background: #ef4444"></div>
+            <div class="sw-name">#ef4444</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #f97316"></div>
+            <div class="sw-name">#f97316</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #eab308"></div>
+            <div class="sw-name">#eab308</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #22c55e"></div>
+            <div class="sw-name">#22c55e</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #3b82f6"></div>
+            <div class="sw-name">#3b82f6</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #8b5cf6"></div>
+            <div class="sw-name">#8b5cf6</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #ec4899"></div>
+            <div class="sw-name">#ec4899</div>
+          </div>
+          <div class="swatch">
+            <div class="sw-box" style="background: #64748b"></div>
+            <div class="sw-name">#64748b</div>
+          </div>
+        </div>
+        <div class="tip blue">
+          <span class="tip-icon">💡</span>
+          <div>
+            구글에 <strong>"color picker"</strong>를 검색하면 원하는 색의 HEX
+            코드를 바로 찾을 수 있어요!
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>✍️ 폰트 & 텍스트 속성</h3>
+        <div class="prop-grid">
+          <div class="prop-card">
+            <div class="pn">font-size</div>
+            <div class="pd">글자 크기</div>
+            <div class="pe">font-size: 16px;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">font-weight</div>
+            <div class="pd">글자 굵기 (100~900)</div>
+            <div class="pe">font-weight: bold;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">font-family</div>
+            <div class="pd">글꼴 종류</div>
+            <div class="pe">font-family: sans-serif;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">color</div>
+            <div class="pd">글자 색상</div>
+            <div class="pe">color: #333;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">text-align</div>
+            <div class="pd">텍스트 정렬</div>
+            <div class="pe">text-align: center;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">line-height</div>
+            <div class="pd">줄 간격</div>
+            <div class="pe">line-height: 1.6;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">text-decoration</div>
+            <div class="pd">밑줄, 취소선 등</div>
+            <div class="pe">text-decoration: none;</div>
+          </div>
+          <div class="prop-card">
+            <div class="pn">background-color</div>
+            <div class="pd">배경 색상</div>
+            <div class="pe">background-color: #f0f0f0;</div>
+          </div>
+        </div>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">폰트 & 텍스트 예제</span>
+          </div>
+          <pre><span class="cs">h1</span> <span class="ck">{</span>
+  <span class="cp">font-size</span><span class="ck">:</span>   <span class="cv">32px</span><span class="ck">;</span>
+  <span class="cp">color</span><span class="ck">:</span>       <span class="cv">#1d4ed8</span><span class="ck">;</span>
+  <span class="cp">text-align</span><span class="ck">:</span>  <span class="cv">center</span><span class="ck">;</span>
+<span class="ck">}</span>
+<span class="cs">p</span> <span class="ck">{</span>
+  <span class="cp">font-size</span><span class="ck">:</span>   <span class="cv">16px</span><span class="ck">;</span>
+  <span class="cp">line-height</span><span class="ck">:</span> <span class="cv">1.8</span><span class="ck">;</span>
+  <span class="cp">color</span><span class="ck">:</span>       <span class="cv">#374151</span><span class="ck">;</span>
+<span class="ck">}</span>
+<span class="cs">a</span> <span class="ck">{</span>
+  <span class="cp">text-decoration</span><span class="ck">:</span> <span class="cv">none</span><span class="ck">;</span>  <span class="cc">/* 밑줄 제거 */</span>
+<span class="ck">}</span></pre>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 4: 박스모델 ══ -->
+      <div class="sec-hdr" id="s4">
+        <div class="sec-num">4</div>
+        <div>
+          <h2>박스모델</h2>
+          <span class="sec-sub">CSS의 핵심 — 모든 요소는 박스다</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📦 박스모델이란?</h3>
+        <div class="concept">
+          HTML의 모든 요소는 사실 <strong>네모난 박스</strong>입니다.<br />
+          이 박스는 4개의 레이어로 구성돼요:
+          <strong>content → padding → border → margin</strong>
+        </div>
+        <div class="bm-margin">
+          <span class="bm-tag t-mg">margin (바깥 여백)</span>
+          <div class="bm-border">
+            <span class="bm-tag t-bd">border (테두리)</span>
+            <div class="bm-padding">
+              <span class="bm-tag t-pd">padding (안쪽 여백)</span>
+              <div class="bm-content">content (내용)</div>
+            </div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div
+            class="ibox"
+            style="background: var(--acl); border-color: var(--acb)"
+          >
+            <div class="ibox-title">📦 content</div>
+            <p>
+              실제 텍스트·이미지가 들어가는 영역.<br /><code>width</code>,
+              <code>height</code>로 크기 조절
+            </p>
+          </div>
+          <div class="ibox" style="background: #dcfce7; border-color: #86efac">
+            <div class="ibox-title" style="color: #15803d">
+              🟩 padding (안쪽 여백)
+            </div>
+            <p>
+              content와 border 사이 공간.<br />배경색이 padding 영역까지 채워짐
+            </p>
+          </div>
+          <div class="ibox" style="background: #fee2e2; border-color: #fca5a5">
+            <div class="ibox-title" style="color: #dc2626">
+              🔴 border (테두리)
+            </div>
+            <p>요소 주위를 감싸는 선.<br />굵기·스타일·색상 지정 가능</p>
+          </div>
+          <div class="ibox" style="background: #fef9c3; border-color: #fde047">
+            <div class="ibox-title" style="color: #a16207">
+              🟡 margin (바깥 여백)
+            </div>
+            <p>요소와 요소 사이의 공간.<br />배경색이 margin엔 적용 안 됨</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📐 margin / padding / border 사용법</h3>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">박스모델 속성 예제</span>
+          </div>
+          <pre><span class="cs">.box</span> <span class="ck">{</span>
+  <span class="cp">width</span><span class="ck">:</span>           <span class="cv">300px</span><span class="ck">;</span>
+  <span class="cp">height</span><span class="ck">:</span>          <span class="cv">150px</span><span class="ck">;</span>
+  <span class="cc">/* 안쪽 여백 — 상하 16px, 좌우 24px */</span>
+  <span class="cp">padding</span><span class="ck">:</span>         <span class="cv">16px 24px</span><span class="ck">;</span>
+  <span class="cc">/* 바깥 여백 — 위쪽만 20px */</span>
+  <span class="cp">margin</span><span class="ck">:</span>          <span class="cv">20px 0 0 0</span><span class="ck">;</span>
+  <span class="cc">/* 테두리 — 굵기 스타일 색상 */</span>
+  <span class="cp">border</span><span class="ck">:</span>          <span class="cv">2px solid #3b82f6</span><span class="ck">;</span>
+  <span class="cc">/* 모서리 둥글게 */</span>
+  <span class="cp">border-radius</span><span class="ck">:</span>   <span class="cv">8px</span><span class="ck">;</span>
+  <span class="cp">background-color</span><span class="ck">:</span> <span class="cv">#eff6ff</span><span class="ck">;</span>
+<span class="ck">}</span></pre>
+        </div>
+        <div class="tip blue">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>padding/margin 단축 표기</strong><br />
+            값 1개: 상하좌우 모두 &nbsp;|&nbsp; 값 2개:
+            <code>상하 좌우</code> &nbsp;|&nbsp; 값 4개:
+            <code>상 우 하 좌</code> (시계방향)
+          </div>
+        </div>
+        <div class="cb">
+          <div class="cbh">
+            <div class="dots">
+              <div class="dot dr"></div>
+              <div class="dot dy"></div>
+              <div class="dot dg"></div>
+            </div>
+            <span class="cblbl">border 스타일 종류</span>
+          </div>
+          <pre><span class="cp">border</span><span class="ck">:</span> <span class="cv">2px solid  #333</span><span class="ck">;</span>  <span class="cc">/* 실선 ━━━ */</span>
+<span class="cp">border</span><span class="ck">:</span> <span class="cv">2px dashed #333</span><span class="ck">;</span>  <span class="cc">/* 점선 ╌╌╌ */</span>
+<span class="cp">border</span><span class="ck">:</span> <span class="cv">2px dotted #333</span><span class="ck">;</span>  <span class="cc">/* 점점 ······ */</span></pre>
+        </div>
+        <div class="border-demo">
+          <div class="bd-box" style="border: 2px solid #3b82f6">solid</div>
+          <div class="bd-box" style="border: 2px dashed #3b82f6">dashed</div>
+          <div class="bd-box" style="border: 2px dotted #3b82f6">dotted</div>
+          <div
+            class="bd-box"
+            style="border: 2px solid #3b82f6; border-radius: 20px"
+          >
+            radius: 20px
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 섹션 5: 라이브 에디터 ══ -->
+      <div class="sec-hdr" id="s5">
+        <div class="sec-num">5</div>
+        <div>
+          <h2>🎮 라이브 에디터 실습</h2>
+          <span class="sec-sub">CSS를 직접 수정하고 결과를 즉시 확인</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🎨 나를 소개하는 카드 꾸미기</h3>
+        <p style="font-size: 13px; color: var(--sub); margin-bottom: 12px">
+          왼쪽 코드를 수정하고 ▶ 실행 버튼을 눌러보세요!
+        </p>
+        <div class="live-wrap">
+          <div class="live-editor">
+            <div class="live-hdr">✏️ CSS + HTML 편집</div>
+            <textarea class="live-in" id="live-code" spellcheck="false">
+&lt;style&gt;
+  .mycard {
+    background-color: #eff6ff;
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 16px;
+    width: 280px;
+  }
+  .mycard h2 {
+    color: #1d4ed8;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .mycard p {
+    color: #374151;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .tag {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-right: 6px;
+  }
+&lt;/style&gt;
+
+&lt;div class="mycard"&gt;
+  &lt;h2&gt;안녕하세요! 👋&lt;/h2&gt;
+  &lt;p&gt;웹개발을 배우고 있는 [이름]입니다.&lt;/p&gt;
+  &lt;p style="margin-top:12px"&gt;
+    &lt;span class="tag"&gt;HTML&lt;/span&gt;
+    &lt;span class="tag"&gt;CSS&lt;/span&gt;
+    &lt;span class="tag"&gt;초보자&lt;/span&gt;
+  &lt;/p&gt;
+&lt;/div&gt;</textarea
+            >
+            <button class="run-btn" onclick="runLive()">▶ 실행하기</button>
+          </div>
+          <div class="live-preview">
+            <div class="live-prev-hdr">🌐 미리보기 결과</div>
+            <div class="prev-body" id="preview-out"></div>
+          </div>
+        </div>
+        <div class="tip green">
+          <span class="tip-icon">💡</span>
+          <div>
+            색상(<code>#eff6ff</code>), 크기(<code>24px</code>), 여백 숫자를
+            바꿔보세요! 색상은 <strong>구글 color picker</strong>에서 HEX 코드를
+            복사해 붙여넣기 하면 돼요.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🏆 도전 과제 — VS Code + GitHub에서 직접</h3>
+        <div class="concept">
+          지난 시간 만든 <code>index.html</code>에 아래 스타일을 모두
+          적용해보세요!
+        </div>
+        <ol style="padding-left: 20px; font-size: 14px; line-height: 2.4">
+          <li>
+            <code>body</code>에 배경색(<code>background-color</code>) 지정
+          </li>
+          <li><code>h1</code>에 색상, 크기, 가운데 정렬 적용</li>
+          <li>
+            <code>p</code>에 줄 간격(<code>line-height</code>) 1.8 이상 적용
+          </li>
+          <li>
+            <code>.card</code> 클래스 만들어 <code>padding</code>,
+            <code>border</code>, <code>border-radius</code> 적용
+          </li>
+          <li>완성 후 GitHub에 업로드 → Pages URL에서 확인</li>
+        </ol>
+      </div>
+
+      <!-- ══ 섹션 6: 퀴즈 ══ -->
+      <div class="sec-hdr" id="s6">
+        <div class="sec-num">6</div>
+        <div>
+          <h2>✏️ 확인 퀴즈</h2>
+          <span class="sec-sub">10문항 · 각 10점 · 총 100점</span>
+        </div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q1 · 10점</div>
+        <div class="qq">CSS에서 클래스 선택자 앞에 붙이는 기호는?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q1"
+            placeholder="기호 입력"
+            onkeydown="if (event.key === 'Enter') chk(1, '.');"
+          />
+          <button class="qbtn" onclick="chk(1, '.')">확인</button>
+        </div>
+        <div class="qfb" id="qf1"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q2 · 10점</div>
+        <div class="qq">글자 색상을 지정하는 CSS 속성 이름은?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q2"
+            placeholder="속성명 입력"
+            onkeydown="if (event.key === 'Enter') chk(2, 'color');"
+          />
+          <button class="qbtn" onclick="chk(2, 'color')">확인</button>
+        </div>
+        <div class="qfb" id="qf2"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q3 · 10점</div>
+        <div class="qq">
+          텍스트를 가운데 정렬하는 CSS 코드는?<br /><span
+            style="font-size: 12px; color: var(--sub)"
+            >예시 형식: 속성: 값;</span
+          >
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q3"
+            placeholder="CSS 코드 입력"
+            onkeydown="
+              if (event.key === 'Enter') chk(3, 'text-align: center;');
+            "
+          />
+          <button class="qbtn" onclick="chk(3, 'text-align: center;')">
+            확인
+          </button>
+        </div>
+        <div class="qfb" id="qf3"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q4 · 10점</div>
+        <div class="qq">
+          박스모델에서 content와 border 사이의 안쪽 여백 속성은?
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q4"
+            placeholder="속성명 입력"
+            onkeydown="if (event.key === 'Enter') chk(4, 'padding');"
+          />
+          <button class="qbtn" onclick="chk(4, 'padding')">확인</button>
+        </div>
+        <div class="qfb" id="qf4"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q5 · 10점</div>
+        <div class="qq">요소와 요소 사이의 바깥 여백을 지정하는 속성은?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q5"
+            placeholder="속성명 입력"
+            onkeydown="if (event.key === 'Enter') chk(5, 'margin');"
+          />
+          <button class="qbtn" onclick="chk(5, 'margin')">확인</button>
+        </div>
+        <div class="qfb" id="qf5"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q6 · 10점</div>
+        <div class="qq">모서리를 둥글게 만드는 CSS 속성은?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q6"
+            placeholder="속성명 입력"
+            onkeydown="if (event.key === 'Enter') chk(6, 'border-radius');"
+          />
+          <button class="qbtn" onclick="chk(6, 'border-radius')">확인</button>
+        </div>
+        <div class="qfb" id="qf6"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q7 · 10점</div>
+        <div class="qq">배경색을 지정하는 CSS 속성은?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q7"
+            placeholder="속성명 입력"
+            onkeydown="if (event.key === 'Enter') chk(7, 'background-color');"
+          />
+          <button class="qbtn" onclick="chk(7, 'background-color')">
+            확인
+          </button>
+        </div>
+        <div class="qfb" id="qf7"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q8 · 10점</div>
+        <div class="qq">아이디 선택자 앞에 붙이는 기호는?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q8"
+            placeholder="기호 입력"
+            onkeydown="if (event.key === 'Enter') chk(8, '#');"
+          />
+          <button class="qbtn" onclick="chk(8, '#')">확인</button>
+        </div>
+        <div class="qfb" id="qf8"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q9 · 10점</div>
+        <div class="qq">줄 간격을 지정하는 CSS 속성은?</div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q9"
+            placeholder="속성명 입력"
+            onkeydown="if (event.key === 'Enter') chk(9, 'line-height');"
+          />
+          <button class="qbtn" onclick="chk(9, 'line-height')">확인</button>
+        </div>
+        <div class="qfb" id="qf9"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="qmeta">Q10 · 10점</div>
+        <div class="qq">
+          아래 CSS에서 속성과 값 사이에 빠진 기호는?
+          <div class="cb" style="margin-top: 8px">
+            <div class="cbh">
+              <div class="dots">
+                <div class="dot dr"></div>
+                <div class="dot dy"></div>
+                <div class="dot dg"></div>
+              </div>
+              <span class="cblbl">Q10</span>
+            </div>
+            <pre><span class="cs">h1</span> <span class="ck">{</span>
+  <span class="cp">color</span> <span class="cv">blue</span><span class="ck">;</span>
+<span class="ck">}</span></pre>
+          </div>
+        </div>
+        <div class="qrow">
+          <input
+            class="qinput"
+            id="q10"
+            placeholder="빠진 기호"
+            onkeydown="if (event.key === 'Enter') chk(10, ':');"
+          />
+          <button class="qbtn" onclick="chk(10, ':')">확인</button>
+        </div>
+        <div class="qfb" id="qf10"></div>
+      </div>
+
+      <!-- ══ 섹션 7: 제출 ══ -->
+      <div class="sec-hdr" id="s7">
+        <div class="sec-num">7</div>
+        <div>
+          <h2>📤 답안 제출</h2>
+          <span class="sec-sub">모든 문항을 풀고 결과를 제출해봐요</span>
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="db-head">
+          <div class="db-title">📊 진행 현황</div>
+          <div
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 13px;
+              color: var(--sub);
+            "
+            id="db-pct"
+          >
+            0 / 10 완료
+          </div>
+        </div>
+        <div class="db-grid">
+          <div class="db-box">
+            <div class="db-lb">정답</div>
+            <div class="db-vl" id="db-ok" style="color: var(--ok)">0</div>
+          </div>
+          <div class="db-box">
+            <div class="db-lb">오답</div>
+            <div class="db-vl" id="db-ng" style="color: var(--ng)">0</div>
+          </div>
+          <div class="db-box">
+            <div class="db-lb">완료</div>
+            <div class="db-vl" id="db-done" style="color: var(--ac)">0</div>
+          </div>
+          <div class="db-box">
+            <div class="db-lb">예상 점수</div>
+            <div class="db-vl" id="db-score" style="color: var(--ac)">—</div>
+          </div>
+        </div>
+        <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+      </div>
+
+      <div class="sub-panel">
+        <div class="sub-title">📤 답안 제출하기</div>
+        <div class="tip blue">
+          <span class="tip-icon">📋</span>
+          <div>
+            모든 문항을 풀고 이름을 입력한 뒤 <strong>제출 버튼</strong>을
+            눌러주세요.
+          </div>
+        </div>
+        <table class="sum-tbl">
+          <thead>
+            <tr>
+              <th style="width: 60px">번호</th>
+              <th>문제 요약</th>
+              <th style="width: 160px">내 답변</th>
+              <th style="width: 54px; text-align: center">결과</th>
+            </tr>
+          </thead>
+          <tbody id="sum-body"></tbody>
+        </table>
+        <div class="name-row">
+          <span class="name-lb">✏️ 이름</span>
+          <input
+            class="name-in"
+            id="stu-name"
+            placeholder="이름을 먼저 입력하세요"
+            oninput="document.getElementById('nw').style.display = 'none'"
+          />
+        </div>
+        <div id="nw">⚠️ 이름을 먼저 입력해주세요!</div>
+        <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>
+          답안 제출하기
+        </button>
+        <div
+          style="
+            text-align: center;
+            font-size: 12px;
+            color: var(--sub);
+            margin-top: 8px;
+          "
+          id="sub-hint"
+        >
+          모든 문항(10개)을 풀면 제출 버튼이 활성화됩니다 (0 / 10)
+        </div>
+      </div>
+    </main>
+
+    <!-- 팝업 -->
+    <div class="pbg" id="pbg">
+      <div class="popup">
+        <button class="pp-close" onclick="closePopup()">✕</button>
+        <div style="text-align: center; font-size: 46px; margin-bottom: 8px">
+          🎉
+        </div>
+        <div class="pp-score" id="pp-score"></div>
+        <div class="pp-grade" id="pp-grade"></div>
+        <div class="pp-detail">
+          <div class="ppd-row">
+            <span>이름</span><strong id="pp-name"></strong>
+          </div>
+          <div class="ppd-row">
+            <span>정답 / 전체</span><strong id="pp-ratio"></strong>
+          </div>
+        </div>
+        <div class="tip green">
+          <span class="tip-icon">✨</span>
+          <div>아래 버튼을 누르면 결과가 선생님께 자동 전송됩니다.</div>
+        </div>
+        <button class="form-btn" id="form-btn">📤 답안 전송하기</button>
+        <div class="cfg-warn" id="cfg-warn"></div>
+        <button class="cancel-btn" onclick="closePopup()">닫기</button>
+      </div>
+    </div>
+
+    <script>
+      const ANS = {
+        1: ".",
+        2: "color",
+        3: "text-align: center;",
+        4: "padding",
+        5: "margin",
+        6: "border-radius",
+        7: "background-color",
+        8: "#",
+        9: "line-height",
+        10: ":",
+      };
+      const QSUM = {
+        1: "클래스 선택자 기호",
+        2: "글자 색상 속성",
+        3: "텍스트 가운데 정렬",
+        4: "안쪽 여백 속성",
+        5: "바깥 여백 속성",
+        6: "모서리 둥글게",
+        7: "배경색 속성",
+        8: "아이디 선택자 기호",
+        9: "줄 간격 속성",
+        10: "속성과 값 사이 기호",
+      };
+      const TOTAL = 10;
+      let QS = {};
+
+      const SEC_IDS = ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7"];
+      window.addEventListener("scroll", () => {
+        const p = (scrollY / (document.body.scrollHeight - innerHeight)) * 100;
+        document.getElementById("prog").style.width = p + "%";
+        const dots = document.querySelectorAll(".ndot");
+        let cur = 0;
+        SEC_IDS.forEach((id, i) => {
+          const el = document.getElementById(id);
+          if (el && el.getBoundingClientRect().top < 130) cur = i;
+        });
+        dots.forEach((d, i) => d.classList.toggle("active", i === cur));
+      });
+      function goSec(i) {
+        document
+          .getElementById(SEC_IDS[i])
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function runLive() {
+        document.getElementById("preview-out").innerHTML =
+          document.getElementById("live-code").value;
+      }
+      runLive();
+
+      function chk(n, ans) {
+        const inp = document.getElementById("q" + n);
+        const fb = document.getElementById("qf" + n);
+        const v = inp.value.trim();
+        if (!v) {
+          fb.innerHTML =
+            '<span style="color:var(--wn)">❓ 답을 입력하세요!</span>';
+          return;
+        }
+        const ok = v === ans;
+        QS[n] = { ans: v, ok };
+        inp.classList.remove("iok", "ing");
+        inp.classList.add(ok ? "iok" : "ing");
+        if (ok) {
+          fb.innerHTML = '<span class="ok">✓ 정답입니다! 🎉</span>';
+          inp.disabled = true;
+          inp.closest(".quiz-card").querySelector(".qbtn").disabled = true;
+        } else {
+          fb.innerHTML = '<span class="ng">✗ 다시 한번 생각해보세요!</span>';
+        }
+        refresh();
+      }
+
+      function refresh() {
+        const done = Object.keys(QS).length;
+        const ok = Object.values(QS).filter((s) => s.ok).length;
+        const score = ok * 10;
+        document.getElementById("db-ok").textContent = ok;
+        document.getElementById("db-ng").textContent = done - ok;
+        document.getElementById("db-done").textContent = done;
+        document.getElementById("db-score").textContent =
+          done > 0 ? score + "점" : "—";
+        document.getElementById("pbar").style.width =
+          Math.round((done / TOTAL) * 100) + "%";
+        document.getElementById("db-pct").textContent =
+          done + " / " + TOTAL + " 완료";
+        renderSumTable();
+        const btn = document.getElementById("sub-btn");
+        btn.disabled = done < TOTAL;
+        document.getElementById("sub-hint").textContent =
+          done < TOTAL
+            ? `모든 문항(${TOTAL}개)을 풀면 제출 버튼이 활성화됩니다 (${done} / ${TOTAL})`
+            : "✅ 제출 준비 완료!";
+      }
+
+      function renderSumTable() {
+        const tb = document.getElementById("sum-body");
+        tb.innerHTML = "";
+        for (let i = 1; i <= TOTAL; i++) {
+          const s = QS[i];
+          const tr = document.createElement("tr");
+          tr.innerHTML =
+            `<td style="font-weight:700;color:var(--ac)">Q${i}</td>` +
+            `<td style="font-size:12px;color:var(--sub)">${QSUM[i]}</td>` +
+            `<td class="${s ? "" : "tpd"}">${s ? s.ans : "—"}</td>` +
+            `<td style="text-align:center" class="${s ? (s.ok ? "tok" : "tng") : "tpd"}">${s ? (s.ok ? "✅" : "❌") : "⬜"}</td>`;
+          tb.appendChild(tr);
+        }
+      }
+
+      /* ╔══════════════════════════════════════════════╗
+   ║ 선생님 설정 — LESSON_ID만 파일마다 변경     ║
+   ╚══════════════════════════════════════════════╝ */
+      const WEB_APP_URL =
+        "https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec";
+      const LESSON_ID = "web/02-1_css_basic";
+      /* ═════════════════════════════════════════════ */
+
+      function collectAnswers() {
+        return Array.from({ length: TOTAL }, (_, i) =>
+          QS[i + 1] ? String(QS[i + 1].ans) : "",
+        );
+      }
+      function openPopup() {
+        const name = document.getElementById("stu-name").value.trim();
+        if (!name) {
+          document.getElementById("nw").style.display = "block";
+          document
+            .querySelector(".sub-panel")
+            .scrollIntoView({ behavior: "smooth" });
+          return;
+        }
+        document.getElementById("nw").style.display = "none";
+        const ok = Object.values(QS).filter((s) => s.ok).length;
+        const score = ok * 10;
+        const ps = document.getElementById("pp-score");
+        ps.textContent = score + "점";
+        ps.style.color =
+          score >= 90
+            ? "var(--ok)"
+            : score >= 70
+              ? "var(--wn)"
+              : score >= 60
+                ? "var(--c1)"
+                : "var(--ng)";
+        document.getElementById("pp-grade").textContent =
+          score >= 90
+            ? "🏆 A등급 — 우수!"
+            : score >= 80
+              ? "🥈 B등급 — 잘했어요!"
+              : score >= 70
+                ? "🥉 C등급 — 조금 더!"
+                : score >= 60
+                  ? "📚 D등급 — 복습 필요"
+                  : "💪 다시 도전!";
+        document.getElementById("pp-name").textContent = name;
+        document.getElementById("pp-ratio").textContent = ok + " / " + TOTAL;
+        const fb = document.getElementById("form-btn");
+        fb.disabled = false;
+        fb.style.background = "";
+        fb.textContent = "📤 답안 전송하기";
+        fb.onclick = function () {
+          submitToSheets(name, score);
+        };
+        document.getElementById("pbg").style.display = "flex";
+      }
+      async function submitToSheets(name, score) {
+        const fb = document.getElementById("form-btn");
+        const cw = document.getElementById("cfg-warn");
+        if (WEB_APP_URL.includes("여기에")) {
+          cw.style.display = "block";
+          cw.innerHTML =
+            "⚙️ <strong>설정 필요:</strong> WEB_APP_URL을 Apps Script 배포 URL로 교체해주세요.";
+          return;
+        }
+        cw.style.display = "none";
+        fb.disabled = true;
+        fb.textContent = "전송 중...";
+        const ok = Object.values(QS).filter((s) => s.ok).length;
+        try {
+          await fetch(WEB_APP_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({
+              lesson: LESSON_ID,
+              name,
+              answers: collectAnswers(),
+              score: score + "점 (" + ok + "/" + TOTAL + ")",
+            }),
+          });
+          fb.textContent = "✅ 제출 완료!";
+          fb.style.background = "var(--ok)";
+        } catch (err) {
+          fb.disabled = false;
+          fb.textContent = "다시 시도";
+          cw.style.display = "block";
+          cw.innerHTML = "⚠️ 전송 오류: " + err.message;
+        }
+      }
+      function closePopup() {
+        document.getElementById("pbg").style.display = "none";
+      }
+      document.getElementById("pbg").addEventListener("click", function (e) {
+        if (e.target === this) closePopup();
+      });
+      renderSumTable();
+    </script>
+  </body>
+</html>
