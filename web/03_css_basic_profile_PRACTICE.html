@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+    <!-- meta:unit=2. CSS 기초 -->
+    <!-- meta:title=CSS 기초 연습1 -->
+    <!-- meta:desc= -->
+    <!-- meta:date=2026-04-13 -->
+  <title>CSS 기초 실습 | 자기소개 페이지 학생용</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#edf4ff;
+      --card:#ffffff;
+      --s2:#dbeafe;
+      --s3:#bfdbfe;
+      --bdr:#93c5fd;
+      --text:#10223d;
+      --sub:#45638f;
+      --ac:#1d4ed8;
+      --acl:#eff6ff;
+      --cbg:#eef5ff;
+      --cbr:#bfd7ff;
+      --sh:0 4px 18px rgba(29,78,216,.10);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;line-height:1.7;}
+
+    #hdr{position:sticky;top:0;z-index:100;background:#081426;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;gap:12px;}
+    .hbadge{background:var(--ac);padding:4px 10px;border-radius:999px;font-family:'Black Han Sans',sans-serif;font-size:12px;white-space:nowrap;}
+    .htitle{font-family:'Black Han Sans',sans-serif;font-size:16px;flex:1;text-align:center;}
+    .hmeta{font-size:12px;color:#bfdbfe;white-space:nowrap;}
+
+    .hero{padding:56px 24px 32px;text-align:center;background:linear-gradient(160deg,#eff6ff 50%,#dbeafe 100%);}
+    .hero-emoji{display:block;font-size:66px;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(26px,5vw,40px);margin-bottom:10px;background:linear-gradient(135deg,var(--ac),#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero p{max-width:760px;margin:0 auto 18px;color:var(--sub);font-size:15px;}
+    .hero code,.mini-card code{font-family:'JetBrains Mono',monospace;background:var(--acl);padding:1px 5px;border-radius:4px;font-size:12px;color:var(--ac);}
+    .badge-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;}
+    .cbadge{padding:5px 14px;border-radius:999px;border:1.5px solid var(--bdr);background:#fff;color:var(--ac);font-size:12px;font-weight:600;}
+
+    .main{max-width:1180px;margin:0 auto;padding:0 24px 72px;}
+    .guide{background:#fff8db;border:1px solid #facc15;border-radius:16px;padding:20px 22px;box-shadow:var(--sh);margin:28px 0 18px;}
+    .guide h2{font-family:'Black Han Sans',sans-serif;font-size:19px;color:#92400e;margin-bottom:10px;}
+    .guide p{font-size:14px;color:#78350f;margin-bottom:8px;}
+    .guide ol{padding-left:20px;color:#78350f;font-size:14px;}
+    .guide li{margin:6px 0;}
+
+    .layout{display:grid;grid-template-columns:1.02fr .98fr;gap:18px;align-items:start;}
+    .panel{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;box-shadow:var(--sh);}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bdr);background:var(--acl);gap:12px;}
+    .panel-title{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--ac);}
+    .panel-sub{font-size:12px;color:var(--sub);}
+    .dots{display:flex;gap:5px;align-items:center;}
+    .dot{width:10px;height:10px;border-radius:50%;}
+    .dr{background:#ff5f57;}.dy{background:#ffbd2e;}.dg{background:#28c840;}
+
+    .editor-wrap{background:var(--cbg);}
+    .code-box{width:100%;min-height:840px;padding:16px 18px;border:none;outline:none;resize:vertical;background:transparent;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;}
+    .editor-tools{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--cbr);background:#f7fbff;}
+    .tool-note{font-size:12px;color:var(--sub);}
+    .tool-actions{display:flex;gap:8px;}
+    .btn{border:none;border-radius:10px;padding:9px 14px;font-family:'Black Han Sans',sans-serif;font-size:12px;cursor:pointer;}
+    .btn-primary{background:var(--ac);color:#fff;}
+    .btn-secondary{background:#dbeafe;color:#1e3a8a;}
+    .btn:hover{opacity:.9;}
+
+    .preview-wrap{background:#f8fbff;}
+    .preview-frame{width:100%;height:980px;border:none;background:#fff;display:block;}
+
+    .mini-card{margin-top:18px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;box-shadow:var(--sh);padding:18px 20px;}
+    .mini-card h3{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--ac);margin-bottom:10px;}
+    .mini-card ul{padding-left:18px;}
+    .mini-card li{margin:6px 0;font-size:14px;color:#334155;}
+
+    .full-html-view{grid-column:1 / -1;margin-top:18px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;box-shadow:var(--sh);padding:16px 18px;}
+    .full-html-view summary{cursor:pointer;font-weight:700;color:var(--ac);font-size:16px;}
+    .html-guide{margin-top:10px;background:#f8fafc;color:#1e293b;border:1px solid #cbd5e1;border-radius:12px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.85;overflow:auto;white-space:pre-wrap;max-height:560px;}
+
+    @media (max-width:980px){
+      .layout{grid-template-columns:1fr;}
+      .code-box{min-height:560px;}
+      .preview-frame{height:760px;}
+    }
+
+    @media (max-width:640px){
+      #hdr{padding:0 14px;}
+      .hmeta{display:none;}
+      .main{padding:0 14px 52px;}
+      .hero{padding:42px 16px 24px;}
+      .panel-head,.editor-tools{flex-direction:column;align-items:flex-start;}
+    }
+  </style>
+</head>
+<body>
+
+  <header id="hdr">
+    <span class="hbadge">CSS 기초 실습</span>
+    <span class="htitle">🎨 자기소개 페이지 꾸미기</span>
+    
+  </header>
+
+  <section class="hero">
+    <span class="hero-emoji">🖌️</span>
+    <h1>CSS 적용 연습</h1>
+    <p>왼쪽 입력창에 CSS를 작성하면 오른쪽 자기소개 페이지에 바로 적용됩니다. 먼저 <code>body</code>, <code>#wrapper</code>, <code>.header</code>부터 완성한 뒤 카드와 세부 요소로 넘어가세요.</p>
+    <div class="badge-row">
+      <span class="cbadge">선택자</span>
+      <span class="cbadge">색상</span>
+      <span class="cbadge">폰트</span>
+      <span class="cbadge">박스모델</span>
+      
+    </div>
+  </section>
+
+  <main class="main">
+    <section class="guide">
+      <h2>연습하기</h2>
+      <p>아래 HTML 구조에 적용할 CSS입니다. <strong>CSS를 작성</strong>해서 카드형 자기소개 페이지를 완성하면 됩니다.</p>
+      <ol>
+        <li>왼쪽 CSS 코드에서 주석을 참고해 필요한 속성을 채우세요.</li>
+        <li>오른쪽 미리보기를 보면서 결과가 바뀌는지 확인하세요.</li>
+        <li>기본 완성 후 이름, 학교, 관심 분야, 링크를 자신의 정보로 수정해도 됩니다.</li>
+        <li>추가 과제: 메인 색상을 파랑이 아닌 다른 색으로 바꿔보세요.</li>
+      </ol>
+    </section>
+
+    <section class="layout">
+      <div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div><span class="panel-title">CSS 입력창</span></div>
+            <span class="panel-sub">작성한 내용이 오른쪽에 적용됩니다</span>
+          </div>
+          <div class="editor-wrap">
+            <textarea class="code-box" id="cssInput" spellcheck="false">/*
+STEP 1. 페이지 전체 기본 스타일
+- 배경색, 기본 글자색, 글꼴, 여백 초기화
+*/
+body {
+  /* background-color: #f0f7ff; */
+  /* color: #0c1a2e; */
+  /* font-family: 'Noto Sans KR', sans-serif; */
+  /* margin: 0; */
+  /* padding: 0; */
+}
+
+/*
+STEP 2. 전체 내용을 감싸는 박스
+- 가운데 정렬 + 최대 너비
+*/
+#wrapper {
+  /* max-width: 680px; */
+  /* margin: 48px auto; */
+  /* padding: 0 20px; */
+}
+
+/* STEP 3. 맨 위 소개 박스 */
+.header {
+  /* background-color: #1d4ed8; */
+  /* border-radius: 16px; */
+  /* padding: 40px 32px; */
+  /* text-align: center; */
+  /* margin-bottom: 20px; */
+}
+
+/* STEP 4. 이모지 크게 만들기 */
+.avatar-emoji {
+  /* font-size: 72px; */
+  /* display: block; */
+  /* margin-bottom: 12px; */
+}
+
+/* STEP 5. 헤더 안 제목 */
+.header h1 {
+  /* font-family: 'Black Han Sans', sans-serif; */
+  /* font-size: 30px; */
+  /* color: #ffffff; */
+  /* margin-bottom: 6px; */
+}
+
+/* STEP 6. 헤더 안 소개글 */
+.header p {
+  /* font-size: 14px; */
+  /* color: #bfdbfe; */
+  /* line-height: 1.7; */
+}
+
+/* STEP 7. 카드 공통 스타일 */
+.card {
+  /* background-color: #ffffff; */
+  /* border: 1px solid #bfdbfe; */
+  /* border-top: 4px solid #1d4ed8; */
+  /* border-radius: 12px; */
+  /* padding: 24px; */
+  /* margin-bottom: 16px; */
+}
+
+/* STEP 8. 카드 제목 스타일 */
+.card h2 {
+  /* font-family: 'Black Han Sans', sans-serif; */
+  /* font-size: 17px; */
+  /* color: #1d4ed8; */
+  /* margin-bottom: 14px; */
+  /* padding-bottom: 10px; */
+  /* border-bottom: 1px solid #dbeafe; */
+}
+
+/* STEP 9. 카드 안 기본 문단 */
+.card p {
+  /* font-size: 14px; */
+  /* line-height: 1.9; */
+  /* color: #374151; */
+}
+
+/* STEP 10. 기본 정보 한 줄씩 꾸미기 */
+.info-row {
+  /* padding: 10px 0; */
+  /* border-bottom: 1px solid #eff6ff; */
+  /* font-size: 14px; */
+  /* color: #374151; */
+}
+
+.info-row:last-child {
+  /* border-bottom: none; */
+}
+
+.info-label {
+  /* font-weight: 700; */
+  /* color: #1d4ed8; */
+  /* margin-right: 8px; */
+}
+
+/* STEP 11. 기술 태그를 알약 모양으로 */
+.tag {
+  /* display: inline-block; */
+  /* background-color: #dbeafe; */
+  /* color: #1d4ed8; */
+  /* font-size: 12px; */
+  /* font-weight: 700; */
+  /* padding: 4px 12px; */
+  /* border-radius: 20px; */
+  /* border: 1px solid #bfdbfe; */
+  /* margin: 0 6px 8px 0; */
+}
+
+/* STEP 12. 좋아하는 것 목록 */
+.styled-list {
+  /* padding-left: 20px; */
+  /* margin: 8px 0; */
+}
+
+.styled-list li {
+  /* font-size: 14px; */
+  /* line-height: 2; */
+  /* color: #374151; */
+}
+
+.styled-list li::marker {
+  /* color: #1d4ed8; */
+}
+
+/* STEP 13. 링크를 버튼처럼 */
+.link-btn {
+  /* display: block; */
+  /* background-color: #eff6ff; */
+  /* color: #1d4ed8; */
+  /* text-decoration: none; */
+  /* font-size: 14px; */
+  /* font-weight: 700; */
+  /* padding: 12px 18px; */
+  /* border-radius: 10px; */
+  /* border: 1.5px solid #bfdbfe; */
+  /* margin-bottom: 10px; */
+}
+
+/* STEP 14. 맨 아래 푸터 */
+#footer {
+  /* text-align: center; */
+  /* font-size: 12px; */
+  /* color: #93c5fd; */
+  /* padding: 24px 0 48px; */
+}</textarea>
+            <div class="editor-tools">
+              <span class="tool-note">자동 반영됩니다. 필요하면 적용하기 버튼으로 다시 확인하세요.</span>
+              <div class="tool-actions">
+                <button class="btn btn-secondary" type="button" id="resetBtn">처음 상태로</button>
+                <button class="btn btn-primary" type="button" id="runBtn">적용하기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-card">
+          <h3>어떤 순서로 하면 쉬운가요?</h3>
+          <ul>
+            <li><code>body</code>와 <code>#wrapper</code>를 먼저 꾸며서 전체 틀을 만드세요.</li>
+            <li><code>.header</code>와 <code>.header h1</code>을 꾸며 가장 위 소개 영역을 완성하세요.</li>
+            <li><code>.card</code> 하나를 꾸미면 나머지 카드도 같이 좋아집니다.</li>
+            <li>마지막에 <code>.tag</code>, <code>.link-btn</code>, <code>#footer</code>를 다듬으세요.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div><span class="panel-title">결과 미리보기</span></div>
+          <span class="panel-sub">CSS가 적용된 화면</span>
+        </div>
+        <div class="preview-wrap">
+          <iframe class="preview-frame" id="previewFrame" title="CSS 미리보기"></iframe>
+        </div>
+      </div>
+
+      <details class="full-html-view">
+        <summary>HTML 구조 보기</summary>
+        <div class="html-guide" id="htmlGuide"></div>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    const starterCss = document.getElementById('cssInput').value;
+    const htmlContent = `
+<div id="wrapper">
+  <div class="header">
+    <span class="avatar-emoji">🙋</span>
+    <h1>홍길동</h1>
+    <p>○○고등학교 2학년<br>HTML과 CSS를 배우고 있어요 👨‍💻</p>
+  </div>
+
+  <div class="card">
+    <h2>📋 기본 정보</h2>
+    <div class="info-row"><span class="info-label">이름</span>홍길동</div>
+    <div class="info-row"><span class="info-label">학교</span>대구 ○○고등학교</div>
+    <div class="info-row"><span class="info-label">학년</span>2학년</div>
+    <div class="info-row"><span class="info-label">관심 분야</span>웹개발, UI 디자인</div>
+    <div class="info-row"><span class="info-label">GitHub</span><a href="https://github.com/내아이디">github.com/내아이디</a></div>
+  </div>
+
+  <div class="card">
+    <h2>👋 자기소개</h2>
+    <p>
+      안녕하세요! 웹개발에 관심이 생겨 HTML과 CSS를 공부하고 있는 홍길동입니다.<br>
+      처음에는 어렵게 느껴졌지만, 코드를 짜면서 눈앞에 결과물이 바로 나타나는 게
+      너무 재미있어서 열심히 배우고 있습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>❤️ 좋아하는 것들</h2>
+    <ul class="styled-list">
+      <li>음악 듣기 🎵</li>
+      <li>게임 하기 🎮</li>
+      <li>친구들과 카페 가기 ☕</li>
+      <li>유튜브 보기 📺</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>💻 배우고 있는 기술</h2>
+    <div>
+      <span class="tag">HTML</span>
+      <span class="tag">CSS</span>
+      <span class="tag">Flexbox</span>
+      <span class="tag">GitHub</span>
+      <span class="tag">VS Code</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔗 링크</h2>
+    <a class="link-btn" href="https://github.com/내아이디" target="_blank">🐙 GitHub 프로필 보기</a>
+    <a class="link-btn" href="https://내아이디.github.io/web-class" target="_blank">🌐 내 웹페이지 보기</a>
+  </div>
+</div>
+
+<div id="footer">
+  이 페이지는 HTML과 CSS로 만들었습니다 🎨<br>
+  Made by 홍길동
+</div>`;
+
+    const previewFrame = document.getElementById('previewFrame');
+    const cssInput = document.getElementById('cssInput');
+    const htmlGuide = document.getElementById('htmlGuide');
+    const runBtn = document.getElementById('runBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function buildPreviewDoc(css) {
+      return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>${css}</style>
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
+    }
+
+    function renderPreview() {
+      const css = cssInput.value;
+      const previewDoc = buildPreviewDoc(css);
+      previewFrame.srcdoc = previewDoc;
+      htmlGuide.textContent = previewDoc;
+    }
+
+    let timer;
+    cssInput.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(renderPreview, 180);
+    });
+
+    runBtn.addEventListener('click', renderPreview);
+    resetBtn.addEventListener('click', () => {
+      cssInput.value = starterCss;
+      renderPreview();
+    });
+
+    renderPreview();
+  </script>
+
+</body>
+</html>
