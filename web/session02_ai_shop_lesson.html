@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<!-- meta:subject=웹개발 -->
+<!-- meta:unit=AI 활용 웹제작 실습 -->
+<!-- meta:title=AI를 활용한 내 가게 소개페이지 만들기 - 2회차 -->
+<!-- meta:desc=CSS 기초,색상 테마,타이포,여백,카드디자인,버튼스타일,직접수정 -->
+<!-- meta:date=2026-04-17 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹개발 2회차 - AI와 함께 가게 소개페이지 CSS 완성도 높이기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Do+Hyeon&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7faf8;
+  --panel: #ffffff;
+  --ink: #1d2a26;
+  --sub: #4f6c63;
+  --line: #d9e8e2;
+  --brand: #2f7a68;
+  --brand2: #1f5a4d;
+  --accent: #f2b84b;
+  --ok: #177245;
+  --warn: #a55a0a;
+  --danger: #b83b2f;
+  --shadow: 0 10px 24px rgba(33, 79, 67, 0.12);
+  --r: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background:
+    radial-gradient(circle at top right, #dff4ec 0, transparent 30%),
+    radial-gradient(circle at bottom left, #fff7e5 0, transparent 24%),
+    var(--bg);
+  color: var(--ink);
+  font-family: 'Gowun Dodum', sans-serif;
+  line-height: 1.72;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+.hero {
+  background: linear-gradient(135deg, #1f5a4d 0%, #2f7a68 55%, #63ad97 100%);
+  color: #fff;
+  border-radius: var(--r);
+  padding: 30px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "CSS STYLING";
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  opacity: 0.28;
+  letter-spacing: 0.15em;
+}
+.hero h1 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  letter-spacing: 0.2px;
+  margin-bottom: 8px;
+}
+.hero p { opacity: 0.94; font-size: 0.98rem; max-width: 720px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.badge {
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.step-block {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.step-num {
+  background: var(--brand);
+  color: #fff;
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.8rem;
+  padding: 3px 11px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.step-title {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1.28rem;
+  color: #1f5a4d;
+}
+.grid { display: grid; gap: 12px; }
+@media (min-width: 720px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+.card {
+  background: #f8fcfa;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.card h3 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+.box {
+  border-left: 4px solid;
+  padding: 11px 14px;
+  border-radius: 0 10px 10px 0;
+  margin-top: 12px;
+  font-size: 0.93rem;
+}
+.box.tip { border-color: var(--brand); background: #ebf8f3; }
+.box.ok  { border-color: var(--ok); background: #edf9f1; }
+.box.warn{ border-color: var(--warn); background: #fff5e9; }
+.box.err { border-color: var(--danger); background: #fff1ef; }
+.box strong { display: block; margin-bottom: 3px; }
+.code-block {
+  background: #10221d;
+  color: #daf5ed;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+  margin-top: 10px;
+}
+.prompt-wrap { position: relative; margin-top: 10px; }
+.prompt-wrap pre {
+  background: #10221d;
+  color: #daf5ed;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  border: 1px solid #275545;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  background: var(--brand);
+  color: #fff;
+  padding: 4px 11px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'Gowun Dodum', sans-serif;
+}
+.copy-btn:hover { background: #245f52; }
+.copy-btn.done { background: var(--ok); }
+.p-tag {
+  display: inline-block;
+  background: #e8f5ef;
+  color: #1f5a4d;
+  font-size: 0.75rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.p-tag.adv { background: #fff4e5; color: #9b5a19; }
+.checklist { list-style: none; margin-top: 12px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e6f1ec;
+  font-size: 0.93rem;
+}
+.checklist li:last-child { border-bottom: 0; }
+.checklist li input[type=checkbox] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--brand);
+}
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
+.tbl th, .tbl td { padding: 9px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.tbl th { background: #eaf7f2; font-weight: 700; color: #1f5a4d; }
+.compare { display: grid; gap: 10px; margin-top: 10px; }
+@media (min-width: 640px) { .compare { grid-template-columns: 1fr 1fr; } }
+.compare .bad { background: #fff1ef; border: 1px solid #f3b1a9; border-radius: 10px; padding: 12px; }
+.compare .good { background: #edf9f1; border: 1px solid #97ddb6; border-radius: 10px; padding: 12px; }
+.compare .label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.compare .bad .label { color: var(--danger); }
+.compare .good .label { color: var(--ok); }
+.compare pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.77rem;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+.submit-grid { display: grid; gap: 10px; margin-top: 14px; }
+@media (min-width: 560px) { .submit-grid { grid-template-columns: 1fr 1fr; } }
+.submit-item {
+  border: 1px dashed #b8d7cb;
+  border-radius: 10px;
+  background: #f8fcfa;
+  padding: 14px;
+}
+.submit-item h3 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.98rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+.submit-item p { font-size: 0.88rem; color: #344a44; margin-bottom: 4px; }
+.submit-item .cond {
+  background: #e8f5ef;
+  color: #1f5a4d;
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-top: 6px;
+  display: block;
+  line-height: 1.6;
+}
+p { margin-bottom: 6px; }
+ul { padding-left: 18px; }
+li { margin: 4px 0; }
+h3 { font-family: 'Do Hyeon', sans-serif; color: #1f5a4d; margin: 14px 0 6px; }
+.preview-box {
+  background: #f8fcfa;
+  border: 2px solid #b8d7cb;
+  border-radius: var(--r);
+  padding: 18px;
+  margin-top: 16px;
+}
+.preview-box h4 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.preview-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+.demo-unstyled {
+  background: #fff;
+  border: 1px solid #d9e8e2;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.demo-styled {
+  background: linear-gradient(135deg, #ebf8f3 0%, #fff 100%);
+  border: 1px solid #63ad97;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(47, 122, 104, 0.08);
+}
+.demo-unstyled h5, .demo-styled h5 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #1f5a4d;
+}
+.demo-unstyled .demo-item, .demo-styled .demo-item {
+  background: #f0f5f2;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #4f6c63;
+}
+.demo-styled .demo-item {
+  background: linear-gradient(90deg, #ebf8f3 0%, #e8f5ef 100%);
+  border: 1px solid #d4f1e1;
+  font-weight: 500;
+  color: #1f5a4d;
+}
+.before-after {
+  background: #f8fcfa;
+  border: 2px solid #b8d7cb;
+  border-radius: var(--r);
+  padding: 18px;
+  margin-top: 16px;
+}
+.before-after h4 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .comparison { grid-template-columns: 1fr; }
+}
+.before, .after {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 12px;
+}
+.before h5, .after h5 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--line);
+}
+.before h5 { color: #b83b2f; border-bottom-color: #f5d7d3; }
+.after h5 { color: #177245; border-bottom-color: #d4f1e1; }
+.before pre, .after pre {
+  background: #10221d;
+  color: #daf5ed;
+  padding: 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  overflow-x: auto;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>AI와 함께 가게 소개페이지 CSS 완성도 높이기</h1>
+    <p>1회차에서 만든 HTML 구조를 그대로 활용해 2회차에서는 디자인 품질을 올립니다. 핵심은 "AI가 만든 CSS를 읽고 내 의도로 수정"하는 것입니다.</p>
+    <div class="badges">
+      <span class="badge">도구: VS Code + AI + 브라우저</span>
+      <span class="badge">산출물: index.html(업데이트)</span>
+      <span class="badge">핵심: 색상·여백·가독성</span>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label">
+      <span class="step-num">STEP 1</span>
+      <span class="step-title">1회차 결과물 점검하고 디자인 목표 정하기</span>
+    </div>
+
+    <ul>
+      <li>1회차에서 만든 index.html을 열고 현재 화면을 캡처한다.</li>
+      <li>내 가게 분위기를 한 문장으로 정한다. 예: 따뜻한 우드톤 카페, 시원한 민트톤 디저트샵</li>
+      <li>이번 회차에서 바꿀 디자인 4가지를 정한다: 배경, 제목, 카드, 버튼</li>
+    </ul>
+
+    <div class="box tip">
+      <strong>2회차 핵심 질문</strong>
+      "예쁘게 만들기"가 아니라 "어떤 느낌의 가게인지 화면에서 바로 느껴지는가"를 기준으로 수정합니다.
+    </div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>1회차 파일을 열고 현재 화면을 확인했다</span></li>
+      <li><input type="checkbox"><span>가게 분위기 키워드를 2개 정했다</span></li>
+      <li><input type="checkbox"><span>이번 회차 수정 목표 4가지를 정했다</span></li>
+    </ul>
+
+    <div class="preview-box">
+      <h4>💡 결과물 미리보기</h4>
+      <p style="font-size: 0.9rem; color: #4f6c63; margin-bottom: 12px;">이번 회차를 완성하면 CSS 적용 전/후가 다음과 같이 변합니다:</p>
+      <div class="preview-demo">
+        <div class="demo-unstyled">
+          <h5>CSS 적용 전</h5>
+          <div class="demo-item">가게 제목</div>
+          <div class="demo-item">소개 문구</div>
+          <div class="demo-item">상품 1</div>
+          <div class="demo-item">상품 2</div>
+          <p style="font-size: 0.75rem; color: #4f6c63; margin-top: 8px;">기본 스타일만 있음</p>
+        </div>
+        <div class="demo-styled">
+          <h5>CSS 적용 후</h5>
+          <div class="demo-item">✨ 가게 제목</div>
+          <div class="demo-item">📝 소개 문구</div>
+          <div class="demo-item">🛍️ 상품 1</div>
+          <div class="demo-item">🛍️ 상품 2</div>
+          <p style="font-size: 0.75rem; color: #1f5a4d; margin-top: 8px; font-weight: 500;">색상, 크기, 여백 적용</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label">
+      <span class="step-num">STEP 2</span>
+      <span class="step-title">1차시: CSS 핵심 3요소 익히기</span>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h3>① 색상 테마 3색 규칙</h3>
+        <p>브랜드색, 배경색, 글자색 3개만 먼저 고정하면 화면이 안정됩니다.</p>
+        <div class="code-block">:root {
+  --brand: #2f7a68;
+  --bg: #f7faf8;
+  --ink: #1d2a26;
+}
+body { background: var(--bg); color: var(--ink); }
+button { background: var(--brand); color: #fff; }</div>
+      </div>
+
+      <div class="card">
+        <h3>② 가독성 우선 타이포</h3>
+        <p>제목 크기와 본문 크기를 분리해 읽는 흐름을 만듭니다.</p>
+        <div class="code-block">h1 { font-size: 2rem; }
+h2 { font-size: 1.35rem; }
+p, li { font-size: 1rem; line-height: 1.7; }</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <h3>③ 카드와 버튼으로 정보 구분하기</h3>
+      <p>소개글은 카드, 행동 유도는 버튼으로 시선 흐름을 설계합니다.</p>
+      <div class="code-block">.card {
+  background: #ffffff;
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 16px;
+}
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+}</div>
+    </div>
+
+    <div class="box ok">
+      <strong>1차시 완료 기준</strong>
+      배경색, 제목 크기, 카드 스타일, 버튼 스타일이 모두 바뀌어야 합니다.
+    </div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>CSS 변수 3개(브랜드/배경/글자)를 적용했다</span></li>
+      <li><input type="checkbox"><span>제목과 본문의 글자 크기를 분리했다</span></li>
+      <li><input type="checkbox"><span>카드와 버튼 스타일을 추가했다</span></li>
+    </ul>
+
+    <div class="before-after">
+      <h4>📝 CSS 스타일 적용 포인트</h4>
+      <p style="font-size: 0.9rem; color: #4f6c63; margin-bottom: 12px;">CSS 변수와 기본 스타일 추가로 완성도 있는 페이지가 만들어집니다:</p>
+      <div class="comparison">
+        <div class="before">
+          <h5>수정 전 (기본 스타일)</h5>
+          <pre>&lt;style&gt;
+body {
+  background: white;
+  color: black;
+}
+h1 { font-size: 1rem; }
+button {
+  background: gray;
+}
+&lt;/style&gt;</pre>
+        </div>
+        <div class="after">
+          <h5>수정 후 (CSS 변수+스타일)</h5>
+          <pre>&lt;style&gt;
+:root {
+  --brand: #2f7a68;
+  --bg: #f7faf8;
+  --ink: #1d2a26;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+h1 { font-size: 2rem; }
+button {
+  background: var(--brand);
+  color: white;
+  border-radius: 10px;
+}
+.card {
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 16px;
+}
+&lt;/style&gt;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label">
+      <span class="step-num">STEP 3</span>
+      <span class="step-title">2차시: AI로 개선받고 직접 수정하기</span>
+    </div>
+
+    <p>아래 프롬프트로 개선안을 받은 뒤, 그대로 쓰지 말고 내 기준으로 최소 3곳을 직접 바꿉니다.</p>
+
+    <span class="p-tag">🟢 기본 개선형 프롬프트</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p1')">복사</button>
+      <pre id="p1">너는 웹디자인 튜터야.
+아래 index.html의 CSS를 가게 소개페이지에 맞게 개선해줘.
+
+[현재 분위기]
+- [예: 따뜻한 우드톤 카페]
+
+[개선 목표]
+- 색상 3개를 통일감 있게 재정리
+- 제목/본문 가독성 향상
+- 카드 간격과 버튼 시각 강조
+- 모바일에서도 글자가 겹치지 않게 조정
+
+[출력 형식]
+- 설명 없이 수정된 전체 코드만 출력
+
+[현재 코드]
+[여기에 index.html 전체 붙여넣기]</pre>
+    </div>
+
+    <div class="grid two" style="margin-top:12px;">
+      <div class="card">
+        <h3>수정 포인트 A: 과한 색 줄이기</h3>
+        <div class="compare">
+          <div class="bad">
+            <div class="label">❌ 색상이 너무 많음</div>
+            <pre>h1: 파랑
+h2: 주황
+button: 보라
+card: 연두</pre>
+          </div>
+          <div class="good">
+            <div class="label">✅ 3색 중심 통일</div>
+            <pre>브랜드: 초록
+배경: 아주 연한 민트
+텍스트: 진한 회녹색</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>수정 포인트 B: 여백 정리</h3>
+        <div class="code-block">/* 섹션 간격 */
+section { margin-bottom: 16px; }
+
+/* 카드 내부 간격 */
+.card { padding: 16px; }
+
+/* 버튼 간격 */
+button { margin-top: 8px; }</div>
+      </div>
+    </div>
+
+    <span class="p-tag adv" style="margin-top:12px; display:inline-block;">🟠 코드 비교 요청형</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p2')">복사</button>
+      <pre id="p2">아래 두 CSS를 비교해줘.
+출력 형식:
+1) 더 읽기 쉬운 쪽 선택
+2) 이유 3가지
+3) 개선이 필요한 CSS 코드 5줄 제안
+
+[수정 전 CSS]
+...
+
+[수정 후 CSS]
+...</pre>
+    </div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>AI 개선 프롬프트를 1회 이상 실행했다</span></li>
+      <li><input type="checkbox"><span>색상, 여백, 버튼 중 3곳 이상 직접 수정했다</span></li>
+      <li><input type="checkbox"><span>수정 전/수정 후 차이를 문장으로 설명할 수 있다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label">
+      <span class="step-num">STEP 4</span>
+      <span class="step-title">문제 해결: CSS가 적용되지 않을 때</span>
+    </div>
+
+    <div class="grid two">
+      <div class="box err">
+        <strong>증상 A: 색을 바꿨는데 화면이 그대로임</strong>
+        원인 후보: 선택자 오타, 저장 안 함, 캐시 문제(F5 대신 Ctrl+F5 필요)
+      </div>
+      <div class="box err">
+        <strong>증상 B: 버튼만 스타일이 안 먹음</strong>
+        원인 후보: button 대신 .button으로 작성, 닫는 중괄호 누락
+      </div>
+    </div>
+
+    <span class="p-tag adv" style="margin-top:12px; display:inline-block;">🔴 디버깅 요청형</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p3')">복사</button>
+      <pre id="p3">아래 CSS가 의도대로 적용되지 않아.
+증상:
+- [예: 버튼 색상이 바뀌지 않음]
+
+출력 형식:
+- 원인 후보 3개
+- 가장 가능성 높은 원인 1개
+- 수정 전/수정 후 코드 비교
+- 수정된 전체 코드
+
+[현재 코드 붙여넣기]</pre>
+    </div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>저장(Ctrl+S) 후 새로고침(F5) 루프를 지켰다</span></li>
+      <li><input type="checkbox"><span>오류 증상을 문장으로 적어 AI에게 요청했다</span></li>
+      <li><input type="checkbox"><span>수정 전/후 코드를 직접 비교했다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label">
+      <span class="step-num">STEP 5</span>
+      <span class="step-title">2회차 제출 패키지</span>
+    </div>
+
+    <p>2회차는 "스타일 완성도"가 핵심입니다. 아래 항목을 모두 준비해 제출합니다.</p>
+
+    <div class="submit-grid">
+      <div class="submit-item">
+        <h3>A. 스타일 테마 정의</h3>
+        <p>브랜드색/배경색/텍스트색 3가지를 확정합니다.</p>
+        <span class="cond">CSS 변수 또는 코드로 3색이 코드에 명시되어야 함</span>
+      </div>
+      <div class="submit-item">
+        <h3>B. 가독성 개선</h3>
+        <p>제목과 본문의 크기, 줄간격을 조정합니다.</p>
+        <span class="cond">h1/h2/p 스타일 구분 + 읽기 가능한 줄간격</span>
+      </div>
+      <div class="submit-item">
+        <h3>C. 카드와 버튼 정리</h3>
+        <p>카드 테두리/여백, 버튼 시각 강조를 적용합니다.</p>
+        <span class="cond">카드 스타일 1세트 + 버튼 스타일 1세트 필수</span>
+      </div>
+      <div class="submit-item">
+        <h3>D. 직접 수정 기록</h3>
+        <p>AI 결과에서 직접 손본 항목을 기록합니다.</p>
+        <span class="cond">수정 전 1줄 / 수정 후 1줄 / 이유 1문장 - 3세트</span>
+      </div>
+      <div class="submit-item">
+        <h3>E. 비교 캡처</h3>
+        <p>수정 전 화면과 수정 후 화면을 각각 캡처합니다.</p>
+        <span class="cond">같은 위치 화면 전/후 2장</span>
+      </div>
+      <div class="submit-item">
+        <h3>F. 다음 회차 준비</h3>
+        <p>3회차 카드 레이아웃을 위해 대표 상품 3개 정보를 준비합니다.</p>
+        <span class="cond">상품명/설명/가격(또는 대표문구) 3세트</span>
+      </div>
+    </div>
+
+    <ul class="checklist" style="margin-top:18px;">
+      <li><input type="checkbox"><span>브랜드 색상 3개가 화면 전체에 일관되게 보인다</span></li>
+      <li><input type="checkbox"><span>카드와 버튼이 시각적으로 구분된다</span></li>
+      <li><input type="checkbox"><span>직접 수정 기록 3세트를 작성했다</span></li>
+      <li><input type="checkbox"><span>수정 전/후 화면 캡처를 저장했다</span></li>
+    </ul>
+
+    <div class="box tip" style="margin-top:16px;">
+      <strong>다음 단계 예고</strong>
+      3회차에서는 대표 상품 3개를 카드 컴포넌트로 구성하고, 카드 간격과 배치를 더 전문적으로 다룹니다.
+    </div>
+  </section>
+</div>
+
+<script>
+function copyPrompt(btn, id) {
+  var text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(function () {
+    var old = btn.textContent;
+    btn.textContent = '복사됨';
+    btn.classList.add('done');
+    setTimeout(function () {
+      btn.textContent = old;
+      btn.classList.remove('done');
+    }, 1400);
+  });
+}
+</script>
+</body>
+</html>
