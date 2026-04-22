@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta:subject=웹개발 -->
+<!-- meta:unit=AI 활용 웹제작 실습 -->
+<!-- meta:title=AI를 활용한 내 가게 소개페이지 만들기 -->
+<!-- meta:desc=프롬프트 작성법,HTML파일 저장,VS Code,CSS수정,에러해결,가게소개페이지 완성 -->
+<!-- meta:date=2026-04-17 -->
+  <title>국비지원 과정 안내</title>
+  <meta name="description" content="국비지원 과정 안내 이미지 게시 페이지">
+  <style>
+    :root {
+      --bg: #f3f5fb;
+      --panel: #ffffff;
+      --ink: #1d2440;
+      --sub: #5b668b;
+      --line: #d9def0;
+      --brand: #5333d4;
+      --shadow: 0 12px 30px rgba(45, 57, 122, 0.14);
+      --r: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, #e7e0ff 0, transparent 32%),
+        radial-gradient(circle at bottom left, #dff5ff 0, transparent 28%),
+        var(--bg);
+      line-height: 1.6;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 16px 48px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3.8vw, 2rem);
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      color: var(--sub);
+      font-size: 0.96rem;
+    }
+
+    .poster-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .poster-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      background: #fafbff;
+    }
+
+    .meta small {
+      color: var(--sub);
+      font-size: 0.85rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      background: var(--brand);
+      color: #fff;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .btn:hover {
+      filter: brightness(0.95);
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <h1>📌 국비지원 과정 안내</h1>
+      <p>경북산업직업전문학교 4,5월 개강과정 안내</p>
+    </header>
+
+    <section class="poster-card">
+      <img src="./image.png" alt="국비지원 과정 일정 안내 이미지">
+      <div class="meta">
+        <small></small>
+        <a class="btn" href="./image.png" target="_blank" rel="noopener">원본 이미지 보기</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
