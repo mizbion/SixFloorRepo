@@ -1,0 +1,715 @@
+﻿<!DOCTYPE html>
+<!-- meta:subject=웹개발 -->
+<!-- meta:unit=AI 활용 웹제작 실습 -->
+<!-- meta:title=AI를 활용한 내 가게 소개페이지 만들기 - 3회차 -->
+<!-- meta:desc=카드레이아웃,박스모델,간격,시각위계,상품구성 -->
+<!-- meta:date=2026-04-17 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹개발 3회차 - 3회차: 대표 상품 카드 레이아웃 구성</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Do+Hyeon&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7faf8;
+  --panel: #ffffff;
+  --ink: #1d2a26;
+  --sub: #4f6c63;
+  --line: #d9e8e2;
+  --brand: #2f7a68;
+  --brand2: #1f5a4d;
+  --accent: #f2b84b;
+  --ok: #177245;
+  --warn: #a55a0a;
+  --danger: #b83b2f;
+  --shadow: 0 10px 24px rgba(33, 79, 67, 0.12);
+  --r: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background:
+    radial-gradient(circle at top right, #dff4ec 0, transparent 30%),
+    radial-gradient(circle at bottom left, #fff7e5 0, transparent 24%),
+    var(--bg);
+  color: var(--ink);
+  font-family: 'Gowun Dodum', sans-serif;
+  line-height: 1.72;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+.hero {
+  background: linear-gradient(135deg, #1f5a4d 0%, #2f7a68 55%, #63ad97 100%);
+  color: #fff;
+  border-radius: var(--r);
+  padding: 30px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "SESSION 3";
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  opacity: 0.28;
+  letter-spacing: 0.15em;
+}
+.hero h1 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  letter-spacing: 0.2px;
+  margin-bottom: 8px;
+}
+.hero p { opacity: 0.94; font-size: 0.98rem; max-width: 720px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.badge {
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.step-block {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.step-num {
+  background: var(--brand);
+  color: #fff;
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.8rem;
+  padding: 3px 11px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.step-title {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1.28rem;
+  color: #1f5a4d;
+}
+.grid { display: grid; gap: 12px; }
+@media (min-width: 720px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+.card {
+  background: #f8fcfa;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.card h3 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+.box {
+  border-left: 4px solid;
+  padding: 11px 14px;
+  border-radius: 0 10px 10px 0;
+  margin-top: 12px;
+  font-size: 0.93rem;
+}
+.box.tip { border-color: var(--brand); background: #ebf8f3; }
+.box.ok  { border-color: var(--ok); background: #edf9f1; }
+.box.warn{ border-color: var(--warn); background: #fff5e9; }
+.box.err { border-color: var(--danger); background: #fff1ef; }
+.box strong { display: block; margin-bottom: 3px; }
+.code-block {
+  background: #10221d;
+  color: #daf5ed;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+  margin-top: 10px;
+}
+.prompt-wrap { position: relative; margin-top: 10px; }
+.prompt-wrap pre {
+  background: #10221d;
+  color: #daf5ed;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  border: 1px solid #275545;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  background: var(--brand);
+  color: #fff;
+  padding: 4px 11px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'Gowun Dodum', sans-serif;
+}
+.copy-btn:hover { background: #245f52; }
+.copy-btn.done { background: var(--ok); }
+.p-tag {
+  display: inline-block;
+  background: #e8f5ef;
+  color: #1f5a4d;
+  font-size: 0.75rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.p-tag.adv { background: #fff4e5; color: #9b5a19; }
+.checklist { list-style: none; margin-top: 12px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e6f1ec;
+  font-size: 0.93rem;
+}
+.checklist li:last-child { border-bottom: 0; }
+.checklist li input[type=checkbox] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--brand);
+}
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
+.tbl th, .tbl td { padding: 9px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.tbl th { background: #eaf7f2; font-weight: 700; color: #1f5a4d; }
+.submit-grid { display: grid; gap: 10px; margin-top: 14px; }
+@media (min-width: 560px) { .submit-grid { grid-template-columns: 1fr 1fr; } }
+.submit-item {
+  border: 1px dashed #b8d7cb;
+  border-radius: 10px;
+  background: #f8fcfa;
+  padding: 14px;
+}
+.submit-item h3 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.98rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+.submit-item p { font-size: 0.88rem; color: #344a44; margin-bottom: 4px; }
+.submit-item .cond {
+  background: #e8f5ef;
+  color: #1f5a4d;
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-top: 6px;
+  display: block;
+  line-height: 1.6;
+}
+p { margin-bottom: 6px; }
+ul { padding-left: 18px; }
+li { margin: 4px 0; }
+h3 { font-family: 'Do Hyeon', sans-serif; color: #1f5a4d; margin: 14px 0 6px; }
+.preview-box {
+  background: #f8fcfa;
+  border: 2px solid #b8d7cb;
+  border-radius: var(--r);
+  padding: 18px;
+  margin-top: 16px;
+}
+.preview-box h4 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.preview-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+.demo-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(33, 79, 67, 0.06);
+}
+.demo-card h5 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.demo-card p {
+  font-size: 0.85rem;
+  color: #4f6c63;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.demo-price {
+  color: #2f7a68;
+  font-family: 'Do Hyeon', sans-serif;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.before-after {
+  background: #f8fcfa;
+  border: 2px solid #b8d7cb;
+  border-radius: var(--r);
+  padding: 18px;
+  margin-top: 16px;
+}
+.before-after h4 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .comparison { grid-template-columns: 1fr; }
+}
+.before, .after {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 12px;
+}
+.before h5, .after h5 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--line);
+}
+.before h5 { color: #b83b2f; border-bottom-color: #f5d7d3; }
+.after h5 { color: #177245; border-bottom-color: #d4f1e1; }
+.before pre, .after pre {
+  background: #10221d;
+  color: #daf5ed;
+  padding: 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  overflow-x: auto;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>3회차: 대표 상품 카드 레이아웃 구성</h1>
+    <p>상품 정보를 카드 컴포넌트로 구조화해 정보 전달력을 높입니다.</p>
+    <div class="badges">
+      <span class="badge">도구: VS Code + AI + 브라우저</span>
+      <span class="badge">산출물: index.html(업데이트)</span>
+      <span class="badge">핵심: 카드 컴포넌트 · 간격 · 시각 위계</span>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 1</span><span class="step-title">수업 목표와 준비</span></div>
+    <ul>
+      <li>지난 회차 결과물을 열고 현재 상태를 빠르게 점검한다.</li>
+      <li>이번 회차의 핵심 결과물을 한 문장으로 정의한다.</li>
+      <li>AI 사용 전, 직접 수정할 항목 3가지를 먼저 정한다.</li>
+    </ul>
+    <table class="tbl">
+      <thead><tr><th>핵심 목표</th><th>성공 기준</th></tr></thead>
+      <tbody>
+        <tr><td>상품 카드 3개를 동일 스타일로 구성</td><td>완료 여부를 화면에서 확인 가능</td></tr>
+        <tr><td>제목/설명/가격 위계를 분리</td><td>코드 수정 근거를 설명 가능</td></tr>
+        <tr><td>카드 스타일 개선 프롬프트 적용</td><td>AI 프롬프트 개선 1회 이상</td></tr>
+      </tbody>
+    </table>
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>이번 회차 목표를 이해했다</span></li>
+      <li><input type="checkbox"><span>직접 수정할 포인트 3개를 정했다</span></li>
+      <li><input type="checkbox"><span>시작 화면 캡처를 저장했다</span></li>
+    </ul>
+
+    <div class="preview-box">
+      <h4>💡 결과물 미리보기</h4>
+      <p style="font-size: 0.9rem; color: #4f6c63; margin-bottom: 12px;">이번 회차를 완성하면 다음과 같이 보입니다:</p>
+      <div class="preview-demo">
+        <div class="demo-card">
+          <h5>인기 메뉴 #1</h5>
+          <p>신선한 재료로 만든 시그니처 메뉴입니다.</p>
+          <div class="demo-price">₩12,000</div>
+        </div>
+        <div class="demo-card">
+          <h5>인기 메뉴 #2</h5>
+          <p>계절 한정 특가 상품으로 추천드립니다.</p>
+          <div class="demo-price">₩15,000</div>
+        </div>
+        <div class="demo-card">
+          <h5>인기 메뉴 #3</h5>
+          <p>고객 평점 1위 인기 상품입니다.</p>
+          <div class="demo-price">₩18,000</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 2</span><span class="step-title">1차시 핵심 개념 + 기본 실습</span></div>
+    <div class="grid two">
+      <div class="card">
+        <h3>핵심 개념</h3>
+        <p>카드 컴포넌트는 반복 구조를 통일해 가독성을 높입니다.</p>
+        <div class="code-block">.product-card {
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 14px;
+}
+.product-name { font-weight: 700; }
+.product-price { color: #2f7a68; }</div>
+      </div>
+      <div class="card">
+        <h3>실습 순서</h3>
+        <ul>
+          <li>현재 코드에서 관련 섹션을 먼저 찾는다.</li>
+          <li>작은 수정 1개 후 바로 저장/새로고침으로 확인한다.</li>
+          <li>동작 확인 후 같은 패턴으로 2~3개 확장한다.</li>
+        </ul>
+        <div class="box tip">한 번에 크게 바꾸기보다 작은 수정을 반복하면 오류를 줄일 수 있습니다.</div>
+      </div>
+    </div>
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>기본 개념 코드를 직접 적용했다</span></li>
+      <li><input type="checkbox"><span>저장/새로고침 루프로 결과를 확인했다</span></li>
+      <li><input type="checkbox"><span>최소 2개 이상 화면 변화가 생겼다</span></li>
+    </ul>
+
+    <div class="before-after">
+      <h4>📝 코드 수정 포인트</h4>
+      <p style="font-size: 0.9rem; color: #4f6c63; margin-bottom: 12px;">카드 3개 추가하는 HTML 구조와 스타일 개선 방법입니다:</p>
+      <div class="comparison">
+        <div class="before">
+          <h5>수정 전 (기본 상태)</h5>
+          <pre><!-- 상품 영역이 없음 -->
+&lt;header&gt;
+  &lt;h1&gt;내 가게&lt;/h1&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+  &lt;section&gt;
+    소개 텍스트
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+        </div>
+        <div class="after">
+          <h5>수정 후 (카드 3개 추가)</h5>
+          <pre>&lt;section class="products"&gt;
+  &lt;h2&gt;추천 상품&lt;/h2&gt;
+  &lt;div class="product-list"&gt;
+    &lt;div class="product-card"&gt;
+      &lt;h3 class="product-name"&gt;
+        상품명
+      &lt;/h3&gt;
+      &lt;p class="product-desc"&gt;
+        설명
+      &lt;/p&gt;
+      &lt;span class="product-price"&gt;
+        가격
+      &lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 2-보충</span><span class="step-title">카드컴포넌트 + 선택자 집중 실습</span></div>
+    <p>아래 실습은 이번 회차 핵심인 <strong>카드컴포넌트 구조</strong>와 <strong>선택자 사용법</strong>을 직접 익히기 위한 미션입니다.</p>
+
+    <h3>실습 목표</h3>
+    <table class="tbl">
+      <thead><tr><th>학습 요소</th><th>오늘 할 일</th><th>완료 기준</th></tr></thead>
+      <tbody>
+        <tr><td>카드컴포넌트</td><td>같은 구조의 상품 카드 3개 만들기</td><td>제목/설명/가격이 카드마다 동일 위치</td></tr>
+        <tr><td>클래스 선택자</td><td><code>.product-card</code>, <code>.product-price</code> 스타일 분리</td><td>카드 박스와 가격 강조가 분리 적용</td></tr>
+        <tr><td>자손 선택자</td><td><code>.product-card h3</code>, <code>.product-card p</code> 적용</td><td>카드 내부 텍스트 위계가 보임</td></tr>
+      </tbody>
+    </table>
+
+    <h3>시작 코드 </h3>
+    <div class="code-block">&lt;section class="products"&gt;
+  &lt;h2&gt;추천 상품&lt;/h2&gt;
+
+  &lt;div class="product-card"&gt;
+    &lt;h3&gt;딸기 라떼&lt;/h3&gt;
+    &lt;p&gt;상큼한 딸기와 우유의 조합&lt;/p&gt;
+    &lt;span class="product-price"&gt;5,800원&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class="product-card"&gt;
+    &lt;h3&gt;바닐라 쿠키&lt;/h3&gt;
+    &lt;p&gt;겉은 바삭, 속은 촉촉한 쿠키&lt;/p&gt;
+    &lt;span class="product-price"&gt;3,500원&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class="product-card"&gt;
+    &lt;h3&gt;초코 머핀&lt;/h3&gt;
+    &lt;p&gt;진한 초코향이 나는 촉촉한 머핀&lt;/p&gt;
+    &lt;span class="product-price"&gt;4,200원&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;style&gt;
+.product-card {
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.product-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.product-card p {
+  color: #4f6c63;
+  margin-bottom: 6px;
+}
+
+.product-price {
+  color: #2f7a68;
+  font-weight: 700;
+}
+&lt;/style&gt;</div>
+
+    <h3>실습 미션</h3>
+    <ul>
+      <li>미션 1: <code>.product-card</code>에 배경색과 그림자를 추가해 카드 느낌을 강화하세요.</li>
+      <li>미션 2: <code>.product-card h3</code> 글자 크기를 키우고 색상을 브랜드 톤으로 바꾸세요.</li>
+      <li>미션 3: <code>.product-card p</code>의 줄간격을 조정해서 설명을 읽기 쉽게 만드세요.</li>
+      <li>미션 4: <code>.product-price</code>에 배경색 또는 배지 스타일을 적용해 가격을 더 눈에 띄게 만드세요.</li>
+      <li>미션 5: 카드 하나에 <code>class="product-card hot"</code>를 추가하고 <code>.hot</code> 선택자로 추천 배지를 표현하세요.</li>
+    </ul>
+
+    <h3>실습 미션 정답 코드</h3>
+    <div class="code-block">&lt;section class="products"&gt;
+  &lt;h2&gt;추천 상품&lt;/h2&gt;
+
+  &lt;div class="product-card hot"&gt;
+    &lt;h3&gt;딸기 라떼&lt;/h3&gt;
+    &lt;p&gt;상큼한 딸기와 우유의 조합&lt;/p&gt;
+    &lt;span class="product-price"&gt;5,800원&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class="product-card"&gt;
+    &lt;h3&gt;바닐라 쿠키&lt;/h3&gt;
+    &lt;p&gt;겉은 바삭, 속은 촉촉한 쿠키&lt;/p&gt;
+    &lt;span class="product-price"&gt;3,500원&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class="product-card"&gt;
+    &lt;h3&gt;초코 머핀&lt;/h3&gt;
+    &lt;p&gt;진한 초코향이 나는 촉촉한 머핀&lt;/p&gt;
+    &lt;span class="product-price"&gt;4,200원&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;style&gt;
+.product-card {
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(31, 90, 77, 0.08);
+}
+
+.product-card h3 {
+  font-size: 1.15rem;
+  color: #1f5a4d;
+  margin-bottom: 4px;
+}
+
+.product-card p {
+  color: #4f6c63;
+  line-height: 1.75;
+  margin-bottom: 6px;
+}
+
+.product-price {
+  display: inline-block;
+  color: #1f5a4d;
+  background: #e8f5ef;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 700;
+}
+
+.hot {
+  border: 2px solid #2f7a68;
+  position: relative;
+}
+
+.hot::before {
+  content: "추천";
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background: #2f7a68;
+  color: #fff;
+  font-size: 0.72rem;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+&lt;/style&gt;</div>
+
+    <div class="box tip"><strong>선택자 팁</strong>같은 태그라도 <code>.product-card h3</code>처럼 범위를 좁히면 원하는 영역만 정확하게 스타일링할 수 있습니다.</div>
+
+    <h3>선택자 퀵체크</h3>
+    <table class="tbl">
+      <thead><tr><th>선택자</th><th>의미</th><th>예시 결과</th></tr></thead>
+      <tbody>
+        <tr><td><code>.product-card</code></td><td>카드 박스 전체</td><td>테두리/패딩/배경 적용</td></tr>
+        <tr><td><code>.product-card h3</code></td><td>카드 안 제목만</td><td>제목 크기/색상 변경</td></tr>
+        <tr><td><code>.product-card p</code></td><td>카드 안 설명문만</td><td>본문 색상/줄간격 변경</td></tr>
+        <tr><td><code>.product-price</code></td><td>가격 요소만</td><td>굵기/강조색 적용</td></tr>
+        <tr><td><code>.hot</code></td><td>특정 카드 강조</td><td>추천상품 배지/강조선 적용</td></tr>
+      </tbody>
+    </table>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>카드 3개 구조를 동일하게 만들었다</span></li>
+      <li><input type="checkbox"><span>클래스 선택자와 자손 선택자를 모두 사용했다</span></li>
+      <li><input type="checkbox"><span>가격 강조 스타일을 적용했다</span></li>
+      <li><input type="checkbox"><span>추천 카드(.hot) 커스텀 스타일을 추가했다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 3</span><span class="step-title">2차시 AI 프롬프트 세트</span></div>
+    <p>아래 프롬프트 4종을 순서대로 사용하면 "생성 → 분석 → 개선 → 디버깅" 흐름으로 안정적으로 작업할 수 있습니다.</p>
+
+    <span class="p-tag">🟢 프롬프트 1: 작업 요청</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p1')">복사</button>
+      <pre id="p1">너는 프론트엔드 튜터야.
+현재 가게 페이지에 대표 상품 카드 3개를 추가해줘.
+조건: 카드 크기 통일, 상품명/설명/가격 포함, 버튼 1개 포함.
+출력: 전체 코드만.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <span class="p-tag">🔵 프롬프트 2: 구조 분석</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p2')">복사</button>
+      <pre id="p2">아래 코드의 카드 영역을 분석해줘.
+1) 선택자별 역할
+2) 카드 가독성 문제 3개
+3) 개선 CSS 5줄 제안
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <span class="p-tag adv">🟠 프롬프트 3: 개선 요청</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p3')">복사</button>
+      <pre id="p3">카드 간 간격과 텍스트 위계를 더 명확하게 개선해줘.
+제약: 기존 HTML 구조 유지, CSS 중심 수정.
+수정 전/후 핵심 차이 3줄 후 전체 코드 출력.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <span class="p-tag adv">🔴 프롬프트 4: 디버깅 요청</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p4')">복사</button>
+      <pre id="p4">상품 카드가 한 줄로 깨져 보인다.
+원인 후보 3개와 수정 전/후 코드 비교를 제공해줘.
+마지막에 전체 코드 출력.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>프롬프트 1개 이상 실행했다</span></li>
+      <li><input type="checkbox"><span>AI 결과를 그대로 쓰지 않고 직접 수정했다</span></li>
+      <li><input type="checkbox"><span>개선 전/후 차이를 설명할 수 있다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 4</span><span class="step-title">문제 해결 루틴</span></div>
+    <div class="grid two">
+      <div class="box err"><strong>증상 정리</strong>화면에서 무엇이 안 되는지 문장으로 먼저 적는다.</div>
+      <div class="box warn"><strong>원인 좁히기</strong>HTML/CSS/JS 중 어느 영역 문제인지 먼저 구분한다.</div>
+    </div>
+    <div class="box ok"><strong>검증</strong>수정 후에는 저장/새로고침/재동작 확인까지 3단계로 검증합니다.</div>
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>증상을 문장으로 기록했다</span></li>
+      <li><input type="checkbox"><span>원인 후보를 2개 이상 찾았다</span></li>
+      <li><input type="checkbox"><span>수정 후 재검증을 완료했다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 5</span><span class="step-title">제출 패키지</span></div>
+    <div class="submit-grid">
+      <div class="submit-item"><h3>A. 핵심 기능/디자인 완성</h3><p>이번 회차 목표가 화면에서 확인되어야 합니다.</p><span class="cond">카드 3개 이상 + 상품 정보(이름/설명/가격)</span></div>
+      <div class="submit-item"><h3>B. 직접 수정 기록</h3><p>AI 생성 코드에서 직접 바꾼 항목을 남깁니다.</p><span class="cond">수정 전 1줄 / 수정 후 1줄 / 이유 1문장 - 3세트</span></div>
+      <div class="submit-item"><h3>C. 프롬프트 기록</h3><p>사용한 프롬프트와 개선본을 함께 제출합니다.</p><span class="cond">원본 1개 + 개선본 1개</span></div>
+      <div class="submit-item"><h3>D. 결과 캡처</h3><p>작업 결과를 시각적으로 증명합니다.</p><span class="cond">시작 화면 1장 + 완료 화면 1장</span></div>
+      <div class="submit-item"><h3>E. 오류 해결 로그</h3><p>문제 해결 과정을 짧게 정리합니다.</p><span class="cond">증상 / 원인 / 수정 / 결과 4줄</span></div>
+      <div class="submit-item"><h3>F. 다음 회차 준비</h3><p>다음 회차를 위한 데이터/아이디어를 준비합니다.</p><span class="cond">4회차용 섹션 3개(소개/상품/문의) 배치 구상</span></div>
+    </div>
+    <div class="box tip" style="margin-top:16px;"><strong>다음 회차 예고</strong>4회차에서는 Flexbox로 섹션 배치를 PC/모바일에 맞게 정리합니다.</div>
+  </section>
+</div>
+<script>
+function copyPrompt(btn, id) {
+  var text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(function () {
+    var old = btn.textContent;
+    btn.textContent = '복사됨';
+    btn.classList.add('done');
+    setTimeout(function () {
+      btn.textContent = old;
+      btn.classList.remove('done');
+    }, 1400);
+  });
+}
+</script>
+</body>
+</html>
+
+
+
