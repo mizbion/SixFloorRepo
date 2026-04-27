@@ -1,0 +1,702 @@
+﻿<!DOCTYPE html>
+<!-- meta:subject=웹개발 -->
+<!-- meta:unit=AI 활용 웹제작 실습 -->
+<!-- meta:title=AI를 활용한 내 가게 소개페이지 만들기 - 4회차 -->
+<!-- meta:desc=flexbox,정렬,반응형,미디어쿼리,모바일 -->
+<!-- meta:date=2026-04-17 -->
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹개발 4회차 - 4회차: Flexbox와 반응형 배치</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Do+Hyeon&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7faf8;
+  --panel: #ffffff;
+  --ink: #1d2a26;
+  --sub: #4f6c63;
+  --line: #d9e8e2;
+  --brand: #2f7a68;
+  --brand2: #1f5a4d;
+  --accent: #f2b84b;
+  --ok: #177245;
+  --warn: #a55a0a;
+  --danger: #b83b2f;
+  --shadow: 0 10px 24px rgba(33, 79, 67, 0.12);
+  --r: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background:
+    radial-gradient(circle at top right, #dff4ec 0, transparent 30%),
+    radial-gradient(circle at bottom left, #fff7e5 0, transparent 24%),
+    var(--bg);
+  color: var(--ink);
+  font-family: 'Gowun Dodum', sans-serif;
+  line-height: 1.72;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+.hero {
+  background: linear-gradient(135deg, #1f5a4d 0%, #2f7a68 55%, #63ad97 100%);
+  color: #fff;
+  border-radius: var(--r);
+  padding: 30px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "SESSION 4";
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  opacity: 0.28;
+  letter-spacing: 0.15em;
+}
+.hero h1 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  letter-spacing: 0.2px;
+  margin-bottom: 8px;
+}
+.hero p { opacity: 0.94; font-size: 0.98rem; max-width: 720px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.badge {
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.step-block {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 20px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.step-num {
+  background: var(--brand);
+  color: #fff;
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.8rem;
+  padding: 3px 11px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.step-title {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1.28rem;
+  color: #1f5a4d;
+}
+.grid { display: grid; gap: 12px; }
+@media (min-width: 720px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+.card {
+  background: #f8fcfa;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.card h3 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+.box {
+  border-left: 4px solid;
+  padding: 11px 14px;
+  border-radius: 0 10px 10px 0;
+  margin-top: 12px;
+  font-size: 0.93rem;
+}
+.box.tip { border-color: var(--brand); background: #ebf8f3; }
+.box.ok  { border-color: var(--ok); background: #edf9f1; }
+.box.warn{ border-color: var(--warn); background: #fff5e9; }
+.box.err { border-color: var(--danger); background: #fff1ef; }
+.box strong { display: block; margin-bottom: 3px; }
+.code-block {
+  background: #10221d;
+  color: #daf5ed;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+  margin-top: 10px;
+}
+.prompt-wrap { position: relative; margin-top: 10px; }
+.prompt-wrap pre {
+  background: #10221d;
+  color: #daf5ed;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  border: 1px solid #275545;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  background: var(--brand);
+  color: #fff;
+  padding: 4px 11px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'Gowun Dodum', sans-serif;
+}
+.copy-btn:hover { background: #245f52; }
+.copy-btn.done { background: var(--ok); }
+.p-tag {
+  display: inline-block;
+  background: #e8f5ef;
+  color: #1f5a4d;
+  font-size: 0.75rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.p-tag.adv { background: #fff4e5; color: #9b5a19; }
+.checklist { list-style: none; margin-top: 12px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e6f1ec;
+  font-size: 0.93rem;
+}
+.checklist li:last-child { border-bottom: 0; }
+.checklist li input[type=checkbox] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--brand);
+}
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
+.tbl th, .tbl td { padding: 9px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.tbl th { background: #eaf7f2; font-weight: 700; color: #1f5a4d; }
+.submit-grid { display: grid; gap: 10px; margin-top: 14px; }
+@media (min-width: 560px) { .submit-grid { grid-template-columns: 1fr 1fr; } }
+.submit-item {
+  border: 1px dashed #b8d7cb;
+  border-radius: 10px;
+  background: #f8fcfa;
+  padding: 14px;
+}
+.submit-item h3 {
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 0.98rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+.submit-item p { font-size: 0.88rem; color: #344a44; margin-bottom: 4px; }
+.submit-item .cond {
+  background: #e8f5ef;
+  color: #1f5a4d;
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-top: 6px;
+  display: block;
+  line-height: 1.6;
+}
+p { margin-bottom: 6px; }
+ul { padding-left: 18px; }
+li { margin: 4px 0; }
+h3 { font-family: 'Do Hyeon', sans-serif; color: #1f5a4d; margin: 14px 0 6px; }
+.preview-box {
+  background: #f8fcfa;
+  border: 2px solid #b8d7cb;
+  border-radius: var(--r);
+  padding: 18px;
+  margin-top: 16px;
+}
+.preview-box h4 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.preview-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+.demo-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(33, 79, 67, 0.06);
+}
+.demo-card h5 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.demo-card p {
+  font-size: 0.85rem;
+  color: #4f6c63;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.demo-price {
+  color: #2f7a68;
+  font-family: 'Do Hyeon', sans-serif;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.before-after {
+  background: #f8fcfa;
+  border: 2px solid #b8d7cb;
+  border-radius: var(--r);
+  padding: 18px;
+  margin-top: 16px;
+}
+.before-after h4 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .comparison { grid-template-columns: 1fr; }
+}
+.before, .after {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 12px;
+}
+.before h5, .after h5 {
+  font-family: 'Do Hyeon', sans-serif;
+  color: #1f5a4d;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--line);
+}
+.before h5 { color: #b83b2f; border-bottom-color: #f5d7d3; }
+.after h5 { color: #177245; border-bottom-color: #d4f1e1; }
+.before pre, .after pre {
+  background: #10221d;
+  color: #daf5ed;
+  padding: 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  overflow-x: auto;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>4회차: Flexbox와 반응형 배치</h1>
+    <p>소개/상품/이벤트 섹션을 유연하게 배치하고 모바일 레이아웃까지 맞춥니다.</p>
+    <div class="badges">
+      <span class="badge">도구: VS Code + AI + 브라우저</span>
+      <span class="badge">산출물: index.html(업데이트)</span>
+      <span class="badge">핵심: Flexbox · 미디어쿼리 · 반응형</span>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 1</span><span class="step-title">수업 목표와 준비</span></div>
+    <ul>
+      <li>지난 회차 결과물을 열고 현재 상태를 빠르게 점검한다.</li>
+      <li>이번 회차의 핵심 결과물을 한 문장으로 정의한다.</li>
+      <li>AI 사용 전, 직접 수정할 항목 3가지를 먼저 정한다.</li>
+    </ul>
+    <table class="tbl">
+      <thead><tr><th>핵심 목표</th><th>성공 기준</th></tr></thead>
+      <tbody>
+        <tr><td>PC 2~3열, 모바일 1열 전환 구현</td><td>완료 여부를 화면에서 확인 가능</td></tr>
+        <tr><td>정렬과 간격을 일관되게 유지</td><td>코드 수정 근거를 설명 가능</td></tr>
+        <tr><td>반응형 개선 프롬프트 1회 이상</td><td>AI 프롬프트 개선 1회 이상</td></tr>
+      </tbody>
+    </table>
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>이번 회차 목표를 이해했다</span></li>
+      <li><input type="checkbox"><span>직접 수정할 포인트 3개를 정했다</span></li>
+      <li><input type="checkbox"><span>시작 화면 캡처를 저장했다</span></li>
+    </ul>
+
+    <div class="preview-box">
+      <h4>💡 결과물 미리보기</h4>
+      <p style="font-size: 0.9rem; color: #4f6c63; margin-bottom: 12px;">이번 회차를 완성하면 PC와 모바일에서 다음과 같이 변합니다:</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="padding: 12px; border: 1px solid #d9e8e2; border-radius: 10px; text-align: center;">
+          <p style="font-size: 0.85rem; font-weight: 700; color: #1f5a4d; margin-bottom: 8px;">💻 PC 화면 (2~3열)</p>
+          <div style="display: flex; gap: 8px; height: 80px; background: #f0f5f2; border-radius: 6px;">
+            <div style="flex: 1; background: #e8f5ef; border-radius: 4px; border: 1px dashed #2f7a68;"></div>
+            <div style="flex: 1; background: #e8f5ef; border-radius: 4px; border: 1px dashed #2f7a68;"></div>
+            <div style="flex: 1; background: #e8f5ef; border-radius: 4px; border: 1px dashed #2f7a68;"></div>
+          </div>
+        </div>
+        <div style="padding: 12px; border: 1px solid #d9e8e2; border-radius: 10px; text-align: center;">
+          <p style="font-size: 0.85rem; font-weight: 700; color: #1f5a4d; margin-bottom: 8px;">📱 모바일 (1열)</p>
+          <div style="display: flex; flex-direction: column; gap: 6px; height: 80px; background: #f0f5f2; border-radius: 6px;">
+            <div style="flex: 1; background: #e8f5ef; border-radius: 4px; border: 1px dashed #2f7a68;"></div>
+            <div style="flex: 1; background: #e8f5ef; border-radius: 4px; border: 1px dashed #2f7a68;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 2</span><span class="step-title">1차시 핵심 개념 + 기본 실습</span></div>
+    <div class="grid two">
+      <div class="card">
+        <h3>핵심 개념</h3>
+        <p>레이아웃은 flex-direction, gap, flex 속성으로 대부분 제어할 수 있습니다.</p>
+        <div class="code-block">.layout {
+  display: flex;
+  gap: 12px;
+}
+.layout > section { flex: 1; }
+@media (max-width: 760px) {
+  .layout { flex-direction: column; }
+}</div>
+      </div>
+      <div class="card">
+        <h3>실습 순서</h3>
+        <ul>
+          <li>현재 코드에서 관련 섹션을 먼저 찾는다.</li>
+          <li>작은 수정 1개 후 바로 저장/새로고침으로 확인한다.</li>
+          <li>동작 확인 후 같은 패턴으로 2~3개 확장한다.</li>
+        </ul>
+        <div class="box tip">한 번에 크게 바꾸기보다 작은 수정을 반복하면 오류를 줄일 수 있습니다.</div>
+      </div>
+    </div>
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>기본 개념 코드를 직접 적용했다</span></li>
+      <li><input type="checkbox"><span>저장/새로고침 루프로 결과를 확인했다</span></li>
+      <li><input type="checkbox"><span>최소 2개 이상 화면 변화가 생겼다</span></li>
+    </ul>
+
+    <div class="before-after">
+      <h4>📝 코드 수정 포인트</h4>
+      <p style="font-size: 0.9rem; color: #4f6c63; margin-bottom: 12px;">섹션을 Flexbox로 정렬하고 반응형으로 전환하는 방법입니다:</p>
+      <div class="comparison">
+        <div class="before">
+          <h5>수정 전 (고정 레이아웃)</h5>
+          <pre>&lt;main&gt;
+  &lt;section&gt;소개&lt;/section&gt;
+  &lt;section&gt;상품&lt;/section&gt;
+  &lt;section&gt;이벤트&lt;/section&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+section {
+  width: 30%;
+  float: left;
+}
+&lt;/style&gt;</pre>
+        </div>
+        <div class="after">
+          <h5>수정 후 (Flexbox + 반응형)</h5>
+          <pre>&lt;main&gt;
+  &lt;section&gt;소개&lt;/section&gt;
+  &lt;section&gt;상품&lt;/section&gt;
+  &lt;section&gt;이벤트&lt;/section&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+main {
+  display: flex;
+  gap: 16px;
+}
+
+section { flex: 1; }
+
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+}
+&lt;/style&gt;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 2-보충</span><span class="step-title">Flexbox + 선택자 집중 실습</span></div>
+    <p>이번 보충 실습에서는 <strong>레이아웃 선택자</strong>와 <strong>반응형 Flexbox</strong>를 직접 적용해 배치를 완성합니다.</p>
+
+    <h3>실습 목표</h3>
+    <table class="tbl">
+      <thead><tr><th>학습 요소</th><th>오늘 할 일</th><th>완료 기준</th></tr></thead>
+      <tbody>
+        <tr><td>레이아웃 컨테이너</td><td><code>.layout</code>에 flex 적용</td><td>PC에서 3열 배치 확인</td></tr>
+        <tr><td>자손 선택자</td><td><code>.layout > section</code>으로 폭 통일</td><td>모든 섹션이 같은 비율</td></tr>
+        <tr><td>미디어쿼리</td><td>768px 이하에서 1열 전환</td><td>모바일에서 세로 배치</td></tr>
+      </tbody>
+    </table>
+
+    <h3>시작 코드 </h3>
+    <div class="code-block">&lt;main class="layout"&gt;
+  &lt;section class="panel intro"&gt;
+    &lt;h2&gt;가게 소개&lt;/h2&gt;
+    &lt;p&gt;우리 가게의 특징을 소개합니다.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section class="panel menu"&gt;
+    &lt;h2&gt;대표 메뉴&lt;/h2&gt;
+    &lt;p&gt;시그니처 메뉴를 보여줍니다.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section class="panel contact"&gt;
+    &lt;h2&gt;문의&lt;/h2&gt;
+    &lt;p&gt;연락처와 운영시간을 안내합니다.&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+.layout {
+  display: flex;
+  gap: 12px;
+}
+
+.layout > section {
+  flex: 1;
+}
+
+.panel {
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+}
+&lt;/style&gt;</div>
+
+    <h3>실습 미션</h3>
+    <ul>
+      <li>미션 1: <code>.layout</code>의 <code>gap</code>을 조정해서 섹션 간격을 보기 좋게 맞추세요.</li>
+      <li>미션 2: <code>.layout > section</code> 선택자로 모든 섹션 높이를 비슷하게 보이게 조정하세요.</li>
+      <li>미션 3: <code>.panel h2</code> 선택자를 사용해 섹션 제목 스타일을 통일하세요.</li>
+      <li>미션 4: <code>.menu</code> 클래스에만 강조 배경색을 넣어 대표 메뉴를 눈에 띄게 하세요.</li>
+      <li>미션 5: 768px 이하에서 글자 크기와 패딩이 함께 줄어들도록 미디어쿼리를 보강하세요.</li>
+    </ul>
+
+    <h3>실습 미션 정답 코드</h3>
+    <div class="code-block">&lt;main class="layout"&gt;
+  &lt;section class="panel intro"&gt;
+    &lt;h2&gt;가게 소개&lt;/h2&gt;
+    &lt;p&gt;우리 가게의 특징을 소개합니다.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section class="panel menu"&gt;
+    &lt;h2&gt;대표 메뉴&lt;/h2&gt;
+    &lt;p&gt;시그니처 메뉴를 보여줍니다.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section class="panel contact"&gt;
+    &lt;h2&gt;문의&lt;/h2&gt;
+    &lt;p&gt;연락처와 운영시간을 안내합니다.&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+.layout {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.layout > section {
+  flex: 1;
+  min-height: 150px;
+}
+
+.panel {
+  border: 1px solid #d9e8e2;
+  border-radius: 12px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.panel h2 {
+  font-size: 1.15rem;
+  color: #1f5a4d;
+  margin-bottom: 6px;
+}
+
+.panel p {
+  color: #4f6c63;
+  line-height: 1.7;
+}
+
+.menu {
+  background: #ebf8f3;
+  border-color: #9fd6c2;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .panel h2 {
+    font-size: 1.02rem;
+  }
+
+  .panel p {
+    font-size: 0.92rem;
+  }
+}
+&lt;/style&gt;</div>
+
+    <div class="box tip"><strong>선택자 팁</strong><code>.layout &gt; section</code>은 layout의 바로 아래 section만 선택하므로, 레이아웃 통일 작업에 매우 유용합니다.</div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>PC에서 3열, 모바일에서 1열 전환을 구현했다</span></li>
+      <li><input type="checkbox"><span>자손 선택자(.layout > section)를 적용했다</span></li>
+      <li><input type="checkbox"><span>특정 클래스(.menu)만 강조 스타일을 적용했다</span></li>
+      <li><input type="checkbox"><span>미디어쿼리로 모바일 가독성을 개선했다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 3</span><span class="step-title">2차시 AI 프롬프트 세트</span></div>
+    <p>아래 프롬프트 4종을 순서대로 사용하면 "생성 → 분석 → 개선 → 디버깅" 흐름으로 안정적으로 작업할 수 있습니다.</p>
+
+    <span class="p-tag">🟢 프롬프트 1: 작업 요청</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p1')">복사</button>
+      <pre id="p1">현재 페이지의 소개/상품/문의 섹션을 Flexbox로 재배치해줘.
+조건: PC 3열, 모바일 1열, 텍스트는 좌측 정렬 유지.
+출력: 전체 코드만.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <span class="p-tag">🔵 프롬프트 2: 구조 분석</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p2')">복사</button>
+      <pre id="p2">아래 CSS의 반응형 구조를 분석해줘.
+화면 폭 기준으로 어떤 변화가 생기는지 표로 설명해줘.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <span class="p-tag adv">🟠 프롬프트 3: 개선 요청</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p3')">복사</button>
+      <pre id="p3">모바일에서 요소가 겹치지 않도록 여백/글자 크기/버튼 크기를 개선해줘.
+기존 HTML 구조는 유지.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <span class="p-tag adv">🔴 프롬프트 4: 디버깅 요청</span>
+    <div class="prompt-wrap">
+      <button class="copy-btn" onclick="copyPrompt(this,'p4')">복사</button>
+      <pre id="p4">모바일에서 카드가 화면 밖으로 넘어간다.
+원인과 수정 코드(전/후)를 제시해줘.
+최종 코드도 함께 출력.
+[현재 코드]
+※ [현재 코드] 자리에는 내 index.html 전체를 붙여넣으세요.</pre>
+    </div>
+
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>프롬프트 1개 이상 실행했다</span></li>
+      <li><input type="checkbox"><span>AI 결과를 그대로 쓰지 않고 직접 수정했다</span></li>
+      <li><input type="checkbox"><span>개선 전/후 차이를 설명할 수 있다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 4</span><span class="step-title">문제 해결 루틴</span></div>
+    <div class="grid two">
+      <div class="box err"><strong>증상 정리</strong>화면에서 무엇이 안 되는지 문장으로 먼저 적는다.</div>
+      <div class="box warn"><strong>원인 좁히기</strong>HTML/CSS/JS 중 어느 영역 문제인지 먼저 구분한다.</div>
+    </div>
+    <div class="box ok"><strong>검증</strong>수정 후에는 저장/새로고침/재동작 확인까지 3단계로 검증합니다.</div>
+    <ul class="checklist" style="margin-top:16px;">
+      <li><input type="checkbox"><span>증상을 문장으로 기록했다</span></li>
+      <li><input type="checkbox"><span>원인 후보를 2개 이상 찾았다</span></li>
+      <li><input type="checkbox"><span>수정 후 재검증을 완료했다</span></li>
+    </ul>
+  </section>
+
+  <section class="step-block">
+    <div class="step-label"><span class="step-num">STEP 5</span><span class="step-title">제출 패키지</span></div>
+    <div class="submit-grid">
+      <div class="submit-item"><h3>A. 핵심 기능/디자인 완성</h3><p>이번 회차 목표가 화면에서 확인되어야 합니다.</p><span class="cond">PC/모바일 캡처 각 1장 + 반응형 동작 확인</span></div>
+      <div class="submit-item"><h3>B. 직접 수정 기록</h3><p>AI 생성 코드에서 직접 바꾼 항목을 남깁니다.</p><span class="cond">수정 전 1줄 / 수정 후 1줄 / 이유 1문장 - 3세트</span></div>
+      <div class="submit-item"><h3>C. 프롬프트 기록</h3><p>사용한 프롬프트와 개선본을 함께 제출합니다.</p><span class="cond">원본 1개 + 개선본 1개</span></div>
+      <div class="submit-item"><h3>D. 결과 캡처</h3><p>작업 결과를 시각적으로 증명합니다.</p><span class="cond">시작 화면 1장 + 완료 화면 1장</span></div>
+      <div class="submit-item"><h3>E. 오류 해결 로그</h3><p>문제 해결 과정을 짧게 정리합니다.</p><span class="cond">증상 / 원인 / 수정 / 결과 4줄</span></div>
+      <div class="submit-item"><h3>F. 다음 회차 준비</h3><p>다음 회차를 위한 데이터/아이디어를 준비합니다.</p><span class="cond">5회차용 대표 이미지 2장, 버튼 문구 2개 준비</span></div>
+    </div>
+    <div class="box tip" style="margin-top:16px;"><strong>다음 회차 예고</strong>5회차에서는 이미지와 CTA 버튼을 넣어 사이트 완성도를 높입니다.</div>
+  </section>
+</div>
+<script>
+function copyPrompt(btn, id) {
+  var text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(function () {
+    var old = btn.textContent;
+    btn.textContent = '복사됨';
+    btn.classList.add('done');
+    setTimeout(function () {
+      btn.textContent = old;
+      btn.classList.remove('done');
+    }, 1400);
+  });
+}
+</script>
+</body>
+</html>
+
+
+
