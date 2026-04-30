@@ -1,0 +1,859 @@
+﻿<!DOCTYPE html>
+<!-- meta:subject=웹개발 -->
+<!-- meta:unit=JavaScript 기초 -->
+<!-- meta:title=JavaScript 첫회차 - 문법 중심 실습 -->
+<!-- meta:desc=script태그,변수,자료형,연산자,조건문,반복문,함수,이벤트,DOM기초 -->
+<!-- meta:date=2026-04-29 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹개발 7회차 - JavaScript 첫회차 문법 집중</title>
+<style>
+:root {
+  --bg: #f4f6f8;
+  --panel: #ffffff;
+  --ink: #1a2027;
+  --sub: #4b5563;
+  --line: #dbe2ea;
+  --brand: #0f766e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 20px 14px 48px; }
+.hero {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--brand);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.hero h1 { font-size: 1.55rem; margin-bottom: 6px; }
+.hero p { color: var(--sub); }
+.block {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 12px;
+}
+h2 {
+  font-size: 1.18rem;
+  margin-bottom: 8px;
+  color: #0b5c56;
+}
+h3 { font-size: 1.02rem; margin: 12px 0 6px; }
+h4 { font-size: 0.95rem; margin: 10px 0 6px; color: #334155; }
+p { margin-bottom: 6px; }
+ul { padding-left: 18px; }
+li { margin: 3px 0; }
+.code {
+  background: #f8fafc;
+  color: #1f2937;
+  border: 1px solid #d6deea;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.82rem;
+  white-space: pre;
+  overflow-x: auto;
+  margin-top: 8px;
+}
+.tbl { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.92rem; }
+.tbl th, .tbl td { border: 1px solid var(--line); padding: 8px 9px; text-align: left; vertical-align: top; }
+.tbl th { background: #edf2f7; }
+.mini {
+  background: #eef6ff;
+  border: 1px dashed #b7cee8;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 8px;
+}
+.visual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #c9d8ef;
+  background: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f4f84;
+}
+.diagram-card {
+  background: #ffffff;
+  border: 1px solid #cfe0f7;
+  border-radius: 8px;
+  padding: 8px;
+}
+.diagram-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0b5c56;
+  margin-bottom: 6px;
+}
+.svg-diagram {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+@media (max-width: 860px) {
+  .visual-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.group {
+  border: 1px solid #e5eaf1;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  background: #fcfdff;
+}
+.example-split {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.result-card {
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  background: #f8fffe;
+  padding: 10px;
+}
+.result-card h5 {
+  font-size: 0.86rem;
+  margin-bottom: 6px;
+  color: #0b5c56;
+}
+.result-preview {
+  background: #ffffff;
+  border: 1px dashed #b7d8d2;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.82rem;
+  color: #1f2937;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+@media (max-width: 860px) {
+  .example-split {
+    grid-template-columns: 1fr;
+  }
+}
+.run-box {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+.run-box button {
+  border: 0;
+  border-radius: 6px;
+  background: var(--brand);
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+#result {
+  margin-top: 8px;
+  font-weight: 700;
+  color: #0b5c56;
+}
+.tip {
+  margin-top: 8px;
+  font-size: 0.92rem;
+  color: #334155;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>JavaScript 1</h1>
+    <p>자바스크립트 : 웹페이지의 동작을 만들어요.</p>
+    <div class="mini">
+      <div class="pill-row">
+        <span class="pill">HTML = 구조</span>
+        <span class="pill">CSS = 스타일</span>
+        <span class="pill">JavaScript = 동작</span>
+      </div>
+
+      <div class="visual-grid">
+        <div class="diagram-card">
+          <p class="diagram-title">관계 도식: 3요소가 합쳐져 웹페이지 완성</p>
+          <svg class="svg-diagram" viewBox="0 0 460 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HTML CSS JavaScript 관계 도식">
+            <rect x="20" y="30" width="120" height="54" rx="10" fill="#ffffff" stroke="#8db4e7"/>
+            <text x="80" y="53" text-anchor="middle" font-size="14" fill="#0f4f84" font-weight="700">HTML</text>
+            <text x="80" y="71" text-anchor="middle" font-size="11" fill="#3b5875">구조/뼈대</text>
+
+            <rect x="170" y="30" width="120" height="54" rx="10" fill="#ffffff" stroke="#a5b4fc"/>
+            <text x="230" y="53" text-anchor="middle" font-size="14" fill="#4338ca" font-weight="700">CSS</text>
+            <text x="230" y="71" text-anchor="middle" font-size="11" fill="#5754a6">디자인/스타일</text>
+
+            <rect x="320" y="30" width="120" height="54" rx="10" fill="#ffffff" stroke="#7fd4c8"/>
+            <text x="380" y="53" text-anchor="middle" font-size="14" fill="#0f766e" font-weight="700">JavaScript</text>
+            <text x="380" y="71" text-anchor="middle" font-size="11" fill="#2c6d67">동작/상호작용</text>
+
+            <line x1="140" y1="57" x2="170" y2="57" stroke="#98a7bf" stroke-width="2"/>
+            <line x1="290" y1="57" x2="320" y2="57" stroke="#98a7bf" stroke-width="2"/>
+
+            <path d="M230 95 L230 128" stroke="#94a3b8" stroke-width="2"/>
+            <polygon points="230,136 224,126 236,126" fill="#94a3b8"/>
+
+            <rect x="110" y="142" width="240" height="48" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+            <text x="230" y="163" text-anchor="middle" font-size="13" fill="#1e293b" font-weight="700">완성된 웹페이지</text>
+            <text x="230" y="180" text-anchor="middle" font-size="11" fill="#475569">보이는 화면 + 클릭/입력 반응</text>
+          </svg>
+        </div>
+
+        <div class="diagram-card">
+          <p class="diagram-title">동작 흐름: 브라우저에서 실제 실행 순서</p>
+          <svg class="svg-diagram" viewBox="0 0 460 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JavaScript 실행 흐름 도식">
+            <rect x="24" y="18" width="412" height="36" rx="8" fill="#ffffff" stroke="#bdd7f7"/>
+            <text x="230" y="40" text-anchor="middle" font-size="12" fill="#0f4f84" font-weight="700">1) HTML 읽기 -> DOM 생성</text>
+
+            <rect x="24" y="70" width="412" height="36" rx="8" fill="#ffffff" stroke="#c9b7ff"/>
+            <text x="230" y="92" text-anchor="middle" font-size="12" fill="#4c1d95" font-weight="700">2) CSS 적용 -> 화면 스타일링</text>
+
+            <rect x="24" y="122" width="412" height="36" rx="8" fill="#ffffff" stroke="#97e3d8"/>
+            <text x="230" y="144" text-anchor="middle" font-size="12" fill="#0f766e" font-weight="700">3) script 실행 -> 이벤트 연결</text>
+
+            <rect x="24" y="174" width="412" height="28" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+            <text x="230" y="192" text-anchor="middle" font-size="11" fill="#334155" font-weight="700">4) 사용자 클릭/입력 시 JavaScript가 DOM을 변경</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>1. 수업 목표</h2>
+    <ul>
+      <li>script 태그의 역할과 실행 흐름을 설명할 수 있다.</li>
+      <li>변수, 연산자, 조건문, 반복문, 함수를 작성할 수 있다.</li>
+      <li>DOM 선택과 클릭 이벤트를 연결해 화면을 바꿀 수 있다.</li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h2>2. 오늘 배울 문법 요약</h2>
+    <table class="tbl">
+      <thead>
+        <tr><th>문법</th><th>핵심</th><th>예시</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>script 태그</td><td>JavaScript 실행 영역</td><td><code>&lt;script&gt;...&lt;/script&gt;</code></td></tr>
+        <tr><td>변수/자료형</td><td>데이터 저장과 타입</td><td><code>let name = "민지";</code></td></tr>
+        <tr><td>연산자</td><td>계산/비교/논리</td><td><code>price * count</code></td></tr>
+        <tr><td>조건문</td><td>상황별 분기</td><td><code>if (...) { ... } else { ... }</code></td></tr>
+        <tr><td>반복문</td><td>반복 실행</td><td><code>for (let i = 0; i &lt; 3; i++)</code></td></tr>
+        <tr><td>함수</td><td>기능 재사용</td><td><code>function greet(name) { ... }</code></td></tr>
+        <tr><td>이벤트/DOM</td><td>클릭과 화면 변경</td><td><code>addEventListener("click", ...)</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="block">
+    <h2>3. 단계별 실습 (각 STEP 연습예제 3개)</h2>
+    <p>아래 예제는 모두 복사해 단일 html 파일로 저장 후 바로 실행하세요.</p>
+
+    <h3>STEP A. script 태그와 출력</h3>
+    <div class="group">
+      <h4>연습예제 1: alert 기본</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+alert("자바스크립트 실행 확인");
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 2: console.log 기본</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+console.log("콘솔 출력 테스트");
+console.log("두 번째 줄 출력");
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 3: body 끝 script 위치</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;문서 로딩 테스트&lt;/h1&gt;
+
+&lt;script&gt;
+document.body.style.backgroundColor = "#f0f9ff";
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <h3>STEP B. 변수와 자료형</h3>
+    <div class="group">
+      <h4>연습예제 1: 문자열/숫자/불리언</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+let shopName = "모모 디저트랩";
+let menuPrice = 5800;
+let isOpen = true;
+
+console.log(shopName, menuPrice, isOpen);
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 2: 변수 값 변경</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+let stock = 10;
+console.log("변경 전:", stock);
+stock = 7;
+console.log("변경 후:", stock);
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 3: typeof 확인</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+let name = "준호";
+let age = 17;
+let active = false;
+
+console.log(typeof name);
+console.log(typeof age);
+console.log(typeof active);
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <h3>STEP C. 연산자와 조건문</h3>
+    <div class="group">
+      <h4>연습예제 1: 산술연산</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+let price = 4500;
+let count = 3;
+let total = price * count;
+
+console.log("총 금액:", total);
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 2: if / else 분기</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+let score = 78;
+
+if (score &gt;= 80) {
+  console.log("합격");
+} else {
+  console.log("보충 필요");
+}
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 3: else if 분기</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+let temp = 27;
+
+if (temp &gt;= 30) {
+  console.log("덥다");
+} else if (temp &gt;= 20) {
+  console.log("적당하다");
+} else {
+  console.log("쌀쌀하다");
+}
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <h3>STEP D. 반복문과 함수</h3>
+    <div class="group">
+      <h4>연습예제 1: for 반복문</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+for (let i = 1; i &lt;= 5; i++) {
+  console.log(i + "번째 출력");
+}
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 2: 매개변수 함수</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+function greet(name) {
+  console.log(name + "님 환영합니다.");
+}
+
+greet("민지");
+greet("준호");
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 3: return 함수</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;script&gt;
+function add(a, b) {
+  return a + b;
+}
+
+let result = add(3, 5);
+console.log("합계:", result);
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <h3>STEP E. 이벤트와 DOM</h3>
+    <div class="group">
+      <h4>연습예제 1: 버튼 클릭 시 문구 변경</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button id="btn"&gt;실행&lt;/button&gt;
+  &lt;p id="text"&gt;대기중&lt;/p&gt;
+
+&lt;script&gt;
+const btn = document.getElementById("btn");
+const text = document.getElementById("text");
+
+btn.addEventListener("click", function () {
+  text.textContent = "실행 완료";
+});
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 2: 버튼 클릭 시 색상 변경</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button id="color-btn"&gt;배경 변경&lt;/button&gt;
+
+&lt;script&gt;
+const colorBtn = document.getElementById("color-btn");
+
+colorBtn.addEventListener("click", function () {
+  document.body.style.backgroundColor = "#ecfeff";
+});
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+    <div class="group">
+      <h4>연습예제 3: 입력값 읽어 화면에 출력</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;JS Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;input id="name-input" placeholder="이름 입력" /&gt;
+  &lt;button id="show-btn"&gt;확인&lt;/button&gt;
+  &lt;p id="msg"&gt;&lt;/p&gt;
+
+&lt;script&gt;
+const input = document.getElementById("name-input");
+const showBtn = document.getElementById("show-btn");
+const msg = document.getElementById("msg");
+
+showBtn.addEventListener("click", function () {
+  msg.textContent = input.value + "님, 반갑습니다.";
+});
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <p class="tip">진행 팁: 각 예제마다 "문구 변경 1개 + 숫자 변경 1개 + 기능 추가 1개"를 반드시 수행하면 학습 효과가 큽니다.</p>
+  </section>
+
+  <section class="block">
+    <h2>4. 적용 확인 실습 (JS 전/후)</h2>
+    <p>실습 방법: session06의 완성 코드를 "JS 적용 전 전체 HTML"로 먼저 저장해 실행하고, 아래 JS 코드만 직접 추가해 동작 변화를 확인하세요.</p>
+
+    <div class="group">
+      <h4>1) JS 적용 전 전체 HTML + CSS 코드</h4>
+      <div class="code">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;title&gt;블루문 굿즈샵&lt;/title&gt;
+  &lt;style&gt;
+    :root {
+      --brand: #6c4fd4;
+      --bg: #f8f7fc;
+      --ink: #1e1a2e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: sans-serif;
+      line-height: 1.7;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
+    header {
+      background: var(--brand);
+      color: #fff;
+      padding: 28px 24px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .hero-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+    .cta-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+    .cta-btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .cta-primary { background: #fff; color: var(--brand); }
+    .cta-secondary { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.6); }
+    main { display: flex; gap: 16px; }
+    main &gt; section { flex: 1; }
+    @media (max-width: 768px) { main { flex-direction: column; } }
+    .panel {
+      background: #fff;
+      border: 1px solid #e0daf2;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .panel h2 { margin-bottom: 10px; color: #4b35a8; }
+    .product-card {
+      border: 1px solid #e0daf2;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .product-price { color: var(--brand); font-weight: 700; }
+    .order-form label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-weight: 700;
+      color: #4b35a8;
+    }
+    .order-form input,
+    .order-form select,
+    .order-form textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d4cdf5;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      background: #fff;
+    }
+    .order-form textarea { resize: vertical; min-height: 70px; }
+    .order-btn {
+      margin-top: 14px;
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .order-btn:hover { background: #4b35a8; }
+    footer {
+      text-align: center;
+      margin-top: 24px;
+      padding: 14px;
+      font-size: 0.85rem;
+      color: #7a6ea0;
+      border-top: 1px solid #e0daf2;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="wrap"&gt;
+  &lt;header&gt;
+    &lt;img src="shop.jpg" alt="블루문 굿즈샵 대표 이미지" class="hero-img" /&gt;
+    &lt;h1&gt;블루문 굿즈샵&lt;/h1&gt;
+    &lt;p&gt;덕질하는 일상을 더 귀엽게&lt;/p&gt;
+    &lt;div class="cta-buttons"&gt;
+      &lt;a href="#goods" class="cta-btn cta-primary"&gt;상품 보기&lt;/a&gt;
+      &lt;a href="#order" class="cta-btn cta-secondary"&gt;주문 문의&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;section class="panel"&gt;
+      &lt;h2&gt;샵 소개&lt;/h2&gt;
+      &lt;p&gt;블루문 굿즈샵은 직접 디자인한 일러스트 굿즈를 판매합니다.&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;section id="goods" class="panel"&gt;
+      &lt;h2&gt;대표 상품&lt;/h2&gt;
+      &lt;div class="product-card"&gt;&lt;p&gt;아크릴 키링&lt;/p&gt;&lt;p class="product-price"&gt;₩8,000&lt;/p&gt;&lt;/div&gt;
+      &lt;div class="product-card"&gt;&lt;p&gt;홀로그램 스티커 세트&lt;/p&gt;&lt;p class="product-price"&gt;₩4,500&lt;/p&gt;&lt;/div&gt;
+      &lt;div class="product-card"&gt;&lt;p&gt;캔버스 에코백&lt;/p&gt;&lt;p class="product-price"&gt;₩18,000&lt;/p&gt;&lt;/div&gt;
+    &lt;/section&gt;
+
+    &lt;section id="order" class="panel"&gt;
+      &lt;h2&gt;주문 문의&lt;/h2&gt;
+      &lt;form class="order-form"&gt;
+        &lt;label for="item"&gt;상품 선택 *&lt;/label&gt;
+        &lt;select id="item" name="item" required&gt;
+          &lt;option value=""&gt;-- 상품을 선택하세요 --&lt;/option&gt;
+          &lt;option value="keyring"&gt;아크릴 키링 ₩8,000&lt;/option&gt;
+          &lt;option value="sticker"&gt;홀로그램 스티커 세트 ₩4,500&lt;/option&gt;
+          &lt;option value="ecobag"&gt;캔버스 에코백 ₩18,000&lt;/option&gt;
+        &lt;/select&gt;
+
+        &lt;label for="buyer-name"&gt;주문자 이름 *&lt;/label&gt;
+        &lt;input type="text" id="buyer-name" name="buyer-name" placeholder="예: 홍길동" required /&gt;
+
+        &lt;label for="buyer-email"&gt;이메일 *&lt;/label&gt;
+        &lt;input type="email" id="buyer-email" name="buyer-email" placeholder="예: hong@mail.com" required /&gt;
+
+        &lt;label for="buyer-request"&gt;추가 요청사항&lt;/label&gt;
+        &lt;textarea id="buyer-request" name="buyer-request" rows="3" placeholder="수량, 색상, 포장 방식 등 요청사항"&gt;&lt;/textarea&gt;
+
+        &lt;button type="submit" class="order-btn"&gt;주문 문의 보내기&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;© 2026 블루문 굿즈샵&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/div&gt;
+
+&lt;!-- 여기에 아래 JS 코드 붙여넣기 --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <div class="group">
+      <h4>2) 이 코드에 적용할 JS 코드 (별도 입력)</h4>
+      <div class="code">&lt;script&gt;
+const form = document.querySelector(".order-form");
+const item = document.getElementById("item");
+const buyerName = document.getElementById("buyer-name");
+const buyerEmail = document.getElementById("buyer-email");
+const buyerRequest = document.getElementById("buyer-request");
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  if (!item.value || !buyerName.value.trim() || !buyerEmail.value.trim()) {
+    alert("필수 항목(상품, 이름, 이메일)을 모두 입력하세요.");
+    return;
+  }
+
+  const summary =
+    "주문 접수: " + item.options[item.selectedIndex].text +
+    " / 이름: " + buyerName.value.trim() +
+    " / 이메일: " + buyerEmail.value.trim();
+
+  let feedback = document.getElementById("js-feedback");
+  if (!feedback) {
+    feedback = document.createElement("p");
+    feedback.id = "js-feedback";
+    feedback.style.marginTop = "10px";
+    feedback.style.fontWeight = "700";
+    feedback.style.color = "#0b5c56";
+    form.appendChild(feedback);
+  }
+
+  feedback.textContent = summary;
+  console.log("요청사항:", buyerRequest.value.trim());
+
+  form.reset();
+});
+&lt;/script&gt;</div>
+    </div>
+    <p class="tip">체크 포인트: JS 추가 전에는 제출 버튼이 새로고침만 발생하지만, JS 추가 후에는 필수검사 + 주문요약 문구 출력이 동작합니다.</p>
+  </section>
+</div>
+
+<script>
+const resultMap = {
+  "연습예제 1: alert 기본": "화면 결과\n- 알림창이 뜸\n- 메시지: 자바스크립트 실행 확인",
+  "연습예제 2: console.log 기본": "콘솔 결과\n- 콘솔 출력 테스트\n- 두 번째 줄 출력",
+  "연습예제 3: body 끝 script 위치": "화면 결과\n- 배경색이 연한 하늘색으로 변경",
+  "연습예제 1: 문자열/숫자/불리언": "콘솔 결과\n- 모모 디저트랩 5800 true",
+  "연습예제 2: 변수 값 변경": "콘솔 결과\n- 변경 전: 10\n- 변경 후: 7",
+  "연습예제 3: typeof 확인": "콘솔 결과\n- string\n- number\n- boolean",
+  "연습예제 1: 산술연산": "콘솔 결과\n- 총 금액: 13500",
+  "연습예제 2: if / else 분기": "콘솔 결과\n- 보충 필요",
+  "연습예제 3: else if 분기": "콘솔 결과\n- 적당하다",
+  "연습예제 1: for 반복문": "콘솔 결과\n- 1번째 출력\n- 2번째 출력\n- 3번째 출력\n- 4번째 출력\n- 5번째 출력",
+  "연습예제 2: 매개변수 함수": "콘솔 결과\n- 민지님 환영합니다.\n- 준호님 환영합니다.",
+  "연습예제 3: return 함수": "콘솔 결과\n- 합계: 8",
+  "연습예제 1: 버튼 클릭 시 문구 변경": "클릭 전\n- 대기중\n\n클릭 후\n- 실행 완료",
+  "연습예제 2: 버튼 클릭 시 색상 변경": "클릭 전\n- 기본 배경색\n\n클릭 후\n- 배경색 #ecfeff 적용",
+  "연습예제 3: 입력값 읽어 화면에 출력": "예시 입력: 민지\n클릭 후\n- 민지님, 반갑습니다."
+};
+
+const practiceSection = Array.from(document.querySelectorAll("section.block")).find(function (section) {
+  const heading = section.querySelector("h2");
+  return heading && heading.textContent.includes("3. 단계별 실습");
+});
+
+if (practiceSection) {
+  const groups = practiceSection.querySelectorAll(".group");
+
+  groups.forEach(function (group) {
+    const h4 = group.querySelector("h4");
+    const code = group.querySelector(".code");
+    if (!h4 || !code) return;
+
+    const key = h4.textContent.trim();
+    const previewText = resultMap[key];
+    if (!previewText) return;
+
+    const split = document.createElement("div");
+    split.className = "example-split";
+
+    const resultCard = document.createElement("div");
+    resultCard.className = "result-card";
+    resultCard.innerHTML = '<h5>실행 결과</h5><div class="result-preview"></div>';
+    resultCard.querySelector(".result-preview").textContent = previewText;
+
+    split.appendChild(code);
+    split.appendChild(resultCard);
+    group.appendChild(split);
+  });
+}
+</script>
+
+</body>
+</html>
