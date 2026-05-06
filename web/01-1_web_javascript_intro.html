@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=웹개발(JavaScript) -->
+<!-- meta:unit=Day 01. 자바스크립트 첫걸음 -->
+<!-- meta:title=JS 입문, 변수, 데이터 타입, 연산자 -->
+<!-- meta:desc=script 태그, console.log, let/const, 숫자/문자열/불리언, 템플릿 리터럴, AI 협업 CSS -->
+<!-- meta:date=2026-05-06 -->
+<!-- meta:audience=고3 직업계 -->
+<title>Day 01 · 자바스크립트 첫걸음</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fdf2f4;        --card: #ffffff;
+  --surf2: #f9e4e8;     --surf3: #f3d2d8;
+  --border: #ebbcc4;    --text: #1c1418;       --sub: #7a6068;
+  --ac: #be123c;        --ac-l: #fff1f3;       --ac-b: #fecdd3;
+  --header-bg: #1f0a10;
+  --c1: #1d4ed8; --c1l: #eff6ff; --c1b: #bfdbfe;
+  --c2: #15803d; --c2l: #f0fdf4; --c2b: #bbf7d0;
+  --c3: #b45309; --c3l: #fffbeb; --c3b: #fde68a;
+  --c4: #7c3aed; --c4l: #f5f3ff; --c4b: #ddd6fe;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; font-size: 15px;
+}
+.hd {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--header-bg); color: #fff;
+  border-bottom: 1px solid #2a1218;
+}
+.hd-inner {
+  max-width: 820px; margin: 0 auto;
+  padding: 12px 24px; display: flex; align-items: center; gap: 14px;
+}
+.hd-badge {
+  background: var(--ac); color: #fff;
+  padding: 4px 10px; border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.hd-title { font-family: 'Black Han Sans', sans-serif; font-size: 19px; letter-spacing: 0.3px; }
+.hd-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #cba; margin-left: auto; }
+.prog { height: 3px; background: linear-gradient(90deg, var(--ac) 0%, #f43f5e 100%); width: 0%; transition: width 0.1s; }
+
+.wrap { max-width: 820px; margin: 0 auto; padding: 28px 24px 80px; }
+
+.hero {
+  text-align: center; padding: 36px 20px 28px;
+  background: var(--card); border-radius: 18px;
+  border: 1px solid var(--border); margin-bottom: 28px;
+  box-shadow: 0 4px 14px rgba(190, 18, 60, 0.06);
+}
+.hero-emoji {
+  font-size: 52px; display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px; margin: 12px 0 8px;
+  background: linear-gradient(135deg, var(--ac) 0%, #f43f5e 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 0.5px;
+}
+.hero-sub { color: var(--sub); font-size: 15px; margin-bottom: 18px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.htag {
+  background: var(--ac-l); color: var(--ac);
+  padding: 5px 12px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  border: 1px solid var(--ac-b); font-weight: 500;
+}
+
+.goals {
+  background: var(--card); border-radius: 14px;
+  border: 1px solid var(--border); padding: 22px 24px;
+  margin-bottom: 28px; border-left: 4px solid var(--ac);
+}
+.goals-title {
+  font-family: 'Black Han Sans', sans-serif; font-size: 19px;
+  color: var(--ac); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.goals-title::before { content: "🎯"; font-size: 22px; }
+.goals ol { padding-left: 22px; }
+.goals li { margin-bottom: 8px; color: var(--text); font-weight: 400; }
+.goals li strong { color: var(--ac); font-weight: 600; }
+
+.toc {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 32px;
+}
+.toc-item {
+  background: var(--card); padding: 12px 14px;
+  border-radius: 10px; border: 1px solid var(--border);
+  font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+  transition: all 0.15s;
+}
+.toc-item:hover { background: var(--surf2); border-color: var(--ac-b); transform: translateX(2px); }
+.toc-num {
+  background: var(--ac); color: #fff; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sh {
+  margin: 38px 0 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.sh-num {
+  background: var(--ac); color: #fff;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  flex-shrink: 0;
+}
+.sh-text { flex: 1; }
+.sh-title { font-family: 'Black Han Sans', sans-serif; font-size: 22px; letter-spacing: 0.3px; }
+.sh-sub { color: var(--sub); font-size: 13px; margin-top: 2px; }
+
+.card {
+  background: var(--card); border-radius: 12px;
+  border: 1px solid var(--border); border-top: 4px solid var(--ac);
+  padding: 24px; margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(190, 18, 60, 0.04);
+}
+.card h3 {
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  margin-bottom: 12px; color: var(--text);
+}
+.card p { margin-bottom: 12px; }
+
+.box {
+  background: var(--surf2); border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+  margin: 14px 0; font-size: 14px;
+}
+.box strong { color: var(--ac); }
+
+.tip {
+  border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+  font-size: 13.5px; border: 1px solid;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.tip::before { font-size: 18px; flex-shrink: 0; }
+.tip.blue { background: var(--c1l); border-color: var(--c1b); color: var(--c1); }
+.tip.blue::before { content: "💡"; }
+.tip.green { background: var(--c2l); border-color: var(--c2b); color: var(--c2); }
+.tip.green::before { content: "✅"; }
+.tip.orange { background: var(--c3l); border-color: var(--c3b); color: var(--c3); }
+.tip.orange::before { content: "⚠️"; }
+.tip.red { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.tip.red::before { content: "🚫"; }
+.tip.purple { background: var(--c4l); border-color: var(--c4b); color: var(--c4); }
+.tip.purple::before { content: "🤖"; }
+
+/* 코드 블록 */
+.cb {
+  margin: 12px 0; background: #f8fafc;
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+}
+.cb-hd {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surf2); padding: 7px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.cb-dots { display: flex; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dr { background: #ff5f57; } .dy { background: #ffbd2e; } .dg { background: #28c840; }
+.cb-label {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 11px; color: var(--sub); margin-left: 4px;
+}
+.cb pre {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 13px; line-height: 1.7; padding: 14px 18px;
+  overflow-x: auto; white-space: pre;
+  color: var(--text); margin: 0;
+}
+.kw { color: #b45309; font-weight: 600; }
+.fn { color: #0d7a6e; }
+.st { color: #15803d; }
+.nu { color: #1d4ed8; }
+.cm { color: #9c8d7a; font-style: italic; }
+.op { color: #7c3aed; padding: 0 2px; font-weight: 500; }
+.out { color: #155e75; font-weight: 600; }
+
+/* 인터랙션 영역 */
+.ir { margin: 14px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.ig { flex: 1; min-width: 140px; }
+.il {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--sub); margin-bottom: 4px; font-weight: 600;
+}
+.ir input, .ir select {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+  background: var(--card); color: var(--text);
+}
+.ir input:focus, .ir select:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+
+.btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 11px 22px; border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn:hover { background: #9f1239; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.bac { width: 100%; margin: 8px 0; }
+
+.res {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  padding: 13px 16px; border-radius: 8px; margin-top: 8px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.rl {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  background: var(--ac); color: #fff; padding: 3px 8px;
+  border-radius: 5px; font-weight: 600;
+}
+.rv { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ac); font-weight: 500; }
+
+/* AI 프롬프트 박스 */
+.prompt-box {
+  background: #f5f3ff; border: 1px solid #ddd6fe;
+  border-radius: 10px; padding: 16px;
+  margin: 14px 0;
+}
+.prompt-box h4 {
+  color: #6d28d9; font-size: 14px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.prompt-box h4::before { content: "🤖"; font-size: 18px; }
+.prompt-box pre {
+  background: #fff; border: 1px solid #ddd6fe;
+  padding: 12px 14px; border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  color: #4c1d95; white-space: pre-wrap; line-height: 1.6;
+}
+.prompt-copy {
+  background: #7c3aed; color: #fff; border: none;
+  padding: 7px 14px; border-radius: 6px; font-size: 12px;
+  cursor: pointer; margin-top: 8px; font-family: 'Noto Sans KR', sans-serif;
+}
+.prompt-copy:hover { background: #6d28d9; }
+
+/* 렌더 미리보기 */
+.preview {
+  background: #fff; border: 2px dashed var(--border);
+  border-radius: 10px; padding: 24px; margin: 14px 0;
+  text-align: center;
+}
+.preview-card {
+  display: inline-block; padding: 20px 24px;
+  background: var(--ac-l); border-radius: 10px;
+  border: 1px solid var(--ac-b); text-align: left;
+}
+.preview-card-name { font-family: 'Black Han Sans', sans-serif; font-size: 20px; color: var(--ac); }
+.preview-card-info { font-size: 13px; color: var(--sub); margin-top: 4px; }
+
+/* 마무리 정리 */
+.summary {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  margin-top: 18px;
+}
+.s-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+}
+.s-card-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 4px;
+}
+.s-card-title { font-weight: 600; margin-bottom: 4px; }
+.s-card-desc { font-size: 13px; color: var(--sub); }
+
+@media (max-width: 640px) {
+  .toc { grid-template-columns: 1fr; }
+  .summary { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  .wrap { padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">DAY 01</span>
+    <span class="hd-title">자바스크립트 첫걸음</span>
+    <span class="hd-meta">JS · 4h</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-emoji">✨</div>
+    <h1>자바스크립트 첫걸음</h1>
+    <div class="hero-sub">변수, 데이터 타입, 연산자 — 그리고 AI에게 디자인 부탁하기</div>
+    <div class="hero-tags">
+      <span class="htag">script 태그</span>
+      <span class="htag">let / const</span>
+      <span class="htag">데이터 타입</span>
+      <span class="htag">템플릿 리터럴</span>
+      <span class="htag">AI 협업</span>
+    </div>
+  </div>
+
+  <div class="goals">
+    <div class="goals-title">오늘의 학습목표</div>
+    <ol>
+      <li><strong>JS의 역할</strong>을 설명하고 브라우저 콘솔과 script 태그로 코드를 <strong>실행</strong>할 수 있다.</li>
+      <li><strong>let과 const</strong>를 구분해 사용하며, 숫자·문자열·불리언을 변수에 담을 수 있다.</li>
+      <li><strong>연산자</strong>와 <strong>템플릿 리터럴</strong>로 변수를 조합해 결과를 만들 수 있다.</li>
+      <li>완성된 자기소개 데이터를 <strong>AI에게 CSS 적용을 요청</strong>해 시각화할 수 있다.</li>
+    </ol>
+  </div>
+
+  <div class="toc">
+    <a class="toc-item" href="#s1"><span class="toc-num">1</span> JS는 뭐 하는 애?</a>
+    <a class="toc-item" href="#s2"><span class="toc-num">2</span> 코드 실행 환경</a>
+    <a class="toc-item" href="#s3"><span class="toc-num">3</span> 변수: let과 const</a>
+    <a class="toc-item" href="#s4"><span class="toc-num">4</span> 데이터 타입 3종</a>
+    <a class="toc-item" href="#s5"><span class="toc-num">5</span> 연산자와 형변환</a>
+    <a class="toc-item" href="#s6"><span class="toc-num">6</span> 템플릿 리터럴</a>
+    <a class="toc-item" href="#s7"><span class="toc-num">7</span> 실습: 자기소개 카드</a>
+    <a class="toc-item" href="#s8"><span class="toc-num">8</span> AI에게 CSS 부탁하기</a>
+  </div>
+
+  <!-- ========== 1 ========== -->
+  <div class="sh" id="s1">
+    <div class="sh-num">1</div>
+    <div class="sh-text">
+      <div class="sh-title">JS는 뭐 하는 애?</div>
+      <div class="sh-sub">HTML은 뼈대, CSS는 옷, JS는…?</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>너네가 만든 카페 웹사이트가 있다고 하자. <strong>HTML</strong>로 글자랑 이미지 자리를 잡았고, <strong>CSS</strong>로 색이랑 모양을 예쁘게 꾸몄어. 근데… <em>버튼을 눌러도 아무 일도 안 일어나.</em></p>
+
+    <div class="box">
+      <strong>JavaScript는 웹페이지의 "동작"을 담당</strong>한다. 버튼 클릭 시 메뉴가 펼쳐지고, 입력값을 검사하고, 화면이 바뀌는 모든 것 — JS의 영역.
+    </div>
+
+    <p>오늘은 그 첫걸음이야. <strong>화려한 동작은 다음 시간부터.</strong> 오늘은 JS가 데이터(숫자·글자)를 어떻게 다루는지부터 배운다.</p>
+
+    <div class="tip blue">
+      비유: HTML = 사람의 뼈대, CSS = 옷과 화장, <strong>JS = 움직임과 말과 행동</strong>. 셋이 합쳐져야 살아있는 웹페이지가 된다.
+    </div>
+  </div>
+
+  <!-- ========== 2 ========== -->
+  <div class="sh" id="s2">
+    <div class="sh-num">2</div>
+    <div class="sh-text">
+      <div class="sh-title">코드는 어디서 실행하지?</div>
+      <div class="sh-sub">브라우저 콘솔 + script 태그</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>방법 1. 브라우저 콘솔 (가장 빠름)</h3>
+    <p>크롬에서 <strong>F12</strong> 누르거나 우클릭 → "검사" → 상단의 <strong>Console</strong> 탭. 여기에 코드 한 줄씩 쳐서 바로 실행 가능.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">콘솔에 입력</span>
+      </div>
+      <pre><span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"안녕, 자바스크립트!"</span>);  <span class="out">// → 안녕, 자바스크립트!</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">방법 2. HTML 파일에 script 태그</h3>
+    <p>실제 웹페이지에서 동작하려면 HTML에 연결해야 해.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">index.html</span>
+      </div>
+      <pre><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+    <span class="kw">&lt;h1&gt;</span><span class="st">내 첫 페이지</span><span class="kw">&lt;/h1&gt;</span>
+
+    <span class="kw">&lt;script&gt;</span>
+        <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"페이지가 열렸어요!"</span>);
+    <span class="kw">&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+    </div>
+
+    <div class="tip orange">
+      <strong>위치가 중요!</strong> <code style="font-family:'JetBrains Mono',monospace">&lt;/body&gt;</code> 바로 위에 <code style="font-family:'JetBrains Mono',monospace">&lt;script&gt;</code>를 두는 게 정석. 이유는 다음 차시에 DOM 배울 때.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">콘솔에 출력할 메시지</div>
+        <input type="text" id="msg1" value="안녕!">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runConsole()">▶ 콘솔에 출력해보기 (F12로 결과 확인)</button>
+    <div class="res">
+      <span class="rl">코드</span>
+      <span class="rv" id="r1">위 값을 바꾸고 실행 버튼을 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 3 ========== -->
+  <div class="sh" id="s3">
+    <div class="sh-num">3</div>
+    <div class="sh-text">
+      <div class="sh-title">변수: 데이터를 담는 상자</div>
+      <div class="sh-sub">let과 const, 둘 중 뭘 쓸까?</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>게임에서 캐릭터의 HP가 100이라고 하자. 이걸 코드로 어떻게 기억하지? → <strong>변수</strong>에 담는다.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">variables.js</span>
+      </div>
+      <pre><span class="kw">let</span> hp <span class="op">=</span> <span class="nu">100</span>;        <span class="cm">// 변할 수 있는 값 → let</span>
+<span class="kw">const</span> name <span class="op">=</span> <span class="st">"용사"</span>;  <span class="cm">// 변하지 않는 값 → const</span>
+
+<span class="fn">console</span>.<span class="fn">log</span>(hp);    <span class="out">// → 100</span>
+<span class="fn">console</span>.<span class="fn">log</span>(name);  <span class="out">// → 용사</span>
+
+hp <span class="op">=</span> <span class="nu">80</span>;            <span class="cm">// let은 재할당 OK</span>
+<span class="cm">// name = "마법사";   ← const는 에러!</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>고르는 법</strong>: <strong>일단 const부터.</strong> 값이 바뀌어야 할 때만 let으로 바꾼다. (실수 줄이는 습관)
+    </div>
+
+    <div class="tip red">
+      <strong>var는 잊어라.</strong> 옛날 키워드. 인터넷에서 var를 봐도 따라 쓰지 마. 우리는 let / const만 쓴다.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">캐릭터 이름 (const)</div>
+        <input type="text" id="v_name" value="용사">
+      </div>
+      <div class="ig">
+        <div class="il">HP (let)</div>
+        <input type="number" id="v_hp" value="100">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runVariables()">▶ 변수 만들어보기</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r2">위 값을 바꾸고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 4 ========== -->
+  <div class="sh" id="s4">
+    <div class="sh-num">4</div>
+    <div class="sh-text">
+      <div class="sh-title">데이터 타입 3종 세트</div>
+      <div class="sh-sub">숫자(Number) · 문자열(String) · 불리언(Boolean)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">types.js</span>
+      </div>
+      <pre><span class="cm">// 1. 숫자 — 따옴표 없음</span>
+<span class="kw">const</span> age <span class="op">=</span> <span class="nu">19</span>;
+<span class="kw">const</span> price <span class="op">=</span> <span class="nu">2500.5</span>;
+
+<span class="cm">// 2. 문자열 — 따옴표 필수 (", ', ` 셋 다 OK)</span>
+<span class="kw">const</span> name <span class="op">=</span> <span class="st">"홍길동"</span>;
+<span class="kw">const</span> hobby <span class="op">=</span> <span class="st">'게임'</span>;
+
+<span class="cm">// 3. 불리언 — true / false 둘 중 하나</span>
+<span class="kw">const</span> isStudent <span class="op">=</span> <span class="nu">true</span>;
+<span class="kw">const</span> isAdult <span class="op">=</span> <span class="nu">false</span>;
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> age);        <span class="out">// → "number"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> name);       <span class="out">// → "string"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> isStudent);  <span class="out">// → "boolean"</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>typeof</strong>는 변수의 타입을 알려주는 명령어. 헷갈릴 때 콘솔에서 한 번 찍어보면 끝.
+    </div>
+
+    <div class="tip orange">
+      따옴표를 빼먹으면 어떻게 될까? <code style="font-family:'JetBrains Mono',monospace">const name = 홍길동;</code> → <strong>에러</strong>. 컴퓨터는 "홍길동"이라는 변수를 찾으려다 없어서 멈춘다.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">값을 입력해서 타입 확인</div>
+        <input type="text" id="t_val" value="19">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runTypeof()">▶ 이게 무슨 타입?</button>
+    <div class="res">
+      <span class="rl">typeof</span>
+      <span class="rv" id="r3">위 값을 입력하고 눌러보세요</span>
+    </div>
+
+    <div class="tip green" style="margin-top:14px">
+      <strong>힌트</strong>: 숫자만 입력하면 number, "안녕"처럼 따옴표로 감싸면 string, true/false면 boolean.
+    </div>
+  </div>
+
+  <!-- ========== 5 ========== -->
+  <div class="sh" id="s5">
+    <div class="sh-num">5</div>
+    <div class="sh-text">
+      <div class="sh-title">연산자와 형변환</div>
+      <div class="sh-sub">+ 가 늘 더하기는 아니다</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>산술 연산자</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">arithmetic.js</span>
+      </div>
+      <pre><span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">+</span> <span class="nu">3</span>);   <span class="out">// → 13</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">-</span> <span class="nu">3</span>);   <span class="out">// → 7</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">*</span> <span class="nu">3</span>);   <span class="out">// → 30</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">/</span> <span class="nu">3</span>);   <span class="out">// → 3.333...</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">%</span> <span class="nu">3</span>);   <span class="out">// → 1  (나머지)</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">문자열에서 + 의 함정</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">trap.js</span>
+      </div>
+      <pre><span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">+</span> <span class="nu">3</span>);       <span class="out">// → 13   (숫자+숫자=덧셈)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"10"</span> <span class="op">+</span> <span class="nu">3</span>);     <span class="out">// → "103" (문자열+숫자=이어붙이기!)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"안녕"</span> <span class="op">+</span> <span class="st">" 길동"</span>); <span class="out">// → "안녕 길동"</span></pre>
+    </div>
+
+    <div class="tip red">
+      <strong>입력창에서 받은 값은 무조건 문자열이다.</strong> <code style="font-family:'JetBrains Mono',monospace">input.value</code>로 받은 "10"과 3을 더하면 "103". 계산하려면 <strong>Number()</strong>로 변환!
+    </div>
+
+    <h3 style="margin-top:18px">형변환</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">convert.js</span>
+      </div>
+      <pre><span class="kw">const</span> a <span class="op">=</span> <span class="st">"10"</span>;
+<span class="kw">const</span> b <span class="op">=</span> <span class="nu">3</span>;
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">Number</span>(a) <span class="op">+</span> b);  <span class="out">// → 13  (문자열을 숫자로)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(a <span class="op">+</span> <span class="fn">String</span>(b));  <span class="out">// → "103" (숫자를 문자열로)</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">비교 연산자 — 결과는 불리언</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">compare.js</span>
+      </div>
+      <pre><span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">&gt;</span> <span class="nu">5</span>);    <span class="out">// → true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">===</span> <span class="nu">10</span>);  <span class="out">// → true  (값 + 타입 비교)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="nu">10</span> <span class="op">===</span> <span class="st">"10"</span>); <span class="out">// → false (타입 다름)</span></pre>
+    </div>
+
+    <div class="tip purple">
+      <strong>=== 를 써라.</strong> == 도 있지만 헷갈리는 결과를 만든다. JS는 무조건 ===, !==.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">숫자 1</div>
+        <input type="text" id="c_a" value="10">
+      </div>
+      <div class="ig">
+        <div class="il">숫자 2</div>
+        <input type="text" id="c_b" value="3">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runCalc()">▶ 더하기 결과는?</button>
+    <div class="res">
+      <span class="rl">출력</span>
+      <span class="rv" id="r4">두 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 6 ========== -->
+  <div class="sh" id="s6">
+    <div class="sh-num">6</div>
+    <div class="sh-text">
+      <div class="sh-title">템플릿 리터럴 — 백틱의 마법</div>
+      <div class="sh-sub">변수랑 글자, 깔끔하게 합치기</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>"내 이름은 길동이고 나이는 19살" 같은 문장을 만들고 싶어. + 로 이어붙이는 방법은… 솔직히 보기 싫어.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">old_way.js</span>
+      </div>
+      <pre><span class="kw">const</span> name <span class="op">=</span> <span class="st">"길동"</span>;
+<span class="kw">const</span> age <span class="op">=</span> <span class="nu">19</span>;
+
+<span class="cm">// 옛날 방식 — 따옴표와 + 가 너무 많음</span>
+<span class="kw">const</span> msg1 <span class="op">=</span> <span class="st">"내 이름은 "</span> <span class="op">+</span> name <span class="op">+</span> <span class="st">"이고 나이는 "</span> <span class="op">+</span> age <span class="op">+</span> <span class="st">"살"</span>;</pre>
+    </div>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">new_way.js</span>
+      </div>
+      <pre><span class="cm">// 템플릿 리터럴 — 백틱(`) + ${변수}</span>
+<span class="kw">const</span> msg2 <span class="op">=</span> <span class="st">`내 이름은 ${</span>name<span class="st">}이고 나이는 ${</span>age<span class="st">}살`</span>;
+
+<span class="fn">console</span>.<span class="fn">log</span>(msg2);  <span class="out">// → 내 이름은 길동이고 나이는 19살</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">백틱이 대체 뭔데?</h3>
+    <p>JS에서 문자열을 감싸는 방법은 <strong>3가지</strong>. 그런데 이 셋이 다 다르게 생겼고 역할도 미묘하게 달라.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">three_quotes.js</span>
+      </div>
+      <pre><span class="kw">const</span> a <span class="op">=</span> <span class="st">"큰따옴표"</span>;     <span class="cm">// " "  Shift + '</span>
+<span class="kw">const</span> b <span class="op">=</span> <span class="st">'작은따옴표'</span>;    <span class="cm">// ' '  엔터 키 왼쪽 두 번째</span>
+<span class="kw">const</span> c <span class="op">=</span> <span class="st">`백틱`</span>;          <span class="cm">// ` `  숫자 1 왼쪽, ESC 아래</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>백틱(`) 위치 찾기</strong>: 키보드 왼쪽 위 구석, <strong>숫자 1 왼쪽</strong>이자 <strong>ESC 키 바로 아래</strong>. 한영 키 옆에도 있음. Shift 안 누르고 그냥 누르면 ` 가 나와야 정상. (안 나오면 한/영 키 확인!)
+    </div>
+
+    <div class="tip red">
+      <strong>가장 흔한 실수</strong>: 백틱(`)을 작은따옴표(')로 잘못 쓰는 것. 모양이 비슷해서 글자 하나만 봐서는 헷갈려. <code style="font-family:'JetBrains Mono',monospace">'안녕 ${name}'</code> 이렇게 작은따옴표를 쓰면 ${name}이 그대로 글자로 나온다 (변수로 안 바뀜).
+    </div>
+
+    <h3 style="margin-top:18px">백틱만 가능한 3가지 마법</h3>
+
+    <h3 style="margin-top:8px;font-size:15px;color:var(--ac)">① ${변수}로 값 끼워넣기</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">interpolation.js</span>
+      </div>
+      <pre><span class="kw">const</span> name <span class="op">=</span> <span class="st">"길동"</span>;
+
+<span class="cm">// ${ } 안에 변수 이름을 넣으면 → 그 자리에 값이 들어간다</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`안녕, ${</span>name<span class="st">}!`</span>);   <span class="out">// → 안녕, 길동!</span>
+
+<span class="cm">// 작은따옴표로 쓰면? 변환 안 됨!</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">'안녕, ${name}!'</span>);   <span class="out">// → 안녕, ${name}!  (그대로 글자)</span></pre>
+    </div>
+
+    <h3 style="margin-top:14px;font-size:15px;color:var(--ac)">② ${ } 안에 계산식도 OK</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">expression.js</span>
+      </div>
+      <pre><span class="kw">const</span> price <span class="op">=</span> <span class="nu">15000</span>;
+<span class="kw">const</span> qty <span class="op">=</span> <span class="nu">3</span>;
+
+<span class="cm">// ${ } 안에는 변수뿐 아니라 계산식, 함수 호출도 가능</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`총액: ${</span>price <span class="op">*</span> qty<span class="st">}원`</span>);          <span class="out">// → 총액: 45000원</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`평균: ${</span>(<span class="nu">85</span> <span class="op">+</span> <span class="nu">90</span> <span class="op">+</span> <span class="nu">75</span>) <span class="op">/</span> <span class="nu">3</span><span class="st">}점`</span>);   <span class="out">// → 평균: 83.33...점</span></pre>
+    </div>
+
+    <h3 style="margin-top:14px;font-size:15px;color:var(--ac)">③ 줄바꿈도 그대로 살아있음</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">multiline.js</span>
+      </div>
+      <pre><span class="cm">// 백틱은 여러 줄 OK</span>
+<span class="kw">const</span> letter <span class="op">=</span> <span class="st">`안녕하세요.
+오늘 날씨가 좋네요.
+- 길동 드림`</span>;
+
+<span class="fn">console</span>.<span class="fn">log</span>(letter);
+<span class="cm">// → 안녕하세요.</span>
+<span class="cm">//   오늘 날씨가 좋네요.</span>
+<span class="cm">//   - 길동 드림</span>
+
+<span class="cm">// 큰따옴표는? → 줄바꿈하면 에러!</span>
+<span class="cm">// const x = "한 줄</span>
+<span class="cm">//           두 줄";   ❌ SyntaxError</span></pre>
+    </div>
+
+    <div class="tip purple">
+      <strong>특히 유용한 곳</strong>: 이따 만들 자기소개 카드처럼 <strong>HTML 코드를 변수에 담을 때</strong>. 여러 줄 HTML을 따옴표 + 줄바꿈 \n으로 연결하면 지옥이지만, 백틱으로는 그냥 보이는 그대로 쓰면 끝.
+    </div>
+
+    <h3 style="margin-top:18px">한눈에 비교</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin:10px 0">
+      <thead>
+        <tr style="background:var(--surf2)">
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub)">기능</th>
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub)">" "</th>
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub)">' '</th>
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub);background:var(--ac-l);color:var(--ac)">` ` (백틱)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8px 10px;border:1px solid var(--border)">기본 문자열</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">✅</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">✅</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center;background:var(--ac-l)">✅</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;border:1px solid var(--border)">${변수} 끼워넣기</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">❌</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">❌</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center;background:var(--ac-l)">✅</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;border:1px solid var(--border)">여러 줄 작성</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">❌</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">❌</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center;background:var(--ac-l)">✅</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;border:1px solid var(--border)">계산식 ${a + b}</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">❌</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center">❌</td>
+          <td style="padding:8px 10px;border:1px solid var(--border);text-align:center;background:var(--ac-l)">✅</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip green">
+      <strong>결론</strong>: 변수가 들어갈 일이 조금이라도 있으면 무조건 백틱. 단순한 글자만 있어도 백틱 써도 문제 없음. <strong>"기본은 백틱"</strong>으로 외우자.
+    </div>
+
+    <h3 style="margin-top:18px">직접 만들어보기</h3>
+    <div class="ir">
+      <div class="ig">
+        <div class="il">이름</div>
+        <input type="text" id="tl_name" value="길동">
+      </div>
+      <div class="ig">
+        <div class="il">나이</div>
+        <input type="number" id="tl_age" value="19">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runTemplate()">▶ 백틱으로 문장 만들기</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r5">위 값을 채우고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 7 ========== -->
+  <div class="sh" id="s7">
+    <div class="sh-num">7</div>
+    <div class="sh-text">
+      <div class="sh-title">실습: 자기소개 카드 만들기</div>
+      <div class="sh-sub">오늘 배운 거 다 모아서 한 번에</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>오늘의 종합 실습. 너의 정보를 변수에 담고, 템플릿 리터럴로 한 문단을 만들어 화면에 띄워보자.</p>
+
+    <h3>1단계 — HTML 준비</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">profile.html</span>
+      </div>
+      <pre><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html lang=</span><span class="st">"ko"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+    <span class="kw">&lt;meta charset=</span><span class="st">"UTF-8"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;title&gt;</span><span class="st">자기소개</span><span class="kw">&lt;/title&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+    <span class="kw">&lt;div id=</span><span class="st">"card"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+    <span class="kw">&lt;script&gt;</span>
+        <span class="cm">// 여기에 JS 코드</span>
+    <span class="kw">&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">2단계 — JS로 데이터 만들기</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">script 안에 작성</span>
+      </div>
+      <pre><span class="cm">// 자기 정보 (자유롭게 바꿔!)</span>
+<span class="kw">const</span> name <span class="op">=</span> <span class="st">"홍길동"</span>;
+<span class="kw">const</span> age <span class="op">=</span> <span class="nu">19</span>;
+<span class="kw">const</span> hobby <span class="op">=</span> <span class="st">"롤"</span>;
+<span class="kw">const</span> dream <span class="op">=</span> <span class="st">"프론트엔드 개발자"</span>;
+<span class="kw">const</span> isStudent <span class="op">=</span> <span class="nu">true</span>;
+
+<span class="cm">// 템플릿 리터럴로 카드 내용 만들기</span>
+<span class="kw">const</span> cardHTML <span class="op">=</span> <span class="st">`</span>
+    <span class="kw">&lt;h1&gt;</span><span class="st">${</span>name<span class="st">}</span><span class="kw">&lt;/h1&gt;</span>
+    <span class="kw">&lt;p&gt;</span><span class="st">${</span>age<span class="st">}살 · ${</span>isStudent <span class="op">?</span> <span class="st">"학생"</span> <span class="op">:</span> <span class="st">"직장인"</span><span class="st">}</span><span class="kw">&lt;/p&gt;</span>
+    <span class="kw">&lt;p&gt;</span><span class="st">취미: ${</span>hobby<span class="st">}</span><span class="kw">&lt;/p&gt;</span>
+    <span class="kw">&lt;p&gt;</span><span class="st">꿈: ${</span>dream<span class="st">}</span><span class="kw">&lt;/p&gt;</span>
+<span class="st">`</span>;
+
+<span class="cm">// 화면에 표시</span>
+<span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="st">"card"</span>).<span class="fn">innerHTML</span> <span class="op">=</span> cardHTML;</pre>
+    </div>
+
+    <div class="tip purple">
+      마지막 줄의 <strong>document.getElementById</strong>는 다음 차시에 자세히 배운다. 오늘은 "이렇게 쓰면 화면에 보이는구나" 정도만!
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">이름</div>
+        <input type="text" id="p_name" value="홍길동">
+      </div>
+      <div class="ig">
+        <div class="il">나이</div>
+        <input type="number" id="p_age" value="19">
+      </div>
+    </div>
+    <div class="ir">
+      <div class="ig">
+        <div class="il">취미</div>
+        <input type="text" id="p_hobby" value="롤">
+      </div>
+      <div class="ig">
+        <div class="il">꿈</div>
+        <input type="text" id="p_dream" value="프론트엔드 개발자">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runProfile()">▶ 자기소개 카드 만들기</button>
+
+    <div class="preview" id="preview" style="display:none">
+      <div class="preview-card" id="previewCard"></div>
+    </div>
+  </div>
+
+  <!-- ========== 8 ========== -->
+  <div class="sh" id="s8">
+    <div class="sh-num">8</div>
+    <div class="sh-text">
+      <div class="sh-title">AI에게 CSS 디자인 부탁하기</div>
+      <div class="sh-sub">JS는 우리가, 디자인은 AI가</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>위에서 만든 자기소개 카드, <strong>HTML 구조와 데이터는 우리가 JS로 만들었다.</strong> 이제 멋진 디자인이 필요해. CSS 잘 모른다고? <strong>AI에게 부탁하자.</strong></p>
+
+    <div class="tip purple">
+      <strong>이게 바로 AI 시대 개발자의 방식.</strong> 핵심 로직(JS)은 직접 짜고, 디자인이나 반복 작업은 AI에게 맡긴다. 단, AI에게 잘 설명해야 좋은 결과가 나옴.
+    </div>
+
+    <h3>좋은 프롬프트의 3요소</h3>
+    <p>① 무엇을 (대상) ② 어떻게 (스타일/분위기) ③ 어떤 형식으로 (CSS만? 인라인? 파일?)</p>
+
+    <div class="prompt-box">
+      <h4>예시 프롬프트 — 그대로 복사해서 AI에게 보내봐</h4>
+      <pre id="promptText">아래 HTML 자기소개 카드에 CSS를 적용해줘.
+
+[HTML]
+&lt;div id="card"&gt;
+    &lt;h1&gt;홍길동&lt;/h1&gt;
+    &lt;p&gt;19살 · 학생&lt;/p&gt;
+    &lt;p&gt;취미: 롤&lt;/p&gt;
+    &lt;p&gt;꿈: 프론트엔드 개발자&lt;/p&gt;
+&lt;/div&gt;
+
+[요구사항]
+- 분위기: 깔끔하고 모던, 핑크 계열
+- 너비: 최대 320px, 가운데 정렬
+- 카드 모양: 라운드 코너 + 옅은 그림자
+- 폰트: 한글이 잘 보이는 sans-serif
+- 모바일에서도 깨지지 않게
+
+CSS만 &lt;style&gt; 태그 안에 작성해서 답변해줘.</pre>
+      <button class="prompt-copy" onclick="copyPrompt()">📋 프롬프트 복사하기</button>
+    </div>
+
+    <h3 style="margin-top:18px">AI가 이렇게 답해줄 거야 (예시)</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">style.css (AI 응답 예시)</span>
+      </div>
+      <pre><span class="cm">/* AI가 만들어준 CSS — 그대로 붙여넣기 */</span>
+<span class="op">#</span><span class="fn">card</span> {
+    <span class="fn">max-width</span><span class="op">:</span> <span class="nu">320</span>px;
+    <span class="fn">margin</span><span class="op">:</span> <span class="nu">40</span>px <span class="kw">auto</span>;
+    <span class="fn">padding</span><span class="op">:</span> <span class="nu">28</span>px;
+    <span class="fn">background</span><span class="op">:</span> <span class="st">#fff1f3</span>;
+    <span class="fn">border-radius</span><span class="op">:</span> <span class="nu">16</span>px;
+    <span class="fn">box-shadow</span><span class="op">:</span> <span class="nu">0</span> <span class="nu">4</span>px <span class="nu">12</span>px <span class="kw">rgba</span>(<span class="nu">190</span>,<span class="nu">18</span>,<span class="nu">60</span>,<span class="nu">0.1</span>);
+    <span class="fn">font-family</span><span class="op">:</span> <span class="st">'Noto Sans KR'</span>, <span class="kw">sans-serif</span>;
+}
+<span class="op">#</span><span class="fn">card</span> <span class="fn">h1</span> {
+    <span class="fn">color</span><span class="op">:</span> <span class="st">#be123c</span>;
+    <span class="fn">margin-bottom</span><span class="op">:</span> <span class="nu">12</span>px;
+}
+<span class="op">#</span><span class="fn">card</span> <span class="fn">p</span> {
+    <span class="fn">color</span><span class="op">:</span> <span class="st">#7a6068</span>;
+    <span class="fn">margin</span><span class="op">:</span> <span class="nu">6</span>px <span class="nu">0</span>;
+}</pre>
+    </div>
+
+    <h3 style="margin-top:18px">실습 미션 — 너만의 CSS 받기</h3>
+    <div class="box">
+      <strong>해야 할 일:</strong>
+      <br>① 위 7번 실습에서 만든 카드를 그대로 사용
+      <br>② 위 프롬프트를 <strong>너만의 분위기로 수정</strong> (예: 핑크 → 네온 / 모던 → 레트로 / 그림자 → 굵은 테두리)
+      <br>③ AI(Claude, ChatGPT 등)에 보내고 받은 CSS를 HTML &lt;head&gt; 안에 붙여넣기
+      <br>④ 같은 데이터인데 <strong>카드 모습이 어떻게 달라졌는지</strong> 친구와 비교해보기
+    </div>
+
+    <div class="tip orange">
+      <strong>주의!</strong> AI가 준 코드를 <strong>그대로 받지 말고</strong> 한 줄씩 읽으면서 "이게 무슨 뜻이지?" 생각해. CSS는 다음 학기에 더 깊이 배우니까, 오늘은 "이런 게 있구나" 수준이면 충분.
+    </div>
+
+    <div class="tip green">
+      <strong>프로 팁</strong>: AI에게 다시 부탁할 때 — "방금 그 CSS에서 카드 배경을 그라데이션으로 바꿔줘" / "h1 폰트를 더 크고 굵게 해줘" / "다크 모드 버전도 만들어줘". 이렇게 <strong>이어가는 대화</strong>가 효과적.
+    </div>
+  </div>
+
+  <!-- 마무리 -->
+  <div class="sh">
+    <div class="sh-num">✓</div>
+    <div class="sh-text">
+      <div class="sh-title">한눈에 정리</div>
+      <div class="sh-sub">오늘 외울 6가지</div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="s-card">
+      <div class="s-card-num">01</div>
+      <div class="s-card-title">JS 실행 환경</div>
+      <div class="s-card-desc">F12 콘솔 / &lt;script&gt; 태그 (body 끝에)</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">02</div>
+      <div class="s-card-title">변수 선언</div>
+      <div class="s-card-desc">기본은 const, 바뀌어야 할 때만 let. var ❌</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">03</div>
+      <div class="s-card-title">데이터 타입 3종</div>
+      <div class="s-card-desc">number / string / boolean → typeof로 확인</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">04</div>
+      <div class="s-card-title">+ 의 두 얼굴</div>
+      <div class="s-card-desc">숫자+숫자=덧셈, 문자열+무엇=이어붙이기. Number()로 변환</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">05</div>
+      <div class="s-card-title">백틱 ` 의 마법</div>
+      <div class="s-card-desc">${변수} 로 깔끔하게 글자+변수 조합. + 안 씀</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">06</div>
+      <div class="s-card-title">AI 협업 공식</div>
+      <div class="s-card-desc">JS는 직접, CSS는 AI에게 — 단 프롬프트는 구체적으로</div>
+    </div>
+  </div>
+
+  <div class="tip blue" style="margin-top:24px">
+    <strong>다음 차시 (Day 02)</strong>: 조건문(if/else)과 반복문(for/while). "HP가 0 이하면 게임 오버", "주사위를 100번 던져라" — 흐름 제어를 배운다.
+  </div>
+
+</div>
+
+<script>
+// 진행 바
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const sc = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('prog').style.width = sc + '%';
+});
+
+// 콘솔 출력
+function runConsole() {
+  const m = document.getElementById('msg1').value || '안녕!';
+  const code = `console.log("${m}");`;
+  document.getElementById('r1').textContent = code + '   → ' + m;
+  console.log(m);
+}
+
+// 변수
+function runVariables() {
+  const n = document.getElementById('v_name').value || '용사';
+  const h = document.getElementById('v_hp').value || 100;
+  document.getElementById('r2').textContent = `name: "${n}"  /  hp: ${h}`;
+}
+
+// typeof
+function runTypeof() {
+  const v = document.getElementById('t_val').value;
+  let result, type;
+  if (v === 'true' || v === 'false') {
+    type = 'boolean';
+    result = `typeof ${v} → "boolean"`;
+  } else if (!isNaN(v) && v.trim() !== '') {
+    type = 'number';
+    result = `typeof ${v} → "number"`;
+  } else {
+    type = 'string';
+    result = `typeof "${v}" → "string"`;
+  }
+  document.getElementById('r3').textContent = result;
+}
+
+// 계산
+function runCalc() {
+  const a = document.getElementById('c_a').value;
+  const b = document.getElementById('c_b').value;
+  const numA = Number(a);
+  const numB = Number(b);
+  const wrong = a + b;
+  const right = numA + numB;
+  document.getElementById('r4').textContent = `"${a}" + "${b}" = "${wrong}"  /  Number 변환: ${right}`;
+}
+
+// 템플릿 리터럴
+function runTemplate() {
+  const n = document.getElementById('tl_name').value || '길동';
+  const a = document.getElementById('tl_age').value || 19;
+  const msg = `내 이름은 ${n}이고 나이는 ${a}살`;
+  document.getElementById('r5').textContent = msg;
+}
+
+// 자기소개 카드
+function runProfile() {
+  const n = document.getElementById('p_name').value || '홍길동';
+  const a = document.getElementById('p_age').value || 19;
+  const h = document.getElementById('p_hobby').value || '롤';
+  const d = document.getElementById('p_dream').value || '프론트엔드 개발자';
+  const isStudent = true;
+  const cardHTML = `
+    <div class="preview-card-name">${n}</div>
+    <div class="preview-card-info">${a}살 · ${isStudent ? '학생' : '직장인'}</div>
+    <div class="preview-card-info">취미: ${h}</div>
+    <div class="preview-card-info">꿈: ${d}</div>
+  `;
+  document.getElementById('previewCard').innerHTML = cardHTML;
+  document.getElementById('preview').style.display = 'block';
+}
+
+// 프롬프트 복사
+function copyPrompt() {
+  const t = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+</script>
+
+</body>
+</html>

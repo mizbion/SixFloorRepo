@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=웹개발(JavaScript) -->
+<!-- meta:unit=Day 02. 조건문 -->
+<!-- meta:title=if / else if / 논리·삼항 연산자 -->
+<!-- meta:desc=if문, else if 다중분기, 비교/논리 연산자, 삼항 연산자, BMI 측정기 실습 -->
+<!-- meta:date=2026-05-06 -->
+<!-- meta:audience=고3 직업계 -->
+<title>Day 02 · 조건문 — 흐름을 갈래로</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f9f7;        --card: #ffffff;
+  --surf2: #e6f3f0;     --surf3: #d8eae5;
+  --border: #c5dcd6;    --text: #1c1814;       --sub: #6e7a73;
+  --ac: #0d7a6e;        --ac-l: #e6f7f5;       --ac-b: #99ddd7;
+  --header-bg: #0a1612;
+  --c1: #1d4ed8; --c1l: #eff6ff; --c1b: #bfdbfe;
+  --c2: #15803d; --c2l: #f0fdf4; --c2b: #bbf7d0;
+  --c3: #b45309; --c3l: #fffbeb; --c3b: #fde68a;
+  --c4: #7c3aed; --c4l: #f5f3ff; --c4b: #ddd6fe;
+  --c5: #be123c; --c5l: #fff1f2; --c5b: #fecdd3;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; font-size: 15px;
+}
+.hd {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--header-bg); color: #fff;
+  border-bottom: 1px solid #142420;
+}
+.hd-inner {
+  max-width: 820px; margin: 0 auto;
+  padding: 12px 24px; display: flex; align-items: center; gap: 14px;
+}
+.hd-badge {
+  background: var(--ac); color: #fff;
+  padding: 4px 10px; border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.hd-title { font-family: 'Black Han Sans', sans-serif; font-size: 19px; letter-spacing: 0.3px; }
+.hd-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #a8c4be; margin-left: auto; }
+.prog { height: 3px; background: linear-gradient(90deg, var(--ac) 0%, #14b8a6 100%); width: 0%; transition: width 0.1s; }
+
+.wrap { max-width: 820px; margin: 0 auto; padding: 28px 24px 80px; }
+
+.hero {
+  text-align: center; padding: 36px 20px 28px;
+  background: var(--card); border-radius: 18px;
+  border: 1px solid var(--border); margin-bottom: 28px;
+  box-shadow: 0 4px 14px rgba(13, 122, 110, 0.06);
+}
+.hero-emoji {
+  font-size: 52px; display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px; margin: 12px 0 8px;
+  background: linear-gradient(135deg, var(--ac) 0%, #14b8a6 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 0.5px;
+}
+.hero-sub { color: var(--sub); font-size: 15px; margin-bottom: 18px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.htag {
+  background: var(--ac-l); color: var(--ac);
+  padding: 5px 12px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  border: 1px solid var(--ac-b); font-weight: 500;
+}
+
+.goals {
+  background: var(--card); border-radius: 14px;
+  border: 1px solid var(--border); padding: 22px 24px;
+  margin-bottom: 28px; border-left: 4px solid var(--ac);
+}
+.goals-title {
+  font-family: 'Black Han Sans', sans-serif; font-size: 19px;
+  color: var(--ac); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.goals-title::before { content: "🎯"; font-size: 22px; }
+.goals ol { padding-left: 22px; }
+.goals li { margin-bottom: 8px; color: var(--text); font-weight: 400; }
+.goals li strong { color: var(--ac); font-weight: 600; }
+
+.toc {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 32px;
+}
+.toc-item {
+  background: var(--card); padding: 12px 14px;
+  border-radius: 10px; border: 1px solid var(--border);
+  font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+  transition: all 0.15s;
+}
+.toc-item:hover { background: var(--surf2); border-color: var(--ac-b); transform: translateX(2px); }
+.toc-num {
+  background: var(--ac); color: #fff; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sh {
+  margin: 38px 0 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.sh-num {
+  background: var(--ac); color: #fff;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  flex-shrink: 0;
+}
+.sh-text { flex: 1; }
+.sh-title { font-family: 'Black Han Sans', sans-serif; font-size: 22px; letter-spacing: 0.3px; }
+.sh-sub { color: var(--sub); font-size: 13px; margin-top: 2px; }
+
+.card {
+  background: var(--card); border-radius: 12px;
+  border: 1px solid var(--border); border-top: 4px solid var(--ac);
+  padding: 24px; margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(13, 122, 110, 0.04);
+}
+.card h3 {
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  margin-bottom: 12px; color: var(--text);
+}
+.card p { margin-bottom: 12px; }
+
+.box {
+  background: var(--surf2); border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+  margin: 14px 0; font-size: 14px;
+}
+.box strong { color: var(--ac); }
+
+.tip {
+  border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+  font-size: 13.5px; border: 1px solid;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.tip::before { font-size: 18px; flex-shrink: 0; }
+.tip.blue { background: var(--c1l); border-color: var(--c1b); color: var(--c1); }
+.tip.blue::before { content: "💡"; }
+.tip.green { background: var(--c2l); border-color: var(--c2b); color: var(--c2); }
+.tip.green::before { content: "✅"; }
+.tip.orange { background: var(--c3l); border-color: var(--c3b); color: var(--c3); }
+.tip.orange::before { content: "⚠️"; }
+.tip.red { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.tip.red::before { content: "🚫"; }
+.tip.purple { background: var(--c4l); border-color: var(--c4b); color: var(--c4); }
+.tip.purple::before { content: "🤖"; }
+.tip.rose { background: var(--c5l); border-color: var(--c5b); color: var(--c5); }
+.tip.rose::before { content: "🔁"; }
+
+/* 코드 블록 */
+.cb {
+  margin: 12px 0; background: #f8fafc;
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+}
+.cb-hd {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surf2); padding: 7px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.cb-dots { display: flex; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dr { background: #ff5f57; } .dy { background: #ffbd2e; } .dg { background: #28c840; }
+.cb-label {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 11px; color: var(--sub); margin-left: 4px;
+}
+.cb pre {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 13px; line-height: 1.7; padding: 14px 18px;
+  overflow-x: auto; white-space: pre;
+  color: var(--text); margin: 0;
+}
+.kw { color: #b45309; font-weight: 600; }
+.fn { color: #0d7a6e; }
+.st { color: #15803d; }
+.nu { color: #1d4ed8; }
+.cm { color: #9c8d7a; font-style: italic; }
+.op { color: #7c3aed; padding: 0 2px; font-weight: 500; }
+.out { color: #155e75; font-weight: 600; }
+
+/* 인터랙션 */
+.ir { margin: 14px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.ig { flex: 1; min-width: 140px; }
+.il {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--sub); margin-bottom: 4px; font-weight: 600;
+}
+.ir input, .ir select {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+  background: var(--card); color: var(--text);
+}
+.ir input:focus, .ir select:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+
+.btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 11px 22px; border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn:hover { background: #0a5f56; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.bac { width: 100%; margin: 8px 0; }
+
+.res {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  padding: 13px 16px; border-radius: 8px; margin-top: 8px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.rl {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  background: var(--ac); color: #fff; padding: 3px 8px;
+  border-radius: 5px; font-weight: 600;
+}
+.rv { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ac); font-weight: 500; }
+
+/* AI 프롬프트 박스 */
+.prompt-box {
+  background: #f5f3ff; border: 1px solid #ddd6fe;
+  border-radius: 10px; padding: 16px;
+  margin: 14px 0;
+}
+.prompt-box h4 {
+  color: #6d28d9; font-size: 14px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.prompt-box h4::before { content: "🤖"; font-size: 18px; }
+.prompt-box pre {
+  background: #fff; border: 1px solid #ddd6fe;
+  padding: 12px 14px; border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  color: #4c1d95; white-space: pre-wrap; line-height: 1.6;
+}
+.prompt-copy {
+  background: #7c3aed; color: #fff; border: none;
+  padding: 7px 14px; border-radius: 6px; font-size: 12px;
+  cursor: pointer; margin-top: 8px; font-family: 'Noto Sans KR', sans-serif;
+}
+.prompt-copy:hover { background: #6d28d9; }
+
+/* BMI 미리보기 */
+.preview {
+  background: #fff; border: 2px dashed var(--border);
+  border-radius: 10px; padding: 24px; margin: 14px 0;
+  text-align: center;
+}
+.preview-card {
+  display: inline-block; padding: 22px 28px;
+  background: var(--ac-l); border-radius: 10px;
+  border: 1px solid var(--ac-b); text-align: left;
+  min-width: 240px;
+}
+.preview-bmi { font-family: 'Black Han Sans', sans-serif; font-size: 30px; color: var(--ac); }
+.preview-label { font-size: 13px; color: var(--sub); margin-top: 6px; }
+.preview-grade { font-family: 'Black Han Sans', sans-serif; font-size: 22px; margin-top: 10px; color: var(--ac); }
+
+/* 퀴즈 */
+.quiz-section {
+  margin-top: 38px; padding-top: 18px;
+  border-top: 2px dashed var(--border);
+}
+.quiz-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  border-radius: 10px; padding: 18px 20px; margin-bottom: 14px;
+}
+.quiz-meta {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 6px;
+}
+.quiz-q {
+  font-size: 14.5px; margin-bottom: 12px; line-height: 1.6;
+}
+.quiz-q .qcode {
+  display: block; background: #f8fafc; border: 1px solid var(--border);
+  border-radius: 7px; padding: 10px 14px; margin: 8px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  white-space: pre;
+}
+.qrow { display: flex; gap: 8px; }
+.qinput {
+  flex: 1; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+}
+.qinput:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+.qinput.iok { border-color: #28c840; background: #f0fdf4; }
+.qinput.ing { border-color: #ff5f57; background: #fef2f2; }
+.qbtn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 9px 16px; border-radius: 7px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+}
+.qbtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.qfb {
+  margin-top: 8px; font-size: 13px; min-height: 18px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.qfb.ok { color: #15803d; }
+.qfb.ng { color: #dc2626; }
+
+/* 대시보드 */
+.dashboard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  margin: 22px 0 14px;
+}
+.db-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 14px;
+}
+.db-box {
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; text-align: center;
+}
+.db-lb { font-size: 11px; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+.db-vl {
+  font-family: 'Black Han Sans', sans-serif; font-size: 24px;
+  color: var(--ac); margin-top: 2px;
+}
+.ptrack {
+  height: 8px; background: var(--surf3); border-radius: 4px; overflow: hidden;
+}
+.pbar {
+  height: 100%; width: 0%; background: linear-gradient(90deg, var(--ac), #14b8a6);
+  transition: width 0.3s;
+}
+
+/* 답안 요약 */
+.summary-tbl {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; margin: 14px 0;
+}
+.summary-tbl th, .summary-tbl td {
+  padding: 8px 10px; border: 1px solid var(--border);
+  text-align: left;
+}
+.summary-tbl th {
+  background: var(--surf2); font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--sub);
+}
+.summary-tbl td { font-family: 'JetBrains Mono', monospace; }
+.summary-tbl .stat { width: 40px; text-align: center; }
+
+/* 제출 */
+.submit-area {
+  margin-top: 18px; padding: 18px;
+  background: var(--surf2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.name-in {
+  width: 100%; padding: 10px 14px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+}
+.name-in:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+.sub-btn {
+  width: 100%; background: var(--ac); color: #fff; border: none;
+  padding: 12px; border-radius: 8px; font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 500;
+  cursor: pointer;
+}
+.sub-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sub-btn:hover:not(:disabled) { background: #0a5f56; }
+
+#cfg-warn {
+  display: none; background: #fef3c7; border: 1px solid #fde68a;
+  color: #92400e; padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; margin-top: 10px;
+}
+
+/* 결과 팝업 */
+.popup-bg {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.popup-bg.show { display: flex; }
+.popup {
+  background: #fff; border-radius: 14px; padding: 28px;
+  max-width: 380px; width: 90%; text-align: center;
+  border-top: 6px solid var(--ac);
+}
+.popup h2 { font-family: 'Black Han Sans', sans-serif; font-size: 22px; margin-bottom: 12px; color: var(--ac); }
+.popup .score { font-family: 'Black Han Sans', sans-serif; font-size: 56px; color: var(--ac); margin: 12px 0; }
+.popup .grade { font-family: 'Black Han Sans', sans-serif; font-size: 30px; margin-bottom: 8px; }
+.popup .pname { font-size: 14px; color: var(--sub); margin-bottom: 18px; }
+.popup-btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+}
+.popup-btn:hover { background: #0a5f56; }
+
+/* 마무리 */
+.summary-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  margin-top: 18px;
+}
+.s-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+}
+.s-card-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 4px;
+}
+.s-card-title { font-weight: 600; margin-bottom: 4px; }
+.s-card-desc { font-size: 13px; color: var(--sub); }
+
+@media (max-width: 640px) {
+  .toc, .summary-cards { grid-template-columns: 1fr; }
+  .db-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero h1 { font-size: 28px; }
+  .wrap { padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">DAY 02</span>
+    <span class="hd-title">조건문 — 흐름을 갈래로</span>
+    <span class="hd-meta">JS · 4h</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-emoji">🔀</div>
+    <h1>조건문 — 흐름을 갈래로</h1>
+    <div class="hero-sub">if · else if · 논리 연산자 — "만약 ~이면" 코드의 첫 분기점</div>
+    <div class="hero-tags">
+      <span class="htag">if / else</span>
+      <span class="htag">else if</span>
+      <span class="htag">&& || !</span>
+      <span class="htag">삼항 연산자</span>
+      <span class="htag">BMI 측정기</span>
+    </div>
+  </div>
+
+  <div class="goals">
+    <div class="goals-title">오늘의 학습목표</div>
+    <ol>
+      <li><strong>if / else</strong>와 비교 연산자로 조건에 따라 다른 코드를 실행할 수 있다.</li>
+      <li><strong>else if</strong>로 다중 분기를 만들고, 점수→등급 같은 여러 단계 조건을 처리할 수 있다.</li>
+      <li><strong>논리 연산자(&&, ||, !)</strong>와 삼항 연산자로 복합 조건을 간결하게 표현할 수 있다.</li>
+      <li>학습한 조건문으로 <strong>BMI 측정기</strong>를 만들고, 결과 화면을 AI에게 CSS 적용을 요청할 수 있다.</li>
+    </ol>
+  </div>
+
+  <div class="toc">
+    <a class="toc-item" href="#s1"><span class="toc-num">1</span> 1일차 복습</a>
+    <a class="toc-item" href="#s2"><span class="toc-num">2</span> if / else 기본</a>
+    <a class="toc-item" href="#s3"><span class="toc-num">3</span> else if 다중 분기</a>
+    <a class="toc-item" href="#s4"><span class="toc-num">4</span> 조건 순서의 함정</a>
+    <a class="toc-item" href="#s5"><span class="toc-num">5</span> 논리 연산자</a>
+    <a class="toc-item" href="#s6"><span class="toc-num">6</span> 삼항 연산자</a>
+    <a class="toc-item" href="#s7"><span class="toc-num">7</span> 실습: BMI 측정기</a>
+    <a class="toc-item" href="#s8"><span class="toc-num">8</span> AI에게 CSS 부탁하기</a>
+  </div>
+
+  <!-- ========== 1 ========== -->
+  <div class="sh" id="s1">
+    <div class="sh-num">1</div>
+    <div class="sh-text">
+      <div class="sh-title">1일차 복습 — 변수와 데이터</div>
+      <div class="sh-sub">조건문 들어가기 전에 30초 정리</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">recap.js</span>
+      </div>
+      <pre><span class="kw">const</span> name <span class="op">=</span> <span class="st">"길동"</span>;     <span class="cm">// 문자열</span>
+<span class="kw">let</span> score <span class="op">=</span> <span class="nu">85</span>;          <span class="cm">// 숫자, 변할 수 있음</span>
+<span class="kw">const</span> isPass <span class="op">=</span> <span class="nu">true</span>;      <span class="cm">// 불리언</span>
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`${</span>name<span class="st">}: ${</span>score<span class="st">}점`</span>);  <span class="out">// → 길동: 85점</span></pre>
+    </div>
+
+    <div class="box">
+      오늘 핵심: <strong>"score가 60점 이상이면 합격"</strong> 같은 판단을 코드로 어떻게 표현할까? → <strong>if문</strong>의 등장.
+    </div>
+  </div>
+
+  <!-- ========== 2 ========== -->
+  <div class="sh" id="s2">
+    <div class="sh-num">2</div>
+    <div class="sh-text">
+      <div class="sh-title">if / else — 두 갈래의 길</div>
+      <div class="sh-sub">조건이 맞으면 A, 아니면 B</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>가장 단순한 형태</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">if_basic.js</span>
+      </div>
+      <pre><span class="kw">const</span> score <span class="op">=</span> <span class="nu">85</span>;
+
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"합격!"</span>);
+} <span class="kw">else</span> {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"불합격..."</span>);
+}
+<span class="cm">// → 합격!</span></pre>
+    </div>
+
+    <div class="box">
+      <strong>구조</strong>:<br>
+      <code style="font-family:'JetBrains Mono',monospace">if (조건) { 참일 때 실행 } else { 거짓일 때 실행 }</code>
+    </div>
+
+    <h3 style="margin-top:18px">비교 연산자 — 결과는 항상 true 또는 false</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">compare.js</span>
+      </div>
+      <pre>a <span class="op">===</span> b      <span class="cm">// 같다 (값+타입)</span>
+a <span class="op">!==</span> b      <span class="cm">// 같지 않다</span>
+a <span class="op">&gt;</span> b        <span class="cm">// 크다</span>
+a <span class="op">&gt;=</span> b       <span class="cm">// 크거나 같다</span>
+a <span class="op">&lt;</span> b        <span class="cm">// 작다</span>
+a <span class="op">&lt;=</span> b       <span class="cm">// 작거나 같다</span></pre>
+    </div>
+
+    <div class="tip orange">
+      <strong>=== 와 ==의 차이</strong>: == 는 타입을 무시해서 헷갈림. (예: <code style="font-family:'JetBrains Mono',monospace">1 == "1"</code> → true). 우린 무조건 <strong>===</strong>.
+    </div>
+
+    <h3 style="margin-top:18px">중괄호 빼먹지 마</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">braces.js</span>
+      </div>
+      <pre><span class="cm">// 한 줄짜리도 중괄호 쓰는 습관</span>
+<span class="kw">if</span> (hp <span class="op">&lt;=</span> <span class="nu">0</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"게임 오버"</span>);
+}
+
+<span class="cm">// 권장하지 않음 — 나중에 줄 추가할 때 버그 위험</span>
+<span class="kw">if</span> (hp <span class="op">&lt;=</span> <span class="nu">0</span>) <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"게임 오버"</span>);</pre>
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">점수 입력 (0-100)</div>
+        <input type="number" id="if_score" value="85">
+      </div>
+      <div class="ig">
+        <div class="il">합격 기준</div>
+        <input type="number" id="if_pass" value="60">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runIfBasic()">▶ 합격 / 불합격 판정</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r1">위 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 3 ========== -->
+  <div class="sh" id="s3">
+    <div class="sh-num">3</div>
+    <div class="sh-text">
+      <div class="sh-title">else if — 갈래 늘리기</div>
+      <div class="sh-sub">A / B / C / D / F 같은 다단계 분기</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>합격/불합격은 두 갈래라 if/else로 충분. 그런데 <strong>점수 → 등급(A,B,C,D,F)</strong> 처럼 갈래가 많으면?</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">grade.js</span>
+      </div>
+      <pre><span class="kw">const</span> score <span class="op">=</span> <span class="nu">85</span>;
+<span class="kw">let</span> grade;
+
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">90</span>) {
+    grade <span class="op">=</span> <span class="st">"A"</span>;
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">80</span>) {
+    grade <span class="op">=</span> <span class="st">"B"</span>;
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">70</span>) {
+    grade <span class="op">=</span> <span class="st">"C"</span>;
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+    grade <span class="op">=</span> <span class="st">"D"</span>;
+} <span class="kw">else</span> {
+    grade <span class="op">=</span> <span class="st">"F"</span>;
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`등급: ${</span>grade<span class="st">}`</span>);  <span class="out">// → 등급: B</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>핵심 규칙</strong>: <strong>위에서부터</strong> 조건을 검사하고, <strong>처음 만족하는 가지 하나</strong>만 실행하고 나머지는 건너뛴다.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">점수 (0-100)</div>
+        <input type="number" id="g_score" value="85">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runGrade()">▶ 등급 판정</button>
+    <div class="res">
+      <span class="rl">등급</span>
+      <span class="rv" id="r2">점수를 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 4 ========== -->
+  <div class="sh" id="s4">
+    <div class="sh-num">4</div>
+    <div class="sh-text">
+      <div class="sh-title">조건 순서의 함정</div>
+      <div class="sh-sub">왜 90점이 D 등급으로 나오지?</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>이 코드의 결과를 예측해봐. 95점인 학생을 넣으면?</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">trap.js</span>
+      </div>
+      <pre><span class="kw">const</span> score <span class="op">=</span> <span class="nu">95</span>;
+
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"D"</span>);
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">90</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"A"</span>);
+}
+<span class="cm">// → D  (왜?)</span></pre>
+    </div>
+
+    <div class="tip red">
+      <strong>이유</strong>: 95는 60 이상도 만족! 위 조건이 먼저 걸려서 D가 출력된다. <strong>else if는 큰 조건부터 작은 조건 순서</strong>로 써야 한다.
+    </div>
+
+    <div class="tip green">
+      <strong>해결</strong>: 위 코드를 90 이상 → 60 이상 순서로 바꾸면 정상 작동. <em>등급 판정은 항상 큰 점수부터!</em>
+    </div>
+  </div>
+
+  <!-- ========== 5 ========== -->
+  <div class="sh" id="s5">
+    <div class="sh-num">5</div>
+    <div class="sh-text">
+      <div class="sh-title">논리 연산자 — 조건 합치기</div>
+      <div class="sh-sub">&& (그리고), || (또는), ! (아님)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3가지 기호</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">logic.js</span>
+      </div>
+      <pre>A <span class="op">&&</span> B    <span class="cm">// A 그리고 B (둘 다 true여야 true)</span>
+A <span class="op">||</span> B    <span class="cm">// A 또는 B (하나만 true면 true)</span>
+<span class="op">!</span>A         <span class="cm">// A의 반대 (true면 false, false면 true)</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">실전 예제 — 놀이공원 입장 조건</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">park.js</span>
+      </div>
+      <pre><span class="kw">const</span> age <span class="op">=</span> <span class="nu">15</span>;
+<span class="kw">const</span> height <span class="op">=</span> <span class="nu">160</span>;
+<span class="kw">const</span> hasGuardian <span class="op">=</span> <span class="nu">true</span>;
+
+<span class="cm">// 14세 이상 그리고 키 150 이상</span>
+<span class="kw">if</span> (age <span class="op">&gt;=</span> <span class="nu">14</span> <span class="op">&&</span> height <span class="op">&gt;=</span> <span class="nu">150</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"바이킹 탑승 가능"</span>);
+}
+
+<span class="cm">// 14세 이상이거나 보호자 동반이면</span>
+<span class="kw">if</span> (age <span class="op">&gt;=</span> <span class="nu">14</span> <span class="op">||</span> hasGuardian) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"입장 가능"</span>);
+}</pre>
+    </div>
+
+    <h3 style="margin-top:18px">! 의 활용</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">not.js</span>
+      </div>
+      <pre><span class="kw">const</span> isLogin <span class="op">=</span> <span class="nu">false</span>;
+
+<span class="kw">if</span> (<span class="op">!</span>isLogin) {     <span class="cm">// 로그인 안 했으면</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"로그인이 필요합니다"</span>);
+}</pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>읽는 법</strong>: <code style="font-family:'JetBrains Mono',monospace">!isLogin</code> = "isLogin이 아니다" = "로그인하지 않은 상태"
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">나이</div>
+        <input type="number" id="l_age" value="15">
+      </div>
+      <div class="ig">
+        <div class="il">키 (cm)</div>
+        <input type="number" id="l_height" value="160">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runLogic()">▶ 바이킹 탑승 가능?</button>
+    <div class="res">
+      <span class="rl">판정</span>
+      <span class="rv" id="r3">위 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 6 ========== -->
+  <div class="sh" id="s6">
+    <div class="sh-num">6</div>
+    <div class="sh-text">
+      <div class="sh-title">삼항 연산자 — 한 줄 if</div>
+      <div class="sh-sub">조건 ? 참일때값 : 거짓일때값</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>간단한 if/else는 한 줄로 줄일 수 있어. 변수에 값을 할당할 때 특히 자주 씀.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">ternary.js</span>
+      </div>
+      <pre><span class="cm">// 기존 방식 — 4줄</span>
+<span class="kw">let</span> result;
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+    result <span class="op">=</span> <span class="st">"합격"</span>;
+} <span class="kw">else</span> {
+    result <span class="op">=</span> <span class="st">"불합격"</span>;
+}
+
+<span class="cm">// 삼항 연산자 — 1줄</span>
+<span class="kw">const</span> result2 <span class="op">=</span> score <span class="op">&gt;=</span> <span class="nu">60</span> <span class="op">?</span> <span class="st">"합격"</span> <span class="op">:</span> <span class="st">"불합격"</span>;
+<span class="cm">//                  ↑조건       ↑참일때    ↑거짓일때</span>
+
+<span class="fn">console</span>.<span class="fn">log</span>(result2);  <span class="out">// → 합격</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>가장 흔한 사용처</strong>: 화면에 보여줄 텍스트 결정 — <code style="font-family:'JetBrains Mono',monospace">isStudent ? "학생" : "직장인"</code>
+    </div>
+
+    <div class="tip orange">
+      <strong>주의</strong>: 조건이 복잡해지면 (else if가 3개 이상) 삼항 연산자보다 if/else if가 읽기 좋다. 한 줄에 다 욱여넣지 말 것.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">점수</div>
+        <input type="number" id="t_score" value="75">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runTernary()">▶ 한 줄로 합격 판정</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r4">점수를 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 7 ========== -->
+  <div class="sh" id="s7">
+    <div class="sh-num">7</div>
+    <div class="sh-text">
+      <div class="sh-title">실습: BMI 측정기</div>
+      <div class="sh-sub">조건문 풀세트 + 화면 출력</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>BMI 계산 공식과 기준</h3>
+    <div class="box">
+      <strong>BMI = 몸무게(kg) ÷ 키(m)²</strong>
+      <br>
+      <br>· 18.5 미만 → 저체중
+      <br>· 18.5 이상 23 미만 → 정상
+      <br>· 23 이상 25 미만 → 과체중
+      <br>· 25 이상 → 비만
+    </div>
+
+    <h3>전체 코드</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">bmi.html</span>
+      </div>
+      <pre><span class="kw">&lt;div id=</span><span class="st">"result"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+<span class="kw">&lt;script&gt;</span>
+    <span class="kw">const</span> height <span class="op">=</span> <span class="nu">170</span>;   <span class="cm">// cm</span>
+    <span class="kw">const</span> weight <span class="op">=</span> <span class="nu">65</span>;    <span class="cm">// kg</span>
+
+    <span class="cm">// 1단계: BMI 계산 (cm → m로 변환)</span>
+    <span class="kw">const</span> heightM <span class="op">=</span> height <span class="op">/</span> <span class="nu">100</span>;
+    <span class="kw">const</span> bmi <span class="op">=</span> weight <span class="op">/</span> (heightM <span class="op">*</span> heightM);
+
+    <span class="cm">// 2단계: 등급 판정</span>
+    <span class="kw">let</span> grade;
+    <span class="kw">if</span> (bmi <span class="op">&lt;</span> <span class="nu">18.5</span>) {
+        grade <span class="op">=</span> <span class="st">"저체중"</span>;
+    } <span class="kw">else if</span> (bmi <span class="op">&lt;</span> <span class="nu">23</span>) {
+        grade <span class="op">=</span> <span class="st">"정상"</span>;
+    } <span class="kw">else if</span> (bmi <span class="op">&lt;</span> <span class="nu">25</span>) {
+        grade <span class="op">=</span> <span class="st">"과체중"</span>;
+    } <span class="kw">else</span> {
+        grade <span class="op">=</span> <span class="st">"비만"</span>;
+    }
+
+    <span class="cm">// 3단계: 화면에 출력</span>
+    <span class="kw">const</span> html <span class="op">=</span> <span class="st">`
+        &lt;h1&gt;BMI ${</span>bmi.<span class="fn">toFixed</span>(<span class="nu">1</span>)<span class="st">}&lt;/h1&gt;
+        &lt;p&gt;키: ${</span>height<span class="st">}cm / 몸무게: ${</span>weight<span class="st">}kg&lt;/p&gt;
+        &lt;p&gt;상태: ${</span>grade<span class="st">}&lt;/p&gt;
+    `</span>;
+    <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="st">"result"</span>).<span class="fn">innerHTML</span> <span class="op">=</span> html;
+<span class="kw">&lt;/script&gt;</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>toFixed(1)</strong>: 소수점 첫째 자리까지만 표시. 22.4912... → "22.5"
+    </div>
+
+    <h3 style="margin-top:18px">직접 측정해보기</h3>
+    <div class="ir">
+      <div class="ig">
+        <div class="il">키 (cm)</div>
+        <input type="number" id="b_height" value="170">
+      </div>
+      <div class="ig">
+        <div class="il">몸무게 (kg)</div>
+        <input type="number" id="b_weight" value="65">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runBMI()">▶ BMI 측정</button>
+
+    <div class="preview" id="bmiPreview" style="display:none">
+      <div class="preview-card" id="bmiCard"></div>
+    </div>
+  </div>
+
+  <!-- ========== 8 ========== -->
+  <div class="sh" id="s8">
+    <div class="sh-num">8</div>
+    <div class="sh-text">
+      <div class="sh-title">AI에게 CSS 디자인 부탁하기</div>
+      <div class="sh-sub">결과 화면을 의료 앱 느낌으로</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>BMI 결과 화면을 좀 더 <strong>건강·의료 앱</strong> 느낌으로 만들고 싶어. 1일차에 배운 방식으로 AI에게 부탁하자.</p>
+
+    <div class="prompt-box">
+      <h4>예시 프롬프트 — 그대로 복사해서 AI에게 보내봐</h4>
+      <pre id="promptText">아래 HTML BMI 결과 카드에 CSS를 적용해줘.
+
+[HTML]
+&lt;div id="result"&gt;
+    &lt;h1&gt;BMI 22.5&lt;/h1&gt;
+    &lt;p&gt;키: 170cm / 몸무게: 65kg&lt;/p&gt;
+    &lt;p&gt;상태: 정상&lt;/p&gt;
+&lt;/div&gt;
+
+[요구사항]
+- 분위기: 건강·의료 앱, 깔끔하고 신뢰감 있게
+- 메인 컬러: 민트/녹색 계열
+- 너비: 최대 360px, 가운데 정렬
+- BMI 숫자는 크게 강조 (40px 이상)
+- 카드 모양: 라운드 + 옅은 그림자
+- 상태 글자에 따라 색을 바꾸고 싶다면 "정상=초록"으로
+
+CSS만 &lt;style&gt; 태그 안에 작성해서 답변해줘.</pre>
+      <button class="prompt-copy" onclick="copyPrompt()">📋 프롬프트 복사하기</button>
+    </div>
+
+    <h3 style="margin-top:18px">실습 미션 — 너만의 분위기로 변형</h3>
+    <div class="box">
+      ① 위 프롬프트의 <strong>분위기·메인 컬러</strong>를 바꿔봐 (다크모드 / 핑크 / 레트로 게임풍 등)
+      <br>② 받은 CSS를 BMI 측정기 HTML &lt;head&gt; 안에 붙여넣기
+      <br>③ 친구와 결과를 비교 — 같은 데이터인데 어떻게 다르게 보이는지
+    </div>
+
+    <div class="tip purple">
+      <strong>심화</strong>: AI에게 "상태에 따라 카드 배경색이 자동으로 바뀌게 해줘"라고 추가 요청하면, 자바스크립트와 CSS를 연결한 더 멋진 코드를 받을 수 있다. (코드 그대로 이해 안 돼도 일단 붙여보고 동작 확인!)
+    </div>
+  </div>
+
+  <!-- ========== 퀴즈 섹션 ========== -->
+  <div class="sh" id="quiz">
+    <div class="sh-num">Q</div>
+    <div class="sh-text">
+      <div class="sh-title">평가 문항 (8문제)</div>
+      <div class="sh-sub">학습목표 4개 × 재인 1 + 적용 1</div>
+    </div>
+  </div>
+
+  <div class="card quiz-section" style="border-top-color:var(--ac); margin-top:14px">
+
+    <!-- LO1: if/else 재인 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q1 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 출력 결과는?
+        <span class="qcode"><span class="kw">const</span> hp <span class="op">=</span> <span class="nu">0</span>;
+<span class="kw">if</span> (hp <span class="op">&lt;=</span> <span class="nu">0</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"게임 오버"</span>);
+} <span class="kw">else</span> {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"진행 중"</span>);
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q1" placeholder="콘솔에 찍히는 글자만"
+               onkeydown="if(event.key==='Enter')chk(1,'게임 오버')">
+        <button class="qbtn" onclick="chk(1,'게임 오버')">확인</button>
+      </div>
+      <div class="qfb" id="qf1"></div>
+    </div>
+
+    <!-- LO1: if/else 적용 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q2 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 빈칸에 들어갈 비교 연산자는?<br>
+        (점수가 60 이상이면 "합격" 출력)
+        <span class="qcode"><span class="kw">if</span> (score <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span> <span class="nu">60</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"합격"</span>);
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q2" placeholder="예: ===, &gt;=, !=="
+               onkeydown="if(event.key==='Enter')chk(2,'>=')">
+        <button class="qbtn" onclick="chk(2,'>=')">확인</button>
+      </div>
+      <div class="qfb" id="qf2"></div>
+    </div>
+
+    <!-- LO2: else if 재인 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q3 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드에서 score가 75일 때 출력되는 등급은?
+        <span class="qcode"><span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">90</span>) {
+    grade <span class="op">=</span> <span class="st">"A"</span>;
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">80</span>) {
+    grade <span class="op">=</span> <span class="st">"B"</span>;
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">70</span>) {
+    grade <span class="op">=</span> <span class="st">"C"</span>;
+} <span class="kw">else</span> {
+    grade <span class="op">=</span> <span class="st">"F"</span>;
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q3" placeholder="A, B, C, F 중 하나"
+               onkeydown="if(event.key==='Enter')chk(3,'C')">
+        <button class="qbtn" onclick="chk(3,'C')">확인</button>
+      </div>
+      <div class="qfb" id="qf3"></div>
+    </div>
+
+    <!-- LO2: else if 적용 (조건 순서) -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q4 · LO2 · 10점</div>
+      <div class="quiz-q">
+        score가 95일 때 다음 코드의 출력 결과는? (조건 순서를 잘 보세요)
+        <span class="qcode"><span class="kw">const</span> score <span class="op">=</span> <span class="nu">95</span>;
+<span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"D"</span>);
+} <span class="kw">else if</span> (score <span class="op">&gt;=</span> <span class="nu">90</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"A"</span>);
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q4" placeholder="콘솔에 찍히는 글자"
+               onkeydown="if(event.key==='Enter')chk(4,'D')">
+        <button class="qbtn" onclick="chk(4,'D')">확인</button>
+      </div>
+      <div class="qfb" id="qf4"></div>
+    </div>
+
+    <!-- LO3: 논리 연산자 재인 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q5 · LO3 · 10점</div>
+      <div class="quiz-q">
+        age=15, height=160일 때 다음 조건식의 결과(true/false)는?
+        <span class="qcode">age <span class="op">&gt;=</span> <span class="nu">14</span> <span class="op">&&</span> height <span class="op">&gt;=</span> <span class="nu">150</span></span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q5" placeholder="true 또는 false"
+               onkeydown="if(event.key==='Enter')chk(5,'true')">
+        <button class="qbtn" onclick="chk(5,'true')">확인</button>
+      </div>
+      <div class="qfb" id="qf5"></div>
+    </div>
+
+    <!-- LO3: 삼항 연산자 적용 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q6 · LO3 · 10점</div>
+      <div class="quiz-q">
+        다음 삼항 연산자의 결과는? (score = 50)
+        <span class="qcode"><span class="kw">const</span> result <span class="op">=</span> score <span class="op">&gt;=</span> <span class="nu">60</span> <span class="op">?</span> <span class="st">"합격"</span> <span class="op">:</span> <span class="st">"불합격"</span>;</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q6" placeholder="result에 담기는 값"
+               onkeydown="if(event.key==='Enter')chk(6,'불합격')">
+        <button class="qbtn" onclick="chk(6,'불합격')">확인</button>
+      </div>
+      <div class="qfb" id="qf6"></div>
+    </div>
+
+    <!-- LO4: BMI 종합 재인 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q7 · LO4 · 10점</div>
+      <div class="quiz-q">
+        키 160cm, 몸무게 50kg일 때 BMI는? (소수점 첫째 자리까지)<br>
+        <em>계산식: 50 / (1.6 × 1.6)</em>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q7" placeholder="예: 22.5"
+               onkeydown="if(event.key==='Enter')chk(7,'19.5')">
+        <button class="qbtn" onclick="chk(7,'19.5')">확인</button>
+      </div>
+      <div class="qfb" id="qf7"></div>
+    </div>
+
+    <!-- LO4: BMI 종합 적용 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q8 · LO4 · 10점</div>
+      <div class="quiz-q">
+        BMI가 24일 때 본문의 등급 판정 기준에 따라 어느 등급?
+        <span class="qcode"><span class="cm">// 기준 복습</span>
+<span class="cm">// 18.5 미만 → 저체중</span>
+<span class="cm">// 18.5 이상 23 미만 → 정상</span>
+<span class="cm">// 23 이상 25 미만 → 과체중</span>
+<span class="cm">// 25 이상 → 비만</span></span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q8" placeholder="저체중 / 정상 / 과체중 / 비만"
+               onkeydown="if(event.key==='Enter')chk(8,'과체중')">
+        <button class="qbtn" onclick="chk(8,'과체중')">확인</button>
+      </div>
+      <div class="qfb" id="qf8"></div>
+    </div>
+
+    <!-- 대시보드 -->
+    <div class="dashboard">
+      <div class="db-grid">
+        <div class="db-box"><div class="db-lb">정답</div><div class="db-vl" id="db-ok">0</div></div>
+        <div class="db-box"><div class="db-lb">오답</div><div class="db-vl" id="db-ng" style="color:#dc2626">0</div></div>
+        <div class="db-box"><div class="db-lb">완료</div><div class="db-vl" id="db-done">0/8</div></div>
+        <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score">0점</div></div>
+      </div>
+      <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+    </div>
+
+    <table class="summary-tbl">
+      <thead>
+        <tr>
+          <th style="width:50px">번호</th>
+          <th>문제</th>
+          <th style="width:120px">내 답변</th>
+          <th class="stat">결과</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody">
+        <tr><td>Q1</td><td>if/else 결과 예측</td><td id="ans1">-</td><td class="stat" id="st1">⬜</td></tr>
+        <tr><td>Q2</td><td>비교 연산자 빈칸</td><td id="ans2">-</td><td class="stat" id="st2">⬜</td></tr>
+        <tr><td>Q3</td><td>else if 등급 결과</td><td id="ans3">-</td><td class="stat" id="st3">⬜</td></tr>
+        <tr><td>Q4</td><td>조건 순서 함정</td><td id="ans4">-</td><td class="stat" id="st4">⬜</td></tr>
+        <tr><td>Q5</td><td>&& 결과 판정</td><td id="ans5">-</td><td class="stat" id="st5">⬜</td></tr>
+        <tr><td>Q6</td><td>삼항 연산자 결과</td><td id="ans6">-</td><td class="stat" id="st6">⬜</td></tr>
+        <tr><td>Q7</td><td>BMI 계산</td><td id="ans7">-</td><td class="stat" id="st7">⬜</td></tr>
+        <tr><td>Q8</td><td>BMI 등급 판정</td><td id="ans8">-</td><td class="stat" id="st8">⬜</td></tr>
+      </tbody>
+    </table>
+
+    <div class="submit-area">
+      <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요" oninput="checkSubmit()">
+      <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+      <div id="cfg-warn">⚠️ 선생님: 이 파일의 WEB_APP_URL이 설정되지 않았습니다. 코드 상단의 설정 영역을 확인하세요.</div>
+    </div>
+  </div>
+
+  <!-- 마무리 -->
+  <div class="sh">
+    <div class="sh-num">✓</div>
+    <div class="sh-text">
+      <div class="sh-title">한눈에 정리</div>
+      <div class="sh-sub">오늘 외울 6가지</div>
+    </div>
+  </div>
+
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="s-card-num">01</div>
+      <div class="s-card-title">if / else 구조</div>
+      <div class="s-card-desc">if (조건) { } else { } — 중괄호 항상</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">02</div>
+      <div class="s-card-title">비교는 ===</div>
+      <div class="s-card-desc">== 는 쓰지 마. !==, &gt;=, &lt;= 도 함께</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">03</div>
+      <div class="s-card-title">else if 순서</div>
+      <div class="s-card-desc">큰 조건 → 작은 조건. 위에서 처음 만족한 것만 실행</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">04</div>
+      <div class="s-card-title">논리 3종</div>
+      <div class="s-card-desc">&& 그리고 / || 또는 / ! 아님</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">05</div>
+      <div class="s-card-title">삼항은 한 줄로</div>
+      <div class="s-card-desc">조건 ? A : B — 변수 할당에 자주 쓰임</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">06</div>
+      <div class="s-card-title">분기 → 출력</div>
+      <div class="s-card-desc">조건문 결과를 innerHTML로 화면에 표시</div>
+    </div>
+  </div>
+
+  <div class="tip blue" style="margin-top:24px">
+    <strong>다음 차시 (Day 03)</strong>: 반복문 — for문, while문, 중첩 반복. 1부터 100까지 합, 구구단, "100명 학생 점수 한 번에 등급 판정"이 가능해진다.
+  </div>
+
+</div>
+
+<!-- 결과 팝업 -->
+<div class="popup-bg" id="popupBg" onclick="if(event.target.id==='popupBg')closePopup()">
+  <div class="popup">
+    <h2>제출 결과</h2>
+    <div class="pname" id="p-name">-</div>
+    <div class="score" id="p-score">0점</div>
+    <div class="grade" id="p-grade">-</div>
+    <button class="popup-btn" onclick="sendAnswers()">답안 전송하기</button>
+    <button class="popup-btn" style="background:#888;margin-left:8px" onclick="closePopup()">닫기</button>
+    <div id="send-status" style="margin-top:12px;font-size:13px;color:var(--sub)"></div>
+  </div>
+</div>
+
+<script>
+/* ╔══════════════════════════════════════════════╗
+   ║ 선생님 설정 — LESSON_ID만 파일마다 변경      ║
+   ╚══════════════════════════════════════════════╝ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec';
+const LESSON_ID   = 'web/02_javascript_control_flow';
+/* ═══════════════ 설정 끝 ═══════════════════════ */
+
+// 진행 바
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const sc = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('prog').style.width = sc + '%';
+});
+
+// 1번 — if 기본
+function runIfBasic() {
+  const s = Number(document.getElementById('if_score').value) || 0;
+  const p = Number(document.getElementById('if_pass').value) || 60;
+  const r = s >= p ? '합격! 🎉' : '불합격...';
+  document.getElementById('r1').textContent = `${s}점 (기준 ${p}점) → ${r}`;
+}
+
+// 2번 — 등급
+function runGrade() {
+  const s = Number(document.getElementById('g_score').value) || 0;
+  let g;
+  if (s >= 90) g = 'A';
+  else if (s >= 80) g = 'B';
+  else if (s >= 70) g = 'C';
+  else if (s >= 60) g = 'D';
+  else g = 'F';
+  document.getElementById('r2').textContent = `${s}점 → ${g} 등급`;
+}
+
+// 3번 — 논리 연산자
+function runLogic() {
+  const a = Number(document.getElementById('l_age').value) || 0;
+  const h = Number(document.getElementById('l_height').value) || 0;
+  const ok = a >= 14 && h >= 150;
+  document.getElementById('r3').textContent =
+    `나이 ${a}, 키 ${h}cm → ${ok ? '✅ 탑승 가능' : '❌ 탑승 불가'}`;
+}
+
+// 4번 — 삼항
+function runTernary() {
+  const s = Number(document.getElementById('t_score').value) || 0;
+  const r = s >= 60 ? '합격' : '불합격';
+  document.getElementById('r4').textContent = `${s}점 → "${r}"`;
+}
+
+// BMI
+function runBMI() {
+  const h = Number(document.getElementById('b_height').value) || 0;
+  const w = Number(document.getElementById('b_weight').value) || 0;
+  if (h <= 0 || w <= 0) {
+    alert('키와 몸무게를 올바르게 입력하세요');
+    return;
+  }
+  const hM = h / 100;
+  const bmi = w / (hM * hM);
+  let grade, color;
+  if (bmi < 18.5) { grade = '저체중'; color = '#1d4ed8'; }
+  else if (bmi < 23) { grade = '정상'; color = '#15803d'; }
+  else if (bmi < 25) { grade = '과체중'; color = '#b45309'; }
+  else { grade = '비만'; color = '#dc2626'; }
+
+  const html = `
+    <div class="preview-bmi">BMI ${bmi.toFixed(1)}</div>
+    <div class="preview-label">키 ${h}cm · 몸무게 ${w}kg</div>
+    <div class="preview-grade" style="color:${color}">${grade}</div>
+  `;
+  document.getElementById('bmiCard').innerHTML = html;
+  document.getElementById('bmiPreview').style.display = 'block';
+}
+
+// 프롬프트 복사
+function copyPrompt() {
+  const t = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+/* ─── 퀴즈 시스템 ─────────────────────────────── */
+const total = 8;
+const answered = {};   // {1: {ans, ok}, ...}
+
+function chk(n, correct) {
+  const inp = document.getElementById('q' + n);
+  const fb = document.getElementById('qf' + n);
+  const btn = inp.nextElementSibling;
+  const user = inp.value.trim();
+
+  if (!user) {
+    fb.textContent = '답을 입력해주세요';
+    fb.className = 'qfb ng';
+    return;
+  }
+
+  // 정답 비교 (양쪽 trim, 따옴표 허용)
+  const norm = (s) => s.replace(/['"`]/g, '').replace(/\s/g, '').toLowerCase();
+  const isOk = norm(user) === norm(correct);
+
+  if (isOk) {
+    inp.classList.remove('ing');
+    inp.classList.add('iok');
+    inp.disabled = true;
+    btn.disabled = true;
+    fb.textContent = '✅ 정답!';
+    fb.className = 'qfb ok';
+    answered[n] = { ans: user, ok: true };
+  } else {
+    inp.classList.add('ing');
+    fb.textContent = '❌ 다시 시도해보세요';
+    fb.className = 'qfb ng';
+    if (!answered[n] || answered[n].ok === false) {
+      answered[n] = { ans: user, ok: false };
+    }
+  }
+
+  updateDashboard();
+  updateSummary(n, user, isOk);
+  checkSubmit();
+}
+
+function updateDashboard() {
+  let ok = 0, ng = 0;
+  for (const k in answered) {
+    if (answered[k].ok) ok++;
+    else ng++;
+  }
+  const done = Object.keys(answered).length;
+  // 채점 가능한 답변(정답 또는 더 이상 시도 안 한 오답) 기준
+  document.getElementById('db-ok').textContent = ok;
+  document.getElementById('db-ng').textContent = ng;
+  document.getElementById('db-done').textContent = `${ok}/${total}`;
+  document.getElementById('db-score').textContent = `${ok * 10}점`;
+  document.getElementById('pbar').style.width = `${(ok / total) * 100}%`;
+}
+
+function updateSummary(n, ans, isOk) {
+  document.getElementById('ans' + n).textContent = ans || '-';
+  document.getElementById('st' + n).textContent = isOk ? '✅' : '❌';
+}
+
+function collectAnswers() {
+  const list = [];
+  for (let i = 1; i <= total; i++) {
+    if (answered[i]) {
+      list.push({ q: i, ans: answered[i].ans, ok: answered[i].ok });
+    } else {
+      list.push({ q: i, ans: '미응답', ok: false });
+    }
+  }
+  return list;
+}
+
+function checkSubmit() {
+  const name = document.getElementById('stu-name').value.trim();
+  const allDone = Object.keys(answered).length === total &&
+    Object.values(answered).every(a => a.ok);
+  document.getElementById('sub-btn').disabled = !(name && allDone);
+}
+
+function openPopup() {
+  const name = document.getElementById('stu-name').value.trim();
+  let ok = 0;
+  for (const k in answered) if (answered[k].ok) ok++;
+  const score = ok * 10;
+  let grade;
+  if (score >= 90) grade = 'A';
+  else if (score >= 80) grade = 'B';
+  else if (score >= 70) grade = 'C';
+  else if (score >= 60) grade = 'D';
+  else grade = 'F';
+
+  document.getElementById('p-name').textContent = name + ' 학생';
+  document.getElementById('p-score').textContent = score + '점';
+  document.getElementById('p-grade').textContent = grade + ' 등급';
+  document.getElementById('popupBg').classList.add('show');
+  document.getElementById('send-status').textContent = '';
+}
+
+function closePopup() {
+  document.getElementById('popupBg').classList.remove('show');
+}
+
+async function sendAnswers() {
+  const name = document.getElementById('stu-name').value.trim();
+  let ok = 0;
+  for (const k in answered) if (answered[k].ok) ok++;
+  const score = ok * 10;
+  const status = document.getElementById('send-status');
+
+  if (WEB_APP_URL.includes('여기에')) {
+    document.getElementById('cfg-warn').style.display = 'block';
+    status.textContent = '⚠️ 전송 URL이 설정되지 않음';
+    return;
+  }
+
+  status.textContent = '전송 중...';
+  try {
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        lesson: LESSON_ID,
+        name,
+        answers: collectAnswers(),
+        score: score + '점'
+      })
+    });
+    status.textContent = '✅ 전송 완료!';
+  } catch (e) {
+    status.textContent = '❌ 전송 실패: ' + e.message;
+  }
+}
+</script>
+
+</body>
+</html>
