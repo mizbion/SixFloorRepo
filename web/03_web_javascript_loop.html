@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=웹개발(JavaScript) -->
+<!-- meta:unit=자바스크립트 활용 -->
+<!-- meta:title=Day3. 반복문 - for / while / break · continue / 중첩 / 주사위 게임 -->
+<!-- meta:desc=for문, while문, break/continue, 중첩 반복문, Math.random, 주사위 게임 실습, AI 협업 CSS -->
+<!-- meta:date=2026-05-07 -->
+<!-- meta:audience=고3 직업계 -->
+<title>Day 03 · 반복문 — 같은 일을 100번도 한 번에</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fff7ed;        --card: #ffffff;
+  --surf2: #ffedd5;     --surf3: #fed7aa;
+  --border: #fdba74;    --text: #1c1410;       --sub: #7a6055;
+  --ac: #c2410c;        --ac-l: #fff7ed;       --ac-b: #fed7aa;
+  --header-bg: #1c0a05;
+  --c1: #1d4ed8; --c1l: #eff6ff; --c1b: #bfdbfe;
+  --c2: #15803d; --c2l: #f0fdf4; --c2b: #bbf7d0;
+  --c3: #b45309; --c3l: #fffbeb; --c3b: #fde68a;
+  --c4: #7c3aed; --c4l: #f5f3ff; --c4b: #ddd6fe;
+  --c5: #be123c; --c5l: #fff1f2; --c5b: #fecdd3;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; font-size: 15px;
+}
+.hd {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--header-bg); color: #fff;
+  border-bottom: 1px solid #2a1208;
+}
+.hd-inner {
+  max-width: 820px; margin: 0 auto;
+  padding: 12px 24px; display: flex; align-items: center; gap: 14px;
+}
+.hd-badge {
+  background: var(--ac); color: #fff;
+  padding: 4px 10px; border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.hd-title { font-family: 'Black Han Sans', sans-serif; font-size: 19px; letter-spacing: 0.3px; }
+.hd-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #cba593; margin-left: auto; }
+.prog { height: 3px; background: linear-gradient(90deg, var(--ac) 0%, #ea580c 100%); width: 0%; transition: width 0.1s; }
+
+.wrap { max-width: 820px; margin: 0 auto; padding: 28px 24px 80px; }
+
+.hero {
+  text-align: center; padding: 36px 20px 28px;
+  background: var(--card); border-radius: 18px;
+  border: 1px solid var(--border); margin-bottom: 28px;
+  box-shadow: 0 4px 14px rgba(194, 65, 12, 0.08);
+}
+.hero-emoji {
+  font-size: 52px; display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px; margin: 12px 0 8px;
+  background: linear-gradient(135deg, var(--ac) 0%, #ea580c 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 0.5px;
+}
+.hero-sub { color: var(--sub); font-size: 15px; margin-bottom: 18px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.htag {
+  background: var(--ac-l); color: var(--ac);
+  padding: 5px 12px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  border: 1px solid var(--ac-b); font-weight: 500;
+}
+
+.goals {
+  background: var(--card); border-radius: 14px;
+  border: 1px solid var(--border); padding: 22px 24px;
+  margin-bottom: 28px; border-left: 4px solid var(--ac);
+}
+.goals-title {
+  font-family: 'Black Han Sans', sans-serif; font-size: 19px;
+  color: var(--ac); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.goals-title::before { content: "🎯"; font-size: 22px; }
+.goals ol { padding-left: 22px; }
+.goals li { margin-bottom: 8px; color: var(--text); font-weight: 400; }
+.goals li strong { color: var(--ac); font-weight: 600; }
+
+.toc {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 32px;
+}
+.toc-item {
+  background: var(--card); padding: 12px 14px;
+  border-radius: 10px; border: 1px solid var(--border);
+  font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+  transition: all 0.15s;
+}
+.toc-item:hover { background: var(--surf2); border-color: var(--ac-b); transform: translateX(2px); }
+.toc-num {
+  background: var(--ac); color: #fff; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sh {
+  margin: 38px 0 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.sh-num {
+  background: var(--ac); color: #fff;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  flex-shrink: 0;
+}
+.sh-text { flex: 1; }
+.sh-title { font-family: 'Black Han Sans', sans-serif; font-size: 22px; letter-spacing: 0.3px; }
+.sh-sub { color: var(--sub); font-size: 13px; margin-top: 2px; }
+
+.card {
+  background: var(--card); border-radius: 12px;
+  border: 1px solid var(--border); border-top: 4px solid var(--ac);
+  padding: 24px; margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(194, 65, 12, 0.05);
+}
+.card h3 {
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  margin-bottom: 12px; color: var(--text);
+}
+.card p { margin-bottom: 12px; }
+
+.box {
+  background: var(--surf2); border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+  margin: 14px 0; font-size: 14px;
+}
+.box strong { color: var(--ac); }
+
+.tip {
+  border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+  font-size: 13.5px; border: 1px solid;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.tip::before { font-size: 18px; flex-shrink: 0; }
+.tip.blue { background: var(--c1l); border-color: var(--c1b); color: var(--c1); }
+.tip.blue::before { content: "💡"; }
+.tip.green { background: var(--c2l); border-color: var(--c2b); color: var(--c2); }
+.tip.green::before { content: "✅"; }
+.tip.orange { background: var(--c3l); border-color: var(--c3b); color: var(--c3); }
+.tip.orange::before { content: "⚠️"; }
+.tip.red { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.tip.red::before { content: "🚫"; }
+.tip.purple { background: var(--c4l); border-color: var(--c4b); color: var(--c4); }
+.tip.purple::before { content: "🤖"; }
+.tip.rose { background: var(--c5l); border-color: var(--c5b); color: var(--c5); }
+.tip.rose::before { content: "🔁"; }
+
+/* 코드 블록 */
+.cb {
+  margin: 12px 0; background: #fefcf9;
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+}
+.cb-hd {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surf2); padding: 7px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.cb-dots { display: flex; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dr { background: #ff5f57; } .dy { background: #ffbd2e; } .dg { background: #28c840; }
+.cb-label {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 11px; color: var(--sub); margin-left: 4px;
+}
+.cb pre {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 13px; line-height: 1.7; padding: 14px 18px;
+  overflow-x: auto; white-space: pre;
+  color: var(--text); margin: 0;
+}
+.kw { color: #b45309; font-weight: 600; }
+.fn { color: #c2410c; }
+.st { color: #15803d; }
+.nu { color: #1d4ed8; }
+.cm { color: #9c8d7a; font-style: italic; }
+.op { color: #7c3aed; padding: 0 2px; font-weight: 500; }
+.out { color: #155e75; font-weight: 600; }
+
+/* 인터랙션 */
+.ir { margin: 14px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.ig { flex: 1; min-width: 140px; }
+.il {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--sub); margin-bottom: 4px; font-weight: 600;
+}
+.ir input, .ir select {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+  background: var(--card); color: var(--text);
+}
+.ir input:focus, .ir select:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+
+.btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 11px 22px; border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn:hover { background: #9a3412; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.bac { width: 100%; margin: 8px 0; }
+
+.res {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  padding: 13px 16px; border-radius: 8px; margin-top: 8px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.rl {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  background: var(--ac); color: #fff; padding: 3px 8px;
+  border-radius: 5px; font-weight: 600;
+}
+.rv { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ac); font-weight: 500; word-break: break-word; }
+
+/* AI 프롬프트 박스 */
+.prompt-box {
+  background: #f5f3ff; border: 1px solid #ddd6fe;
+  border-radius: 10px; padding: 16px;
+  margin: 14px 0;
+}
+.prompt-box h4 {
+  color: #6d28d9; font-size: 14px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.prompt-box h4::before { content: "🤖"; font-size: 18px; }
+.prompt-box pre {
+  background: #fff; border: 1px solid #ddd6fe;
+  padding: 12px 14px; border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  color: #4c1d95; white-space: pre-wrap; line-height: 1.6;
+}
+.prompt-copy {
+  background: #7c3aed; color: #fff; border: none;
+  padding: 7px 14px; border-radius: 6px; font-size: 12px;
+  cursor: pointer; margin-top: 8px; font-family: 'Noto Sans KR', sans-serif;
+}
+.prompt-copy:hover { background: #6d28d9; }
+
+/* 주사위 미리보기 */
+.preview {
+  background: #fff; border: 2px dashed var(--border);
+  border-radius: 10px; padding: 24px; margin: 14px 0;
+  text-align: center;
+}
+.dice-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center; margin-bottom: 16px;
+}
+.dice {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  background: #fff; border: 2px solid var(--ac);
+  border-radius: 8px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px; color: var(--ac);
+  box-shadow: 0 2px 4px rgba(194, 65, 12, 0.15);
+}
+.stat-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-top: 12px;
+}
+.stat-box {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  border-radius: 8px; padding: 10px;
+}
+.stat-lb { font-size: 11px; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+.stat-vl {
+  font-family: 'Black Han Sans', sans-serif; font-size: 24px;
+  color: var(--ac); margin-top: 2px;
+}
+
+/* 구구단 */
+.gugu-table {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin: 14px 0;
+}
+.gugu-card {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  border-radius: 8px; padding: 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  line-height: 1.7;
+}
+.gugu-card h4 {
+  font-family: 'Black Han Sans', sans-serif; font-size: 14px;
+  color: var(--ac); margin-bottom: 6px;
+  border-bottom: 1px solid var(--ac-b); padding-bottom: 4px;
+}
+
+/* 퀴즈 */
+.quiz-section {
+  margin-top: 38px; padding-top: 18px;
+  border-top: 2px dashed var(--border);
+}
+.quiz-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  border-radius: 10px; padding: 18px 20px; margin-bottom: 14px;
+}
+.quiz-meta {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 6px;
+}
+.quiz-q {
+  font-size: 14.5px; margin-bottom: 12px; line-height: 1.6;
+}
+.quiz-q .qcode {
+  display: block; background: #fefcf9; border: 1px solid var(--border);
+  border-radius: 7px; padding: 10px 14px; margin: 8px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  white-space: pre;
+}
+.qrow { display: flex; gap: 8px; }
+.qinput {
+  flex: 1; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+}
+.qinput:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+.qinput.iok { border-color: #28c840; background: #f0fdf4; }
+.qinput.ing { border-color: #ff5f57; background: #fef2f2; }
+.qbtn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 9px 16px; border-radius: 7px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+}
+.qbtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.qfb {
+  margin-top: 8px; font-size: 13px; min-height: 18px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.qfb.ok { color: #15803d; }
+.qfb.ng { color: #dc2626; }
+
+/* 대시보드 */
+.dashboard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  margin: 22px 0 14px;
+}
+.db-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 14px;
+}
+.db-box {
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; text-align: center;
+}
+.db-lb { font-size: 11px; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+.db-vl {
+  font-family: 'Black Han Sans', sans-serif; font-size: 24px;
+  color: var(--ac); margin-top: 2px;
+}
+.ptrack {
+  height: 8px; background: var(--surf3); border-radius: 4px; overflow: hidden;
+}
+.pbar {
+  height: 100%; width: 0%; background: linear-gradient(90deg, var(--ac), #ea580c);
+  transition: width 0.3s;
+}
+
+/* 답안 요약 */
+.summary-tbl {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; margin: 14px 0;
+}
+.summary-tbl th, .summary-tbl td {
+  padding: 8px 10px; border: 1px solid var(--border);
+  text-align: left;
+}
+.summary-tbl th {
+  background: var(--surf2); font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--sub);
+}
+.summary-tbl td { font-family: 'JetBrains Mono', monospace; }
+.summary-tbl .stat { width: 40px; text-align: center; }
+
+/* 제출 */
+.submit-area {
+  margin-top: 18px; padding: 18px;
+  background: var(--surf2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.name-in {
+  width: 100%; padding: 10px 14px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+}
+.name-in:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+.sub-btn {
+  width: 100%; background: var(--ac); color: #fff; border: none;
+  padding: 12px; border-radius: 8px; font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 500;
+  cursor: pointer;
+}
+.sub-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sub-btn:hover:not(:disabled) { background: #9a3412; }
+
+#cfg-warn {
+  display: none; background: #fef3c7; border: 1px solid #fde68a;
+  color: #92400e; padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; margin-top: 10px;
+}
+
+/* 결과 팝업 */
+.popup-bg {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.popup-bg.show { display: flex; }
+.popup {
+  background: #fff; border-radius: 14px; padding: 28px;
+  max-width: 380px; width: 90%; text-align: center;
+  border-top: 6px solid var(--ac);
+}
+.popup h2 { font-family: 'Black Han Sans', sans-serif; font-size: 22px; margin-bottom: 12px; color: var(--ac); }
+.popup .score { font-family: 'Black Han Sans', sans-serif; font-size: 56px; color: var(--ac); margin: 12px 0; }
+.popup .grade { font-family: 'Black Han Sans', sans-serif; font-size: 30px; margin-bottom: 8px; }
+.popup .pname { font-size: 14px; color: var(--sub); margin-bottom: 18px; }
+.popup-btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+}
+.popup-btn:hover { background: #9a3412; }
+
+/* 마무리 */
+.summary-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  margin-top: 18px;
+}
+.s-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+}
+.s-card-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 4px;
+}
+.s-card-title { font-weight: 600; margin-bottom: 4px; }
+.s-card-desc { font-size: 13px; color: var(--sub); }
+
+@media (max-width: 640px) {
+  .toc, .summary-cards { grid-template-columns: 1fr; }
+  .db-grid { grid-template-columns: repeat(2, 1fr); }
+  .gugu-table { grid-template-columns: repeat(2, 1fr); }
+  .stat-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  .wrap { padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">DAY 03</span>
+    <span class="hd-title">반복문 — 같은 일을 100번도 한 번에</span>
+    <span class="hd-meta">JS · 4h</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-emoji">🎲</div>
+    <h1>반복문 — 자동화의 시작</h1>
+    <div class="hero-sub">for · while · break · continue — 1부터 100까지 합도, 구구단도, 주사위 100번도</div>
+    <div class="hero-tags">
+      <span class="htag">for</span>
+      <span class="htag">while</span>
+      <span class="htag">break / continue</span>
+      <span class="htag">중첩 반복</span>
+      <span class="htag">주사위 게임</span>
+    </div>
+  </div>
+
+  <div class="goals">
+    <div class="goals-title">오늘의 학습목표</div>
+    <ol>
+      <li><strong>for문</strong>의 기본 구조(초기값/조건/증감식)를 이해하고, 1부터 N까지 순회하는 반복을 작성할 수 있다.</li>
+      <li><strong>while문</strong>으로 조건이 만족되는 동안 반복하는 코드를 작성하고, 무한 루프를 피할 수 있다.</li>
+      <li><strong>break / continue</strong>로 반복 흐름을 중간에 멈추거나 건너뛸 수 있다.</li>
+      <li><strong>중첩 반복문</strong>(for 안의 for)으로 구구단 같은 2차원 패턴을 만들 수 있다.</li>
+      <li>학습한 반복문과 조건문을 결합해 <strong>랜덤 주사위 게임</strong>을 완성하고, 결과 화면을 AI에게 CSS 적용을 요청할 수 있다.</li>
+    </ol>
+  </div>
+
+  <div class="toc">
+    <a class="toc-item" href="#s1"><span class="toc-num">1</span> 반복이 왜 필요한가</a>
+    <a class="toc-item" href="#s2"><span class="toc-num">2</span> for문 기본 구조</a>
+    <a class="toc-item" href="#s3"><span class="toc-num">3</span> for문 다양한 패턴</a>
+    <a class="toc-item" href="#s4"><span class="toc-num">4</span> while문</a>
+    <a class="toc-item" href="#s5"><span class="toc-num">5</span> break / continue</a>
+    <a class="toc-item" href="#s6"><span class="toc-num">6</span> 중첩 반복문</a>
+    <a class="toc-item" href="#s7"><span class="toc-num">7</span> Math.random</a>
+    <a class="toc-item" href="#s8"><span class="toc-num">8</span> 실습: 주사위 게임</a>
+    <a class="toc-item" href="#s9"><span class="toc-num">9</span> AI에게 CSS 부탁하기</a>
+    <a class="toc-item" href="#quiz"><span class="toc-num">Q</span> 평가 문항 (10문제)</a>
+  </div>
+
+  <!-- ========== 1 ========== -->
+  <div class="sh" id="s1">
+    <div class="sh-num">1</div>
+    <div class="sh-text">
+      <div class="sh-title">반복이 왜 필요한가?</div>
+      <div class="sh-sub">컴퓨터가 잘하는 일 = 같은 일을 빠르게</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>"1부터 100까지 더해줘"라고 하면 어떻게 할래?</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">terrible.js</span>
+      </div>
+      <pre><span class="cm">// 이렇게? — 100줄을 다 쓸 수는 없잖아</span>
+<span class="kw">let</span> sum <span class="op">=</span> <span class="nu">0</span>;
+sum <span class="op">=</span> sum <span class="op">+</span> <span class="nu">1</span>;
+sum <span class="op">=</span> sum <span class="op">+</span> <span class="nu">2</span>;
+sum <span class="op">=</span> sum <span class="op">+</span> <span class="nu">3</span>;
+<span class="cm">// ... 97줄 더 쓰기? 😱</span></pre>
+    </div>
+
+    <div class="box">
+      <strong>반복문(loop)</strong>은 같은 일을 정해진 횟수만큼, 또는 조건이 만족되는 동안 자동으로 반복해주는 도구다. 대표 두 가지: <strong>for문</strong>과 <strong>while문</strong>.
+    </div>
+
+    <div class="tip blue">
+      오늘부터는 "사람이 할 수 없는 양의 일"을 코드로 처리한다. 반복문 = 자동화의 시작.
+    </div>
+  </div>
+
+  <!-- ========== 2 ========== -->
+  <div class="sh" id="s2">
+    <div class="sh-num">2</div>
+    <div class="sh-text">
+      <div class="sh-title">for문 — 가장 기본 형태</div>
+      <div class="sh-sub">초기값 / 조건 / 증감식, 세 칸의 약속</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>구조</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">for_structure.js</span>
+      </div>
+      <pre><span class="kw">for</span> (초기값; 조건; 증감식) {
+    <span class="cm">// 반복할 코드</span>
+}
+
+<span class="cm">// 실제 예시: 1부터 5까지 출력</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">5</span>; i<span class="op">++</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}
+<span class="cm">// → 1, 2, 3, 4, 5</span></pre>
+    </div>
+
+    <div class="box">
+      <strong>세 칸 해석</strong>:<br>
+      ① <code style="font-family:'JetBrains Mono',monospace">let i = 1</code> → 시작값. 보통 i를 0이나 1부터<br>
+      ② <code style="font-family:'JetBrains Mono',monospace">i &lt;= 5</code> → 이 조건이 true인 동안 반복. 끝나는 시점<br>
+      ③ <code style="font-family:'JetBrains Mono',monospace">i++</code> → 한 번 돌 때마다 i를 1 증가 (i = i + 1과 같음)
+    </div>
+
+    <h3 style="margin-top:18px">실행 순서를 따라가보자 (i = 1부터 5까지)</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">trace.js</span>
+      </div>
+      <pre>① i <span class="op">=</span> <span class="nu">1</span>          ← 시작값 설정 (단 한 번)
+② i <span class="op">&lt;=</span> <span class="nu">5</span> ?       ← 조건 체크 (true)
+③ <span class="fn">console</span>.<span class="fn">log</span>(i)  ← 본문 실행 → 1 출력
+④ i<span class="op">++</span>           ← 증감식 → i = 2
+
+② i <span class="op">&lt;=</span> <span class="nu">5</span> ?       ← true → 2 출력 → i = 3
+② i <span class="op">&lt;=</span> <span class="nu">5</span> ?       ← true → 3 출력 → i = 4
+② i <span class="op">&lt;=</span> <span class="nu">5</span> ?       ← true → 4 출력 → i = 5
+② i <span class="op">&lt;=</span> <span class="nu">5</span> ?       ← true → 5 출력 → i = 6
+② i <span class="op">&lt;=</span> <span class="nu">5</span> ?       ← false → 종료 ✋</pre>
+    </div>
+
+    <div class="tip green">
+      <strong>외울 패턴</strong>: <code style="font-family:'JetBrains Mono',monospace">for (let i = 1; i &lt;= N; i++)</code> → "1부터 N까지 N번 반복".
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">시작값</div>
+        <input type="number" id="for_start" value="1">
+      </div>
+      <div class="ig">
+        <div class="il">끝값 (이하)</div>
+        <input type="number" id="for_end" value="5">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runForBasic()">▶ for문 실행</button>
+    <div class="res">
+      <span class="rl">출력</span>
+      <span class="rv" id="r1">위 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 3 ========== -->
+  <div class="sh" id="s3">
+    <div class="sh-num">3</div>
+    <div class="sh-text">
+      <div class="sh-title">for문 다양한 패턴</div>
+      <div class="sh-sub">누적합, 거꾸로, 짝수만</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>패턴 ① 누적합 — 1부터 100까지의 합</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">sum.js</span>
+      </div>
+      <pre><span class="kw">let</span> sum <span class="op">=</span> <span class="nu">0</span>;       <span class="cm">// 합을 담을 그릇 (반복 시작 전!)</span>
+
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">100</span>; i<span class="op">++</span>) {
+    sum <span class="op">+=</span> i;       <span class="cm">// sum = sum + i (계속 더하기)</span>
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(sum);  <span class="out">// → 5050</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>핵심 패턴</strong>: 그릇(sum) 만들기 → for문 안에서 계속 더하기 → 끝나면 출력. 평균, 최댓값 찾기에도 같은 구조.
+    </div>
+
+    <h3 style="margin-top:18px">패턴 ② 거꾸로 (카운트다운)</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">countdown.js</span>
+      </div>
+      <pre><span class="cm">// 시작: 큰 값, 조건: 작아져도 OK인 한, 증감: 감소</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">5</span>; i <span class="op">&gt;=</span> <span class="nu">1</span>; i<span class="op">--</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}
+<span class="cm">// → 5, 4, 3, 2, 1</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">패턴 ③ 짝수만 (2씩 증가)</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">even.js</span>
+      </div>
+      <pre><span class="cm">// 방법 A: 2부터 2씩 증가</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">2</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i <span class="op">+=</span> <span class="nu">2</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);    <span class="cm">// → 2, 4, 6, 8, 10</span>
+}
+
+<span class="cm">// 방법 B: 1씩 증가하면서 짝수만 골라내기 (다음 차시 if문 응용)</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}</pre>
+    </div>
+
+    <div class="tip green">
+      <strong>%(나머지) 활용</strong>: <code style="font-family:'JetBrains Mono',monospace">i % 2 === 0</code>은 짝수, <code style="font-family:'JetBrains Mono',monospace">i % 3 === 0</code>은 3의 배수. 자주 쓰는 트릭.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">N (1부터 N까지 합)</div>
+        <input type="number" id="sum_n" value="100">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runSum()">▶ 합 계산하기</button>
+    <div class="res">
+      <span class="rl">합계</span>
+      <span class="rv" id="r2">N을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 4 ========== -->
+  <div class="sh" id="s4">
+    <div class="sh-num">4</div>
+    <div class="sh-text">
+      <div class="sh-title">while문 — 조건이 참인 동안 반복</div>
+      <div class="sh-sub">횟수보다 조건이 중요한 경우</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>구조</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">while_basic.js</span>
+      </div>
+      <pre><span class="kw">while</span> (조건) {
+    <span class="cm">// 반복할 코드</span>
+}
+
+<span class="cm">// 예시: 1부터 5까지 출력 (for문과 같은 결과)</span>
+<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>;             <span class="cm">// 초기값 (직접 만들어야 함)</span>
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nu">5</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+    i<span class="op">++</span>;                <span class="cm">// 증감식 (직접 써줘야 함!)</span>
+}</pre>
+    </div>
+
+    <div class="box">
+      <strong>for vs while</strong>: 횟수가 정해져 있으면 <strong>for</strong>, 조건만 있고 횟수를 모르면 <strong>while</strong>. 예: "HP가 0이 될 때까지", "정답 맞힐 때까지".
+    </div>
+
+    <h3 style="margin-top:18px">while문이 더 어울리는 예시</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">half.js</span>
+      </div>
+      <pre><span class="cm">// 100을 2로 나눠서 1보다 작아질 때까지 — 몇 번 나누면 될까?</span>
+<span class="kw">let</span> n <span class="op">=</span> <span class="nu">100</span>;
+<span class="kw">let</span> count <span class="op">=</span> <span class="nu">0</span>;
+
+<span class="kw">while</span> (n <span class="op">&gt;=</span> <span class="nu">1</span>) {
+    n <span class="op">=</span> n <span class="op">/</span> <span class="nu">2</span>;
+    count<span class="op">++</span>;
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(count);  <span class="out">// → 7번 (100 → 50 → 25 → 12.5 → ...)</span></pre>
+    </div>
+
+    <div class="tip red">
+      <strong>무한 루프 주의!</strong> 증감식을 빠뜨리면 조건이 영원히 true → 브라우저가 멈춤.
+      <span style="display:block;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#dc2626">// while (i &lt;= 5) { console.log(i); }   ← i++ 빠짐, 무한 반복!</span>
+    </div>
+
+    <div class="tip orange">
+      <strong>비상 탈출</strong>: 무한 루프에 빠지면 브라우저 탭을 닫거나, 크롬은 "이 페이지가 응답하지 않습니다 → 페이지 종료"를 클릭. 작업 저장은 평소에 자주!
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">시작 숫자 (예: 100)</div>
+        <input type="number" id="while_n" value="100">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runWhile()">▶ 몇 번 나누면 1 미만?</button>
+    <div class="res">
+      <span class="rl">횟수</span>
+      <span class="rv" id="r3">숫자를 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 5 ========== -->
+  <div class="sh" id="s5">
+    <div class="sh-num">5</div>
+    <div class="sh-text">
+      <div class="sh-title">break · continue — 흐름 끊기와 건너뛰기</div>
+      <div class="sh-sub">반복 중간에 빠져나오거나, 한 회만 스킵</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>break — 반복문 자체를 종료</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">break.js</span>
+      </div>
+      <pre><span class="cm">// 1부터 10까지 가다가 5를 만나면 멈춰</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">===</span> <span class="nu">5</span>) {
+        <span class="kw">break</span>;       <span class="cm">// for문 통째로 빠져나옴</span>
+    }
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}
+<span class="cm">// → 1, 2, 3, 4   (5는 출력 안 됨, 그 뒤로 모두 중단)</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>활용</strong>: "찾으면 더 볼 필요 없는" 경우. 사용자 검색, 비밀번호 일치 확인 등.
+    </div>
+
+    <h3 style="margin-top:18px">continue — 이번 한 번만 건너뛰기</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">continue.js</span>
+      </div>
+      <pre><span class="cm">// 1부터 5까지 가는데 3만 빼고 출력</span>
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">5</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">===</span> <span class="nu">3</span>) {
+        <span class="kw">continue</span>;    <span class="cm">// 이번 회만 건너뛰고 다음으로</span>
+    }
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}
+<span class="cm">// → 1, 2, 4, 5   (3 빠짐, 나머지는 진행)</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>break vs continue</strong>: <strong>break</strong>는 <em>전부 끝</em>, <strong>continue</strong>는 <em>이번 한 번만 스킵</em>. 둘 다 if문과 거의 항상 붙어 다닌다.
+    </div>
+  </div>
+
+  <!-- ========== 6 ========== -->
+  <div class="sh" id="s6">
+    <div class="sh-num">6</div>
+    <div class="sh-text">
+      <div class="sh-title">중첩 반복문 — 구구단 만들기</div>
+      <div class="sh-sub">for 안의 for, 표 형태의 데이터</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>"2단부터 9단까지 전부 출력해줘"라고 하면? 단(2~9)이 바깥, 곱하는 수(1~9)가 안쪽 — <strong>for 안에 for</strong>를 넣는다.</p>
+
+    <h3>코드</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">gugu.js</span>
+      </div>
+      <pre><span class="kw">for</span> (<span class="kw">let</span> dan <span class="op">=</span> <span class="nu">2</span>; dan <span class="op">&lt;=</span> <span class="nu">9</span>; dan<span class="op">++</span>) {       <span class="cm">// 바깥: 단</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`=== ${</span>dan<span class="st">}단 ===`</span>);
+    <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">9</span>; i<span class="op">++</span>) {       <span class="cm">// 안쪽: 1~9</span>
+        <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`${</span>dan<span class="st">} × ${</span>i<span class="st">} = ${</span>dan <span class="op">*</span> i<span class="st">}`</span>);
+    }
+}</pre>
+    </div>
+
+    <div class="box">
+      <strong>실행 횟수</strong>: 바깥이 8번(2~9단), 안쪽이 9번(1~9). 안쪽 본문은 총 <strong>8 × 9 = 72번</strong> 실행된다.
+    </div>
+
+    <h3 style="margin-top:18px">화면에 그려보기</h3>
+    <button class="btn bac" onclick="runGugu()">▶ 구구단 표 만들기</button>
+    <div id="guguResult" class="gugu-table" style="display:none"></div>
+
+    <div class="tip orange">
+      <strong>안쪽 변수 이름</strong>: 바깥이 <code style="font-family:'JetBrains Mono',monospace">i</code>면 안쪽은 <code style="font-family:'JetBrains Mono',monospace">j</code>. 같은 이름으로 두 개 못 만든다. 실수하지 말 것.
+    </div>
+  </div>
+
+  <!-- ========== 7 ========== -->
+  <div class="sh" id="s7">
+    <div class="sh-num">7</div>
+    <div class="sh-text">
+      <div class="sh-title">Math.random — 무작위 숫자 만들기</div>
+      <div class="sh-sub">주사위 게임의 핵심 도구</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>주사위 게임을 만들려면 <strong>1~6 사이의 무작위 숫자</strong>가 필요해. JS는 <code style="font-family:'JetBrains Mono',monospace">Math.random()</code>이라는 도구를 준다.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">random.js</span>
+      </div>
+      <pre><span class="cm">// 0 이상 1 미만의 소수 (예: 0.3471, 0.9982, ...)</span>
+<span class="fn">Math</span>.<span class="fn">random</span>();    <span class="out">// → 0.5723...</span>
+
+<span class="cm">// 1~6 사이의 정수 (주사위!)</span>
+<span class="kw">const</span> dice <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;
+<span class="cm">// 분해:</span>
+<span class="cm">//   Math.random() * 6  → 0~5.999...</span>
+<span class="cm">//   Math.floor(...)    → 0~5 (소수점 버림)</span>
+<span class="cm">//   ... + 1            → 1~6</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>일반 공식</strong>: <code style="font-family:'JetBrains Mono',monospace">Math.floor(Math.random() * N) + 1</code> → 1~N 사이의 정수. N에 6 넣으면 주사위, 100 넣으면 1~100 뽑기.
+    </div>
+
+    <button class="btn bac" onclick="runDice1()">🎲 주사위 한 번 굴리기</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r4">버튼을 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 8 ========== -->
+  <div class="sh" id="s8">
+    <div class="sh-num">8</div>
+    <div class="sh-text">
+      <div class="sh-title">실습: 랜덤 주사위 게임</div>
+      <div class="sh-sub">반복문 + 조건문 + 화면 출력 종합</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>요구사항</h3>
+    <div class="box">
+      ① 사용자가 입력한 횟수만큼 주사위를 굴린다<br>
+      ② 모든 결과를 화면에 표시한다<br>
+      ③ 짝수가 몇 번, 홀수가 몇 번 나왔는지 카운트한다<br>
+      ④ 가장 큰 눈은 몇이 나왔는지 표시한다
+    </div>
+
+    <h3>전체 코드</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">dice_game.html</span>
+      </div>
+      <pre><span class="kw">&lt;div id=</span><span class="st">"result"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+<span class="kw">&lt;script&gt;</span>
+    <span class="kw">const</span> times <span class="op">=</span> <span class="nu">10</span>;          <span class="cm">// 굴릴 횟수</span>
+
+    <span class="cm">// 결과를 담을 그릇들</span>
+    <span class="kw">let</span> evenCount <span class="op">=</span> <span class="nu">0</span>;       <span class="cm">// 짝수 카운트</span>
+    <span class="kw">let</span> oddCount <span class="op">=</span> <span class="nu">0</span>;        <span class="cm">// 홀수 카운트</span>
+    <span class="kw">let</span> maxValue <span class="op">=</span> <span class="nu">0</span>;        <span class="cm">// 최댓값 추적</span>
+    <span class="kw">let</span> diceList <span class="op">=</span> <span class="st">""</span>;       <span class="cm">// 결과 표시용 문자열</span>
+
+    <span class="cm">// for문으로 N번 굴리기</span>
+    <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> times; i<span class="op">++</span>) {
+        <span class="kw">const</span> dice <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;
+        diceList <span class="op">+=</span> dice <span class="op">+</span> <span class="st">" "</span>;
+
+        <span class="cm">// 짝/홀 판정 (Day 02 조건문 응용)</span>
+        <span class="kw">if</span> (dice <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span>) {
+            evenCount<span class="op">++</span>;
+        } <span class="kw">else</span> {
+            oddCount<span class="op">++</span>;
+        }
+
+        <span class="cm">// 최댓값 갱신</span>
+        <span class="kw">if</span> (dice <span class="op">&gt;</span> maxValue) {
+            maxValue <span class="op">=</span> dice;
+        }
+    }
+
+    <span class="cm">// 화면에 출력 (템플릿 리터럴, Day 01 응용)</span>
+    <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="st">"result"</span>).<span class="fn">innerHTML</span> <span class="op">=</span> <span class="st">`
+        &lt;h2&gt;${</span>times<span class="st">}번 굴린 결과&lt;/h2&gt;
+        &lt;p&gt;나온 눈: ${</span>diceList<span class="st">}&lt;/p&gt;
+        &lt;p&gt;짝수: ${</span>evenCount<span class="st">}회 / 홀수: ${</span>oddCount<span class="st">}회&lt;/p&gt;
+        &lt;p&gt;최고 눈: ${</span>maxValue<span class="st">}&lt;/p&gt;
+    `</span>;
+<span class="kw">&lt;/script&gt;</span></pre>
+    </div>
+
+    <div class="tip purple">
+      <strong>학습 흐름 종합</strong>: 1일차(변수, 템플릿 리터럴) + 2일차(if문, 비교 연산자) + 3일차(for문, Math.random) — 세 차시가 한 코드에서 만난다.
+    </div>
+
+    <h3 style="margin-top:18px">직접 굴려보기</h3>
+    <div class="ir">
+      <div class="ig">
+        <div class="il">굴릴 횟수</div>
+        <input type="number" id="d_times" value="10">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runDiceGame()">🎲 주사위 게임 시작!</button>
+
+    <div class="preview" id="dicePreview" style="display:none">
+      <h3 id="diceTitle" style="font-family:'Black Han Sans',sans-serif;color:var(--ac);margin-bottom:12px"></h3>
+      <div class="dice-grid" id="diceGrid"></div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-lb">짝수</div>
+          <div class="stat-vl" id="evenCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lb">홀수</div>
+          <div class="stat-vl" id="oddCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lb">최고 눈</div>
+          <div class="stat-vl" id="maxValue">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 9 ========== -->
+  <div class="sh" id="s9">
+    <div class="sh-num">9</div>
+    <div class="sh-text">
+      <div class="sh-title">AI에게 CSS 디자인 부탁하기</div>
+      <div class="sh-sub">결과 화면을 게임 느낌으로</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>주사위 게임 결과를 좀 더 <strong>게임 콘솔</strong> 느낌으로 꾸며보자. 어떤 분위기로 갈지는 너의 몫.</p>
+
+    <div class="prompt-box">
+      <h4>예시 프롬프트 — 그대로 복사해서 AI에게 보내봐</h4>
+      <pre id="promptText">아래 HTML 주사위 게임 결과 화면에 CSS를 적용해줘.
+
+[HTML]
+&lt;div id="result"&gt;
+    &lt;h2&gt;10번 굴린 결과&lt;/h2&gt;
+    &lt;p&gt;나온 눈: 3 1 6 4 2 5 6 1 3 4&lt;/p&gt;
+    &lt;p&gt;짝수: 5회 / 홀수: 5회&lt;/p&gt;
+    &lt;p&gt;최고 눈: 6&lt;/p&gt;
+&lt;/div&gt;
+
+[요구사항]
+- 분위기: 레트로 게임 콘솔 느낌, 모험적이고 두근거리는
+- 메인 컬러: 주황/빨강 계열 + 어두운 배경
+- 너비: 최대 400px, 가운데 정렬
+- 주사위 결과(숫자들)는 박스로 감싸 강조
+- 폰트: 가능하면 픽셀 폰트 또는 두꺼운 sans-serif
+- 호버 시 미세한 흔들림 효과(선택)
+
+CSS만 &lt;style&gt; 태그 안에 작성해서 답변해줘.</pre>
+      <button class="prompt-copy" onclick="copyPrompt()">📋 프롬프트 복사하기</button>
+    </div>
+
+    <h3 style="margin-top:18px">실습 미션 — 너만의 분위기로 변형</h3>
+    <div class="box">
+      ① 위 프롬프트의 <strong>분위기·메인 컬러</strong>를 바꿔봐 (네온 사이버펑크 / 카지노 / 보드게임 박스 등)<br>
+      ② 받은 CSS를 주사위 게임 HTML &lt;head&gt; 안에 붙여넣기<br>
+      ③ 같은 데이터인데 분위기가 어떻게 다른지 친구와 비교
+    </div>
+
+    <div class="tip purple">
+      <strong>심화</strong>: AI에게 "주사위 결과 숫자에 따라 박스 색이 다르게(짝수=파랑, 홀수=빨강) 바뀌게 해줘"라고 요청하면, JS와 CSS 클래스를 함께 다루는 법을 배우게 된다. (이건 다음 차시 DOM 조작에서 더 깊이!)
+    </div>
+  </div>
+
+  <!-- ========== 퀴즈 섹션 ========== -->
+  <div class="sh" id="quiz">
+    <div class="sh-num">Q</div>
+    <div class="sh-text">
+      <div class="sh-title">평가 문항 (10문제)</div>
+      <div class="sh-sub">학습목표 5개 × 각 2문항 · 100점 만점</div>
+    </div>
+  </div>
+
+  <div class="card quiz-section" style="border-top-color:var(--ac); margin-top:14px">
+
+    <!-- LO1: for문 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q1 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드는 몇 번 반복되는가? (반복 본문 실행 횟수)
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q1" placeholder="숫자만 입력 (예: 5)"
+               onkeydown="if(event.key==='Enter')chk(1,'10')">
+        <button class="qbtn" onclick="chk(1,'10')">확인</button>
+      </div>
+      <div class="qfb" id="qf1"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q2 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 sum 최종 값은?
+        <span class="qcode"><span class="kw">let</span> sum <span class="op">=</span> <span class="nu">0</span>;
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">5</span>; i<span class="op">++</span>) {
+    sum <span class="op">+=</span> i;
+}
+<span class="fn">console</span>.<span class="fn">log</span>(sum);</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q2" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(2,'15')">
+        <button class="qbtn" onclick="chk(2,'15')">확인</button>
+      </div>
+      <div class="qfb" id="qf2"></div>
+    </div>
+
+    <!-- LO2: while문 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q3 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 출력 결과는? (콘솔에 찍히는 숫자들)
+        <span class="qcode"><span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nu">3</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+    i<span class="op">++</span>;
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q3" placeholder="예: 1,2,3 또는 1 2 3"
+               onkeydown="if(event.key==='Enter')chk(3,'1 2 3')">
+        <button class="qbtn" onclick="chk(3,'1 2 3')">확인</button>
+      </div>
+      <div class="qfb" id="qf3"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q4 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 빈칸에 들어갈 비교 연산자는?<br>
+        (i가 5보다 작거나 같은 동안 반복)
+        <span class="qcode"><span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>;
+<span class="kw">while</span> (i <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span> <span class="nu">5</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+    i<span class="op">++</span>;
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q4" placeholder="비교 연산자 (예: &gt;=, &lt;=)"
+               onkeydown="if(event.key==='Enter')chk(4,'<=')">
+        <button class="qbtn" onclick="chk(4,'<=')">확인</button>
+      </div>
+      <div class="qfb" id="qf4"></div>
+    </div>
+
+    <!-- LO3: break/continue -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q5 · LO3 · 10점</div>
+      <div class="quiz-q">
+        break를 사용한 다음 코드의 출력 결과는?
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">===</span> <span class="nu">4</span>) <span class="kw">break</span>;
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q5" placeholder="예: 1 2 3"
+               onkeydown="if(event.key==='Enter')chk(5,'1 2 3')">
+        <button class="qbtn" onclick="chk(5,'1 2 3')">확인</button>
+      </div>
+      <div class="qfb" id="qf5"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q6 · LO3 · 10점</div>
+      <div class="quiz-q">
+        continue를 사용한 다음 코드의 출력 결과는?
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">5</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">===</span> <span class="nu">3</span>) <span class="kw">continue</span>;
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q6" placeholder="예: 1 2 4 5"
+               onkeydown="if(event.key==='Enter')chk(6,'1 2 4 5')">
+        <button class="qbtn" onclick="chk(6,'1 2 4 5')">확인</button>
+      </div>
+      <div class="qfb" id="qf6"></div>
+    </div>
+
+    <!-- LO4: 중첩 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q7 · LO4 · 10점</div>
+      <div class="quiz-q">
+        다음 중첩 반복문의 본문(console.log)은 총 몇 번 실행되는가?
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">3</span>; i<span class="op">++</span>) {
+    <span class="kw">for</span> (<span class="kw">let</span> j <span class="op">=</span> <span class="nu">1</span>; j <span class="op">&lt;=</span> <span class="nu">4</span>; j<span class="op">++</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i, j);
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q7" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(7,'12')">
+        <button class="qbtn" onclick="chk(7,'12')">확인</button>
+      </div>
+      <div class="qfb" id="qf7"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q8 · LO4 · 10점</div>
+      <div class="quiz-q">
+        구구단 7단의 5번째 줄 (7 × 5)의 결과는?
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q8" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(8,'35')">
+        <button class="qbtn" onclick="chk(8,'35')">확인</button>
+      </div>
+      <div class="qfb" id="qf8"></div>
+    </div>
+
+    <!-- LO5: 주사위 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q9 · LO5 · 10점</div>
+      <div class="quiz-q">
+        <code style="font-family:'JetBrains Mono',monospace;background:#f8fafc;padding:2px 6px;border-radius:4px">Math.floor(Math.random() * 10) + 1</code>이 만들 수 있는 가장 큰 정수는?
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q9" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(9,'10')">
+        <button class="qbtn" onclick="chk(9,'10')">확인</button>
+      </div>
+      <div class="qfb" id="qf9"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q10 · LO5 · 10점</div>
+      <div class="quiz-q">
+        주사위 게임 코드의 빈칸에 들어갈 키워드는?<br>
+        (1~6 사이의 정수를 만드는 식)
+        <span class="qcode"><span class="kw">const</span> dice <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span>) <span class="op">+</span> <span class="nu">1</span>;</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q10" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(10,'6')">
+        <button class="qbtn" onclick="chk(10,'6')">확인</button>
+      </div>
+      <div class="qfb" id="qf10"></div>
+    </div>
+
+    <!-- 대시보드 -->
+    <div class="dashboard">
+      <div class="db-grid">
+        <div class="db-box"><div class="db-lb">정답</div><div class="db-vl" id="db-ok">0</div></div>
+        <div class="db-box"><div class="db-lb">오답</div><div class="db-vl" id="db-ng" style="color:#dc2626">0</div></div>
+        <div class="db-box"><div class="db-lb">완료</div><div class="db-vl" id="db-done">0/10</div></div>
+        <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score">0점</div></div>
+      </div>
+      <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+    </div>
+
+    <table class="summary-tbl">
+      <thead>
+        <tr>
+          <th style="width:50px">번호</th>
+          <th>문제</th>
+          <th style="width:120px">내 답변</th>
+          <th class="stat">결과</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody">
+        <tr><td>Q1</td><td>for문 반복 횟수</td><td id="ans1">-</td><td class="stat" id="st1">⬜</td></tr>
+        <tr><td>Q2</td><td>for 누적합</td><td id="ans2">-</td><td class="stat" id="st2">⬜</td></tr>
+        <tr><td>Q3</td><td>while문 출력</td><td id="ans3">-</td><td class="stat" id="st3">⬜</td></tr>
+        <tr><td>Q4</td><td>while 조건 빈칸</td><td id="ans4">-</td><td class="stat" id="st4">⬜</td></tr>
+        <tr><td>Q5</td><td>break 출력</td><td id="ans5">-</td><td class="stat" id="st5">⬜</td></tr>
+        <tr><td>Q6</td><td>continue 출력</td><td id="ans6">-</td><td class="stat" id="st6">⬜</td></tr>
+        <tr><td>Q7</td><td>중첩 실행 횟수</td><td id="ans7">-</td><td class="stat" id="st7">⬜</td></tr>
+        <tr><td>Q8</td><td>7 × 5</td><td id="ans8">-</td><td class="stat" id="st8">⬜</td></tr>
+        <tr><td>Q9</td><td>Math.random 최댓값</td><td id="ans9">-</td><td class="stat" id="st9">⬜</td></tr>
+        <tr><td>Q10</td><td>주사위 빈칸</td><td id="ans10">-</td><td class="stat" id="st10">⬜</td></tr>
+      </tbody>
+    </table>
+
+    <div class="submit-area">
+      <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요" oninput="checkSubmit()">
+      <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+      <div id="cfg-warn">⚠️ 선생님: 이 파일의 WEB_APP_URL이 설정되지 않았습니다.</div>
+    </div>
+  </div>
+
+  <!-- 마무리 -->
+  <div class="sh">
+    <div class="sh-num">✓</div>
+    <div class="sh-text">
+      <div class="sh-title">한눈에 정리</div>
+      <div class="sh-sub">오늘 외울 6가지</div>
+    </div>
+  </div>
+
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="s-card-num">01</div>
+      <div class="s-card-title">for문 3칸</div>
+      <div class="s-card-desc">초기값; 조건; 증감식 — 횟수가 정해진 반복</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">02</div>
+      <div class="s-card-title">while문</div>
+      <div class="s-card-desc">조건만 있고 횟수 모름. 증감식 빠뜨리면 무한 루프</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">03</div>
+      <div class="s-card-title">break / continue</div>
+      <div class="s-card-desc">break = 통째로 종료, continue = 이번 회만 스킵</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">04</div>
+      <div class="s-card-title">중첩 반복</div>
+      <div class="s-card-desc">for 안의 for. 안쪽 변수 이름 다르게 (i, j)</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">05</div>
+      <div class="s-card-title">Math.random 공식</div>
+      <div class="s-card-desc">Math.floor(Math.random() * N) + 1 → 1~N 정수</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">06</div>
+      <div class="s-card-title">누적 패턴</div>
+      <div class="s-card-desc">그릇 만들기 → 반복 안에서 더하기 → 결과 출력</div>
+    </div>
+  </div>
+
+  <div class="tip blue" style="margin-top:24px">
+    <strong>다음 차시 (Day 04)</strong>: 함수 — 만든 코드를 이름 붙여 재사용하기. <code style="font-family:'JetBrains Mono',monospace">function rollDice() { ... }</code>처럼 호출 한 번으로 같은 일을 반복할 수 있게 된다.
+  </div>
+
+</div>
+
+<!-- 결과 팝업 -->
+<div class="popup-bg" id="popupBg" onclick="if(event.target.id==='popupBg')closePopup()">
+  <div class="popup">
+    <h2>제출 결과</h2>
+    <div class="pname" id="p-name">-</div>
+    <div class="score" id="p-score">0점</div>
+    <div class="grade" id="p-grade">-</div>
+    <button class="popup-btn" onclick="sendAnswers()">답안 전송하기</button>
+    <button class="popup-btn" style="background:#888;margin-left:8px" onclick="closePopup()">닫기</button>
+    <div id="send-status" style="margin-top:12px;font-size:13px;color:var(--sub)"></div>
+  </div>
+</div>
+
+<script>
+/* ╔══════════════════════════════════════════════╗
+   ║ 선생님 설정 — LESSON_ID만 파일마다 변경      ║
+   ╚══════════════════════════════════════════════╝ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec';
+const LESSON_ID   = 'web/03_javascript_loop';
+/* ═══════════════ 설정 끝 ═══════════════════════ */
+
+// 진행 바
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const sc = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('prog').style.width = sc + '%';
+});
+
+// for문 기본
+function runForBasic() {
+  const s = Number(document.getElementById('for_start').value);
+  const e = Number(document.getElementById('for_end').value);
+  if (e - s > 200) {
+    document.getElementById('r1').textContent = '범위가 너무 큽니다 (200 이하로)';
+    return;
+  }
+  const arr = [];
+  for (let i = s; i <= e; i++) arr.push(i);
+  document.getElementById('r1').textContent = arr.join(', ') || '(반복 없음)';
+}
+
+// 누적합
+function runSum() {
+  const n = Number(document.getElementById('sum_n').value);
+  if (n < 1 || n > 100000) {
+    document.getElementById('r2').textContent = '1~100000 사이 숫자를 입력하세요';
+    return;
+  }
+  let sum = 0;
+  for (let i = 1; i <= n; i++) sum += i;
+  document.getElementById('r2').textContent = `1부터 ${n}까지의 합 = ${sum}`;
+}
+
+// while
+function runWhile() {
+  let n = Number(document.getElementById('while_n').value);
+  if (n < 1) {
+    document.getElementById('r3').textContent = '1 이상의 숫자를 입력하세요';
+    return;
+  }
+  let count = 0;
+  let trace = [n];
+  while (n >= 1) {
+    n = n / 2;
+    count++;
+    if (count <= 8) trace.push(Number(n.toFixed(2)));
+  }
+  document.getElementById('r3').textContent = `${count}번 (${trace.slice(0, 6).join(' → ')}${trace.length > 6 ? ' ...' : ''})`;
+}
+
+// 구구단
+function runGugu() {
+  const grid = document.getElementById('guguResult');
+  let html = '';
+  for (let dan = 2; dan <= 9; dan++) {
+    let lines = '';
+    for (let i = 1; i <= 9; i++) {
+      lines += `${dan} × ${i} = ${dan * i}<br>`;
+    }
+    html += `<div class="gugu-card"><h4>${dan}단</h4>${lines}</div>`;
+  }
+  grid.innerHTML = html;
+  grid.style.display = 'grid';
+}
+
+// 주사위 한 번
+function runDice1() {
+  const dice = Math.floor(Math.random() * 6) + 1;
+  document.getElementById('r4').textContent = `🎲 ${dice}`;
+}
+
+// 주사위 게임
+function runDiceGame() {
+  const times = Number(document.getElementById('d_times').value);
+  if (times < 1 || times > 1000) {
+    alert('1~1000 사이의 횟수를 입력하세요');
+    return;
+  }
+
+  let evenCount = 0, oddCount = 0, maxValue = 0;
+  const diceList = [];
+
+  for (let i = 1; i <= times; i++) {
+    const dice = Math.floor(Math.random() * 6) + 1;
+    diceList.push(dice);
+    if (dice % 2 === 0) evenCount++;
+    else oddCount++;
+    if (dice > maxValue) maxValue = dice;
+  }
+
+  document.getElementById('diceTitle').textContent = `${times}번 굴린 결과`;
+
+  // 최대 30개까지만 표시
+  const displayList = times <= 30 ? diceList : diceList.slice(0, 30);
+  document.getElementById('diceGrid').innerHTML =
+    displayList.map(d => `<div class="dice">${d}</div>`).join('') +
+    (times > 30 ? `<div class="dice" style="border-style:dashed;color:var(--sub)">+${times - 30}</div>` : '');
+
+  document.getElementById('evenCount').textContent = evenCount;
+  document.getElementById('oddCount').textContent = oddCount;
+  document.getElementById('maxValue').textContent = maxValue;
+  document.getElementById('dicePreview').style.display = 'block';
+}
+
+// 프롬프트 복사
+function copyPrompt() {
+  const t = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+/* ─── 퀴즈 시스템 ─────────────────────────────── */
+const total = 10;
+const answered = {};
+
+function chk(n, correct) {
+  const inp = document.getElementById('q' + n);
+  const fb = document.getElementById('qf' + n);
+  const btn = inp.nextElementSibling;
+  const user = inp.value.trim();
+
+  if (!user) {
+    fb.textContent = '답을 입력해주세요';
+    fb.className = 'qfb ng';
+    return;
+  }
+
+  // 정답 비교 (공백/쉼표/따옴표 무시)
+  const norm = (s) => s.replace(/['"`]/g, '').replace(/[\s,]/g, '').toLowerCase();
+  const isOk = norm(user) === norm(correct);
+
+  if (isOk) {
+    inp.classList.remove('ing');
+    inp.classList.add('iok');
+    inp.disabled = true;
+    btn.disabled = true;
+    fb.textContent = '✅ 정답!';
+    fb.className = 'qfb ok';
+    answered[n] = { ans: user, ok: true };
+  } else {
+    inp.classList.add('ing');
+    fb.textContent = '❌ 다시 시도해보세요';
+    fb.className = 'qfb ng';
+    if (!answered[n] || answered[n].ok === false) {
+      answered[n] = { ans: user, ok: false };
+    }
+  }
+
+  updateDashboard();
+  updateSummary(n, user, isOk);
+  checkSubmit();
+}
+
+function updateDashboard() {
+  let ok = 0, ng = 0;
+  for (const k in answered) {
+    if (answered[k].ok) ok++;
+    else ng++;
+  }
+  document.getElementById('db-ok').textContent = ok;
+  document.getElementById('db-ng').textContent = ng;
+  document.getElementById('db-done').textContent = `${ok}/${total}`;
+  document.getElementById('db-score').textContent = `${ok * 10}점`;
+  document.getElementById('pbar').style.width = `${(ok / total) * 100}%`;
+}
+
+function updateSummary(n, ans, isOk) {
+  document.getElementById('ans' + n).textContent = ans || '-';
+  document.getElementById('st' + n).textContent = isOk ? '✅' : '❌';
+}
+
+function collectAnswers() {
+  const list = [];
+  for (let i = 1; i <= total; i++) {
+    if (answered[i]) {
+      list.push({ q: i, ans: answered[i].ans, ok: answered[i].ok });
+    } else {
+      list.push({ q: i, ans: '미응답', ok: false });
+    }
+  }
+  return list;
+}
+
+function checkSubmit() {
+  const name = document.getElementById('stu-name').value.trim();
+  const allDone = Object.keys(answered).length === total &&
+    Object.values(answered).every(a => a.ok);
+  document.getElementById('sub-btn').disabled = !(name && allDone);
+}
+
+function openPopup() {
+  const name = document.getElementById('stu-name').value.trim();
+  let ok = 0;
+  for (const k in answered) if (answered[k].ok) ok++;
+  const score = ok * 10;
+  let grade;
+  if (score >= 90) grade = 'A';
+  else if (score >= 80) grade = 'B';
+  else if (score >= 70) grade = 'C';
+  else if (score >= 60) grade = 'D';
+  else grade = 'F';
+
+  document.getElementById('p-name').textContent = name + ' 학생';
+  document.getElementById('p-score').textContent = score + '점';
+  document.getElementById('p-grade').textContent = grade + ' 등급';
+  document.getElementById('popupBg').classList.add('show');
+  document.getElementById('send-status').textContent = '';
+}
+
+function closePopup() {
+  document.getElementById('popupBg').classList.remove('show');
+}
+
+async function sendAnswers() {
+  const name = document.getElementById('stu-name').value.trim();
+  let ok = 0;
+  for (const k in answered) if (answered[k].ok) ok++;
+  const score = ok * 10;
+  const status = document.getElementById('send-status');
+
+  status.textContent = '전송 중...';
+  try {
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        lesson: LESSON_ID,
+        name,
+        answers: collectAnswers(),
+        score: score + '점'
+      })
+    });
+    status.textContent = '✅ 전송 완료!';
+  } catch (e) {
+    status.textContent = '❌ 전송 실패: ' + e.message;
+  }
+}
+</script>
+
+</body>
+</html>
