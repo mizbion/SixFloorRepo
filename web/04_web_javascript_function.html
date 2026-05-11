@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=웹개발(JavaScript) -->
+<!-- meta:unit=Day 04. 함수 -->
+<!-- meta:title=function / 매개변수 / return / 화살표 함수 / 랜덤 이름 뽑기 -->
+<!-- meta:desc=함수 선언과 호출, 매개변수와 return값, 화살표 함수, 기본값 매개변수, 랜덤 이름 뽑기 실습 -->
+<!-- meta:date=2026-05-08 -->
+<!-- meta:audience=고3 직업계 -->
+<title>Day 04 · 함수 — 코드에 이름 붙이기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- 공통 스타일 -->
+<link rel="stylesheet" href="lecture_common.css">
+
+<style>
+/* ── Day 04 색 팔레트 (보라) ── */
+:root {
+  --bg: #faf5ff;
+  --card: #ffffff;
+  --surf2: #f3e8ff;
+  --surf3: #e9d5ff;
+  --border: #d8b4fe;
+  --text: #1a1322;
+  --sub: #6b5b7a;
+  --ac: #7c3aed;
+  --ac-l: #f5f3ff;
+  --ac-b: #ddd6fe;
+  --header-bg: #1a0a2e;
+  --grad-end: #a855f7;
+}
+
+/* Day 04 고유 - 함수 다이어그램 박스 */
+.fnbox {
+  background: var(--surf2); border: 2px dashed var(--ac);
+  border-radius: 12px; padding: 20px; margin: 14px 0;
+  text-align: center;
+}
+.fnbox-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; flex-wrap: wrap;
+}
+.fnbox-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: var(--sub); display: block; margin-bottom: 4px;
+}
+.fnbox-block {
+  background: var(--card); padding: 12px 18px; border-radius: 8px;
+  border: 1px solid var(--ac-b); font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; min-width: 80px;
+}
+.fnbox-arrow { color: var(--ac); font-size: 22px; font-weight: bold; }
+
+/* Day 04 고유 - 랜덤 이름 뽑기 결과 */
+.picked-name {
+  display: inline-block;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 42px; color: var(--ac);
+  padding: 18px 32px;
+  background: var(--ac-l); border: 2px solid var(--ac-b);
+  border-radius: 14px;
+  animation: pop 0.4s ease-out;
+}
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.name-pool {
+  margin-top: 16px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  justify-content: center;
+}
+.name-chip {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: 999px;
+  font-size: 12px; color: var(--sub);
+  font-family: 'JetBrains Mono', monospace;
+}
+@media (max-width: 640px) {
+  .picked-name { font-size: 32px; padding: 14px 24px; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">DAY 04</span>
+    <span class="hd-title">함수 — 코드에 이름 붙이기</span>
+    <span class="hd-meta">JS · 4h</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-emoji">📦</div>
+    <h1>함수 — 코드에 이름 붙이기</h1>
+    <div class="hero-sub">function · 매개변수 · return · 화살표 함수 — 같은 일을 반복하지 않는 법</div>
+    <div class="hero-tags">
+      <span class="htag">function</span>
+      <span class="htag">매개변수</span>
+      <span class="htag">return</span>
+      <span class="htag">() => </span>
+      <span class="htag">랜덤 이름 뽑기</span>
+    </div>
+  </div>
+
+  <div class="goals">
+    <div class="goals-title">오늘의 학습목표</div>
+    <ol>
+      <li>함수의 필요성을 이해하고, <strong>function 키워드</strong>로 함수를 선언해 호출할 수 있다.</li>
+      <li><strong>매개변수</strong>로 함수에 값을 전달하고, <strong>return</strong>으로 결과를 받아낼 수 있다.</li>
+      <li><strong>화살표 함수(arrow function)</strong>를 사용해 같은 기능을 짧게 작성할 수 있다.</li>
+      <li>학습한 함수로 <strong>랜덤 이름 뽑기</strong>를 만들고, 결과 화면을 AI에게 CSS 적용을 요청할 수 있다.</li>
+    </ol>
+  </div>
+
+  <div class="toc">
+    <a class="toc-item" href="#s1"><span class="toc-num">1</span> 왜 함수가 필요한가</a>
+    <a class="toc-item" href="#s2"><span class="toc-num">2</span> 함수 선언과 호출</a>
+    <a class="toc-item" href="#s3"><span class="toc-num">3</span> 매개변수와 인자</a>
+    <a class="toc-item" href="#s4"><span class="toc-num">4</span> return — 값 돌려주기</a>
+    <a class="toc-item" href="#s5"><span class="toc-num">5</span> log vs return</a>
+    <a class="toc-item" href="#s6"><span class="toc-num">6</span> 화살표 함수</a>
+    <a class="toc-item" href="#s7"><span class="toc-num">7</span> 기본값 매개변수</a>
+    <a class="toc-item" href="#s8"><span class="toc-num">8</span> 실습: 랜덤 이름 뽑기</a>
+    <a class="toc-item" href="#s9"><span class="toc-num">9</span> AI에게 CSS 부탁하기</a>
+    <a class="toc-item" href="#quiz"><span class="toc-num">Q</span> 평가 문항 (10문제)</a>
+  </div>
+
+  <!-- ========== 1 ========== -->
+  <div class="sh" id="s1">
+    <div class="sh-num">1</div>
+    <div class="sh-text">
+      <div class="sh-title">왜 함수가 필요한가?</div>
+      <div class="sh-sub">3일차 주사위 코드, 다시 본다</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>3일차에 만든 주사위 굴리는 코드를 떠올려봐.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">repeat.js</span>
+      </div>
+      <pre><span class="cm">// 주사위 1번 굴리기</span>
+<span class="kw">const</span> dice1 <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;
+<span class="cm">// 주사위 또 1번 굴리기</span>
+<span class="kw">const</span> dice2 <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;
+<span class="cm">// 또 한 번...</span>
+<span class="kw">const</span> dice3 <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;</pre>
+    </div>
+
+    <p>같은 코드를 또 쓰고, 또 쓰고… 만약 주사위 범위를 1~10으로 바꾸려면? <strong>모든 자리를 다 찾아 고쳐야 해.</strong> 한 군데만 빠뜨려도 버그.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">with_function.js</span>
+      </div>
+      <pre><span class="cm">// 한 번만 정의해두면 — 이름으로 부르기만 하면 끝</span>
+<span class="kw">function</span> <span class="fn">rollDice</span>() {
+    <span class="kw">return</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;
+}
+
+<span class="kw">const</span> dice1 <span class="op">=</span> <span class="fn">rollDice</span>();
+<span class="kw">const</span> dice2 <span class="op">=</span> <span class="fn">rollDice</span>();
+<span class="kw">const</span> dice3 <span class="op">=</span> <span class="fn">rollDice</span>();</pre>
+    </div>
+
+    <div class="box">
+      <strong>함수(function)</strong> = 코드 묶음에 <strong>이름</strong>을 붙인 것. 한 번 만들어두면 그 이름으로 몇 번이고 부를 수 있다. 수정도 한 곳에서만.
+    </div>
+
+    <div class="tip blue">
+      <strong>비유</strong>: 함수는 <em>전자레인지</em>. "재료 넣고 → 버튼 누르고 → 결과 받기". 매번 회로를 새로 만들 필요 없이 버튼 한 번이면 끝.
+    </div>
+  </div>
+
+  <!-- ========== 2 ========== -->
+  <div class="sh" id="s2">
+    <div class="sh-num">2</div>
+    <div class="sh-text">
+      <div class="sh-title">함수 선언과 호출</div>
+      <div class="sh-sub">만들기 vs 부르기 — 둘은 다르다</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>가장 단순한 함수</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">declare.js</span>
+      </div>
+      <pre><span class="cm">// 1단계: 선언 (만드는 단계 — 아직 실행 안 됨!)</span>
+<span class="kw">function</span> <span class="fn">sayHello</span>() {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"안녕하세요!"</span>);
+}
+
+<span class="cm">// 2단계: 호출 (실제로 부르는 단계 — 이제 실행)</span>
+<span class="fn">sayHello</span>();    <span class="out">// → 안녕하세요!</span>
+<span class="fn">sayHello</span>();    <span class="out">// → 안녕하세요!</span>
+<span class="fn">sayHello</span>();    <span class="out">// → 안녕하세요!</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>꼭 외울 것</strong>: 함수 이름 뒤에 <strong>괄호 ()</strong>가 있어야 호출. 괄호 빼면? 함수 자체를 가리킬 뿐 실행 안 됨.
+    </div>
+
+    <h3 style="margin-top:18px">함수 이름 짓기 규칙</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">naming.js</span>
+      </div>
+      <pre><span class="cm">// ✅ 좋은 이름 — 동사로 시작, 무엇을 하는지 명확</span>
+<span class="kw">function</span> <span class="fn">rollDice</span>() { ... }
+<span class="kw">function</span> <span class="fn">getStudentName</span>() { ... }
+<span class="kw">function</span> <span class="fn">calculateTotal</span>() { ... }
+
+<span class="cm">// ❌ 나쁜 이름 — 추상적, 줄임말, 동사 아님</span>
+<span class="kw">function</span> <span class="fn">do1</span>() { ... }       <span class="cm">// 뭐 하는지 모름</span>
+<span class="kw">function</span> <span class="fn">data</span>() { ... }      <span class="cm">// 동사 아님</span>
+<span class="kw">function</span> <span class="fn">한글이름</span>() { ... }    <span class="cm">// 가능은 하지만 권장 안 함</span></pre>
+    </div>
+
+    <div class="tip orange">
+      <strong>관례</strong>: 함수 이름은 소문자로 시작 + 두 단어 이상이면 첫 글자만 대문자(camelCase). <code style="font-family:'JetBrains Mono',monospace">getStudentName</code>처럼.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">함수가 출력할 메시지</div>
+        <input type="text" id="hello_msg" value="안녕, JS!">
+      </div>
+      <div class="ig">
+        <div class="il">호출 횟수</div>
+        <input type="number" id="hello_n" value="3">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runHello()">▶ 함수 호출하기</button>
+    <div class="res">
+      <span class="rl">출력</span>
+      <span class="rv" id="r1">위 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 3 ========== -->
+  <div class="sh" id="s3">
+    <div class="sh-num">3</div>
+    <div class="sh-text">
+      <div class="sh-title">매개변수 — 함수에 값 넣기</div>
+      <div class="sh-sub">parameter (받는 자리) vs argument (넣는 값)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>인사 메시지가 매번 똑같으면 재미없어. <strong>이름을 받아서</strong> 다른 메시지를 출력해보자.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">parameter.js</span>
+      </div>
+      <pre><span class="cm">// 괄호 안 name = "매개변수" (값을 받을 자리)</span>
+<span class="kw">function</span> <span class="fn">greet</span>(name) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`안녕, ${</span>name<span class="st">}!`</span>);
+}
+
+<span class="cm">// 호출할 때 넣는 값 = "인자"</span>
+<span class="fn">greet</span>(<span class="st">"길동"</span>);    <span class="out">// → 안녕, 길동!</span>
+<span class="fn">greet</span>(<span class="st">"영희"</span>);    <span class="out">// → 안녕, 영희!</span>
+<span class="fn">greet</span>(<span class="st">"철수"</span>);    <span class="out">// → 안녕, 철수!</span></pre>
+    </div>
+
+    <div class="fnbox">
+      <div class="fnbox-row">
+        <div>
+          <span class="fnbox-tag">인자 (호출할 때)</span>
+          <div class="fnbox-block">"길동"</div>
+        </div>
+        <div class="fnbox-arrow">→</div>
+        <div>
+          <span class="fnbox-tag">매개변수 (받는 자리)</span>
+          <div class="fnbox-block">name</div>
+        </div>
+        <div class="fnbox-arrow">→</div>
+        <div>
+          <span class="fnbox-tag">함수 안에서 사용</span>
+          <div class="fnbox-block">${name}</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:18px">매개변수 여러 개</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">multiple_params.js</span>
+      </div>
+      <pre><span class="kw">function</span> <span class="fn">introduce</span>(name, age, hobby) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`${</span>name<span class="st">}, ${</span>age<span class="st">}살, 취미는 ${</span>hobby<span class="st">}`</span>);
+}
+
+<span class="fn">introduce</span>(<span class="st">"길동"</span>, <span class="nu">19</span>, <span class="st">"롤"</span>);
+<span class="cm">// → 길동, 19살, 취미는 롤</span>
+
+<span class="cm">// 순서가 중요!</span>
+<span class="fn">introduce</span>(<span class="nu">19</span>, <span class="st">"길동"</span>, <span class="st">"롤"</span>);
+<span class="cm">// → 19, 길동살, 취미는 롤   (이상한 결과)</span></pre>
+    </div>
+
+    <div class="tip orange">
+      <strong>인자 개수와 순서</strong>: 매개변수가 3개면 인자도 3개. 순서 바꾸면 결과도 엉망. 쉼표로 구분.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">이름</div>
+        <input type="text" id="g_name" value="길동">
+      </div>
+      <div class="ig">
+        <div class="il">나이</div>
+        <input type="number" id="g_age" value="19">
+      </div>
+      <div class="ig">
+        <div class="il">취미</div>
+        <input type="text" id="g_hobby" value="롤">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runIntroduce()">▶ introduce 함수 호출</button>
+    <div class="res">
+      <span class="rl">출력</span>
+      <span class="rv" id="r2">위 값을 채우고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 4 ========== -->
+  <div class="sh" id="s4">
+    <div class="sh-num">4</div>
+    <div class="sh-text">
+      <div class="sh-title">return — 함수가 값을 돌려준다</div>
+      <div class="sh-sub">결과를 변수에 담을 수 있게 됨</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>지금까지 함수는 출력만 했어. 그런데 함수의 진짜 힘은 <strong>결과를 돌려받는 것</strong>이야.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">return.js</span>
+      </div>
+      <pre><span class="kw">function</span> <span class="fn">add</span>(a, b) {
+    <span class="kw">return</span> a <span class="op">+</span> b;     <span class="cm">// 결과를 "돌려준다"</span>
+}
+
+<span class="cm">// 돌려받은 값을 변수에 담을 수 있다</span>
+<span class="kw">const</span> result <span class="op">=</span> <span class="fn">add</span>(<span class="nu">3</span>, <span class="nu">5</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(result);    <span class="out">// → 8</span>
+
+<span class="cm">// 또 다른 계산에 바로 쓸 수도 있다</span>
+<span class="kw">const</span> total <span class="op">=</span> <span class="fn">add</span>(<span class="nu">10</span>, <span class="nu">20</span>) <span class="op">+</span> <span class="fn">add</span>(<span class="nu">5</span>, <span class="nu">7</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(total);     <span class="out">// → 42</span></pre>
+    </div>
+
+    <div class="fnbox">
+      <div class="fnbox-row">
+        <div>
+          <span class="fnbox-tag">입력 (인자)</span>
+          <div class="fnbox-block">3, 5</div>
+        </div>
+        <div class="fnbox-arrow">→</div>
+        <div>
+          <span class="fnbox-tag">처리</span>
+          <div class="fnbox-block">a + b</div>
+        </div>
+        <div class="fnbox-arrow">→</div>
+        <div>
+          <span class="fnbox-tag">출력 (return)</span>
+          <div class="fnbox-block">8</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:18px">return의 또 다른 효과 — 함수 종료</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">early_return.js</span>
+      </div>
+      <pre><span class="kw">function</span> <span class="fn">checkAge</span>(age) {
+    <span class="kw">if</span> (age <span class="op">&lt;</span> <span class="nu">0</span>) {
+        <span class="kw">return</span> <span class="st">"잘못된 나이"</span>;   <span class="cm">// 여기서 함수 종료</span>
+    }
+    <span class="kw">if</span> (age <span class="op">&lt;</span> <span class="nu">19</span>) {
+        <span class="kw">return</span> <span class="st">"미성년자"</span>;
+    }
+    <span class="kw">return</span> <span class="st">"성인"</span>;
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">checkAge</span>(<span class="op">-</span><span class="nu">5</span>));   <span class="out">// → 잘못된 나이</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">checkAge</span>(<span class="nu">15</span>));   <span class="out">// → 미성년자</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">checkAge</span>(<span class="nu">25</span>));   <span class="out">// → 성인</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>return 만나면 끝!</strong> 그 줄 뒤로 함수 안의 코드는 실행되지 않는다. 조건에 따라 빨리 빠져나오는 데 유용.
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">숫자 a</div>
+        <input type="number" id="add_a" value="3">
+      </div>
+      <div class="ig">
+        <div class="il">숫자 b</div>
+        <input type="number" id="add_b" value="5">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runAdd()">▶ add(a, b) 호출</button>
+    <div class="res">
+      <span class="rl">return</span>
+      <span class="rv" id="r3">두 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 5 ========== -->
+  <div class="sh" id="s5">
+    <div class="sh-num">5</div>
+    <div class="sh-text">
+      <div class="sh-title">console.log vs return</div>
+      <div class="sh-sub">학생들이 가장 많이 헷갈리는 부분</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>둘 다 함수 안에서 자주 쓰이지만 <strong>전혀 다른 일</strong>을 한다.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">log_vs_return.js</span>
+      </div>
+      <pre><span class="cm">// A: console.log만 쓰는 함수</span>
+<span class="kw">function</span> <span class="fn">addLog</span>(a, b) {
+    <span class="fn">console</span>.<span class="fn">log</span>(a <span class="op">+</span> b);    <span class="cm">// 화면에 보여주기만</span>
+}
+
+<span class="kw">const</span> x <span class="op">=</span> <span class="fn">addLog</span>(<span class="nu">3</span>, <span class="nu">5</span>);
+<span class="cm">// 콘솔: 8 (출력됨)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(x);            <span class="out">// → undefined  (받을 게 없음!)</span>
+
+<span class="cm">// B: return을 쓰는 함수</span>
+<span class="kw">function</span> <span class="fn">addReturn</span>(a, b) {
+    <span class="kw">return</span> a <span class="op">+</span> b;            <span class="cm">// 결과를 돌려주기</span>
+}
+
+<span class="kw">const</span> y <span class="op">=</span> <span class="fn">addReturn</span>(<span class="nu">3</span>, <span class="nu">5</span>);
+<span class="cm">// 콘솔: 아무것도 안 찍힘</span>
+<span class="fn">console</span>.<span class="fn">log</span>(y);            <span class="out">// → 8  (변수에 담겨 있음!)</span></pre>
+    </div>
+
+    <div class="box">
+      <strong>핵심 차이</strong>:<br>
+      · <strong>console.log</strong> → 화면(콘솔)에 보여주고 끝. 변수에 담을 수 없음.<br>
+      · <strong>return</strong> → 화면엔 안 보이지만 결과를 <em>돌려준다</em>. 변수에 담거나 다른 계산에 쓸 수 있음.
+    </div>
+
+    <div class="tip orange">
+      <strong>팁</strong>: 함수 안에서 계산 결과를 <strong>다른 코드에서 또 쓸 거면 return</strong>, <strong>그냥 보여주기만 할 거면 console.log</strong>. 보통은 <strong>return을 쓰고, 받은 값을 밖에서 console.log</strong>하는 게 정석.
+    </div>
+  </div>
+
+  <!-- ========== 6 ========== -->
+  <div class="sh" id="s6">
+    <div class="sh-num">6</div>
+    <div class="sh-text">
+      <div class="sh-title">화살표 함수 — 짧고 간결한 ES6</div>
+      <div class="sh-sub">앞으로 우리는 이걸 메인으로 쓴다</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>똑같은 함수를 <strong>화살표 함수(arrow function)</strong>로 쓰면 훨씬 짧아져. 모던 JS의 표준이야.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">arrow.js</span>
+      </div>
+      <pre><span class="cm">// 기존 방식 (function 선언식)</span>
+<span class="kw">function</span> <span class="fn">add</span>(a, b) {
+    <span class="kw">return</span> a <span class="op">+</span> b;
+}
+
+<span class="cm">// 화살표 함수 (변수에 담기)</span>
+<span class="kw">const</span> add <span class="op">=</span> (a, b) <span class="op">=&gt;</span> {
+    <span class="kw">return</span> a <span class="op">+</span> b;
+};
+
+<span class="cm">// 한 줄짜리는 더 짧게! (return 생략 + 중괄호 생략)</span>
+<span class="kw">const</span> add <span class="op">=</span> (a, b) <span class="op">=&gt;</span> a <span class="op">+</span> b;
+
+<span class="cm">// 호출 방법은 동일</span>
+<span class="fn">add</span>(<span class="nu">3</span>, <span class="nu">5</span>);    <span class="out">// → 8</span></pre>
+    </div>
+
+    <h3 style="margin-top:18px">화살표 함수 변형 패턴</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">arrow_patterns.js</span>
+      </div>
+      <pre><span class="cm">// 1. 매개변수 없을 때 — 빈 괄호</span>
+<span class="kw">const</span> sayHi <span class="op">=</span> () <span class="op">=&gt;</span> <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"안녕"</span>);
+
+<span class="cm">// 2. 매개변수 1개일 때 — 괄호 생략 가능</span>
+<span class="kw">const</span> double <span class="op">=</span> n <span class="op">=&gt;</span> n <span class="op">*</span> <span class="nu">2</span>;
+<span class="cm">// 또는: const double = (n) => n * 2;  ← 같은 코드</span>
+
+<span class="cm">// 3. 매개변수 2개 이상 — 괄호 필수</span>
+<span class="kw">const</span> mul <span class="op">=</span> (a, b) <span class="op">=&gt;</span> a <span class="op">*</span> b;
+
+<span class="cm">// 4. 본문이 여러 줄 — 중괄호 + return</span>
+<span class="kw">const</span> grade <span class="op">=</span> (score) <span class="op">=&gt;</span> {
+    <span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">90</span>) <span class="kw">return</span> <span class="st">"A"</span>;
+    <span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">80</span>) <span class="kw">return</span> <span class="st">"B"</span>;
+    <span class="kw">return</span> <span class="st">"C"</span>;
+};</pre>
+    </div>
+
+    <div class="tip green">
+      <strong>외울 패턴</strong>: <code style="font-family:'JetBrains Mono',monospace">const 함수이름 = (매개변수) => 결과식</code><br>
+      한 줄로 끝나는 작은 함수에 특히 잘 어울린다.
+    </div>
+
+    <div class="tip blue">
+      <strong>왜 화살표 함수?</strong> ① 짧다 ② 모던 JS의 표준 ③ 다음 차시 배열 메서드(map/filter)에서 빛을 발한다. 지금부터 친해져 두자.
+    </div>
+  </div>
+
+  <!-- ========== 7 ========== -->
+  <div class="sh" id="s7">
+    <div class="sh-num">7</div>
+    <div class="sh-text">
+      <div class="sh-title">기본값 매개변수 — 빠뜨려도 안전하게</div>
+      <div class="sh-sub">인자를 안 넣어도 동작하는 함수</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>인자를 안 주면 어떻게 될까?</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">missing_arg.js</span>
+      </div>
+      <pre><span class="kw">const</span> greet <span class="op">=</span> (name) <span class="op">=&gt;</span> <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`안녕, ${</span>name<span class="st">}!`</span>);
+
+<span class="fn">greet</span>();    <span class="out">// → 안녕, undefined!  (어색...)</span></pre>
+    </div>
+
+    <p>매개변수에 <strong>기본값</strong>을 정해주면 인자 없이 호출해도 안전해.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">default_param.js</span>
+      </div>
+      <pre><span class="cm">// 매개변수 옆에 = 기본값</span>
+<span class="kw">const</span> greet <span class="op">=</span> (name <span class="op">=</span> <span class="st">"손님"</span>) <span class="op">=&gt;</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`안녕, ${</span>name<span class="st">}!`</span>);
+
+<span class="fn">greet</span>();              <span class="out">// → 안녕, 손님!</span>
+<span class="fn">greet</span>(<span class="st">"길동"</span>);        <span class="out">// → 안녕, 길동!  (인자 있으면 그게 우선)</span>
+
+<span class="cm">// 여러 매개변수도 각각 기본값 가능</span>
+<span class="kw">const</span> rollDice <span class="op">=</span> (max <span class="op">=</span> <span class="nu">6</span>) <span class="op">=&gt;</span>
+    <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> max) <span class="op">+</span> <span class="nu">1</span>;
+
+<span class="fn">rollDice</span>();      <span class="cm">// → 1~6  (기본값 사용)</span>
+<span class="fn">rollDice</span>(<span class="nu">10</span>);    <span class="cm">// → 1~10 (10면 주사위)</span>
+<span class="fn">rollDice</span>(<span class="nu">100</span>);   <span class="cm">// → 1~100</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>실전</strong>: 자주 쓰는 값을 기본으로 정해두면 코드가 깔끔. 사용자 정원 = 100명, 페이지당 항목 = 10개 등.
+    </div>
+  </div>
+
+  <!-- ========== 8 ========== -->
+  <div class="sh" id="s8">
+    <div class="sh-num">8</div>
+    <div class="sh-text">
+      <div class="sh-title">실습: 랜덤 이름 뽑기</div>
+      <div class="sh-sub">발표자 정하기 / 조 짜기에 진짜 쓰는 도구</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>요구사항</h3>
+    <div class="box">
+      ① 학생 이름 배열을 입력 (예: 길동, 영희, 철수, 민지...)<br>
+      ② 함수 <code style="font-family:'JetBrains Mono',monospace">pickOne()</code>이 그중 한 명을 무작위로 뽑아 return<br>
+      ③ 함수 <code style="font-family:'JetBrains Mono',monospace">showResult()</code>가 화면에 큰 글씨로 표시<br>
+      ④ "다시 뽑기" 버튼으로 또 굴리기
+    </div>
+
+    <h3>전체 코드</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">name_picker.html</span>
+      </div>
+      <pre><span class="kw">&lt;div id=</span><span class="st">"result"</span><span class="kw">&gt;&lt;/div&gt;</span>
+<span class="kw">&lt;button onclick=</span><span class="st">"pick()"</span><span class="kw">&gt;</span>다시 뽑기<span class="kw">&lt;/button&gt;</span>
+
+<span class="kw">&lt;script&gt;</span>
+    <span class="cm">// 학생 명단 (배열은 다음 차시에 자세히!)</span>
+    <span class="kw">const</span> students <span class="op">=</span> [<span class="st">"길동"</span>, <span class="st">"영희"</span>, <span class="st">"철수"</span>, <span class="st">"민지"</span>, <span class="st">"준호"</span>];
+
+    <span class="cm">// 함수 ① 한 명 뽑기 (return으로 결과 돌려주기)</span>
+    <span class="kw">const</span> pickOne <span class="op">=</span> (list) <span class="op">=&gt;</span> {
+        <span class="kw">const</span> idx <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> list.length);
+        <span class="kw">return</span> list[idx];
+    };
+
+    <span class="cm">// 함수 ② 화면에 표시</span>
+    <span class="kw">const</span> showResult <span class="op">=</span> (name) <span class="op">=&gt;</span> {
+        <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="st">"result"</span>).<span class="fn">innerHTML</span> <span class="op">=</span>
+            <span class="st">`&lt;h1&gt;🎉 ${</span>name<span class="st">} &lt;/h1&gt;`</span>;
+    };
+
+    <span class="cm">// 함수 ③ 두 함수를 묶어서 한 번에 실행 (button onclick에서 호출)</span>
+    <span class="kw">const</span> pick <span class="op">=</span> () <span class="op">=&gt;</span> {
+        <span class="kw">const</span> picked <span class="op">=</span> <span class="fn">pickOne</span>(students);
+        <span class="fn">showResult</span>(picked);
+    };
+
+    <span class="cm">// 페이지 열리자마자 한 번 뽑기</span>
+    <span class="fn">pick</span>();
+<span class="kw">&lt;/script&gt;</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>학습 흐름 종합</strong>: 함수 3개로 역할을 나눴어. <strong>pickOne</strong>(뽑기), <strong>showResult</strong>(보여주기), <strong>pick</strong>(둘을 합치기). 함수 하나당 한 가지 일만 — 깔끔한 코드의 시작.
+    </div>
+
+    <div class="tip amber">
+      <strong>배열 미리보기</strong>: <code style="font-family:'JetBrains Mono',monospace">students[idx]</code>로 배열의 idx번째 값을 꺼낼 수 있다. <code style="font-family:'JetBrains Mono',monospace">list.length</code>는 배열 길이. 배열은 다음 차시(Day 05)에 본격 학습!
+    </div>
+
+    <h3 style="margin-top:18px">직접 뽑아보기</h3>
+    <div class="ir">
+      <div class="ig">
+        <div class="il">학생 이름 (쉼표로 구분)</div>
+        <input type="text" id="name_pool" value="길동, 영희, 철수, 민지, 준호">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runNamePicker()">🎉 한 명 뽑기</button>
+
+    <div class="preview" id="namePreview" style="display:none">
+      <div class="picked-name" id="pickedName"></div>
+      <div class="name-pool" id="namePool"></div>
+    </div>
+  </div>
+
+  <!-- ========== 9 ========== -->
+  <div class="sh" id="s9">
+    <div class="sh-num">9</div>
+    <div class="sh-text">
+      <div class="sh-title">AI에게 CSS 디자인 부탁하기</div>
+      <div class="sh-sub">발표자 발표 화면처럼 두근거리게</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>이름 뽑기 결과 화면을 좀 더 <strong>이벤트 추첨 화면</strong>처럼 꾸며보자. 두근두근하게.</p>
+
+    <div class="prompt-box">
+      <h4>예시 프롬프트 — 그대로 복사해서 AI에게 보내봐</h4>
+      <pre id="promptText">아래 HTML 랜덤 이름 뽑기 화면에 CSS를 적용해줘.
+
+[HTML]
+&lt;div id="result"&gt;
+    &lt;h1&gt;🎉 길동 🎉&lt;/h1&gt;
+&lt;/div&gt;
+&lt;button onclick="pick()"&gt;다시 뽑기&lt;/button&gt;
+
+[요구사항]
+- 분위기: 이벤트 추첨, 발표 무대 같은 느낌
+- 메인 컬러: 보라/핑크 그라데이션 + 살짝 화려하게
+- 이름은 매우 크게 표시 (60px 이상)
+- 이름이 표시될 때 살짝 튀어오르는 애니메이션 (transform scale + opacity)
+- 버튼: 호버 시 색이 변하고 약간 커지는 효과
+- 가운데 정렬, 모바일에서도 잘 보이게
+
+CSS만 &lt;style&gt; 태그 안에 작성해서 답변해줘.</pre>
+      <button class="prompt-copy" onclick="copyPrompt()">📋 프롬프트 복사하기</button>
+    </div>
+
+    <h3 style="margin-top:18px">실습 미션 — 너만의 분위기로 변형</h3>
+    <div class="box">
+      ① 위 프롬프트의 <strong>분위기·컬러</strong>를 바꿔봐 (복권 추첨 / 콘서트 무대 / 어둠의 운명 분위기 등)<br>
+      ② 받은 CSS를 이름 뽑기 HTML에 붙여넣기<br>
+      ③ 친구와 결과 화면 비교 + "어떤 게 더 두근거려?" 평가
+    </div>
+
+    <div class="tip rose">
+      <strong>심화 미션</strong>: AI에게 "이름이 결정되기 전에 1초간 후보 이름들이 빠르게 바뀌는 효과를 추가해줘"라고 요청해봐. setInterval과 setTimeout이라는 새로운 도구를 만나게 될 거야.
+    </div>
+  </div>
+
+  <!-- ========== 퀴즈 섹션 ========== -->
+  <div class="sh" id="quiz">
+    <div class="sh-num">Q</div>
+    <div class="sh-text">
+      <div class="sh-title">평가 문항 (10문제)</div>
+      <div class="sh-sub">학습목표 4개 · 100점 만점</div>
+    </div>
+  </div>
+
+  <div class="card quiz-section" style="border-top-color:var(--ac); margin-top:14px">
+
+    <!-- LO1: 함수 선언/호출 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q1 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드를 실행하면 콘솔에 "안녕"이 몇 번 출력되는가?
+        <span class="qcode"><span class="kw">function</span> <span class="fn">say</span>() {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"안녕"</span>);
+}
+<span class="fn">say</span>();
+<span class="fn">say</span>();
+<span class="fn">say</span>();</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q1" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(1,'3')">
+        <button class="qbtn" onclick="chk(1,'3')">확인</button>
+      </div>
+      <div class="qfb" id="qf1"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q2 · LO1 · 10점</div>
+      <div class="quiz-q">
+        함수 호출 시 함수 이름 뒤에 반드시 와야 하는 기호 한 쌍은?
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q2" placeholder="기호만 입력 (예: { })"
+               onkeydown="if(event.key==='Enter')chk(2,'()')">
+        <button class="qbtn" onclick="chk(2,'()')">확인</button>
+      </div>
+      <div class="qfb" id="qf2"></div>
+    </div>
+
+    <!-- LO2: 매개변수와 return -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q3 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 result 값은?
+        <span class="qcode"><span class="kw">function</span> <span class="fn">multiply</span>(a, b) {
+    <span class="kw">return</span> a <span class="op">*</span> b;
+}
+<span class="kw">const</span> result <span class="op">=</span> <span class="fn">multiply</span>(<span class="nu">4</span>, <span class="nu">7</span>);</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q3" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(3,'28')">
+        <button class="qbtn" onclick="chk(3,'28')">확인</button>
+      </div>
+      <div class="qfb" id="qf3"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q4 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드를 실행하면 변수 x에 담기는 값은?
+        <span class="qcode"><span class="kw">function</span> <span class="fn">addLog</span>(a, b) {
+    <span class="fn">console</span>.<span class="fn">log</span>(a <span class="op">+</span> b);
+}
+<span class="kw">const</span> x <span class="op">=</span> <span class="fn">addLog</span>(<span class="nu">3</span>, <span class="nu">5</span>);</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q4" placeholder="값을 입력 (예: 8, undefined 등)"
+               onkeydown="if(event.key==='Enter')chk(4,'undefined')">
+        <button class="qbtn" onclick="chk(4,'undefined')">확인</button>
+      </div>
+      <div class="qfb" id="qf4"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q5 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 빈칸에 들어갈 키워드는?<br>
+        (a와 b의 합을 돌려주는 함수)
+        <span class="qcode"><span class="kw">function</span> <span class="fn">sum</span>(a, b) {
+    <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span> a <span class="op">+</span> b;
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q5" placeholder="키워드"
+               onkeydown="if(event.key==='Enter')chk(5,'return')">
+        <button class="qbtn" onclick="chk(5,'return')">확인</button>
+      </div>
+      <div class="qfb" id="qf5"></div>
+    </div>
+
+    <!-- LO3: 화살표 함수 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q6 · LO3 · 10점</div>
+      <div class="quiz-q">
+        다음 화살표 함수를 호출했을 때 결과는?
+        <span class="qcode"><span class="kw">const</span> double <span class="op">=</span> n <span class="op">=&gt;</span> n <span class="op">*</span> <span class="nu">2</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">double</span>(<span class="nu">7</span>));</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q6" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(6,'14')">
+        <button class="qbtn" onclick="chk(6,'14')">확인</button>
+      </div>
+      <div class="qfb" id="qf6"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q7 · LO3 · 10점</div>
+      <div class="quiz-q">
+        다음 화살표 함수 빈칸에 들어갈 기호는?<br>
+        (a와 b를 곱한 결과를 돌려주는 함수)
+        <span class="qcode"><span class="kw">const</span> mul <span class="op">=</span> (a, b) <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span> a <span class="op">*</span> b;</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q7" placeholder="기호 입력"
+               onkeydown="if(event.key==='Enter')chk(7,'=>')">
+        <button class="qbtn" onclick="chk(7,'=>')">확인</button>
+      </div>
+      <div class="qfb" id="qf7"></div>
+    </div>
+
+    <!-- LO4: 종합 (랜덤 이름 뽑기) -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q8 · LO4 · 10점</div>
+      <div class="quiz-q">
+        다음 함수에서 students 배열의 길이를 알아내는 코드는?<br>
+        (students에는 이름들이 들어 있음)
+        <span class="qcode"><span class="kw">const</span> students <span class="op">=</span> [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>];
+<span class="fn">console</span>.<span class="fn">log</span>(<span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span>);   <span class="cm">// → 3</span></span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q8" placeholder="코드 입력 (예: students.xxx)"
+               onkeydown="if(event.key==='Enter')chk(8,'students.length')">
+        <button class="qbtn" onclick="chk(8,'students.length')">확인</button>
+      </div>
+      <div class="qfb" id="qf8"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q9 · LO4 · 10점</div>
+      <div class="quiz-q">
+        다음 코드는 무엇을 하는가? 가장 알맞은 설명은?
+        <span class="qcode"><span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> students.length);</span>
+        <em style="font-size:12px;color:var(--sub)">(아래 보기 중 하나를 입력)</em><br>
+        ① 학생 수 카운트 ② 배열 인덱스 생성 ③ 평균 계산
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q9" placeholder="번호 입력 (1, 2, 3)"
+               onkeydown="if(event.key==='Enter')chk(9,'2')">
+        <button class="qbtn" onclick="chk(9,'2')">확인</button>
+      </div>
+      <div class="qfb" id="qf9"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q10 · LO4 · 10점</div>
+      <div class="quiz-q">
+        다음 화살표 함수의 빈칸에 들어갈 코드는?<br>
+        (배열에서 무작위로 한 명을 뽑아 돌려주는 함수)
+        <span class="qcode"><span class="kw">const</span> pickOne <span class="op">=</span> (list) <span class="op">=&gt;</span> {
+    <span class="kw">const</span> idx <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> list.length);
+    <span class="kw">return</span> <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span>;
+};</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q10" placeholder="코드 입력"
+               onkeydown="if(event.key==='Enter')chk(10,'list[idx]')">
+        <button class="qbtn" onclick="chk(10,'list[idx]')">확인</button>
+      </div>
+      <div class="qfb" id="qf10"></div>
+    </div>
+
+    <!-- 대시보드 -->
+    <div class="dashboard">
+      <div class="db-grid">
+        <div class="db-box"><div class="db-lb">정답</div><div class="db-vl" id="db-ok">0</div></div>
+        <div class="db-box"><div class="db-lb">오답</div><div class="db-vl" id="db-ng" style="color:#dc2626">0</div></div>
+        <div class="db-box"><div class="db-lb">완료</div><div class="db-vl" id="db-done">0/10</div></div>
+        <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score">0점</div></div>
+      </div>
+      <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+    </div>
+
+    <table class="summary-tbl">
+      <thead>
+        <tr>
+          <th style="width:50px">번호</th>
+          <th>문제</th>
+          <th style="width:120px">내 답변</th>
+          <th class="stat">결과</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody">
+        <tr><td>Q1</td><td>함수 호출 횟수</td><td id="ans1">-</td><td class="stat" id="st1">⬜</td></tr>
+        <tr><td>Q2</td><td>호출 시 필수 기호</td><td id="ans2">-</td><td class="stat" id="st2">⬜</td></tr>
+        <tr><td>Q3</td><td>multiply 결과</td><td id="ans3">-</td><td class="stat" id="st3">⬜</td></tr>
+        <tr><td>Q4</td><td>console.log vs return</td><td id="ans4">-</td><td class="stat" id="st4">⬜</td></tr>
+        <tr><td>Q5</td><td>return 빈칸</td><td id="ans5">-</td><td class="stat" id="st5">⬜</td></tr>
+        <tr><td>Q6</td><td>화살표 함수 결과</td><td id="ans6">-</td><td class="stat" id="st6">⬜</td></tr>
+        <tr><td>Q7</td><td>화살표 기호</td><td id="ans7">-</td><td class="stat" id="st7">⬜</td></tr>
+        <tr><td>Q8</td><td>length 사용</td><td id="ans8">-</td><td class="stat" id="st8">⬜</td></tr>
+        <tr><td>Q9</td><td>random*length 의미</td><td id="ans9">-</td><td class="stat" id="st9">⬜</td></tr>
+        <tr><td>Q10</td><td>배열 인덱스 접근</td><td id="ans10">-</td><td class="stat" id="st10">⬜</td></tr>
+      </tbody>
+    </table>
+
+    <div class="submit-area">
+      <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요" oninput="checkSubmit()">
+      <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+    </div>
+  </div>
+
+  <!-- 마무리 -->
+  <div class="sh">
+    <div class="sh-num">✓</div>
+    <div class="sh-text">
+      <div class="sh-title">한눈에 정리</div>
+      <div class="sh-sub">오늘 외울 6가지</div>
+    </div>
+  </div>
+
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="s-card-num">01</div>
+      <div class="s-card-title">함수 = 이름 붙인 코드 묶음</div>
+      <div class="s-card-desc">선언과 호출은 다르다. 호출은 이름() 형태</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">02</div>
+      <div class="s-card-title">매개변수 vs 인자</div>
+      <div class="s-card-desc">선언할 때 = 매개변수, 호출할 때 넣는 값 = 인자</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">03</div>
+      <div class="s-card-title">return = 결과 돌려주기</div>
+      <div class="s-card-desc">변수에 담을 수 있게 됨. console.log와 다름</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">04</div>
+      <div class="s-card-title">화살표 함수가 표준</div>
+      <div class="s-card-desc">const 이름 = (a, b) => a + b — 짧고 깔끔</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">05</div>
+      <div class="s-card-title">기본값 매개변수</div>
+      <div class="s-card-desc">(name = "손님") => ... — 인자 없으면 기본값 사용</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">06</div>
+      <div class="s-card-title">함수 하나 = 일 하나</div>
+      <div class="s-card-desc">기능별로 함수를 나눠 쓰면 코드가 단순해짐</div>
+    </div>
+  </div>
+
+  <div class="tip blue" style="margin-top:24px">
+    <strong>다음 차시 (Day 05)</strong>: 배열과 배열 메서드 — push, pop, map, filter. 오늘 살짝 본 <code style="font-family:'JetBrains Mono',monospace">students[idx]</code>, <code style="font-family:'JetBrains Mono',monospace">list.length</code>가 본격 등장한다.
+  </div>
+
+</div>
+
+<!-- 결과 팝업 -->
+<div class="popup-bg" id="popupBg" onclick="if(event.target.id==='popupBg')closePopup()">
+  <div class="popup">
+    <h2>제출 결과</h2>
+    <div class="pname" id="p-name">-</div>
+    <div class="score" id="p-score">0점</div>
+    <div class="grade" id="p-grade">-</div>
+    <button class="popup-btn" onclick="sendAnswers()">답안 전송하기</button>
+    <button class="popup-btn" style="background:#888;margin-left:8px" onclick="closePopup()">닫기</button>
+    <div id="send-status" style="margin-top:12px;font-size:13px;color:var(--sub)"></div>
+  </div>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+// ── 차시 설정 ──
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'web/04_javascript_function',
+  quizTotal: 10
+};
+
+// ── 차시 고유 인터랙션 함수 ──
+function runHello() {
+  const msg = document.getElementById('hello_msg').value || '안녕';
+  const n = Math.min(Math.max(Number(document.getElementById('hello_n').value) || 1, 1), 20);
+  const arr = Array(n).fill(msg);
+  document.getElementById('r1').textContent = arr.join(' / ');
+}
+function runIntroduce() {
+  const name = document.getElementById('g_name').value || '길동';
+  const age = document.getElementById('g_age').value || 19;
+  const hobby = document.getElementById('g_hobby').value || '롤';
+  document.getElementById('r2').textContent = `${name}, ${age}살, 취미는 ${hobby}`;
+}
+function runAdd() {
+  const a = Number(document.getElementById('add_a').value) || 0;
+  const b = Number(document.getElementById('add_b').value) || 0;
+  document.getElementById('r3').textContent = `add(${a}, ${b}) = ${a + b}`;
+}
+function runNamePicker() {
+  const raw = document.getElementById('name_pool').value.trim();
+  const list = raw.split(/[,\s]+/).filter(s => s.length > 0);
+  if (list.length === 0) {
+    alert('이름을 한 명 이상 입력하세요');
+    return;
+  }
+
+  const idx = Math.floor(Math.random() * list.length);
+  const picked = list[idx];
+
+  document.getElementById('pickedName').textContent = `🎉 ${picked} 🎉`;
+  // re-trigger animation
+  const el = document.getElementById('pickedName');
+  el.style.animation = 'none';
+  setTimeout(() => { el.style.animation = ''; }, 10);
+
+  document.getElementById('namePool').innerHTML =
+    list.map(n => `<span class="name-chip" style="${n === picked ? 'border-color:var(--ac);color:var(--ac);font-weight:600' : ''}">${n}</span>`).join('');
+
+  document.getElementById('namePreview').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=웹개발(JavaScript) -->
+<!-- meta:unit=자바스크립트 활용 -->
+<!-- meta:title=Day3.5 if + for 결합 패턴 / 가위바위보 게임 -->
+<!-- meta:desc=조건문과 반복문을 결합한 필터링/카운트/누적 패턴, 짝수 구구단, 가위바위보 게임 종합 실습 -->
+<!-- meta:date=2026-05-08 -->
+<!-- meta:audience=고3 직업계 -->
+<title>Day 3.5 · 조건문 + 반복문 연습</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fffbeb;        --card: #ffffff;
+  --surf2: #fef3c7;     --surf3: #fde68a;
+  --border: #fcd34d;    --text: #1c1608;       --sub: #75603b;
+  --ac: #d97706;        --ac-l: #fffbeb;       --ac-b: #fde68a;
+  --header-bg: #1c1208;
+  --c1: #1d4ed8; --c1l: #eff6ff; --c1b: #bfdbfe;
+  --c2: #15803d; --c2l: #f0fdf4; --c2b: #bbf7d0;
+  --c3: #c2410c; --c3l: #fff7ed; --c3b: #fed7aa;
+  --c4: #7c3aed; --c4l: #f5f3ff; --c4b: #ddd6fe;
+  --c5: #be123c; --c5l: #fff1f2; --c5b: #fecdd3;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; font-size: 15px;
+}
+.hd {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--header-bg); color: #fff;
+  border-bottom: 1px solid #2a1d0a;
+}
+.hd-inner {
+  max-width: 820px; margin: 0 auto;
+  padding: 12px 24px; display: flex; align-items: center; gap: 14px;
+}
+.hd-badge {
+  background: var(--ac); color: #fff;
+  padding: 4px 10px; border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.hd-title { font-family: 'Black Han Sans', sans-serif; font-size: 19px; letter-spacing: 0.3px; }
+.hd-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #d4b87a; margin-left: auto; }
+.prog { height: 3px; background: linear-gradient(90deg, var(--ac) 0%, #f59e0b 100%); width: 0%; transition: width 0.1s; }
+
+.wrap { max-width: 820px; margin: 0 auto; padding: 28px 24px 80px; }
+
+.hero {
+  text-align: center; padding: 36px 20px 28px;
+  background: var(--card); border-radius: 18px;
+  border: 1px solid var(--border); margin-bottom: 28px;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.08);
+}
+.hero-emoji {
+  font-size: 52px; display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px; margin: 12px 0 8px;
+  background: linear-gradient(135deg, var(--ac) 0%, #f59e0b 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 0.5px;
+}
+.hero-sub { color: var(--sub); font-size: 15px; margin-bottom: 18px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.htag {
+  background: var(--ac-l); color: var(--ac);
+  padding: 5px 12px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  border: 1px solid var(--ac-b); font-weight: 500;
+}
+
+.goals {
+  background: var(--card); border-radius: 14px;
+  border: 1px solid var(--border); padding: 22px 24px;
+  margin-bottom: 28px; border-left: 4px solid var(--ac);
+}
+.goals-title {
+  font-family: 'Black Han Sans', sans-serif; font-size: 19px;
+  color: var(--ac); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.goals-title::before { content: "🎯"; font-size: 22px; }
+.goals ol { padding-left: 22px; }
+.goals li { margin-bottom: 8px; color: var(--text); font-weight: 400; }
+.goals li strong { color: var(--ac); font-weight: 600; }
+
+.toc {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 32px;
+}
+.toc-item {
+  background: var(--card); padding: 12px 14px;
+  border-radius: 10px; border: 1px solid var(--border);
+  font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+  transition: all 0.15s;
+}
+.toc-item:hover { background: var(--surf2); border-color: var(--ac-b); transform: translateX(2px); }
+.toc-num {
+  background: var(--ac); color: #fff; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sh {
+  margin: 38px 0 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.sh-num {
+  background: var(--ac); color: #fff;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  flex-shrink: 0;
+}
+.sh-text { flex: 1; }
+.sh-title { font-family: 'Black Han Sans', sans-serif; font-size: 22px; letter-spacing: 0.3px; }
+.sh-sub { color: var(--sub); font-size: 13px; margin-top: 2px; }
+
+.card {
+  background: var(--card); border-radius: 12px;
+  border: 1px solid var(--border); border-top: 4px solid var(--ac);
+  padding: 24px; margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.04);
+}
+.card h3 {
+  font-family: 'Black Han Sans', sans-serif; font-size: 18px;
+  margin-bottom: 12px; color: var(--text);
+}
+.card p { margin-bottom: 12px; }
+
+.box {
+  background: var(--surf2); border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+  margin: 14px 0; font-size: 14px;
+}
+.box strong { color: var(--ac); }
+
+.tip {
+  border-radius: 10px; padding: 13px 16px; margin: 14px 0;
+  font-size: 13.5px; border: 1px solid;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.tip::before { font-size: 18px; flex-shrink: 0; }
+.tip.blue { background: var(--c1l); border-color: var(--c1b); color: var(--c1); }
+.tip.blue::before { content: "💡"; }
+.tip.green { background: var(--c2l); border-color: var(--c2b); color: var(--c2); }
+.tip.green::before { content: "✅"; }
+.tip.orange { background: var(--c3l); border-color: var(--c3b); color: var(--c3); }
+.tip.orange::before { content: "⚠️"; }
+.tip.red { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.tip.red::before { content: "🚫"; }
+.tip.purple { background: var(--c4l); border-color: var(--c4b); color: var(--c4); }
+.tip.purple::before { content: "🤖"; }
+.tip.rose { background: var(--c5l); border-color: var(--c5b); color: var(--c5); }
+.tip.rose::before { content: "🔁"; }
+
+/* 코드 블록 */
+.cb {
+  margin: 12px 0; background: #fffefb;
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+}
+.cb-hd {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surf2); padding: 7px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.cb-dots { display: flex; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dr { background: #ff5f57; } .dy { background: #ffbd2e; } .dg { background: #28c840; }
+.cb-label {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 11px; color: var(--sub); margin-left: 4px;
+}
+.cb pre {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 13px; line-height: 1.7; padding: 14px 18px;
+  overflow-x: auto; white-space: pre;
+  color: var(--text); margin: 0;
+}
+.kw { color: #b45309; font-weight: 600; }
+.fn { color: #d97706; }
+.st { color: #15803d; }
+.nu { color: #1d4ed8; }
+.cm { color: #9c8d7a; font-style: italic; }
+.op { color: #7c3aed; padding: 0 2px; font-weight: 500; }
+.out { color: #155e75; font-weight: 600; }
+
+/* 인터랙션 */
+.ir { margin: 14px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.ig { flex: 1; min-width: 140px; }
+.il {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--sub); margin-bottom: 4px; font-weight: 600;
+}
+.ir input, .ir select {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+  background: var(--card); color: var(--text);
+}
+.ir input:focus, .ir select:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+
+.btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 11px 22px; border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn:hover { background: #b45309; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.bac { width: 100%; margin: 8px 0; }
+
+.res {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  padding: 13px 16px; border-radius: 8px; margin-top: 8px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.rl {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  background: var(--ac); color: #fff; padding: 3px 8px;
+  border-radius: 5px; font-weight: 600;
+}
+.rv { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ac); font-weight: 500; word-break: break-word; }
+
+/* AI 프롬프트 박스 */
+.prompt-box {
+  background: #f5f3ff; border: 1px solid #ddd6fe;
+  border-radius: 10px; padding: 16px;
+  margin: 14px 0;
+}
+.prompt-box h4 {
+  color: #6d28d9; font-size: 14px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.prompt-box h4::before { content: "🤖"; font-size: 18px; }
+.prompt-box pre {
+  background: #fff; border: 1px solid #ddd6fe;
+  padding: 12px 14px; border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  color: #4c1d95; white-space: pre-wrap; line-height: 1.6;
+}
+.prompt-copy {
+  background: #7c3aed; color: #fff; border: none;
+  padding: 7px 14px; border-radius: 6px; font-size: 12px;
+  cursor: pointer; margin-top: 8px; font-family: 'Noto Sans KR', sans-serif;
+}
+.prompt-copy:hover { background: #6d28d9; }
+
+/* 짝수 구구단 표 */
+.gugu-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin: 14px 0;
+}
+.gugu-card {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  border-radius: 8px; padding: 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  line-height: 1.7;
+}
+.gugu-card h4 {
+  font-family: 'Black Han Sans', sans-serif; font-size: 14px;
+  color: var(--ac); margin-bottom: 6px;
+  border-bottom: 1px solid var(--ac-b); padding-bottom: 4px;
+}
+
+/* 가위바위보 게임 미리보기 */
+.preview {
+  background: #fff; border: 2px dashed var(--border);
+  border-radius: 10px; padding: 24px; margin: 14px 0;
+  text-align: center;
+}
+.rps-row {
+  display: flex; gap: 16px; justify-content: center;
+  align-items: center; margin-bottom: 18px;
+  font-family: 'Black Han Sans', sans-serif;
+}
+.rps-side {
+  font-size: 60px;
+  background: var(--ac-l); border: 2px solid var(--ac-b);
+  border-radius: 12px; padding: 14px 20px;
+  min-width: 110px;
+  animation: pop 0.4s ease-out;
+}
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.rps-vs {
+  font-size: 24px; color: var(--ac);
+}
+.rps-result {
+  font-family: 'Black Han Sans', sans-serif; font-size: 28px;
+  margin: 10px 0 16px;
+}
+.rps-result.win { color: #15803d; }
+.rps-result.lose { color: #dc2626; }
+.rps-result.draw { color: var(--sub); }
+.rps-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.rps-stat {
+  background: var(--ac-l); border: 1px solid var(--ac-b);
+  border-radius: 8px; padding: 10px;
+}
+.rps-stat-lb { font-size: 11px; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+.rps-stat-vl {
+  font-family: 'Black Han Sans', sans-serif; font-size: 24px;
+  color: var(--ac); margin-top: 2px;
+}
+.rps-history {
+  margin-top: 14px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  justify-content: center;
+}
+.rps-chip {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.rps-chip.w { border-color: #15803d; color: #15803d; }
+.rps-chip.l { border-color: #dc2626; color: #dc2626; }
+.rps-chip.d { border-color: var(--sub); color: var(--sub); }
+
+/* 퀴즈 */
+.quiz-section {
+  margin-top: 38px; padding-top: 18px;
+  border-top: 2px dashed var(--border);
+}
+.quiz-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  border-radius: 10px; padding: 18px 20px; margin-bottom: 14px;
+}
+.quiz-meta {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 6px;
+}
+.quiz-q {
+  font-size: 14.5px; margin-bottom: 12px; line-height: 1.6;
+}
+.quiz-q .qcode {
+  display: block; background: #fffefb; border: 1px solid var(--border);
+  border-radius: 7px; padding: 10px 14px; margin: 8px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  white-space: pre;
+}
+.qrow { display: flex; gap: 8px; }
+.qinput {
+  flex: 1; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+}
+.qinput:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+.qinput.iok { border-color: #28c840; background: #f0fdf4; }
+.qinput.ing { border-color: #ff5f57; background: #fef2f2; }
+.qbtn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 9px 16px; border-radius: 7px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+}
+.qbtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.qfb {
+  margin-top: 8px; font-size: 13px; min-height: 18px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.qfb.ok { color: #15803d; }
+.qfb.ng { color: #dc2626; }
+
+/* 대시보드 */
+.dashboard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  margin: 22px 0 14px;
+}
+.db-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 14px;
+}
+.db-box {
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; text-align: center;
+}
+.db-lb { font-size: 11px; color: var(--sub); font-family: 'JetBrains Mono', monospace; }
+.db-vl {
+  font-family: 'Black Han Sans', sans-serif; font-size: 24px;
+  color: var(--ac); margin-top: 2px;
+}
+.ptrack {
+  height: 8px; background: var(--surf3); border-radius: 4px; overflow: hidden;
+}
+.pbar {
+  height: 100%; width: 0%; background: linear-gradient(90deg, var(--ac), #f59e0b);
+  transition: width 0.3s;
+}
+
+/* 답안 요약 */
+.summary-tbl {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; margin: 14px 0;
+}
+.summary-tbl th, .summary-tbl td {
+  padding: 8px 10px; border: 1px solid var(--border);
+  text-align: left;
+}
+.summary-tbl th {
+  background: var(--surf2); font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--sub);
+}
+.summary-tbl td { font-family: 'JetBrains Mono', monospace; }
+.summary-tbl .stat { width: 40px; text-align: center; }
+
+/* 제출 */
+.submit-area {
+  margin-top: 18px; padding: 18px;
+  background: var(--surf2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.name-in {
+  width: 100%; padding: 10px 14px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+}
+.name-in:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-b); }
+.sub-btn {
+  width: 100%; background: var(--ac); color: #fff; border: none;
+  padding: 12px; border-radius: 8px; font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 500;
+  cursor: pointer;
+}
+.sub-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sub-btn:hover:not(:disabled) { background: #b45309; }
+
+/* 결과 팝업 */
+.popup-bg {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.popup-bg.show { display: flex; }
+.popup {
+  background: #fff; border-radius: 14px; padding: 28px;
+  max-width: 380px; width: 90%; text-align: center;
+  border-top: 6px solid var(--ac);
+}
+.popup h2 { font-family: 'Black Han Sans', sans-serif; font-size: 22px; margin-bottom: 12px; color: var(--ac); }
+.popup .score { font-family: 'Black Han Sans', sans-serif; font-size: 56px; color: var(--ac); margin: 12px 0; }
+.popup .grade { font-family: 'Black Han Sans', sans-serif; font-size: 30px; margin-bottom: 8px; }
+.popup .pname { font-size: 14px; color: var(--sub); margin-bottom: 18px; }
+.popup-btn {
+  background: var(--ac); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+}
+.popup-btn:hover { background: #b45309; }
+
+/* 마무리 */
+.summary-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  margin-top: 18px;
+}
+.s-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 4px solid var(--ac);
+  padding: 14px 16px; border-radius: 8px;
+}
+.s-card-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ac); font-weight: 600; margin-bottom: 4px;
+}
+.s-card-title { font-weight: 600; margin-bottom: 4px; }
+.s-card-desc { font-size: 13px; color: var(--sub); }
+
+@media (max-width: 640px) {
+  .toc, .summary-cards { grid-template-columns: 1fr; }
+  .db-grid, .rps-stats { grid-template-columns: repeat(2, 1fr); }
+  .gugu-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero h1 { font-size: 28px; }
+  .rps-side { font-size: 44px; padding: 10px 14px; min-width: 80px; }
+  .wrap { padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">DAY 3.5</span>
+    <span class="hd-title">조건문 + 반복문 연습</span>
+    <span class="hd-meta">JS · 4h</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-emoji">⚙️</div>
+    <h1>조건문 + 반복문 = 진짜 프로그램</h1>
+    <div class="hero-sub">2일차 if문과 3일차 for문을 합치면 — 자동으로 분류하고, 세고, 합치는 코드</div>
+    <div class="hero-tags">
+      <span class="htag">필터링</span>
+      <span class="htag">카운트</span>
+      <span class="htag">평균</span>
+      <span class="htag">중첩 + 조건</span>
+      <span class="htag">가위바위보</span>
+    </div>
+  </div>
+
+  <div class="goals">
+    <div class="goals-title">오늘의 학습목표</div>
+    <ol>
+      <li><strong>조건문과 반복문을 결합</strong>해 특정 조건의 데이터만 골라내는 코드를 작성할 수 있다.</li>
+      <li>반복문 안에서 누적 변수와 조건문을 함께 활용해 <strong>카운트·합계·평균</strong>을 계산할 수 있다.</li>
+      <li><strong>중첩 반복문 안에 조건문</strong>을 넣어 짝수 구구단 같은 2차원 패턴을 만들 수 있다.</li>
+      <li>학습한 내용으로 <strong>가위바위보 게임</strong>을 만들고, 결과 화면을 AI에게 CSS 적용을 요청할 수 있다.</li>
+    </ol>
+  </div>
+
+  <div class="toc">
+    <a class="toc-item" href="#s1"><span class="toc-num">1</span> 2·3일차 핵심 복습</a>
+    <a class="toc-item" href="#s2"><span class="toc-num">2</span> 패턴 ① 필터링</a>
+    <a class="toc-item" href="#s3"><span class="toc-num">3</span> 패턴 ② 카운트</a>
+    <a class="toc-item" href="#s4"><span class="toc-num">4</span> 패턴 ③ 누적합·평균</a>
+    <a class="toc-item" href="#s5"><span class="toc-num">5</span> 짝수 구구단</a>
+    <a class="toc-item" href="#s6"><span class="toc-num">6</span> 가위바위보 설계</a>
+    <a class="toc-item" href="#s7"><span class="toc-num">7</span> 가위바위보 구현</a>
+    <a class="toc-item" href="#s8"><span class="toc-num">8</span> AI에게 CSS 부탁하기</a>
+    <a class="toc-item" href="#quiz"><span class="toc-num">Q</span> 평가 문항 (10문제)</a>
+  </div>
+
+  <!-- ========== 1 ========== -->
+  <div class="sh" id="s1">
+    <div class="sh-num">1</div>
+    <div class="sh-text">
+      <div class="sh-title">2·3일차 핵심 복습</div>
+      <div class="sh-sub">합치기 전에 30초 정리</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2일차 — 조건문</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">recap_if.js</span>
+      </div>
+      <pre><span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"합격"</span>);
+} <span class="kw">else</span> {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">"불합격"</span>);
+}</pre>
+    </div>
+
+    <h3 style="margin-top:14px">3일차 — 반복문</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">recap_for.js</span>
+      </div>
+      <pre><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(i);
+}</pre>
+    </div>
+
+    <div class="box">
+      오늘은 이 둘을 <strong>합친다</strong>. 반복문이 한 명씩 검사하는 사람이라면, 조건문은 그 사람이 가진 판단 기준. 합치면? <strong>"100명을 조건에 따라 자동으로 분류하는 시스템"</strong>이 된다.
+    </div>
+
+    <div class="tip blue">
+      <strong>핵심 패턴 3가지</strong>를 오늘 배운다 — ① 필터링(조건에 맞는 것만 골라내기) ② 카운트(개수 세기) ③ 누적합/평균. 모든 통계 코드의 기본.
+    </div>
+  </div>
+
+  <!-- ========== 2 ========== -->
+  <div class="sh" id="s2">
+    <div class="sh-num">2</div>
+    <div class="sh-text">
+      <div class="sh-title">패턴 ① 필터링 — 조건에 맞는 것만</div>
+      <div class="sh-sub">"1~20 중 짝수만 출력"</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>예제 — 1부터 20까지 중 짝수만</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">filter_even.js</span>
+      </div>
+      <pre><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">20</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span>) {       <span class="cm">// 짝수일 때만</span>
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}
+<span class="cm">// → 2, 4, 6, 8, 10, 12, 14, 16, 18, 20</span></pre>
+    </div>
+
+    <div class="box">
+      <strong>필터링 패턴</strong>: <code style="font-family:'JetBrains Mono',monospace">for { if (조건) { 처리 } }</code> — 모든 값을 검사하면서 조건을 통과한 것만 처리.
+    </div>
+
+    <h3 style="margin-top:18px">예제 — 1~50 중 3의 배수만</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">filter_3.js</span>
+      </div>
+      <pre><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">50</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">3</span> <span class="op">===</span> <span class="nu">0</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}
+<span class="cm">// → 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>%(나머지) 활용</strong>: <code style="font-family:'JetBrains Mono',monospace">i % N === 0</code>은 "i가 N의 배수"라는 뜻. 짝수면 N=2, 5의 배수면 N=5.
+    </div>
+
+    <h3 style="margin-top:18px">복합 조건 — 짝수이면서 5의 배수</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">filter_both.js</span>
+      </div>
+      <pre><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">100</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span> <span class="op">&&</span> i <span class="op">%</span> <span class="nu">5</span> <span class="op">===</span> <span class="nu">0</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}
+<span class="cm">// → 10, 20, 30, 40, 50, 60, 70, 80, 90, 100</span></pre>
+    </div>
+
+    <div class="tip orange">
+      <strong>복습</strong>: <code style="font-family:'JetBrains Mono',monospace">&&</code>는 "그리고", <code style="font-family:'JetBrains Mono',monospace">||</code>는 "또는". 2일차 논리 연산자, 기억나지?
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">시작값</div>
+        <input type="number" id="f_start" value="1">
+      </div>
+      <div class="ig">
+        <div class="il">끝값</div>
+        <input type="number" id="f_end" value="30">
+      </div>
+      <div class="ig">
+        <div class="il">N의 배수만</div>
+        <input type="number" id="f_n" value="3">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runFilter()">▶ 필터링 실행</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r1">위 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 3 ========== -->
+  <div class="sh" id="s3">
+    <div class="sh-num">3</div>
+    <div class="sh-text">
+      <div class="sh-title">패턴 ② 카운트 — 몇 개인지 세기</div>
+      <div class="sh-sub">조건에 맞는 횟수를 변수에 누적</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>예제 — 1~100 중 7의 배수가 몇 개?</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">count.js</span>
+      </div>
+      <pre><span class="kw">let</span> count <span class="op">=</span> <span class="nu">0</span>;        <span class="cm">// 카운트 그릇 (반복 시작 전!)</span>
+
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">100</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">7</span> <span class="op">===</span> <span class="nu">0</span>) {
+        count<span class="op">++</span>;       <span class="cm">// 조건 만족할 때마다 +1</span>
+    }
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(count);  <span class="out">// → 14</span></pre>
+    </div>
+
+    <div class="box">
+      <strong>카운트 패턴 3단계</strong>:<br>
+      ① 반복 시작 <strong>전</strong>에 <code style="font-family:'JetBrains Mono',monospace">let count = 0</code><br>
+      ② 반복 <strong>안</strong>에서 조건 만족하면 <code style="font-family:'JetBrains Mono',monospace">count++</code><br>
+      ③ 반복 끝나고 결과 사용
+    </div>
+
+    <div class="tip red">
+      <strong>흔한 실수</strong>: <code style="font-family:'JetBrains Mono',monospace">let count = 0</code>을 for문 <em>안</em>에 쓰면 → 매번 0으로 초기화 → 결과는 항상 0 또는 1. 꼭 <strong>밖</strong>에 선언!
+    </div>
+
+    <h3 style="margin-top:18px">예제 — 주사위 100번 굴려서 6이 나온 횟수</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">dice_count.js</span>
+      </div>
+      <pre><span class="kw">let</span> sixCount <span class="op">=</span> <span class="nu">0</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">100</span>; i<span class="op">++</span>) {
+    <span class="kw">const</span> dice <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">6</span>) <span class="op">+</span> <span class="nu">1</span>;
+    <span class="kw">if</span> (dice <span class="op">===</span> <span class="nu">6</span>) {
+        sixCount<span class="op">++</span>;
+    }
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`100번 중 6은 ${</span>sixCount<span class="st">}번`</span>);
+<span class="cm">// → 100번 중 6은 17번 (실행할 때마다 다름)</span></pre>
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">굴릴 횟수</div>
+        <input type="number" id="c_times" value="100">
+      </div>
+      <div class="ig">
+        <div class="il">목표 눈 (1-6)</div>
+        <input type="number" id="c_target" value="6" min="1" max="6">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runCount()">🎲 굴려서 세기</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r2">위 값을 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 4 ========== -->
+  <div class="sh" id="s4">
+    <div class="sh-num">4</div>
+    <div class="sh-text">
+      <div class="sh-title">패턴 ③ 누적합·평균 — 통계의 기본</div>
+      <div class="sh-sub">합계 + 카운트로 평균까지</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>예제 — 1~100 중 짝수의 합과 평균</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">sum_avg.js</span>
+      </div>
+      <pre><span class="kw">let</span> sum <span class="op">=</span> <span class="nu">0</span>;        <span class="cm">// 합계 그릇</span>
+<span class="kw">let</span> count <span class="op">=</span> <span class="nu">0</span>;      <span class="cm">// 카운트 그릇</span>
+
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">100</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span>) {
+        sum <span class="op">+=</span> i;       <span class="cm">// 짝수면 합에 더하기</span>
+        count<span class="op">++</span>;       <span class="cm">// 짝수면 카운트도 +1</span>
+    }
+}
+
+<span class="kw">const</span> average <span class="op">=</span> sum <span class="op">/</span> count;
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`합: ${</span>sum<span class="st">}`</span>);          <span class="out">// → 합: 2550</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`평균: ${</span>average<span class="st">}`</span>);     <span class="out">// → 평균: 51</span></pre>
+    </div>
+
+    <div class="tip green">
+      <strong>평균 공식</strong>: <code style="font-family:'JetBrains Mono',monospace">평균 = 합계 / 개수</code>. 그래서 합계와 카운트를 동시에 누적해야 한다.
+    </div>
+
+    <h3 style="margin-top:18px">예제 — 점수 누적하며 합격자 통계</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">score_stat.js</span>
+      </div>
+      <pre><span class="cm">// 학생 5명의 점수를 입력받는다고 가정 (지금은 직접 prompt로 받기)</span>
+<span class="kw">let</span> totalSum <span class="op">=</span> <span class="nu">0</span>;
+<span class="kw">let</span> passCount <span class="op">=</span> <span class="nu">0</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">5</span>; i<span class="op">++</span>) {
+    <span class="kw">const</span> score <span class="op">=</span> <span class="fn">Number</span>(<span class="fn">prompt</span>(<span class="st">`${</span>i<span class="st">}번 학생 점수`</span>));
+    totalSum <span class="op">+=</span> score;
+    <span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="nu">60</span>) {
+        passCount<span class="op">++</span>;
+    }
+}
+
+<span class="kw">const</span> avg <span class="op">=</span> totalSum <span class="op">/</span> <span class="nu">5</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`평균 ${</span>avg<span class="st">}점, 합격자 ${</span>passCount<span class="st">}명`</span>);</pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>prompt()</strong>는 사용자에게 입력을 받는 브라우저 함수. 결과는 항상 문자열이라 <code style="font-family:'JetBrains Mono',monospace">Number()</code>로 변환 필요. (1일차 형변환!)
+    </div>
+
+    <div class="ir">
+      <div class="ig">
+        <div class="il">학생 수</div>
+        <input type="number" id="s_count" value="10" min="1" max="100">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runScoreStat()">▶ 랜덤 점수 통계 (합/평균/합격자)</button>
+    <div class="res">
+      <span class="rl">결과</span>
+      <span class="rv" id="r3">학생 수를 입력하고 눌러보세요</span>
+    </div>
+  </div>
+
+  <!-- ========== 5 ========== -->
+  <div class="sh" id="s5">
+    <div class="sh-num">5</div>
+    <div class="sh-text">
+      <div class="sh-title">짝수 구구단 — 중첩 + 조건</div>
+      <div class="sh-sub">3일차 구구단을 한 단계 업그레이드</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>일반 구구단은 2~9단 전체. 이번엔 <strong>짝수 단(2, 4, 6, 8단)만</strong> 출력. 중첩 반복문 + 조건문 조합.</p>
+
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">even_gugu.js</span>
+      </div>
+      <pre><span class="kw">for</span> (<span class="kw">let</span> dan <span class="op">=</span> <span class="nu">2</span>; dan <span class="op">&lt;=</span> <span class="nu">9</span>; dan<span class="op">++</span>) {       <span class="cm">// 바깥: 단</span>
+    <span class="kw">if</span> (dan <span class="op">%</span> <span class="nu">2</span> <span class="op">!==</span> <span class="nu">0</span>) {              <span class="cm">// 홀수 단이면</span>
+        <span class="kw">continue</span>;                          <span class="cm">// 건너뛰기 (3일차 continue!)</span>
+    }
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`=== ${</span>dan<span class="st">}단 ===`</span>);
+    <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">9</span>; i<span class="op">++</span>) {       <span class="cm">// 안쪽: 1~9</span>
+        <span class="fn">console</span>.<span class="fn">log</span>(<span class="st">`${</span>dan<span class="st">} × ${</span>i<span class="st">} = ${</span>dan <span class="op">*</span> i<span class="st">}`</span>);
+    }
+}
+<span class="cm">// → 2단, 4단, 6단, 8단만 출력</span></pre>
+    </div>
+
+    <div class="tip blue">
+      <strong>continue 활용</strong>: 바깥 반복문에서 조건이 안 맞으면 안쪽 코드 전체를 건너뛴다. if문으로 감싸는 것보다 들여쓰기가 줄어 깔끔.
+    </div>
+
+    <div class="tip orange">
+      <strong>같은 결과를 다른 방법으로</strong>: <code style="font-family:'JetBrains Mono',monospace">for (let dan = 2; dan &lt;= 9; dan += 2)</code>처럼 처음부터 2씩 증가하면 if도 continue도 필요 없다. 같은 문제도 여러 풀이가 있다는 점.
+    </div>
+
+    <h3 style="margin-top:18px">화면에 그려보기</h3>
+    <button class="btn bac" onclick="runEvenGugu()">▶ 짝수 구구단 표 만들기</button>
+    <div id="guguResult" class="gugu-grid" style="display:none"></div>
+  </div>
+
+  <!-- ========== 6 ========== -->
+  <div class="sh" id="s6">
+    <div class="sh-num">6</div>
+    <div class="sh-text">
+      <div class="sh-title">실습 설계 — 가위바위보 게임</div>
+      <div class="sh-sub">먼저 규칙과 코드 흐름을 그려보자</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>게임 규칙 (숫자로 표현)</h3>
+    <div class="box">
+      <strong>각 손 모양에 번호</strong>:<br>
+      · <strong>0 = 가위 ✌️</strong><br>
+      · <strong>1 = 바위 ✊</strong><br>
+      · <strong>2 = 보 ✋</strong>
+      <br><br>
+      <strong>승부 결정</strong>:<br>
+      · 가위(0) → 보(2)를 이김<br>
+      · 바위(1) → 가위(0)를 이김<br>
+      · 보(2) → 바위(1)를 이김<br>
+      · 같은 모양이면 무승부
+    </div>
+
+    <h3 style="margin-top:14px">한 판 코드 흐름</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">one_round.js</span>
+      </div>
+      <pre><span class="cm">// 1단계: 사용자와 컴퓨터가 0/1/2 중 하나 선택</span>
+<span class="kw">const</span> user <span class="op">=</span> <span class="nu">1</span>;                              <span class="cm">// 일단 고정 (실제론 prompt나 버튼)</span>
+<span class="kw">const</span> com <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">3</span>);   <span class="cm">// 0, 1, 2 중 무작위</span>
+
+<span class="cm">// 2단계: 승부 판정</span>
+<span class="kw">let</span> result;
+<span class="kw">if</span> (user <span class="op">===</span> com) {
+    result <span class="op">=</span> <span class="st">"무승부"</span>;
+} <span class="kw">else if</span> (
+    (user <span class="op">===</span> <span class="nu">0</span> <span class="op">&&</span> com <span class="op">===</span> <span class="nu">2</span>) <span class="op">||</span>      <span class="cm">// 가위 vs 보</span>
+    (user <span class="op">===</span> <span class="nu">1</span> <span class="op">&&</span> com <span class="op">===</span> <span class="nu">0</span>) <span class="op">||</span>      <span class="cm">// 바위 vs 가위</span>
+    (user <span class="op">===</span> <span class="nu">2</span> <span class="op">&&</span> com <span class="op">===</span> <span class="nu">1</span>)         <span class="cm">// 보 vs 바위</span>
+) {
+    result <span class="op">=</span> <span class="st">"승리"</span>;
+} <span class="kw">else</span> {
+    result <span class="op">=</span> <span class="st">"패배"</span>;
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(result);</pre>
+    </div>
+
+    <div class="tip green">
+      <strong>승리 조건의 트릭</strong>: 사용자가 이기는 3가지 경우만 || 로 묶었다. 그것 외에는 자동으로 패배. 모든 경우의 수를 다 적을 필요 없음.
+    </div>
+
+    <h3 style="margin-top:18px">N판 반복하면? — 통계 추가</h3>
+    <p>이제 <strong>for문으로 N번 반복</strong>하면서 <strong>승/무/패 카운트</strong>를 누적하면 통계가 완성. 패턴 ②(카운트)를 그대로 적용.</p>
+  </div>
+
+  <!-- ========== 7 ========== -->
+  <div class="sh" id="s7">
+    <div class="sh-num">7</div>
+    <div class="sh-text">
+      <div class="sh-title">실습: 가위바위보 N판 게임</div>
+      <div class="sh-sub">반복 + 조건 + 카운트 종합</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>전체 코드 (N판 자동 대전)</h3>
+    <div class="cb">
+      <div class="cb-hd">
+        <div class="cb-dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+        <span class="cb-label">rps_game.html</span>
+      </div>
+      <pre><span class="kw">&lt;div id=</span><span class="st">"result"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+<span class="kw">&lt;script&gt;</span>
+    <span class="kw">const</span> rounds <span class="op">=</span> <span class="nu">10</span>;            <span class="cm">// 총 판 수</span>
+
+    <span class="cm">// 카운트 그릇 3개</span>
+    <span class="kw">let</span> winCount <span class="op">=</span> <span class="nu">0</span>;
+    <span class="kw">let</span> drawCount <span class="op">=</span> <span class="nu">0</span>;
+    <span class="kw">let</span> loseCount <span class="op">=</span> <span class="nu">0</span>;
+
+    <span class="cm">// 결과 기록용 (간단한 문자열로 누적)</span>
+    <span class="kw">let</span> log <span class="op">=</span> <span class="st">""</span>;
+
+    <span class="cm">// for문으로 N판 반복</span>
+    <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> rounds; i<span class="op">++</span>) {
+        <span class="kw">const</span> user <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">3</span>);
+        <span class="kw">const</span> com <span class="op">=</span> <span class="fn">Math</span>.<span class="fn">floor</span>(<span class="fn">Math</span>.<span class="fn">random</span>() <span class="op">*</span> <span class="nu">3</span>);
+
+        <span class="cm">// 판정</span>
+        <span class="kw">let</span> r;
+        <span class="kw">if</span> (user <span class="op">===</span> com) {
+            r <span class="op">=</span> <span class="st">"무"</span>;
+            drawCount<span class="op">++</span>;
+        } <span class="kw">else if</span> (
+            (user <span class="op">===</span> <span class="nu">0</span> <span class="op">&&</span> com <span class="op">===</span> <span class="nu">2</span>) <span class="op">||</span>
+            (user <span class="op">===</span> <span class="nu">1</span> <span class="op">&&</span> com <span class="op">===</span> <span class="nu">0</span>) <span class="op">||</span>
+            (user <span class="op">===</span> <span class="nu">2</span> <span class="op">&&</span> com <span class="op">===</span> <span class="nu">1</span>)
+        ) {
+            r <span class="op">=</span> <span class="st">"승"</span>;
+            winCount<span class="op">++</span>;
+        } <span class="kw">else</span> {
+            r <span class="op">=</span> <span class="st">"패"</span>;
+            loseCount<span class="op">++</span>;
+        }
+
+        log <span class="op">+=</span> r <span class="op">+</span> <span class="st">" "</span>;       <span class="cm">// 결과 기록</span>
+    }
+
+    <span class="cm">// 승률 계산 (소수점 첫째 자리)</span>
+    <span class="kw">const</span> rate <span class="op">=</span> (winCount <span class="op">/</span> rounds <span class="op">*</span> <span class="nu">100</span>).<span class="fn">toFixed</span>(<span class="nu">1</span>);
+
+    <span class="cm">// 화면에 출력</span>
+    <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="st">"result"</span>).<span class="fn">innerHTML</span> <span class="op">=</span> <span class="st">`
+        &lt;h2&gt;${</span>rounds<span class="st">}판 대전 결과&lt;/h2&gt;
+        &lt;p&gt;${</span>winCount<span class="st">}승 ${</span>drawCount<span class="st">}무 ${</span>loseCount<span class="st">}패&lt;/p&gt;
+        &lt;p&gt;승률: ${</span>rate<span class="st">}%&lt;/p&gt;
+        &lt;p&gt;기록: ${</span>log<span class="st">}&lt;/p&gt;
+    `</span>;
+<span class="kw">&lt;/script&gt;</span></pre>
+    </div>
+
+    <div class="tip purple">
+      <strong>3차시 종합</strong>: 1일차(변수, 템플릿 리터럴) + 2일차(if/else if, &&, ||) + 3일차(for, Math.random) + 오늘(카운트 패턴). 한 코드 안에 다 들어 있다.
+    </div>
+
+    <div class="tip orange">
+      <strong>지금은 사용자도 무작위</strong>: 진짜 게임이라면 사용자가 버튼을 눌러 선택하겠지만, 그건 다음 차시(함수)와 그 이후(이벤트)에 배운다. 오늘은 "사용자 vs 컴퓨터 시뮬레이션".
+    </div>
+
+    <h3 style="margin-top:18px">직접 돌려보기</h3>
+    <div class="ir">
+      <div class="ig">
+        <div class="il">총 판 수</div>
+        <input type="number" id="rps_rounds" value="10" min="1" max="500">
+      </div>
+    </div>
+    <button class="btn bac" onclick="runRPS()">✊✌️✋ 가위바위보 시작!</button>
+
+    <div class="preview" id="rpsPreview" style="display:none">
+      <h3 id="rpsTitle" style="font-family:'Black Han Sans',sans-serif;color:var(--ac);margin-bottom:14px"></h3>
+      <div class="rps-row">
+        <div>
+          <div style="font-size:11px;color:var(--sub);margin-bottom:6px;font-family:'JetBrains Mono',monospace">USER (마지막 판)</div>
+          <div class="rps-side" id="userHand">✊</div>
+        </div>
+        <div class="rps-vs">VS</div>
+        <div>
+          <div style="font-size:11px;color:var(--sub);margin-bottom:6px;font-family:'JetBrains Mono',monospace">COMPUTER (마지막 판)</div>
+          <div class="rps-side" id="comHand">✊</div>
+        </div>
+      </div>
+      <div class="rps-result" id="rpsResult"></div>
+      <div class="rps-stats">
+        <div class="rps-stat">
+          <div class="rps-stat-lb">승</div>
+          <div class="rps-stat-vl" id="winC" style="color:#15803d">0</div>
+        </div>
+        <div class="rps-stat">
+          <div class="rps-stat-lb">무</div>
+          <div class="rps-stat-vl" id="drawC" style="color:var(--sub)">0</div>
+        </div>
+        <div class="rps-stat">
+          <div class="rps-stat-lb">패</div>
+          <div class="rps-stat-vl" id="loseC" style="color:#dc2626">0</div>
+        </div>
+        <div class="rps-stat">
+          <div class="rps-stat-lb">승률</div>
+          <div class="rps-stat-vl" id="rateC">0%</div>
+        </div>
+      </div>
+      <div class="rps-history" id="rpsHistory"></div>
+    </div>
+  </div>
+
+  <!-- ========== 8 ========== -->
+  <div class="sh" id="s8">
+    <div class="sh-num">8</div>
+    <div class="sh-text">
+      <div class="sh-title">AI에게 CSS 디자인 부탁하기</div>
+      <div class="sh-sub">결과 화면을 게임 UI 느낌으로</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>가위바위보 결과 화면을 좀 더 <strong>스포츠 중계 화면</strong>이나 <strong>아케이드 게임</strong> 느낌으로.</p>
+
+    <div class="prompt-box">
+      <h4>예시 프롬프트 — 그대로 복사해서 AI에게 보내봐</h4>
+      <pre id="promptText">아래 HTML 가위바위보 결과 화면에 CSS를 적용해줘.
+
+[HTML]
+&lt;div id="result"&gt;
+    &lt;h2&gt;10판 대전 결과&lt;/h2&gt;
+    &lt;p&gt;6승 2무 2패&lt;/p&gt;
+    &lt;p&gt;승률: 60.0%&lt;/p&gt;
+    &lt;p&gt;기록: 승 패 승 무 승 승 패 무 승 승&lt;/p&gt;
+&lt;/div&gt;
+
+[요구사항]
+- 분위기: 아케이드 게임 / 스포츠 중계 화면
+- 메인 컬러: 노랑/주황 + 어두운 배경
+- "승률"은 매우 크게 강조 (40px+)
+- 승/무/패 숫자는 박스 3개로 구분, 각각 색 다르게 (승=초록, 무=회색, 패=빨강)
+- 폰트: 두꺼운 sans-serif 또는 디스플레이 폰트
+- 가운데 정렬, 모바일도 깨지지 않게
+
+CSS만 &lt;style&gt; 태그 안에 작성해서 답변해줘.</pre>
+      <button class="prompt-copy" onclick="copyPrompt()">📋 프롬프트 복사하기</button>
+    </div>
+
+    <h3 style="margin-top:18px">실습 미션 — 너만의 분위기로 변형</h3>
+    <div class="box">
+      ① 위 프롬프트의 <strong>분위기·컬러</strong>를 바꿔봐 (도장깨기 무도관 / 권투 경기장 / 8비트 픽셀 게임 등)<br>
+      ② 받은 CSS를 가위바위보 HTML &lt;head&gt; 안에 붙여넣기<br>
+      ③ 같은 데이터인데 분위기가 어떻게 다른지 친구와 비교
+    </div>
+
+    <div class="tip purple">
+      <strong>심화 미션</strong>: AI에게 "승률에 따라 배경색이 바뀌게 해줘 (60% 이상=금색, 30~60%=회색, 30% 이하=빨강)"라고 요청해봐. JS와 CSS를 연결하는 코드를 받게 된다.
+    </div>
+  </div>
+
+  <!-- ========== 퀴즈 섹션 ========== -->
+  <div class="sh" id="quiz">
+    <div class="sh-num">Q</div>
+    <div class="sh-text">
+      <div class="sh-title">평가 문항 (10문제)</div>
+      <div class="sh-sub">학습목표 4개 · 100점 만점</div>
+    </div>
+  </div>
+
+  <div class="card quiz-section" style="border-top-color:var(--ac); margin-top:14px">
+
+    <!-- LO1: 필터링 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q1 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 출력 결과는? (콘솔에 찍히는 숫자들)
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">3</span> <span class="op">===</span> <span class="nu">0</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q1" placeholder="예: 3 6 9"
+               onkeydown="if(event.key==='Enter')chk(1,'3 6 9')">
+        <button class="qbtn" onclick="chk(1,'3 6 9')">확인</button>
+      </div>
+      <div class="qfb" id="qf1"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q2 · LO1 · 10점</div>
+      <div class="quiz-q">
+        빈칸에 들어갈 조건식은? (1~20 중 5의 배수만 출력)
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">20</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (<span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q2" placeholder="조건식 (예: i % N === 0)"
+               onkeydown="if(event.key==='Enter')chk(2,'i%5===0')">
+        <button class="qbtn" onclick="chk(2,'i%5===0')">확인</button>
+      </div>
+      <div class="qfb" id="qf2"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q3 · LO1 · 10점</div>
+      <div class="quiz-q">
+        다음 코드는 1~30 중 몇 개의 숫자를 출력하는가? (짝수이면서 3의 배수)
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">30</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span> <span class="op">&&</span> i <span class="op">%</span> <span class="nu">3</span> <span class="op">===</span> <span class="nu">0</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(i);
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q3" placeholder="개수만"
+               onkeydown="if(event.key==='Enter')chk(3,'5')">
+        <button class="qbtn" onclick="chk(3,'5')">확인</button>
+      </div>
+      <div class="qfb" id="qf3"></div>
+    </div>
+
+    <!-- LO2: 카운트/누적 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q4 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 sum 최종 값은?<br>
+        (1~10 중 짝수의 합)
+        <span class="qcode"><span class="kw">let</span> sum <span class="op">=</span> <span class="nu">0</span>;
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">10</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">2</span> <span class="op">===</span> <span class="nu">0</span>) {
+        sum <span class="op">+=</span> i;
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q4" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(4,'30')">
+        <button class="qbtn" onclick="chk(4,'30')">확인</button>
+      </div>
+      <div class="qfb" id="qf4"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q5 · LO2 · 10점</div>
+      <div class="quiz-q">
+        다음 코드의 count 값은?<br>
+        (1~50 중 7의 배수의 개수)
+        <span class="qcode"><span class="kw">let</span> count <span class="op">=</span> <span class="nu">0</span>;
+<span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">50</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (i <span class="op">%</span> <span class="nu">7</span> <span class="op">===</span> <span class="nu">0</span>) {
+        count<span class="op">++</span>;
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q5" placeholder="숫자만"
+               onkeydown="if(event.key==='Enter')chk(5,'7')">
+        <button class="qbtn" onclick="chk(5,'7')">확인</button>
+      </div>
+      <div class="qfb" id="qf5"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q6 · LO2 · 10점</div>
+      <div class="quiz-q">
+        평균을 구하는 다음 코드의 빈칸에 들어갈 식은?<br>
+        (4명의 평균 점수)
+        <span class="qcode"><span class="kw">let</span> sum <span class="op">=</span> <span class="nu">85</span> <span class="op">+</span> <span class="nu">90</span> <span class="op">+</span> <span class="nu">75</span> <span class="op">+</span> <span class="nu">80</span>;
+<span class="kw">const</span> avg <span class="op">=</span> <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span>;</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q6" placeholder="식 입력 (예: sum / N)"
+               onkeydown="if(event.key==='Enter')chk(6,'sum/4')">
+        <button class="qbtn" onclick="chk(6,'sum/4')">확인</button>
+      </div>
+      <div class="qfb" id="qf6"></div>
+    </div>
+
+    <!-- LO3: 중첩+조건 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q7 · LO3 · 10점</div>
+      <div class="quiz-q">
+        짝수 단(2~9단 중 짝수만) 짝수 구구단을 출력할 때, <strong>출력되는 단</strong>을 모두 적으면?
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q7" placeholder="예: 2 4 6 8"
+               onkeydown="if(event.key==='Enter')chk(7,'2 4 6 8')">
+        <button class="qbtn" onclick="chk(7,'2 4 6 8')">확인</button>
+      </div>
+      <div class="qfb" id="qf7"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q8 · LO3 · 10점</div>
+      <div class="quiz-q">
+        다음 중첩 반복문에서 console.log는 총 몇 번 실행되는가?
+        <span class="qcode"><span class="kw">for</span> (<span class="kw">let</span> dan <span class="op">=</span> <span class="nu">2</span>; dan <span class="op">&lt;=</span> <span class="nu">9</span>; dan<span class="op">++</span>) {
+    <span class="kw">if</span> (dan <span class="op">%</span> <span class="nu">2</span> <span class="op">!==</span> <span class="nu">0</span>) <span class="kw">continue</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="nu">1</span>; i <span class="op">&lt;=</span> <span class="nu">9</span>; i<span class="op">++</span>) {
+        <span class="fn">console</span>.<span class="fn">log</span>(dan <span class="op">*</span> i);
+    }
+}</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q8" placeholder="숫자만 (4단×9 + ...)"
+               onkeydown="if(event.key==='Enter')chk(8,'36')">
+        <button class="qbtn" onclick="chk(8,'36')">확인</button>
+      </div>
+      <div class="qfb" id="qf8"></div>
+    </div>
+
+    <!-- LO4: 가위바위보 -->
+    <div class="quiz-card">
+      <div class="quiz-meta">Q9 · LO4 · 10점</div>
+      <div class="quiz-q">
+        가위바위보에서 <strong>0=가위, 1=바위, 2=보</strong>일 때, user가 1(바위), com이 2(보)면 사용자는?
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q9" placeholder="승 / 무 / 패"
+               onkeydown="if(event.key==='Enter')chk(9,'패')">
+        <button class="qbtn" onclick="chk(9,'패')">확인</button>
+      </div>
+      <div class="qfb" id="qf9"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">Q10 · LO4 · 10점</div>
+      <div class="quiz-q">
+        N번 가위바위보 후 winCount가 6, rounds가 10일 때, 승률(%)을 계산하는 식은?<br>
+        (소수점 없이 정수로 결과 = 60)
+        <span class="qcode"><span class="kw">const</span> rate <span class="op">=</span> <span style="background:#fef3c7;padding:0 6px;border-radius:3px">  ?  </span>;</span>
+      </div>
+      <div class="qrow">
+        <input class="qinput" id="q10" placeholder="식 입력"
+               onkeydown="if(event.key==='Enter')chk(10,'winCount/rounds*100')">
+        <button class="qbtn" onclick="chk(10,'winCount/rounds*100')">확인</button>
+      </div>
+      <div class="qfb" id="qf10"></div>
+    </div>
+
+    <!-- 대시보드 -->
+    <div class="dashboard">
+      <div class="db-grid">
+        <div class="db-box"><div class="db-lb">정답</div><div class="db-vl" id="db-ok">0</div></div>
+        <div class="db-box"><div class="db-lb">오답</div><div class="db-vl" id="db-ng" style="color:#dc2626">0</div></div>
+        <div class="db-box"><div class="db-lb">완료</div><div class="db-vl" id="db-done">0/10</div></div>
+        <div class="db-box"><div class="db-lb">예상 점수</div><div class="db-vl" id="db-score">0점</div></div>
+      </div>
+      <div class="ptrack"><div class="pbar" id="pbar"></div></div>
+    </div>
+
+    <table class="summary-tbl">
+      <thead>
+        <tr>
+          <th style="width:50px">번호</th>
+          <th>문제</th>
+          <th style="width:120px">내 답변</th>
+          <th class="stat">결과</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody">
+        <tr><td>Q1</td><td>3의 배수 출력</td><td id="ans1">-</td><td class="stat" id="st1">⬜</td></tr>
+        <tr><td>Q2</td><td>5의 배수 조건식</td><td id="ans2">-</td><td class="stat" id="st2">⬜</td></tr>
+        <tr><td>Q3</td><td>복합 조건 개수</td><td id="ans3">-</td><td class="stat" id="st3">⬜</td></tr>
+        <tr><td>Q4</td><td>짝수 합계</td><td id="ans4">-</td><td class="stat" id="st4">⬜</td></tr>
+        <tr><td>Q5</td><td>7의 배수 카운트</td><td id="ans5">-</td><td class="stat" id="st5">⬜</td></tr>
+        <tr><td>Q6</td><td>평균 식</td><td id="ans6">-</td><td class="stat" id="st6">⬜</td></tr>
+        <tr><td>Q7</td><td>짝수 단</td><td id="ans7">-</td><td class="stat" id="st7">⬜</td></tr>
+        <tr><td>Q8</td><td>실행 횟수</td><td id="ans8">-</td><td class="stat" id="st8">⬜</td></tr>
+        <tr><td>Q9</td><td>바위 vs 보</td><td id="ans9">-</td><td class="stat" id="st9">⬜</td></tr>
+        <tr><td>Q10</td><td>승률 계산식</td><td id="ans10">-</td><td class="stat" id="st10">⬜</td></tr>
+      </tbody>
+    </table>
+
+    <div class="submit-area">
+      <input class="name-in" id="stu-name" placeholder="이름을 먼저 입력하세요" oninput="checkSubmit()">
+      <button class="sub-btn" id="sub-btn" onclick="openPopup()" disabled>답안 제출하기</button>
+    </div>
+  </div>
+
+  <!-- 마무리 -->
+  <div class="sh">
+    <div class="sh-num">✓</div>
+    <div class="sh-text">
+      <div class="sh-title">한눈에 정리</div>
+      <div class="sh-sub">오늘 외울 6가지</div>
+    </div>
+  </div>
+
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="s-card-num">01</div>
+      <div class="s-card-title">필터링 패턴</div>
+      <div class="s-card-desc">for { if (조건) { 처리 } } — 모든 패턴의 시작</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">02</div>
+      <div class="s-card-title">% N === 0</div>
+      <div class="s-card-desc">N의 배수 판별. 짝수=%2, 5배수=%5</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">03</div>
+      <div class="s-card-title">카운트 그릇 위치</div>
+      <div class="s-card-desc">반복문 밖에 선언, 안에서 ++</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">04</div>
+      <div class="s-card-title">평균 = 합 / 개수</div>
+      <div class="s-card-desc">sum과 count를 동시에 누적</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">05</div>
+      <div class="s-card-title">중첩 + continue</div>
+      <div class="s-card-desc">바깥 조건 안 맞으면 continue로 건너뛰기</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-num">06</div>
+      <div class="s-card-title">N판 게임 패턴</div>
+      <div class="s-card-desc">for + 무작위 + if/else if + 카운트 = 시뮬레이션</div>
+    </div>
+  </div>
+
+  <div class="tip blue" style="margin-top:24px">
+    <strong>다음 차시 (Day 04)</strong>: 함수 — 오늘 만든 가위바위보 한 판 코드를 함수로 묶어 <code style="font-family:'JetBrains Mono',monospace">playRound()</code>처럼 호출 한 번에 실행하게 만든다.
+  </div>
+
+</div>
+
+<!-- 결과 팝업 -->
+<div class="popup-bg" id="popupBg" onclick="if(event.target.id==='popupBg')closePopup()">
+  <div class="popup">
+    <h2>제출 결과</h2>
+    <div class="pname" id="p-name">-</div>
+    <div class="score" id="p-score">0점</div>
+    <div class="grade" id="p-grade">-</div>
+    <button class="popup-btn" onclick="sendAnswers()">답안 전송하기</button>
+    <button class="popup-btn" style="background:#888;margin-left:8px" onclick="closePopup()">닫기</button>
+    <div id="send-status" style="margin-top:12px;font-size:13px;color:var(--sub)"></div>
+  </div>
+</div>
+
+<script>
+/* ╔══════════════════════════════════════════════╗
+   ║ 선생님 설정 — LESSON_ID만 파일마다 변경      ║
+   ╚══════════════════════════════════════════════╝ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec';
+const LESSON_ID   = 'web/03-5_javascript_practice';
+/* ═══════════════ 설정 끝 ═══════════════════════ */
+
+// 진행 바
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const sc = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('prog').style.width = sc + '%';
+});
+
+// 필터링
+function runFilter() {
+  const s = Number(document.getElementById('f_start').value);
+  const e = Number(document.getElementById('f_end').value);
+  const n = Number(document.getElementById('f_n').value);
+  if (e - s > 500 || n < 1) {
+    document.getElementById('r1').textContent = '범위가 너무 크거나 N이 잘못됨';
+    return;
+  }
+  const arr = [];
+  for (let i = s; i <= e; i++) {
+    if (i % n === 0) arr.push(i);
+  }
+  document.getElementById('r1').textContent =
+    arr.length ? `${arr.length}개: ${arr.slice(0,30).join(', ')}${arr.length > 30 ? ' ...' : ''}` : '(없음)';
+}
+
+// 카운트
+function runCount() {
+  const t = Number(document.getElementById('c_times').value);
+  const target = Number(document.getElementById('c_target').value);
+  if (t < 1 || t > 10000 || target < 1 || target > 6) {
+    document.getElementById('r2').textContent = '입력값을 확인하세요';
+    return;
+  }
+  let count = 0;
+  for (let i = 1; i <= t; i++) {
+    const dice = Math.floor(Math.random() * 6) + 1;
+    if (dice === target) count++;
+  }
+  const rate = (count / t * 100).toFixed(1);
+  document.getElementById('r2').textContent = `${t}번 중 ${target}이 나온 횟수: ${count}회 (${rate}%)`;
+}
+
+// 점수 통계
+function runScoreStat() {
+  const n = Number(document.getElementById('s_count').value);
+  if (n < 1 || n > 1000) {
+    document.getElementById('r3').textContent = '학생 수 1~1000';
+    return;
+  }
+  let sum = 0;
+  let pass = 0;
+  let max = 0;
+  let min = 100;
+  const scores = [];
+  for (let i = 1; i <= n; i++) {
+    const score = Math.floor(Math.random() * 101); // 0~100 랜덤
+    scores.push(score);
+    sum += score;
+    if (score >= 60) pass++;
+    if (score > max) max = score;
+    if (score < min) min = score;
+  }
+  const avg = (sum / n).toFixed(1);
+  const rate = (pass / n * 100).toFixed(1);
+  const preview = scores.slice(0, 10).join(', ') + (n > 10 ? ' ...' : '');
+  document.getElementById('r3').textContent =
+    `평균 ${avg}점 / 합격 ${pass}명(${rate}%) / 최고 ${max} / 최저 ${min} | 점수: ${preview}`;
+}
+
+// 짝수 구구단
+function runEvenGugu() {
+  const grid = document.getElementById('guguResult');
+  let html = '';
+  for (let dan = 2; dan <= 9; dan++) {
+    if (dan % 2 !== 0) continue;
+    let lines = '';
+    for (let i = 1; i <= 9; i++) {
+      lines += `${dan} × ${i} = ${dan * i}<br>`;
+    }
+    html += `<div class="gugu-card"><h4>${dan}단</h4>${lines}</div>`;
+  }
+  grid.innerHTML = html;
+  grid.style.display = 'grid';
+}
+
+// 가위바위보
+function runRPS() {
+  const rounds = Number(document.getElementById('rps_rounds').value);
+  if (rounds < 1 || rounds > 1000) {
+    alert('1~1000 사이로 입력하세요');
+    return;
+  }
+
+  const handIcons = ['✌️', '✊', '✋'];
+  let winC = 0, drawC = 0, loseC = 0;
+  const history = [];
+  let lastUser = 0, lastCom = 0, lastResult = '';
+
+  for (let i = 1; i <= rounds; i++) {
+    const user = Math.floor(Math.random() * 3);
+    const com = Math.floor(Math.random() * 3);
+    let r;
+    if (user === com) {
+      r = '무'; drawC++;
+    } else if (
+      (user === 0 && com === 2) ||
+      (user === 1 && com === 0) ||
+      (user === 2 && com === 1)
+    ) {
+      r = '승'; winC++;
+    } else {
+      r = '패'; loseC++;
+    }
+    history.push(r);
+    if (i === rounds) {
+      lastUser = user; lastCom = com; lastResult = r;
+    }
+  }
+
+  const rate = (winC / rounds * 100).toFixed(1);
+
+  document.getElementById('rpsTitle').textContent = `${rounds}판 대전 결과`;
+  const userEl = document.getElementById('userHand');
+  const comEl = document.getElementById('comHand');
+  userEl.textContent = handIcons[lastUser];
+  comEl.textContent = handIcons[lastCom];
+  // re-trigger animation
+  userEl.style.animation = 'none'; comEl.style.animation = 'none';
+  setTimeout(() => { userEl.style.animation = ''; comEl.style.animation = ''; }, 10);
+
+  const resEl = document.getElementById('rpsResult');
+  resEl.textContent = `마지막 판: ${lastResult === '승' ? '🏆 승리!' : lastResult === '패' ? '💀 패배' : '🤝 무승부'}`;
+  resEl.className = 'rps-result ' + (lastResult === '승' ? 'win' : lastResult === '패' ? 'lose' : 'draw');
+
+  document.getElementById('winC').textContent = winC;
+  document.getElementById('drawC').textContent = drawC;
+  document.getElementById('loseC').textContent = loseC;
+  document.getElementById('rateC').textContent = rate + '%';
+
+  // 최대 30판 기록 표시
+  const display = history.slice(0, 30);
+  document.getElementById('rpsHistory').innerHTML =
+    display.map(r => `<span class="rps-chip ${r === '승' ? 'w' : r === '패' ? 'l' : 'd'}">${r}</span>`).join('') +
+    (history.length > 30 ? `<span class="rps-chip">+${history.length - 30}</span>` : '');
+
+  document.getElementById('rpsPreview').style.display = 'block';
+}
+
+// 프롬프트 복사
+function copyPrompt() {
+  const t = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+/* ─── 퀴즈 시스템 ─────────────────────────────── */
+const total = 10;
+const answered = {};
+
+function chk(n, correct) {
+  const inp = document.getElementById('q' + n);
+  const fb = document.getElementById('qf' + n);
+  const btn = inp.nextElementSibling;
+  const user = inp.value.trim();
+
+  if (!user) {
+    fb.textContent = '답을 입력해주세요';
+    fb.className = 'qfb ng';
+    return;
+  }
+
+  // 정답 비교 (공백/쉼표/따옴표 무시)
+  const norm = (s) => s.replace(/['"`]/g, '').replace(/[\s,]/g, '').toLowerCase();
+  const isOk = norm(user) === norm(correct);
+
+  if (isOk) {
+    inp.classList.remove('ing');
+    inp.classList.add('iok');
+    inp.disabled = true;
+    btn.disabled = true;
+    fb.textContent = '✅ 정답!';
+    fb.className = 'qfb ok';
+    answered[n] = { ans: user, ok: true };
+  } else {
+    inp.classList.add('ing');
+    fb.textContent = '❌ 다시 시도해보세요';
+    fb.className = 'qfb ng';
+    if (!answered[n] || answered[n].ok === false) {
+      answered[n] = { ans: user, ok: false };
+    }
+  }
+
+  updateDashboard();
+  updateSummary(n, user, isOk);
+  checkSubmit();
+}
+
+function updateDashboard() {
+  let ok = 0, ng = 0;
+  for (const k in answered) {
+    if (answered[k].ok) ok++;
+    else ng++;
+  }
+  document.getElementById('db-ok').textContent = ok;
+  document.getElementById('db-ng').textContent = ng;
+  document.getElementById('db-done').textContent = `${ok}/${total}`;
+  document.getElementById('db-score').textContent = `${ok * 10}점`;
+  document.getElementById('pbar').style.width = `${(ok / total) * 100}%`;
+}
+
+function updateSummary(n, ans, isOk) {
+  document.getElementById('ans' + n).textContent = ans || '-';
+  document.getElementById('st' + n).textContent = isOk ? '✅' : '❌';
+}
+
+function collectAnswers() {
+  const list = [];
+  for (let i = 1; i <= total; i++) {
+    if (answered[i]) {
+      list.push({ q: i, ans: answered[i].ans, ok: answered[i].ok });
+    } else {
+      list.push({ q: i, ans: '미응답', ok: false });
+    }
+  }
+  return list;
+}
+
+function checkSubmit() {
+  const name = document.getElementById('stu-name').value.trim();
+  const allDone = Object.keys(answered).length === total &&
+    Object.values(answered).every(a => a.ok);
+  document.getElementById('sub-btn').disabled = !(name && allDone);
+}
+
+function openPopup() {
+  const name = document.getElementById('stu-name').value.trim();
+  let ok = 0;
+  for (const k in answered) if (answered[k].ok) ok++;
+  const score = ok * 10;
+  let grade;
+  if (score >= 90) grade = 'A';
+  else if (score >= 80) grade = 'B';
+  else if (score >= 70) grade = 'C';
+  else if (score >= 60) grade = 'D';
+  else grade = 'F';
+
+  document.getElementById('p-name').textContent = name + ' 학생';
+  document.getElementById('p-score').textContent = score + '점';
+  document.getElementById('p-grade').textContent = grade + ' 등급';
+  document.getElementById('popupBg').classList.add('show');
+  document.getElementById('send-status').textContent = '';
+}
+
+function closePopup() {
+  document.getElementById('popupBg').classList.remove('show');
+}
+
+async function sendAnswers() {
+  const name = document.getElementById('stu-name').value.trim();
+  let ok = 0;
+  for (const k in answered) if (answered[k].ok) ok++;
+  const score = ok * 10;
+  const status = document.getElementById('send-status');
+
+  status.textContent = '전송 중...';
+  try {
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        lesson: LESSON_ID,
+        name,
+        answers: collectAnswers(),
+        score: score + '점'
+      })
+    });
+    status.textContent = '✅ 전송 완료!';
+  } catch (e) {
+    status.textContent = '❌ 전송 실패: ' + e.message;
+  }
+}
+</script>
+
+</body>
+</html>
