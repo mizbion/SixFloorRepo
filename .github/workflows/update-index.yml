@@ -6,6 +6,8 @@ on:
       - 'py/**/*.html'
       - 'ai/**/*.html'
       - 'web/**/*.html'
+      - 'aipot/**/*.html'
+      - 'sqld/**/*.html'
     branches:
       - main
 
