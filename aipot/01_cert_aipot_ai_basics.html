@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=AIPOT -->
+<!-- meta:unit=1과목. 인공지능 기초 이론 -->
+<!-- meta:title=AI 정의·역사·머신러닝·평가지표 정복 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>AI-POT 1과목 · 인공지능 기초 이론</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f9f6f0; --card: #ffffff; --surf2: #f4ecdc; --surf3: #ecdfc4;
+  --border: #e0d0ad; --text: #1c1208; --sub: #8a6d3b;
+  --ac: #b45309; --ac-l: #fef3e2; --ac-b: #92400e;
+  --header-bg: #1a0f00; --grad-end: #d97706;
+}
+.aipot-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.aipot-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.aipot-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.aipot-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.aipot-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; }
+.aipot-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.aipot-side .unit-list li .num { display: inline-block; width: 24px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.aipot-side .unit-list li.current .num { color: #ecdfc4; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fdfaf3; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.algo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+.algo-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.algo-card .algo-name { font-weight: 700; color: var(--ac-b); font-size: 14px; margin-bottom: 4px; }
+.algo-card .algo-type { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
+.type-sup { background: #dbeafe; color: #1e40af; }
+.type-unsup { background: #fce7f3; color: #9d174d; }
+.algo-card .algo-desc { font-size: 12px; color: var(--sub); line-height: 1.6; }
+.algo-card svg { display: block; margin: 8px auto; }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .short-ans { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.qcard .short-ans input { flex: 1; min-width: 180px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; }
+.qcard .explain.show { display: block; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #fef3e2; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+.part-head { background: var(--header-bg); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; margin: 24px 0 14px; }
+.part-head .part-tag { background: var(--grad-end); padding: 2px 10px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
+@media (max-width: 900px) { .aipot-layout { grid-template-columns: 1fr; } .aipot-side { position: static; } }
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">1과목</span>
+    <span class="hd-title">인공지능 기초 이론</span>
+    <span class="hd-meta">AI-POT 2급 · 한국생산성본부</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="aipot-layout">
+  <aside class="aipot-side">
+    <h3>AI-POT 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="current"><span class="num">1</span>인공지능 기초 이론</li>
+      <li><span class="num">2</span>생성형 AI 기초 이론</li>
+      <li><span class="num">3</span>프롬프트 엔지니어링 기초</li>
+      <li><span class="num">4</span>프롬프트 기술 활용</li>
+      <li><span class="num">5</span>업무활용과 윤리의식</li>
+    </ul>
+    <h3 style="margin-top:20px">시험 형식</h3>
+    <div style="font-size:12px; color:var(--sub); line-height:1.8">
+      CBT 60분<br>PART1 객관식 (4지선다)<br>PART2 단답형 주관식<br>PART3 다중보기 선택형<br>PART4 프롬프트 작성형
+    </div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">인공지능 기초 이론</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        AI-POT의 첫 과목입니다. <b style="color:var(--ac-b)">단편 지식 암기가 많고</b>,
+        특히 <b>머신러닝 알고리즘별 그래프 모양</b>과 <b>평가지표 계산</b>이 단골로 출제됩니다.
+      </p>
+    </section>
+    <section style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>AI의 정의·3대 구성요소·범위(AI⊃ML⊃DL⊃생성형AI)를 구분한다</li>
+        <li>머신러닝 유형(지도/비지도/강화)과 알고리즘별 그래프를 식별한다</li>
+        <li>과적합/과소적합과 평가지표(정확도·정밀도·재현율·F1)를 계산한다</li>
+        <li>AI 역사의 분기점(다트머스 회의·두 번의 겨울·딥러닝 혁명)을 안다</li>
+        <li>실제 시험 4개 PART 형식의 예상문제를 풀고 오답 원인을 진단한다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="example">📊 알고리즘 그래프</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. 인공지능이란?</div>
+      <div class="card">
+        <p>인공지능(AI)은 인간의 <b>학습·추론·지각·자연어 이해 능력</b>을 컴퓨터 프로그램으로 구현한 기술입니다. 1956년 <b>다트머스 회의</b>에서 존 매카시가 'Artificial Intelligence'라는 용어를 처음 제안했습니다.</p>
+        <div class="tip"><b>💡 AI의 3대 구성요소 (자주 출제):</b> <code>데이터</code> + <code>알고리즘</code> + <code>컴퓨팅 파워</code>. 이 세 가지가 AI를 떠받치는 기둥입니다.</div>
+        <p style="margin-top:14px"><b>AI의 범위 — 포함 관계가 핵심입니다:</b></p>
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:600px; display:block; margin:10px auto">
+          <rect x="20" y="20" width="560" height="160" rx="10" fill="#fef3e2" stroke="#b45309" stroke-width="2"/>
+          <text x="40" y="42" font-family="Noto Sans KR" font-size="13" font-weight="700" fill="#92400e">인공지능 (AI)</text>
+          <rect x="60" y="50" width="500" height="120" rx="8" fill="#fde8c8" stroke="#d97706" stroke-width="2"/>
+          <text x="80" y="70" font-family="Noto Sans KR" font-size="13" font-weight="700" fill="#92400e">머신러닝 (ML)</text>
+          <rect x="100" y="78" width="440" height="84" rx="6" fill="#fbd9a3" stroke="#d97706" stroke-width="2"/>
+          <text x="120" y="98" font-family="Noto Sans KR" font-size="13" font-weight="700" fill="#92400e">딥러닝 (DL)</text>
+          <rect x="140" y="106" width="380" height="48" rx="6" fill="#f5c178" stroke="#b45309" stroke-width="2"/>
+          <text x="160" y="135" font-family="Noto Sans KR" font-size="13" font-weight="700" fill="#1c1208">생성형 AI</text>
+        </svg>
+        <p style="text-align:center; font-size:13px; color:var(--sub)">AI ⊃ 머신러닝 ⊃ 딥러닝 ⊃ 생성형 AI</p>
+      </div>
+      <div class="sh">2. AI의 패러다임</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>구분</th><th>방식</th><th>대표 예시</th></tr></thead><tbody>
+          <tr><td><b>규칙 기반 시스템</b></td><td>사람이 IF-THEN 규칙을 직접 입력</td><td>엘리베이터 제어, 자동 스프링클러, 온도조절기 / 전문가시스템: DENDRAL, MYCIN, PROSPECTOR</td></tr>
+          <tr><td><b>데이터 기반 학습</b></td><td>데이터로부터 스스로 패턴 학습</td><td>머신러닝, 딥러닝</td></tr>
+        </tbody></table>
+      </div>
+      <div class="sh">3. 머신러닝의 4가지 유형</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>유형</th><th>핵심</th><th>데이터</th></tr></thead><tbody>
+          <tr><td><b>지도학습</b></td><td>정답(레이블)을 주고 피드백으로 학습</td><td>레이블 있음</td></tr>
+          <tr><td><b>비지도학습</b></td><td>정답 없이 스스로 패턴/구조 발견</td><td>레이블 없음</td></tr>
+          <tr><td><b>준지도학습</b></td><td>지도 + 비지도 혼합</td><td>일부만 레이블</td></tr>
+          <tr><td><b>강화학습</b></td><td>'보상'을 통해 더 나은 행동 학습</td><td>보상 신호</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 단골 함정:</b> <code>K-평균 군집화</code>는 비지도, <code>선형/로지스틱 회귀·결정트리·SVM·KNN</code>은 지도입니다.</div>
+      </div>
+      <div class="sh">4. 현대 AI의 3가지 기틀</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>기술</th><th>핵심 원리</th><th>대표 활용</th></tr></thead><tbody>
+          <tr><td><b>GAN</b><br><span style="font-size:12px;color:var(--sub)">적대적 생성 신경망</span></td><td>생성자 vs 판별자가 <b>경쟁</b>하며 학습</td><td>이미지 생성</td></tr>
+          <tr><td><b>MCTS</b><br><span style="font-size:12px;color:var(--sub)">몬테카를로 트리 탐색</span></td><td>시뮬레이션으로 유망한 수를 탐색</td><td>알파고</td></tr>
+          <tr><td><b>Transformer</b><br><span style="font-size:12px;color:var(--sub)">트랜스포머</span></td><td>셀프 어텐션·멀티헤드·포지셔널 인코딩</td><td>GPT, BERT</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 GAN 암기:</b> 생성자(Generator)는 <b>가짜를 만들고</b>, 판별자(Discriminator)는 <b>진짜/가짜를 구분</b>. 위조지폐범과 경찰의 경쟁으로 비유됩니다.</div>
+      </div>
+      <div class="sh">5. 모델 성능 — 과적합과 평가지표</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>상태</th><th>훈련 성능</th><th>테스트 성능</th></tr></thead><tbody>
+          <tr><td><b>과소적합</b></td><td>낮음</td><td>낮음</td></tr>
+          <tr><td><b>최적합</b></td><td>높음</td><td>높음</td></tr>
+          <tr><td><b>과적합</b></td><td>매우 높음</td><td>낮음</td></tr>
+        </tbody></table>
+        <p style="margin-top:16px"><b>혼동행렬 기반 평가지표 (계산 문제 단골):</b></p>
+        <table class="cmp-table"><thead><tr><th>지표</th><th>의미</th><th>공식</th></tr></thead><tbody>
+          <tr><td><b>정확도</b> Accuracy</td><td>전체 중 맞힌 비율</td><td>(TP+TN) / 전체</td></tr>
+          <tr><td><b>정밀도</b> Precision</td><td>양성 예측 중 진짜 양성</td><td>TP / (TP+FP)</td></tr>
+          <tr><td><b>재현율</b> Recall</td><td>실제 양성 중 맞힌 것</td><td>TP / (TP+FN)</td></tr>
+          <tr><td><b>F1 점수</b></td><td>정밀도·재현율의 조화평균</td><td>2 × (P×R) / (P+R)</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 F1 계산 예:</b> 정밀도 80%, 재현율 75%이면 F1 = 2 × (0.8 × 0.75) / (0.8 + 0.75) ≈ <b>0.77 (77%)</b></div>
+      </div>
+      <div class="sh">6. AI 역사의 분기점</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>시기</th><th>사건</th></tr></thead><tbody>
+          <tr><td><b>1956</b></td><td>다트머스 회의, 'AI' 용어 공식 등장 (존 매카시)</td></tr>
+          <tr><td>1차 겨울(1974~)</td><td>민스키의 '퍼셉트론' 책 — 단층 퍼셉트론 한계 지적, 라이트힐 보고서, 자금 삭감</td></tr>
+          <tr><td>2차 부흥(1980~)</td><td>전문가 시스템 상업 성공, 일본 5세대 컴퓨터(FGCS)</td></tr>
+          <tr><td>2차 겨울(1987~)</td><td>LISP 머신 붕괴, 전문가 시스템 한계, FGCS 실패</td></tr>
+          <tr><td><b>2006</b></td><td>'딥러닝' 용어 등장 (심층 신뢰 신경망 논문)</td></tr>
+          <tr><td><b>2012</b></td><td>AlexNet(CNN), ImageNet 대회 우승 → 딥러닝 혁명</td></tr>
+          <tr><td><b>2016</b></td><td>알파고가 이세돌에 승리</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-example">
+      <div class="sh">알고리즘별 그래프 모양 — 시험 최다 출제 영역</div>
+      <div class="card"><p>AI-POT은 알고리즘 이름과 <b>그래프 모양</b>을 연결하는 문제가 매우 자주 나옵니다. 그림만 보고 알고리즘을 맞히거나 그 반대로 묻습니다. 모양을 통째로 외우세요.</p></div>
+      <div class="algo-grid">
+        <div class="algo-card"><div class="algo-name">로지스틱 회귀</div><span class="algo-type type-sup">지도학습</span>
+          <svg viewBox="0 0 160 100" width="160" height="100"><line x1="20" y1="80" x2="150" y2="80" stroke="#8a6d3b"/><line x1="20" y1="10" x2="20" y2="80" stroke="#8a6d3b"/><path d="M 25 75 Q 70 75 85 45 Q 100 15 145 15" fill="none" stroke="#b45309" stroke-width="2.5"/><text x="2" y="18" font-size="9" fill="#8a6d3b">1</text><text x="2" y="82" font-size="9" fill="#8a6d3b">0</text></svg>
+          <div class="algo-desc"><b>S자 곡선</b>. 0~1 사이 출력. 이진 분류용.</div></div>
+        <div class="algo-card"><div class="algo-name">선형 회귀</div><span class="algo-type type-sup">지도학습</span>
+          <svg viewBox="0 0 160 100" width="160" height="100"><line x1="20" y1="80" x2="150" y2="80" stroke="#8a6d3b"/><line x1="20" y1="10" x2="20" y2="80" stroke="#8a6d3b"/><line x1="25" y1="70" x2="145" y2="20" stroke="#b45309" stroke-width="2.5"/><circle cx="40" cy="62" r="3" fill="#1e40af"/><circle cx="60" cy="58" r="3" fill="#1e40af"/><circle cx="85" cy="42" r="3" fill="#1e40af"/><circle cx="110" cy="38" r="3" fill="#1e40af"/><circle cx="130" cy="25" r="3" fill="#1e40af"/></svg>
+          <div class="algo-desc"><b>가운데를 가로지르는 직선</b>. 연속값 예측.</div></div>
+        <div class="algo-card"><div class="algo-name">결정트리</div><span class="algo-type type-sup">지도학습</span>
+          <svg viewBox="0 0 160 100" width="160" height="100"><rect x="68" y="12" width="24" height="16" rx="3" fill="#b45309"/><rect x="38" y="48" width="24" height="16" rx="3" fill="#d97706"/><rect x="98" y="48" width="24" height="16" rx="3" fill="#d97706"/><rect x="20" y="80" width="20" height="14" rx="3" fill="#f5c178"/><rect x="58" y="80" width="20" height="14" rx="3" fill="#f5c178"/><rect x="100" y="80" width="20" height="14" rx="3" fill="#f5c178"/><line x1="80" y1="28" x2="50" y2="48" stroke="#8a6d3b"/><line x1="80" y1="28" x2="110" y2="48" stroke="#8a6d3b"/><line x1="50" y1="64" x2="30" y2="80" stroke="#8a6d3b"/><line x1="50" y1="64" x2="68" y2="80" stroke="#8a6d3b"/><line x1="110" y1="64" x2="110" y2="80" stroke="#8a6d3b"/></svg>
+          <div class="algo-desc"><b>가계도/조직도 모양</b>. 분류·회귀 모두.</div></div>
+        <div class="algo-card"><div class="algo-name">SVM</div><span class="algo-type type-sup">지도학습</span>
+          <svg viewBox="0 0 160 100" width="160" height="100"><line x1="20" y1="80" x2="150" y2="80" stroke="#8a6d3b"/><line x1="20" y1="10" x2="20" y2="80" stroke="#8a6d3b"/><line x1="35" y1="80" x2="125" y2="15" stroke="#b45309" stroke-width="2"/><line x1="25" y1="80" x2="115" y2="15" stroke="#d97706" stroke-dasharray="3"/><line x1="45" y1="80" x2="135" y2="15" stroke="#d97706" stroke-dasharray="3"/><circle cx="40" cy="40" r="3" fill="#1e40af"/><circle cx="55" cy="55" r="3" fill="#1e40af"/><circle cx="110" cy="55" r="3" fill="#9d174d"/><circle cx="125" cy="65" r="3" fill="#9d174d"/></svg>
+          <div class="algo-desc"><b>가운데 실선 + 양쪽 평행 점선(마진)</b>. 두 그룹 분리.</div></div>
+        <div class="algo-card"><div class="algo-name">K-평균 군집화</div><span class="algo-type type-unsup">비지도학습</span>
+          <svg viewBox="0 0 160 100" width="160" height="100"><circle cx="45" cy="35" r="22" fill="#fce7f3" stroke="#9d174d" stroke-dasharray="3"/><circle cx="110" cy="60" r="22" fill="#dbeafe" stroke="#1e40af" stroke-dasharray="3"/><circle cx="40" cy="30" r="2.5" fill="#9d174d"/><circle cx="50" cy="38" r="2.5" fill="#9d174d"/><circle cx="45" cy="45" r="2.5" fill="#9d174d"/><circle cx="105" cy="55" r="2.5" fill="#1e40af"/><circle cx="115" cy="62" r="2.5" fill="#1e40af"/><circle cx="110" cy="70" r="2.5" fill="#1e40af"/></svg>
+          <div class="algo-desc"><b>기준점마다 데이터가 뭉친 군집</b>. K개로 분류.</div></div>
+        <div class="algo-card"><div class="algo-name">KNN</div><span class="algo-type type-sup">지도학습</span>
+          <svg viewBox="0 0 160 100" width="160" height="100"><circle cx="80" cy="50" r="28" fill="none" stroke="#b45309" stroke-dasharray="4"/><polygon points="80,44 76,52 84,52" fill="#b45309"/><circle cx="65" cy="40" r="2.5" fill="#1e40af"/><circle cx="95" cy="42" r="2.5" fill="#1e40af"/><circle cx="70" cy="65" r="2.5" fill="#9d174d"/><circle cx="92" cy="62" r="2.5" fill="#9d174d"/><circle cx="60" cy="55" r="2.5" fill="#1e40af"/></svg>
+          <div class="algo-desc"><b>새 점 주변에 원을 그려</b> K개 이웃으로 분류.</div></div>
+      </div>
+      <div class="tip"><b>💡 한 줄 정리:</b> S자=로지스틱, 직선=선형회귀, 가계도=결정트리, 평행선+마진=SVM, 뭉친 군집=K-평균, 원 그리기=KNN. 이 6개만 확실히 외워도 그래프 문제는 거의 맞힙니다.</div>
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">AI-POT이 좋아하는 함정 6가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. 정밀도 vs 재현율 분모</h4><p>정밀도는 <b>예측한 양성</b>이 분모(TP+FP), 재현율은 <b>실제 양성</b>이 분모(TP+FN). "예측 기준이면 정밀도, 실제 기준이면 재현율".</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. K-평균은 비지도</h4><p>KNN(지도)과 K-평균(비지도)을 헷갈리게 출제. K-평균은 정답 없이 군집을 만드니 비지도, KNN은 레이블된 이웃으로 분류하니 지도.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 과적합 = 훈련만 잘함</h4><p>과적합은 훈련 성능 <b>매우 높은데</b> 테스트 성능 <b>낮은</b> 상태. 둘 다 낮으면 과소적합.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 포함 관계 순서</h4><p>AI ⊃ ML ⊃ DL ⊃ 생성형AI. 딥러닝은 머신러닝의 한 분야입니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. GAN의 두 신경망 역할</h4><p>생성자가 만들고, 판별자가 구분. 역할을 바꿔 출제하니 주의.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. 알파고 = MCTS</h4><p>알파고 핵심 탐색 알고리즘은 <b>MCTS</b>. GAN·트랜스포머와 혼동시키는 보기 주의.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <div class="sh">예상문제 — 실제 시험 4개 PART 형식 (15문항)</div>
+      <p style="color:var(--sub); font-size:14px">실제 AI-POT처럼 객관식 → 단답형 → 다중보기 → 프롬프트 작성 순으로 구성했습니다.</p>
+
+      <div class="part-head"><span class="part-tag">PART 1</span>객관식 (4지선다)</div>
+
+      <div class="qcard" data-q="1" data-answer="3">
+        <div class="qnum">Q1</div>
+        <div class="qbody">인공지능(AI)·머신러닝(ML)·딥러닝(DL)·생성형 AI의 포함 관계로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① DL ⊃ AI ⊃ ML ⊃ 생성형AI</li>
+          <li data-c="2">② AI ⊃ DL ⊃ ML ⊃ 생성형AI</li>
+          <li data-c="3">③ AI ⊃ ML ⊃ DL ⊃ 생성형AI</li>
+          <li data-c="4">④ ML ⊃ AI ⊃ DL ⊃ 생성형AI</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>AI ⊃ ML ⊃ DL ⊃ 생성형AI</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>가장 큰 개념이 <b>AI</b>. 그 안에 데이터로 학습하는 <b>ML</b>, 신경망을 깊게 쌓은 <b>DL</b>, 딥러닝으로 새 콘텐츠를 만드는 <b>생성형 AI</b> 순으로 들어갑니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"AI＞ML＞DL＞생성형". 딥러닝이 머신러닝보다 크다고 나오면 무조건 오답.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="2">
+        <div class="qnum">Q2</div>
+        <div class="qbody">다음 중 머신러닝 유형이 <b>다른</b> 하나는?</div>
+        <ul class="choices">
+          <li data-c="1">① 선형 회귀</li>
+          <li data-c="2">② K-평균 군집화</li>
+          <li data-c="3">③ 결정트리</li>
+          <li data-c="4">④ 로지스틱 회귀</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>K-평균 군집화 (유일한 비지도학습)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>나머지 3개는 정답 레이블을 주고 배우는 <b>지도학습</b>. <b>K-평균</b>만 정답 없이 데이터를 K개 군집으로 묶는 <b>비지도학습</b>입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>회귀·분류는 지도, 군집화는 비지도.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="4">
+        <div class="qnum">Q3</div>
+        <div class="qbody">정밀도 90%, 재현율 60%일 때 F1 점수로 가장 가까운 값은?
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:13px">F1 = 2 × (P × R) / (P + R)</div>
+        </div>
+        <ul class="choices">
+          <li data-c="1">① 0.50</li><li data-c="2">② 0.65</li><li data-c="3">③ 0.70</li><li data-c="4">④ 0.72</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>약 0.72</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>F1 = 2 × (0.9 × 0.6) / (0.9 + 0.6) = 2 × 0.54 / 1.5 = 1.08 / 1.5 = <b>0.72</b>. 조화평균이라 두 값 중 낮은 쪽(60%)에 더 가깝게 당겨집니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>분자는 곱하기×2, 분모는 더하기. 산술평균(0.75)보다 항상 작거나 같습니다.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="1">
+        <div class="qnum">Q4</div>
+        <div class="qbody">훈련 데이터에서는 정확도가 매우 높지만 테스트 데이터에서는 정확도가 크게 떨어지는 현상은?</div>
+        <ul class="choices">
+          <li data-c="1">① 과적합(Overfitting)</li>
+          <li data-c="2">② 과소적합(Underfitting)</li>
+          <li data-c="3">③ 정규화(Normalization)</li>
+          <li data-c="4">④ 최적합</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>과적합</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>훈련 데이터에 지나치게 맞춰져 새 데이터에 일반화하지 못하는 상태가 <b>과적합</b>. 훈련·테스트 둘 다 낮으면 과소적합, 둘 다 높으면 최적합입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"훈련만 잘하고 시험은 망함 = 과적합". 공부한 문제만 외운 학생 같은 상태.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="2">
+        <div class="qnum">Q5</div>
+        <div class="qbody">알파고(AlphaGo)에 사용된 핵심 탐색 알고리즘은?</div>
+        <ul class="choices">
+          <li data-c="1">① GAN</li>
+          <li data-c="2">② MCTS(몬테카를로 트리 탐색)</li>
+          <li data-c="3">③ 트랜스포머</li>
+          <li data-c="4">④ 퍼셉트론</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>MCTS</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>MCTS</b>는 시뮬레이션을 반복해 가장 유망한 수(노드)를 골라내는 탐색 기법으로 알파고의 핵심입니다. GAN은 이미지 생성, 트랜스포머는 GPT/BERT에 쓰입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"바둑·게임 = MCTS, 이미지 = GAN, 텍스트 = 트랜스포머".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="3">
+        <div class="qnum">Q6</div>
+        <div class="qbody">GAN(적대적 생성 신경망)에 대한 설명으로 <b>옳지 않은</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 생성자와 판별자가 서로 경쟁하며 학습한다</li>
+          <li data-c="2">② 생성자는 진짜 같은 가짜 데이터를 만든다</li>
+          <li data-c="3">③ 판별자는 새로운 데이터를 생성하는 역할을 한다</li>
+          <li data-c="4">④ 주로 이미지 생성에 활용된다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>판별자는 생성이 아니라 '구분'이 역할</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>GAN의 두 신경망: <b>생성자(Generator)</b>는 가짜를 만들고, <b>판별자(Discriminator)</b>는 진짜/가짜를 판별합니다. ③은 두 역할을 바꿔놓은 오답입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>위조지폐범(생성자) vs 경찰(판별자). 경찰은 만들지 않고 잡아냅니다.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="2">
+        <div class="qnum">Q7</div>
+        <div class="qbody">다음 중 <b>규칙 기반 시스템</b>의 예로 보기 어려운 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 가정용 온도조절기</li>
+          <li data-c="2">② 이미지 생성 GAN 모델</li>
+          <li data-c="3">③ 자동 스프링클러</li>
+          <li data-c="4">④ 전문가 시스템 MYCIN</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>GAN은 데이터 기반 학습</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>규칙 기반은 사람이 IF-THEN 규칙을 직접 넣는 방식(온도조절기, 스프링클러, MYCIN 등 전문가 시스템). <b>GAN은 데이터로 스스로 학습</b>하므로 데이터 기반에 속합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>전문가 시스템 3대장: DENDRAL·MYCIN·PROSPECTOR (모두 규칙 기반).</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="1">
+        <div class="qnum">Q8</div>
+        <div class="qbody">아래 그래프가 나타내는 머신러닝 알고리즘은?
+          <svg viewBox="0 0 200 90" width="200" height="90" style="display:block;margin:10px 0"><line x1="20" y1="72" x2="185" y2="72" stroke="#8a6d3b"/><line x1="20" y1="10" x2="20" y2="72" stroke="#8a6d3b"/><path d="M 25 68 Q 80 68 95 40 Q 110 12 180 12" fill="none" stroke="#b45309" stroke-width="2.5"/><text x="4" y="16" font-size="9" fill="#8a6d3b">1</text><text x="4" y="74" font-size="9" fill="#8a6d3b">0</text></svg>
+        </div>
+        <ul class="choices">
+          <li data-c="1">① 로지스틱 회귀</li>
+          <li data-c="2">② 선형 회귀</li>
+          <li data-c="3">③ K-평균 군집화</li>
+          <li data-c="4">④ 결정트리</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>로지스틱 회귀 (S자 곡선)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>0과 1 사이를 잇는 <b>S자 곡선</b>은 로지스틱 회귀의 상징입니다. 이진 분류(합격/불합격 등)에 씁니다. 직선이면 선형회귀, 가계도면 결정트리입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"S자 = 로지스틱". 양 끝이 0과 1에 붙어 평평해지는 게 특징.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 2</span>단답형 주관식 (직접 입력)</div>
+
+      <div class="qcard" data-q="9" data-answer="다트머스">
+        <div class="qnum">Q9</div>
+        <div class="qbody">1956년, 존 매카시가 'Artificial Intelligence'라는 용어를 처음 제안한 학술 회의의 이름은? (장소명)</div>
+        <div class="short-ans"><input type="text" id="in-9" placeholder="답을 입력하세요"><button class="reveal-btn" onclick="checkShort(9)">정답 확인</button></div>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>다트머스 회의 (Dartmouth)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>1956년 <b>다트머스 회의</b>는 AI의 공식 출발점입니다. 존 매카시가 이 자리에서 'AI'라는 용어를 처음 썼습니다. AI 역사 문제의 단골 시작점.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"1956 = 다트머스 = AI 탄생". 연도와 묶어서 외우세요.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="과적합">
+        <div class="qnum">Q10</div>
+        <div class="qbody">모델이 훈련 데이터에 지나치게 맞춰져, 새로운 데이터에 대한 예측 성능이 떨어지는 현상을 무엇이라 하는가? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-10" placeholder="답을 입력하세요"><button class="reveal-btn" onclick="checkShort(10)">정답 확인</button></div>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>과적합 (Overfitting)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>과적합</b>은 훈련 성능은 매우 높지만 테스트 성능은 낮은 상태. 반대로 둘 다 낮으면 과소적합(Underfitting)입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>단답형은 오타 주의. "오버피팅"보다 "과적합" 또는 "Overfitting"이 안전.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="강화학습">
+        <div class="qnum">Q11</div>
+        <div class="qbody">'보상(reward)'을 이용하여 AI가 더 높은 성능을 발휘하도록 학습시키는 머신러닝 유형은? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-11" placeholder="답을 입력하세요"><button class="reveal-btn" onclick="checkShort(11)">정답 확인</button></div>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>강화학습</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>강화학습</b>은 행동에 대한 '보상'을 신호로 삼아 점점 더 나은 선택을 학습합니다. 게임 AI, 로봇 제어 등에 쓰입니다. 지도/비지도와 구분되는 제3의 유형.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"보상 = 강화학습". 강아지 훈련처럼 잘하면 간식(보상)을 주는 방식.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="시그모이드">
+        <div class="qnum">Q12</div>
+        <div class="qbody">출력값이 0에서 1 사이이며 S자 형태의 곡선을 가져, 이진 분류에 주로 쓰이는 활성화 함수는? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-12" placeholder="답을 입력하세요"><button class="reveal-btn" onclick="checkShort(12)">정답 확인</button></div>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>시그모이드 함수 (Sigmoid)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>시그모이드</b>는 어떤 입력이든 0~1 사이로 눌러주는 S자 함수로, 로지스틱 회귀의 출력에 쓰입니다. 확률처럼 해석할 수 있어 이진 분류에 적합합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"S자 그래프 + 0~1 출력 = 시그모이드". 로지스틱 회귀와 한 세트.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 3</span>다중보기 선택형 (보기에서 골라 입력)</div>
+
+      <div class="qcard" data-q="13" data-answer="컴퓨팅파워">
+        <div class="qnum">Q13</div>
+        <div class="qbody">아래 보기에서 AI의 <b>3대 구성요소</b> 중 빈칸 ㉠에 들어갈 것을 골라 작성하시오.<br>
+          <span style="color:var(--ac-b)">데이터 · 알고리즘 · ( ㉠ )</span>
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 클라우드 / 컴퓨팅파워 / 데이터베이스 / 네트워크 / 운영체제</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-13" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(13)">정답 확인</button></div>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>컴퓨팅파워</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>AI의 3대 구성요소는 <b>데이터 + 알고리즘 + 컴퓨팅파워</b>입니다. 아무리 좋은 알고리즘과 데이터가 있어도 이를 돌릴 연산 능력(GPU 등)이 없으면 학습이 불가능합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>다중보기형은 보기 단어를 <b>그대로</b> 옮겨 적어야 정답 처리. 오타·띄어쓰기 주의.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="비지도학습">
+        <div class="qnum">Q14</div>
+        <div class="qbody">아래 보기에서 'K-평균 군집화'가 속하는 머신러닝 유형을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 지도학습 / 비지도학습 / 강화학습 / 전이학습</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-14" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(14)">정답 확인</button></div>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>비지도학습</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>K-평균은 정답(레이블) 없이 비슷한 데이터끼리 K개 군집으로 묶습니다. 레이블이 없으므로 <b>비지도학습</b>. KNN과 헷갈리지 마세요(KNN은 지도).</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>'군집화(clustering)'라는 단어가 보이면 거의 비지도학습.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 4</span>프롬프트/서술형 (개념 적용)</div>
+
+      <div class="qcard" data-q="15" data-answer="">
+        <div class="qnum">Q15</div>
+        <div class="qbody">스팸 메일 분류 모델을 평가하려 한다. 실제 스팸 20개 중 모델이 15개를 스팸으로 맞혔다면 <b>재현율(Recall)</b>은 몇 %인가? 계산 과정과 함께 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-15" placeholder="예: 75%"><button class="reveal-btn" onclick="revealQ(15)">모범답안 보기</button></div>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>재현율 = 15 / 20 = 0.75 = <b>75%</b></div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>재현율은 <b>실제 양성 중에서</b> 모델이 맞힌 비율 = TP / (TP+FN). 여기서 실제 스팸 20개가 분모, 맞힌 15개가 분자입니다. "놓치지 않고 얼마나 잡아냈나"를 봅니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">자주 하는 실수</span><div>정밀도(예측한 것 중 맞힌 비율)와 혼동하는 경우가 많습니다. 이 문제는 '실제 스팸 기준'이므로 재현율입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"실제 양성이 분모면 재현율, 예측 양성이 분모면 정밀도".</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">맞힌 문항</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 15</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">객관식은 보기 클릭 후, 주관식은 입력 후 버튼을 누르세요</div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">한 장 정리</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 AI 기본</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>1956 다트머스 회의 = AI 탄생</li>
+            <li>3대 요소: 데이터·알고리즘·컴퓨팅파워</li>
+            <li>범위: AI ⊃ ML ⊃ DL ⊃ 생성형AI</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 머신러닝 유형</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>지도: 회귀·분류 (레이블 O)</li>
+            <li>비지도: 군집화 (레이블 X)</li>
+            <li>강화: 보상 기반</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 그래프 모양</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>S자 = 로지스틱</li>
+            <li>직선 = 선형회귀</li>
+            <li>가계도 = 결정트리</li>
+            <li>마진 평행선 = SVM</li>
+            <li>뭉친 군집 = K-평균</li>
+            <li>원 그리기 = KNN</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 평가지표</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>정밀도 = TP/(TP+FP) 예측기준</li>
+            <li>재현율 = TP/(TP+FN) 실제기준</li>
+            <li>F1 = 2PR/(P+R) 조화평균</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 현대 AI 기틀</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>GAN: 이미지 (생성자vs판별자)</li>
+            <li>MCTS: 알파고</li>
+            <li>Transformer: GPT·BERT</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 다음 과목 예고</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8"><b>2과목</b>: 생성형 AI 원리, LLM, 환각·편향, 토큰화·임베딩, Temperature/Top-p, ChatGPT 구조</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'cert/aipot_01_ai_basics',
+  quizTotal: 15
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function bump(n) {
+  if (!correctSet.has(n)) { correctSet.add(n); document.getElementById('quiz-score').textContent = correctSet.size; }
+}
+
+function revealQ(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = card.dataset.answer;
+  const choices = card.querySelectorAll('.choices li');
+  if (choices.length) {
+    const picked = card.querySelector('.choices li.picked');
+    choices.forEach(li => {
+      if (li.dataset.c === answer) li.classList.add('correct');
+      else if (li.classList.contains('picked')) li.classList.add('wrong');
+    });
+    if (picked && picked.dataset.c === answer) bump(n);
+  }
+  document.getElementById('exp-' + n).classList.add('show');
+}
+
+function normalize(s) {
+  return (s || '').replace(/\s+/g, '').replace(/[().,'"·]/g, '').toLowerCase();
+}
+function checkShort(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = normalize(card.dataset.answer);
+  const input = normalize(document.getElementById('in-' + n).value);
+  const ok = input.length > 0 && (input.includes(answer) || answer.includes(input));
+  const el = document.getElementById('in-' + n);
+  el.style.borderColor = ok ? '#10b981' : '#ef4444';
+  el.style.background = ok ? '#d1fae5' : '#fee2e2';
+  if (ok) bump(n);
+  document.getElementById('exp-' + n).classList.add('show');
+}
+</script>
+</body>
+</html>

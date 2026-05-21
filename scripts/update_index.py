@@ -21,7 +21,7 @@ from datetime import datetime, timezone, timedelta
 
 # ── 설정 ──────────────────────────────────────────────
 INDEX_FILE   = 'index.html'
-SCAN_FOLDERS = ['py', 'ai', 'web']          # 스캔할 폴더 목록
+SCAN_FOLDERS = ['py', 'ai', 'web', 'sqld', 'aipot']          # 스캔할 폴더 목록
 LESSONS_TAG  = 'LESSONS'                    # index.html 안의 배열 변수명
 # ──────────────────────────────────────────────────────
 
