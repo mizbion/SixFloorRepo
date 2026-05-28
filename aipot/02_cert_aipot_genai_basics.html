@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=AIPOT -->
+<!-- meta:unit=2과목. 생성형 AI 기초 이론 -->
+<!-- meta:title=생성형 AI 원리·LLM·파라미터·트랜스포머 정복 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>AI-POT 2과목 · 생성형 AI 기초 이론</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f9f6f0; --card: #ffffff; --surf2: #f4ecdc; --surf3: #ecdfc4;
+  --border: #e0d0ad; --text: #1c1208; --sub: #8a6d3b;
+  --ac: #b45309; --ac-l: #fef3e2; --ac-b: #92400e;
+  --header-bg: #1a0f00; --grad-end: #d97706;
+}
+.aipot-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.aipot-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.aipot-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.aipot-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.aipot-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; }
+.aipot-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.aipot-side .unit-list li.done { color: var(--sub); }
+.aipot-side .unit-list li .num { display: inline-block; width: 24px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.aipot-side .unit-list li.current .num { color: #ecdfc4; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fdfaf3; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .short-ans { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.qcard .short-ans input { flex: 1; min-width: 180px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; }
+.qcard .explain.show { display: block; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #fef3e2; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+.part-head { background: var(--header-bg); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; margin: 24px 0 14px; }
+.part-head .part-tag { background: var(--grad-end); padding: 2px 10px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
+@media (max-width: 900px) { .aipot-layout { grid-template-columns: 1fr; } .aipot-side { position: static; } }
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">2과목</span>
+    <span class="hd-title">생성형 AI 기초 이론</span>
+    <span class="hd-meta">AI-POT 2급 · 한국생산성본부</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="aipot-layout">
+  <aside class="aipot-side">
+    <h3>AI-POT 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">1</span>인공지능 기초 이론</li>
+      <li class="current"><span class="num">2</span>생성형 AI 기초 이론</li>
+      <li><span class="num">3</span>프롬프트 엔지니어링 기초</li>
+      <li><span class="num">4</span>프롬프트 기술 활용</li>
+      <li><span class="num">5</span>업무활용과 윤리의식</li>
+    </ul>
+    <h3 style="margin-top:20px">이 과목 핵심</h3>
+    <div style="font-size:12px; color:var(--sub); line-height:1.8">
+      LLM·환각·편향<br>트랜스포머/GPT/BERT<br>토큰화·임베딩<br>Temperature·Top-p<br>프롬프트 주입·탈옥
+    </div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">생성형 AI 기초 이론</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        <b style="color:var(--ac-b)">용어 정의가 핵심</b>인 과목입니다. 트랜스포머·GPT·BERT의 차이,
+        파라미터 값 범위(Temperature·Top-p), 토큰화·임베딩 구분이 단골 출제 포인트입니다.
+      </p>
+    </section>
+    <section style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>생성형 AI·LLM의 정의와 환각·편향성의 개념·사례를 안다</li>
+        <li>자연어 처리(NLP) 4단계와 트랜스포머/GPT/BERT의 구조 차이를 구분한다</li>
+        <li>사전학습·미세조정과 토큰화·임베딩의 관계를 설명한다</li>
+        <li>Temperature·Top-p·Max_Length 등 텍스트 생성 파라미터를 안다</li>
+        <li>프롬프트 주입·탈옥(DAN) 등 적대적 위협을 이해한다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. 생성형 AI와 LLM</div>
+      <div class="card">
+        <p><b>생성형 AI</b>는 기존 데이터를 학습한 뒤 글·사진·음성·영상 등 <b>새로운 콘텐츠를 창작</b>하는 AI입니다.
+        그중 텍스트 기반이 <b>LLM(거대 언어 모델)</b>으로, 수십억~수천억 개의 <b>파라미터</b>를 가집니다.</p>
+        <div class="tip"><b>💡 LLM 핵심:</b> 방대한 데이터셋으로 학습 + 입력 텍스트에 자연스러운 응답 생성 + 대규모 파라미터. GPT가 대표적입니다.</div>
+      </div>
+
+      <div class="sh">2. 생성형 AI의 한계 — 환각과 편향성</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>현상</th><th>정의</th><th>대표 사례</th></tr></thead><tbody>
+          <tr><td><b>환각</b><br>Hallucination</td><td>실재하지 않는 정보를 그럴듯하게 생성</td><td>미국 법원 가짜 판례 인용 / 메타 갤럭티카 폐쇄</td></tr>
+          <tr><td><b>편향성</b><br>Bias</td><td>학습 데이터에 내재된 사회·문화적 편향을 그대로 반영</td><td>아마존 채용 AI 성차별 / COMPAS 인종차별</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 출제 포인트:</b> 사례와 현상을 짝짓는 문제가 나옵니다. "가짜 판례=환각", "채용 차별=편향성"으로 묶어 외우세요.</div>
+      </div>
+
+      <div class="sh">3. 자연어 처리(NLP)의 4단계</div>
+      <div class="card">
+        <p>인간 언어를 컴퓨터가 이해·처리하는 기술. 순서가 시험에 나옵니다.</p>
+        <svg viewBox="0 0 620 70" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:620px; display:block; margin:10px auto">
+          <rect x="10" y="20" width="130" height="34" rx="6" fill="#fef3e2" stroke="#b45309"/>
+          <text x="75" y="42" text-anchor="middle" font-family="Noto Sans KR" font-size="12" font-weight="700" fill="#92400e">형태소 분석</text>
+          <text x="150" y="42" font-size="16" fill="#b45309">▶</text>
+          <rect x="170" y="20" width="120" height="34" rx="6" fill="#fef3e2" stroke="#b45309"/>
+          <text x="230" y="42" text-anchor="middle" font-family="Noto Sans KR" font-size="12" font-weight="700" fill="#92400e">구문 분석</text>
+          <text x="300" y="42" font-size="16" fill="#b45309">▶</text>
+          <rect x="320" y="20" width="120" height="34" rx="6" fill="#fef3e2" stroke="#b45309"/>
+          <text x="380" y="42" text-anchor="middle" font-family="Noto Sans KR" font-size="12" font-weight="700" fill="#92400e">의미 분석</text>
+          <text x="450" y="42" font-size="16" fill="#b45309">▶</text>
+          <rect x="470" y="20" width="120" height="34" rx="6" fill="#fde8c8" stroke="#b45309"/>
+          <text x="530" y="42" text-anchor="middle" font-family="Noto Sans KR" font-size="12" font-weight="700" fill="#92400e">화용 분석</text>
+        </svg>
+      </div>
+
+      <div class="sh">4. 모델 아키텍처 — 트랜스포머·GPT·BERT</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>모델</th><th>구조</th><th>특징</th></tr></thead><tbody>
+          <tr><td><b>트랜스포머</b></td><td>인코더-디코더</td><td>병렬처리 가능, 어텐션 메커니즘 기반</td></tr>
+          <tr><td><b>GPT</b></td><td>디코더만</td><td>자기회귀적(앞→뒤 순차 생성)</td></tr>
+          <tr><td><b>BERT</b></td><td>인코더만</td><td>양방향 문맥 이해 특화</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 암기:</b> "<b>G</b>PT = 디코더(<b>G</b>enerate, 생성)", "<b>B</b>ERT = 인코더(양<b>방</b>향 이해)". 트랜스포머는 둘 다 가진 원형.</div>
+      </div>
+
+      <div class="sh">5. 사전학습과 미세조정(파인튜닝)</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>단계</th><th>설명</th></tr></thead><tbody>
+          <tr><td><b>사전학습</b><br>Pre-training</td><td>대량의 데이터로 일반적 언어 패턴을 <b>먼저</b> 학습 (선행 단계)</td></tr>
+          <tr><td><b>미세조정</b><br>Fine-tuning</td><td>사전학습된 모델을 <b>특정 작업/데이터</b>에 맞게 추가 학습</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 순서 함정:</b> 사전학습이 먼저, 미세조정이 나중. "범용 능력을 먼저 키우고 → 전문 분야로 다듬기".</div>
+      </div>
+
+      <div class="sh">6. 토큰화와 임베딩</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>개념</th><th>정의</th><th>대표 기법</th></tr></thead><tbody>
+          <tr><td><b>토큰화</b><br>Tokenization</td><td>연속된 텍스트를 최소 단위(토큰)로 나눔</td><td>BPE, WordPiece, SentencePiece</td></tr>
+          <tr><td><b>임베딩</b><br>Embedding</td><td>토큰을 <b>수치 벡터</b>로 변환</td><td>Word2Vec, GloVe, BERT</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 순서:</b> 텍스트 → (토큰화) → 토큰 → (임베딩) → 벡터. 자르고 나서 숫자로 바꾼다고 외우세요.</div>
+      </div>
+
+      <div class="sh">7. 텍스트 생성 파라미터</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>파라미터</th><th>역할</th><th>값 범위</th></tr></thead><tbody>
+          <tr><td><b>Temperature</b></td><td>높을수록 창의적, 낮을수록 예측 가능</td><td><b>0.0 ~ 2.0</b></td></tr>
+          <tr><td><b>Top-p</b></td><td>높을수록 다양한 단어 선택 가능</td><td><b>0.0 ~ 1.0</b></td></tr>
+          <tr><td><b>Max_Length</b></td><td>생성할 최대 토큰 수 (모델 한계 내)</td><td>모델별 상이</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 값 범위 암기 필수:</b> Temperature는 <b>0~2.0</b>, Top-p는 <b>0~1.0</b>. 둘을 바꿔 출제합니다.</div>
+      </div>
+
+      <div class="sh">8. 적대적 위협 — 프롬프트 주입과 탈옥</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>위협</th><th>정의</th></tr></thead><tbody>
+          <tr><td><b>프롬프트 주입</b><br>Prompt Injection</td><td>조작된 입력으로 원래 지시를 우회·변경 (예: "이전 지시는 무시하고…")</td></tr>
+          <tr><td><b>프롬프트 탈옥</b><br>Jailbreaking</td><td>안전장치·윤리 규정을 우회 (예: DAN "Do Anything Now" 모드)</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 구분:</b> 주입 = "지시 덮어쓰기", 탈옥 = "안전장치 풀기(DAN)". DAN이 보이면 탈옥입니다.</div>
+      </div>
+
+      <div class="sh">9. ChatGPT와 GPT</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>구분</th><th>설명</th></tr></thead><tbody>
+          <tr><td><b>GPT</b></td><td>OpenAI의 대규모 언어 모델(엔진). 수십억 매개변수 신경망</td></tr>
+          <tr><td><b>ChatGPT</b></td><td>GPT·o 모델을 쓰는 <b>대화형 서비스</b>(인터페이스). 대화 맥락 유지</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 구분:</b> GPT는 '엔진', ChatGPT는 그 엔진을 얹은 '자동차(서비스)'. 엔진과 완성차의 관계.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">AI-POT 2과목 단골 함정 8가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. GPT=디코더, BERT=인코더</h4><p>역할을 바꿔 출제합니다. GPT는 디코더만(생성), BERT는 인코더만(양방향 이해). 트랜스포머는 둘 다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. Temperature vs Top-p 범위</h4><p>Temperature는 0~<b>2.0</b>, Top-p는 0~<b>1.0</b>. 범위 숫자를 서로 바꿔 함정을 냅니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 사전학습 → 미세조정 순서</h4><p>사전학습이 먼저, 미세조정이 나중. 순서를 뒤집어 출제합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 토큰화 ≠ 임베딩</h4><p>토큰화는 '자르기', 임베딩은 '벡터로 변환'. 토큰화 기법(BPE)과 임베딩 기법(Word2Vec)을 섞어 출제합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. 환각 vs 편향성</h4><p>없는 사실 지어냄=환각(가짜 판례), 데이터 편향 반영=편향성(채용 차별). 사례로 구분.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. 주입 vs 탈옥</h4><p>주입=지시 우회, 탈옥=안전장치 우회. DAN 키워드가 나오면 탈옥.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. NLP 4단계 순서</h4><p>형태소 → 구문 → 의미 → 화용. 단어 쪼개기부터 문맥·의도 파악으로 점점 커집니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 8. ChatGPT ≠ GPT</h4><p>GPT는 모델(엔진), ChatGPT는 서비스(인터페이스). 같은 것으로 묶는 보기 주의.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <div class="sh">예상문제 — 실제 시험 4개 PART 형식 (30문항)</div>
+      <p style="color:var(--sub); font-size:14px">객관식 14 · 단답형 8 · 다중보기 4 · 서술형 4 로 구성했습니다.</p>
+
+      <div class="part-head"><span class="part-tag">PART 1</span>객관식 (4지선다) · 1~14</div>
+
+      <div class="qcard" data-q="1" data-answer="2">
+        <div class="qnum">Q1</div>
+        <div class="qbody">기존 데이터를 학습한 뒤 글·이미지·음성 등 새로운 콘텐츠를 창작하는 AI를 무엇이라 하는가?</div>
+        <ul class="choices">
+          <li data-c="1">① 검색 엔진</li><li data-c="2">② 생성형 AI</li><li data-c="3">③ 규칙 기반 시스템</li><li data-c="4">④ 전문가 시스템</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>생성형 AI</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>생성형 AI는 학습한 데이터를 바탕으로 <b>새로운 콘텐츠를 창작</b>합니다. 검색 엔진은 기존 정보를 찾아줄 뿐 창작하지 않습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"창작 = 생성형, 검색 = 검색엔진".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="3">
+        <div class="qnum">Q2</div>
+        <div class="qbody">LLM(거대 언어 모델)에 대한 설명으로 <b>옳지 않은</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 텍스트 기반 생성형 AI이다</li>
+          <li data-c="2">② 수십억~수천억 개의 파라미터를 가진다</li>
+          <li data-c="3">③ 정해진 IF-THEN 규칙으로만 응답한다</li>
+          <li data-c="4">④ 입력에 자연스러운 응답을 생성한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>IF-THEN은 규칙 기반 시스템</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>LLM은 방대한 데이터로 학습해 확률적으로 응답을 생성합니다. IF-THEN 규칙으로 동작하는 건 규칙 기반 시스템(1과목)입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>LLM 3요소: 방대한 데이터 + 자연스러운 응답 + 대규모 파라미터.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="1">
+        <div class="qnum">Q3</div>
+        <div class="qbody">실재하지 않는 정보를 그럴듯하게 생성하는 현상은? (예: 가짜 판례 인용 사건)</div>
+        <ul class="choices">
+          <li data-c="1">① 환각(Hallucination)</li><li data-c="2">② 편향성(Bias)</li><li data-c="3">③ 과적합</li><li data-c="4">④ 토큰화</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>환각</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>환각</b>은 없는 사실을 진짜처럼 지어내는 것. 미국 법원 가짜 판례, 메타 갤럭티카 폐쇄가 대표 사례입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"없는 걸 지어냄 = 환각". 가짜 판례 키워드가 보이면 환각.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="2">
+        <div class="qnum">Q4</div>
+        <div class="qbody">아마존 채용 AI의 성차별, COMPAS의 인종차별 사례와 관련된 생성형 AI의 한계는?</div>
+        <ul class="choices">
+          <li data-c="1">① 환각</li><li data-c="2">② 편향성</li><li data-c="3">③ 과소적합</li><li data-c="4">④ 프롬프트 주입</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>편향성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>편향성</b>은 학습 데이터에 내재된 사회·문화적 편향을 AI가 그대로 학습·반영하는 것. 채용·사법 차별 사례가 대표적입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"차별 사례 = 편향성, 거짓 정보 = 환각".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="4">
+        <div class="qnum">Q5</div>
+        <div class="qbody">자연어 처리(NLP)의 4단계 순서로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 의미 → 구문 → 형태소 → 화용</li>
+          <li data-c="2">② 구문 → 형태소 → 화용 → 의미</li>
+          <li data-c="3">③ 화용 → 의미 → 구문 → 형태소</li>
+          <li data-c="4">④ 형태소 → 구문 → 의미 → 화용</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>형태소 → 구문 → 의미 → 화용</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>가장 작은 단위(형태소)부터 시작해 문장 구조(구문), 뜻(의미), 맥락·의도(화용)로 점점 범위가 커집니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"형-구-의-화". 작은 것 → 큰 것 순서.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="1">
+        <div class="qnum">Q6</div>
+        <div class="qbody">트랜스포머의 '디코더만'을 활용하며 자기회귀적 방식으로 텍스트를 생성하는 모델은?</div>
+        <ul class="choices">
+          <li data-c="1">① GPT</li><li data-c="2">② BERT</li><li data-c="3">③ CNN</li><li data-c="4">④ RNN</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>GPT (디코더만)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>GPT는 트랜스포머의 <b>디코더</b>만 써서 앞 단어로 다음 단어를 순차 생성(자기회귀). BERT는 <b>인코더</b>만 써서 양방향 문맥을 이해합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"GPT=디코더=생성, BERT=인코더=이해".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="3">
+        <div class="qnum">Q7</div>
+        <div class="qbody">BERT에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 트랜스포머의 디코더만 사용한다</li>
+          <li data-c="2">② 자기회귀적으로 텍스트를 생성한다</li>
+          <li data-c="3">③ 인코더만 활용하며 양방향 문맥 이해에 특화된다</li>
+          <li data-c="4">④ RNN 기반 모델이다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>인코더만, 양방향 이해</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>BERT는 트랜스포머의 인코더만 사용해 문장의 앞뒤를 동시에 보는 <b>양방향 문맥 이해</b>에 강합니다. ①②는 GPT 설명입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>BERT의 'B'를 '양방(Both)'으로 연상.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="2">
+        <div class="qnum">Q8</div>
+        <div class="qbody">사전학습(Pre-training)과 미세조정(Fine-tuning)의 관계로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 미세조정이 사전학습보다 먼저 이루어진다</li>
+          <li data-c="2">② 사전학습이 먼저, 미세조정이 나중에 이루어진다</li>
+          <li data-c="3">③ 둘은 동시에 진행된다</li>
+          <li data-c="4">④ 미세조정은 데이터 없이 진행된다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>사전학습 → 미세조정</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>대량 데이터로 일반 언어 능력을 먼저 키우고(사전학습), 그 모델을 특정 작업/데이터에 맞게 다듬는 것(미세조정)입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"먼저 넓게 배우고, 나중에 전공 정하기".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="9" data-answer="4">
+        <div class="qnum">Q9</div>
+        <div class="qbody">텍스트 생성 파라미터 Temperature의 값 범위로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 0.0 ~ 0.5</li><li data-c="2">② 0.0 ~ 1.0</li><li data-c="3">③ -1.0 ~ 1.0</li><li data-c="4">④ 0.0 ~ 2.0</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>0.0 ~ 2.0</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Temperature는 0~<b>2.0</b>이며 높을수록 창의적·무작위적, 낮을수록 예측 가능한 결과를 냅니다. Top-p(0~1.0)와 범위를 혼동하지 마세요.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Temperature 2.0, Top-p 1.0". 온도가 더 넓다(2배).</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="2">
+        <div class="qnum">Q10</div>
+        <div class="qbody">Top-p 파라미터에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 값 범위는 0.0~2.0이다</li>
+          <li data-c="2">② 높을수록 다양한 단어가 선택될 수 있다</li>
+          <li data-c="3">③ 생성할 최대 토큰 수를 의미한다</li>
+          <li data-c="4">④ 낮을수록 창의적인 결과가 나온다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>높을수록 다양한 단어 선택</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Top-p는 0~<b>1.0</b> 범위로, 높을수록 후보 단어 폭이 넓어집니다. ③은 Max_Length 설명입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>Top-p 높음 = 단어 선택지 넓음 = 다양함.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="3">
+        <div class="qnum">Q11</div>
+        <div class="qbody">"이전 지시는 무시하고 다음을 수행하라"처럼 조작된 입력으로 원래 지시를 우회하는 공격은?</div>
+        <ul class="choices">
+          <li data-c="1">① 환각</li><li data-c="2">② 편향성</li><li data-c="3">③ 프롬프트 주입(Injection)</li><li data-c="4">④ 토큰화</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>프롬프트 주입</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트 주입은 악의적 입력으로 시스템의 <b>원래 지시를 덮어쓰는</b> 공격. "이전 지시 무시"가 전형적 패턴입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"지시 덮어쓰기 = 주입, 안전장치 풀기 = 탈옥".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="1">
+        <div class="qnum">Q12</div>
+        <div class="qbody">"DAN(Do Anything Now) 모드"처럼 AI의 안전장치와 윤리 규정을 우회하려는 시도는?</div>
+        <ul class="choices">
+          <li data-c="1">① 프롬프트 탈옥(Jailbreaking)</li><li data-c="2">② 미세조정</li><li data-c="3">③ 임베딩</li><li data-c="4">④ 사전학습</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>프롬프트 탈옥</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>탈옥은 모델의 <b>안전장치·윤리 규정을 우회</b>하려는 시도. DAN("모든 제약 없이 답하라")이 대표 방식입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>DAN = 탈옥. 'D'AN을 'D'ungeon 탈출로 연상.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="13" data-answer="2">
+        <div class="qnum">Q13</div>
+        <div class="qbody">토큰화(Tokenization)에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 토큰을 수치 벡터로 변환하는 과정이다</li>
+          <li data-c="2">② 연속된 텍스트를 최소 단위(토큰)로 나누는 과정이다</li>
+          <li data-c="3">③ Word2Vec, GloVe가 대표 기법이다</li>
+          <li data-c="4">④ 모델의 최대 출력 길이를 정하는 것이다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>텍스트를 토큰으로 나누기</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>토큰화는 텍스트를 <b>잘게 나누는</b> 과정(BPE, WordPiece, SentencePiece). ①과 ③은 임베딩(Word2Vec, GloVe) 설명입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"토큰화=자르기(BPE), 임베딩=숫자로(Word2Vec)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="4">
+        <div class="qnum">Q14</div>
+        <div class="qbody">ChatGPT와 GPT의 관계로 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 둘은 완전히 동일한 것이다</li>
+          <li data-c="2">② ChatGPT가 GPT보다 먼저 개발되었다</li>
+          <li data-c="3">③ GPT는 대화형 서비스, ChatGPT는 엔진이다</li>
+          <li data-c="4">④ GPT는 언어 모델(엔진), ChatGPT는 이를 활용한 대화형 서비스이다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>GPT=엔진, ChatGPT=서비스</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>GPT는 텍스트를 생성하는 <b>언어 모델(엔진)</b>이고, ChatGPT는 그 모델을 얹어 대화 맥락을 유지하는 <b>서비스(인터페이스)</b>입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"GPT=엔진, ChatGPT=완성차". ③은 둘을 바꿔놓은 오답.</div></div>
+        </div>
+      </div>
+      <div class="part-head"><span class="part-tag">PART 2</span>단답형 주관식 (직접 입력) · 15~22</div>
+
+      <div class="qcard" data-q="15" data-answer="환각">
+        <div class="qnum">Q15</div>
+        <div class="qbody">생성형 AI가 실재하지 않는 정보를 사실처럼 그럴듯하게 만들어내는 현상은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-15" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(15)">정답 확인</button></div>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>환각 (Hallucination)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>없는 사실을 지어내는 현상으로, 가짜 판례 인용 같은 사고가 대표 사례. '할루시네이션'도 정답 처리됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>단답형은 환각/Hallucination/할루시네이션 모두 인정되는 경우가 많습니다.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="16" data-answer="트랜스포머">
+        <div class="qnum">Q16</div>
+        <div class="qbody">인코더-디코더 구조와 어텐션 메커니즘을 기반으로 하며, GPT·BERT의 토대가 된 신경망 아키텍처는? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-16" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(16)">정답 확인</button></div>
+        <div class="explain" id="exp-16">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>트랜스포머 (Transformer)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>트랜스포머는 RNN의 한계를 극복한 아키텍처로, 셀프 어텐션·멀티헤드 어텐션·포지셔널 인코딩으로 구성됩니다. GPT·BERT의 토대입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"GPT·BERT의 부모 = 트랜스포머".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="17" data-answer="미세조정">
+        <div class="qnum">Q17</div>
+        <div class="qbody">사전 학습된 모델을 특정 작업이나 데이터셋에 맞게 추가로 조정·학습하는 과정은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-17" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(17)">정답 확인</button></div>
+        <div class="explain" id="exp-17">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>미세조정 (Fine-tuning, 파인튜닝)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>사전학습으로 일반 능력을 갖춘 모델을 특정 분야로 다듬는 단계. 사전학습이 선행, 미세조정이 후행입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>미세조정/파인튜닝/Fine-tuning 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="18" data-answer="임베딩">
+        <div class="qnum">Q18</div>
+        <div class="qbody">토큰을 컴퓨터가 계산할 수 있는 수치 벡터로 변환한 결과물(또는 그 과정)을 무엇이라 하는가? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-18" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(18)">정답 확인</button></div>
+        <div class="explain" id="exp-18">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>임베딩 (Embedding)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>임베딩은 토큰을 벡터로 바꾸는 것. Word2Vec, GloVe, BERT가 대표 기법. 토큰화(자르기) 다음 단계입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"토큰 → 숫자 벡터 = 임베딩".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="19" data-answer="Temperature">
+        <div class="qnum">Q19</div>
+        <div class="qbody">값이 높을수록 창의적이고 무작위적인 결과를, 낮을수록 예측 가능한 결과를 내는 텍스트 생성 파라미터는? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-19" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(19)">정답 확인</button></div>
+        <div class="explain" id="exp-19">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Temperature</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Temperature(0~2.0)는 출력의 무작위성을 조절합니다. 높으면 창의적·예측불가, 낮으면 안정적·반복적.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"온도 높으면 펄펄 끓어 다양해진다(창의적)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="20" data-answer="토큰화">
+        <div class="qnum">Q20</div>
+        <div class="qbody">사람이 입력한 연속된 텍스트를 컴퓨터가 처리할 수 있도록 최소 단위로 나누는 과정은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-20" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(20)">정답 확인</button></div>
+        <div class="explain" id="exp-20">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>토큰화 (Tokenization)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>토큰화는 텍스트를 토큰으로 자르는 과정. BPE, WordPiece, SentencePiece 등이 있습니다. 임베딩의 앞 단계.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"자르기=토큰화, 숫자화=임베딩".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="21" data-answer="프롬프트주입">
+        <div class="qnum">Q21</div>
+        <div class="qbody">AI 시스템에 조작된 입력을 넣어 원래 지시를 우회하거나 변경하는 공격 기법은? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-21" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(21)">정답 확인</button></div>
+        <div class="explain" id="exp-21">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>프롬프트 주입 (Prompt Injection)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>"이전 지시를 무시하라"처럼 시스템의 원래 지시를 덮어쓰는 공격. 안전장치를 푸는 탈옥과는 구분됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>주입(Injection) = 끼워넣어 지시 바꾸기.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="22" data-answer="화용">
+        <div class="qnum">Q22</div>
+        <div class="qbody">자연어 처리 4단계 중 마지막 단계로, 문맥과 의도를 파악하는 단계는? (○○ 분석, 한글)</div>
+        <div class="short-ans"><input type="text" id="in-22" placeholder="예: ○○ 분석"><button class="reveal-btn" onclick="checkShort(22)">정답 확인</button></div>
+        <div class="explain" id="exp-22">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>화용 분석 (화용)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>NLP 4단계: 형태소 → 구문 → 의미 → <b>화용</b>. 화용 분석은 실제 상황·의도를 고려해 의미를 해석하는 최종 단계입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"형-구-의-화"의 마지막 '화'.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 3</span>다중보기 선택형 (보기에서 골라 입력) · 23~26</div>
+
+      <div class="qcard" data-q="23" data-answer="디코더">
+        <div class="qnum">Q23</div>
+        <div class="qbody">보기에서 GPT가 활용하는 트랜스포머 구성요소를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 인코더 / 디코더 / 임베딩 / 어텐션</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-23" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(23)">정답 확인</button></div>
+        <div class="explain" id="exp-23">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>디코더</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>GPT는 트랜스포머의 디코더만 사용(생성 특화). BERT는 인코더만(이해 특화). 이 둘은 시험 단골 대비입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>다중보기는 보기 단어 그대로 입력. "디코더"라고 정확히.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="24" data-answer="편향성">
+        <div class="qnum">Q24</div>
+        <div class="qbody">보기에서 'COMPAS 알고리즘의 인종차별' 사례와 관련된 생성형 AI의 한계를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 환각 / 편향성 / 과적합 / 토큰화</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-24" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(24)">정답 확인</button></div>
+        <div class="explain" id="exp-24">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>편향성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>COMPAS(재범 예측 알고리즘)의 인종차별은 학습 데이터의 편향이 반영된 사례로, 편향성에 해당합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>차별 사례 = 편향성.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="25" data-answer="BPE">
+        <div class="qnum">Q25</div>
+        <div class="qbody">보기에서 '토큰화'의 대표 기법에 해당하는 것을 하나 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; Word2Vec / GloVe / BPE / ReLU</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-25" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(25)">정답 확인</button></div>
+        <div class="explain" id="exp-25">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>BPE</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>토큰화 기법: BPE, WordPiece, SentencePiece. Word2Vec·GloVe는 임베딩 기법이므로 함정입니다. ReLU는 활성화 함수.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>토큰화 3형제: BPE·WordPiece·SentencePiece.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="26" data-answer="탈옥">
+        <div class="qnum">Q26</div>
+        <div class="qbody">보기에서 'DAN(Do Anything Now) 모드'와 관련된 적대적 위협을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 주입 / 탈옥 / 환각 / 미세조정</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-26" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(26)">정답 확인</button></div>
+        <div class="explain" id="exp-26">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>탈옥</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>DAN은 안전장치·윤리 규정을 우회하려는 대표적 탈옥(Jailbreaking) 방식입니다. 지시를 덮어쓰는 주입과 구분하세요.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>DAN = 탈옥.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 4</span>서술형 (개념 적용) · 27~30</div>
+
+      <div class="qcard" data-q="27" data-answer="">
+        <div class="qnum">Q27</div>
+        <div class="qbody">GPT와 BERT는 모두 트랜스포머에서 나왔지만 사용하는 구성요소와 특징이 다르다. 두 모델의 차이를 '구조'와 '특징' 측면에서 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-27" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(27)">모범답안 보기</button></div>
+        <div class="explain" id="exp-27">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>GPT는 트랜스포머의 <b>디코더만</b> 사용하며 자기회귀적으로 텍스트를 <b>생성</b>한다. BERT는 <b>인코더만</b> 사용하며 양방향 문맥 <b>이해</b>에 특화된다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>핵심 키워드: GPT(디코더·생성·자기회귀), BERT(인코더·양방향·이해). 트랜스포머는 인코더-디코더 모두 가진 원형입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"G=Generate(디코더), B=Both방향(인코더)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="28" data-answer="">
+        <div class="qnum">Q28</div>
+        <div class="qbody">'토큰화'와 '임베딩'은 생성형 AI가 텍스트를 처리하는 연속된 두 단계이다. 각각이 무엇이며 어떤 순서로 일어나는지 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-28" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(28)">모범답안 보기</button></div>
+        <div class="explain" id="exp-28">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>토큰화</b>는 텍스트를 최소 단위(토큰)로 나누는 과정이고, <b>임베딩</b>은 그 토큰을 수치 벡터로 변환하는 과정이다. 순서는 토큰화 → 임베딩이다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>텍스트 → (토큰화) → 토큰 → (임베딩) → 벡터. 토큰화 기법은 BPE 등, 임베딩 기법은 Word2Vec 등입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"자르고 나서 숫자로 바꾼다".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="29" data-answer="">
+        <div class="qnum">Q29</div>
+        <div class="qbody">'프롬프트 주입(Injection)'과 '프롬프트 탈옥(Jailbreaking)'은 모두 적대적 위협이지만 목적이 다르다. 두 위협의 차이를 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-29" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(29)">모범답안 보기</button></div>
+        <div class="explain" id="exp-29">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>주입</b>은 조작된 입력으로 시스템의 <b>원래 지시를 우회·변경</b>하는 것이고, <b>탈옥</b>은 모델의 <b>안전장치·윤리 규정을 우회</b>하는 것이다(예: DAN 모드).</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>주입은 '지시 덮어쓰기', 탈옥은 '안전장치 풀기'. DAN 키워드가 보이면 탈옥입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"주입=지시 바꾸기, 탈옥=규정 풀기".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="30" data-answer="">
+        <div class="qnum">Q30</div>
+        <div class="qbody">Temperature 값을 0에 가깝게 설정한 경우와 2.0에 가깝게 설정한 경우, 생성 결과가 각각 어떻게 달라지는지 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-30" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(30)">모범답안 보기</button></div>
+        <div class="explain" id="exp-30">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>0에 가까우면 <b>예측 가능하고 안정적·반복적인</b> 결과가 나오고, 2.0에 가까우면 <b>창의적이고 무작위적·다양한</b> 결과가 나온다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Temperature(0~2.0)는 출력의 무작위성을 조절합니다. 사실 정확성이 중요하면 낮게, 창의적 아이디어가 필요하면 높게 설정합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"온도 낮음=차분·정확, 온도 높음=펄펄·창의".</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">맞힌 문항</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 30</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">객관식은 보기 클릭 후, 주관식은 입력 후 버튼을 누르세요</div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">한 장 정리</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 생성형 AI · LLM</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>생성형 AI: 새 콘텐츠 창작</li>
+            <li>LLM: 텍스트 기반, 수십억~수천억 파라미터</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 한계</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>환각: 가짜 정보 (가짜 판례)</li>
+            <li>편향성: 차별 (아마존·COMPAS)</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 아키텍처</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>트랜스포머: 인코더-디코더</li>
+            <li>GPT: 디코더만, 생성</li>
+            <li>BERT: 인코더만, 양방향 이해</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 처리 단계</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>NLP: 형태소→구문→의미→화용</li>
+            <li>학습: 사전학습 → 미세조정</li>
+            <li>텍스트: 토큰화 → 임베딩</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 파라미터 · 위협</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>Temperature 0~2.0 (창의성)</li>
+            <li>Top-p 0~1.0 (다양성)</li>
+            <li>주입=지시 우회 / 탈옥=안전장치(DAN)</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 다음 과목 예고</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8"><b>3과목</b>: 프롬프트 정의·구성요소, LLM 플랫폼별 특징, 명확성·구체성 원칙, 이미지 생성 AI</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'cert/aipot_02_genai_basics',
+  quizTotal: 30
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function bump(n) {
+  if (!correctSet.has(n)) { correctSet.add(n); document.getElementById('quiz-score').textContent = correctSet.size; }
+}
+
+function revealQ(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = card.dataset.answer;
+  const choices = card.querySelectorAll('.choices li');
+  if (choices.length) {
+    const picked = card.querySelector('.choices li.picked');
+    choices.forEach(li => {
+      if (li.dataset.c === answer) li.classList.add('correct');
+      else if (li.classList.contains('picked')) li.classList.add('wrong');
+    });
+    if (picked && picked.dataset.c === answer) bump(n);
+  }
+  document.getElementById('exp-' + n).classList.add('show');
+}
+
+function normalize(s) {
+  return (s || '').replace(/\s+/g, '').replace(/[().,'"·]/g, '').toLowerCase();
+}
+function checkShort(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = normalize(card.dataset.answer);
+  const input = normalize(document.getElementById('in-' + n).value);
+  const ok = input.length > 0 && (input.includes(answer) || answer.includes(input));
+  const el = document.getElementById('in-' + n);
+  el.style.borderColor = ok ? '#10b981' : '#ef4444';
+  el.style.background = ok ? '#d1fae5' : '#fee2e2';
+  if (ok) bump(n);
+  document.getElementById('exp-' + n).classList.add('show');
+}
+</script>
+</body>
+</html>
