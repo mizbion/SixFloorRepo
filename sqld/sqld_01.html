@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=SQLD -->
+<!-- meta:unit=Unit 01. 데이터 모델링 개요 -->
+<!-- meta:title=SQLD 시작점: 데이터 모델링 -->
+<!-- meta:desc=데이터 모델링 개요, 3층 스키마, ERD -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 -->
+<title>SQLD 01 · 데이터 모델링 개요</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="lecture_common.css">
+
+<style>
+:root {
+  --bg: #f0f7ff; --card: #ffffff;
+  --surf2: #e0edff; --surf3: #c7dcff;
+  --border: #b6cdf0; --text: #0a1929; --sub: #4a6585;
+  --ac: #1d4ed8; --ac-l: #dbeafe; --ac-b: #1e40af;
+  --header-bg: #061229; --grad-end: #3b82f6;
+}
+
+.sqld-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.sqld-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.sqld-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.sqld-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.sqld-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; cursor: default; }
+.sqld-side .unit-list li.done { color: var(--sub); }
+.sqld-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.sqld-side .unit-list li .num { display: inline-block; width: 28px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.sqld-side .unit-list li.current .num { color: #c7dcff; }
+
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fafcff; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; padding: 14px; background: #f5f9ff; border-radius: 6px; border-left: 3px solid var(--ac); font-size: 14px; line-height: 1.7; }
+.qcard .explain.show { display: block; }
+.qcard .explain h4 { margin: 0 0 8px; color: var(--ac-b); font-size: 14px; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.03em; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #eff6ff; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+
+.result-tbl { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #0a1929; color: #c7e2ff; padding: 14px 18px; border-radius: 6px; overflow-x: auto; margin: 10px 0; }
+.result-tbl .hdr { color: #ffd166; font-weight: 700; }
+.result-tbl .sep { color: #4a6585; }
+.result-tbl .null { color: #ff6b9d; font-style: italic; }
+
+@media (max-width: 900px) {
+  .sqld-layout { grid-template-columns: 1fr; }
+  .sqld-side { position: static; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">UNIT 01</span>
+    <span class="hd-title">데이터 모델링 · 3층 스키마 · ERD</span>
+    <span class="hd-meta">SQLD 자격증 · 입문 핵심 단원</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<div class="sqld-layout">
+
+  <aside class="sqld-side">
+    <h3>SQLD 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="current"><span class="num">01</span>데이터 모델링 개요</li>
+      <li><span class="num">02</span>엔터티·속성·관계</li>
+      <li><span class="num">03</span>정규화·반정규화</li>
+      <li><span class="num">04</span>DDL·DML·TCL</li>
+      <li><span class="num">05</span>WHERE·함수</li>
+      <li><span class="num">06</span>GROUP BY·HAVING</li>
+      <li><span class="num">07</span>JOIN·집합·계층형</li>
+      <li><span class="num">08</span>서브쿼리·뷰·윈도우</li>
+      <li><span class="num">09</span>DCL·절차형 SQL</li>
+      <li><span class="num">10</span>종합 모의고사</li>
+    </ul>
+    <h3 style="margin-top:20px">이 단원 출제 비중</h3>
+    <div style="background:var(--surf2); height:8px; border-radius:4px; overflow:hidden">
+      <div style="background:var(--ac); width:28%; height:100%"></div>
+    </div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">기초 개념이지만 <b style="color:var(--ac-b)">뒤 단원의 이해를 좌우</b>합니다</div>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">데이터 모델링을 먼저 잡아야 SQLD가 편해집니다</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        이 단원은 <b style="color:var(--ac-b)">현실 업무를 데이터 구조로 바꾸는 출발점</b>입니다.
+        개념이 추상적으로 느껴져도, 해설을 따라가면 <b>3층 스키마와 ERD를 한 번에 정리</b>할 수 있게 구성했습니다.
+      </p>
+    </section>
+
+    <section class="goals" style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>데이터 모델링의 목적과 흐름을 <b>업무 관점</b>에서 설명한다</li>
+        <li>외부·개념·내부 스키마를 <b>3층 구조</b>로 구분한다</li>
+        <li>ERD의 엔터티, 속성, 관계, 식별자 개념을 <b>문제 풀이에 연결</b>한다</li>
+        <li>기출형 예상문제 15문항을 풀며 <b>미니 강의형 해설</b>로 재학습한다</li>
+      </ol>
+    </section>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="example">💻 예제</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+
+      <div class="sh">1. 데이터 모델링이란?</div>
+      <div class="card">
+        <p>데이터 모델링은 <b>현실 세계의 업무 규칙을 데이터 구조로 정리하는 작업</b>입니다. 그냥 그림을 그리는 게 아니라, <b>무엇을 저장할지</b>, <b>어떤 관계로 연결할지</b>, <b>어디까지 나눠 저장할지</b>를 결정합니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>단계</th><th>질문</th><th>산출물</th></tr></thead>
+          <tbody>
+            <tr><td><b>요구사항 분석</b></td><td>무슨 업무를 처리하나?</td><td>업무 규칙, 용어 정리</td></tr>
+            <tr><td><b>개념적 모델링</b></td><td>무슨 개체와 관계가 있나?</td><td>ERD 초안</td></tr>
+            <tr><td><b>논리적 모델링</b></td><td>테이블/키로 어떻게 바꾸나?</td><td>정규화된 테이블 구조</td></tr>
+            <tr><td><b>물리적 모델링</b></td><td>실제 DB에 어떻게 저장하나?</td><td>인덱스, 저장 구조</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>핵심:</b> SQLD에서는 <code>업무 → 데이터 구조</code>로 바꾸는 논리적 사고를 묻는 문제가 많습니다. 문법보다 <b>관계와 기준</b>을 먼저 잡으세요.</div>
+      </div>
+
+      <div class="sh">2. 3층 스키마</div>
+      <div class="card">
+        <p>스키마는 데이터베이스를 <b>보는 시점</b>에 따라 나눈 논리적 구조입니다. 외부는 사용자 관점, 개념은 전체 통합 관점, 내부는 저장 관점입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>구분</th><th>다른 이름</th><th>한마디 정의</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>외부 스키마</b></td><td>서브 스키마</td><td>사용자별로 필요한 화면/뷰</td><td>학생용 성적 조회 화면</td></tr>
+            <tr><td><b>개념 스키마</b></td><td>논리 스키마</td><td>DB 전체의 통합 구조</td><td>학생-수강-과목 ERD</td></tr>
+            <tr><td><b>내부 스키마</b></td><td>물리 스키마</td><td>실제 저장 방식</td><td>파일, 인덱스, 페이지</td></tr>
+          </tbody>
+        </table>
+        <div class="warn"><b>주의:</b> 외부 스키마는 <b>개인별 뷰</b>, 개념 스키마는 <b>전체 통합</b>, 내부 스키마는 <b>DBMS가 실제로 저장하는 방식</b>입니다. 셋을 섞으면 문제를 틀리기 쉽습니다.</div>
+      </div>
+
+      <div class="sh">3. ERD 핵심 요소</div>
+      <div class="card">
+        <p>ERD는 Entity-Relationship Diagram의 약자입니다. 말 그대로 <b>엔터티(대상)</b>, <b>속성(특징)</b>, <b>관계(연결)</b>를 그림으로 표현합니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>요소</th><th>의미</th><th>시험 포인트</th></tr></thead>
+          <tbody>
+            <tr><td><b>엔터티</b></td><td>관리 대상</td><td>사람/사물/개념을 데이터로 본 것</td></tr>
+            <tr><td><b>속성</b></td><td>엔터티의 특징</td><td>학생명, 학번, 전화번호</td></tr>
+            <tr><td><b>관계</b></td><td>엔터티 사이 연결</td><td>학생이 과목을 수강한다</td></tr>
+            <tr><td><b>식별자</b></td><td>구별 기준</td><td>기본키/후보키/대체키</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>암기 순서:</b> <code>무엇(엔터티)</code>을 <code>어떤 특징(속성)</code>으로 구분하고, <code>어떻게 연결(관계)</code>되는지 본 뒤, <code>무엇으로 구별(식별자)</code>할지 정합니다.</div>
+      </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-example">
+
+      <div class="sh">예제 데이터: 학교 수강 신청</div>
+      <div class="card">
+        <p>아래 예시는 ERD를 테이블로 옮길 때 자주 나오는 구조입니다. <b>학생과 과목은 직접 M:N 관계</b>가 되기 쉽고, 이를 <b>수강</b>이라는 연결 엔터티로 풀어냅니다.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px">
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[STUDENT] 학생</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>STU_ID</th><th>NAME</th><th>GRADE</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>김지훈</td><td>1</td></tr>
+                <tr><td>1002</td><td>박서연</td><td>2</td></tr>
+                <tr><td>1003</td><td>이도현</td><td>2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[COURSE] 과목</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>COURSE_ID</th><th>COURSE_NAME</th></tr></thead>
+              <tbody>
+                <tr><td>C01</td><td>SQLD</td></tr>
+                <tr><td>C02</td><td>파이썬</td></tr>
+                <tr><td>C03</td><td>웹기초</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[ENROLL] 수강</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>STU_ID</th><th>COURSE_ID</th><th>SEMESTER</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>C01</td><td>2026-1</td></tr>
+                <tr><td>1001</td><td>C02</td><td>2026-1</td></tr>
+                <tr><td>1002</td><td>C01</td><td>2026-1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p style="margin:12px 0 0; font-size:12px; color:var(--sub)">학생 1명은 여러 과목을 들을 수 있고, 과목 1개에도 여러 학생이 들어갑니다. 그래서 수강 테이블이 필요합니다.</p>
+      </div>
+
+      <div class="sh">ERD 그림으로 보기</div>
+      <div class="card">
+        <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:780px; display:block; margin:0 auto">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d4ed8"/>
+            </marker>
+          </defs>
+          <rect x="40" y="55" rx="14" ry="14" width="160" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="120" y="96" text-anchor="middle" font-family="Noto Sans KR" font-size="20" font-weight="700" fill="#1e40af">학생</text>
+          <text x="120" y="124" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">STU_ID, NAME, GRADE</text>
+
+          <rect x="310" y="55" rx="14" ry="14" width="160" height="100" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="390" y="96" text-anchor="middle" font-family="Noto Sans KR" font-size="20" font-weight="700" fill="#1e40af">수강</text>
+          <text x="390" y="124" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">STU_ID, COURSE_ID, SEMESTER</text>
+
+          <rect x="580" y="55" rx="14" ry="14" width="160" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="660" y="96" text-anchor="middle" font-family="Noto Sans KR" font-size="20" font-weight="700" fill="#1e40af">과목</text>
+          <text x="660" y="124" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">COURSE_ID, COURSE_NAME</text>
+
+          <line x1="200" y1="105" x2="310" y2="105" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <line x1="470" y1="105" x2="580" y2="105" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <text x="255" y="88" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">1:N</text>
+          <text x="525" y="88" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">N:1</text>
+        </svg>
+      </div>
+
+      <div class="sh">스키마 연결 감각</div>
+      <div class="card">
+        <table class="cmp-table">
+          <thead><tr><th>보는 관점</th><th>같은 사례에서 무엇을 보나?</th></tr></thead>
+          <tbody>
+            <tr><td><b>외부 스키마</b></td><td>학생은 성적만, 교사는 반별 목록만 보는 식의 화면</td></tr>
+            <tr><td><b>개념 스키마</b></td><td>학생-수강-과목 전체 구조와 관계</td></tr>
+            <tr><td><b>내부 스키마</b></td><td>수강 데이터가 어떤 파일과 인덱스로 저장되는지</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+
+      <div class="sh">SQLD 출제진이 좋아하는 함정 7가지</div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. 데이터 모델링은 ERD만 그리는 일이 아니다</h4>
+        <p>모델링은 <b>업무 규칙을 데이터 구조로 바꾸는 전체 과정</b>입니다. 그림은 결과물일 뿐, 출발점이 아닙니다.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. 3층 스키마의 순서를 섞는다</h4>
+        <p><code>외부 → 개념 → 내부</code> 순서를 기본으로 기억하세요. 사용자 화면부터 실제 저장 구조까지 이어집니다.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 개념 스키마와 내부 스키마를 혼동한다</h4>
+        <p>개념 스키마는 <b>전체 데이터의 논리 구조</b>, 내부 스키마는 <b>저장 방식</b>입니다. 테이블 설계와 파일 저장을 같은 말로 보면 안 됩니다.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 엔터티와 테이블을 같은 뜻으로만 외운다</h4>
+        <p>시험에서는 엔터티를 먼저 발견하고, 그다음 테이블로 옮기는 사고가 필요합니다. 아직 물리 테이블이 아니어도 엔터티는 존재합니다.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. M:N 관계를 그대로 두려 한다</h4>
+        <p>학생-과목처럼 서로 여러 개가 연결되면, 중간 엔터티(연결 엔터티)가 필요합니다. 실제 관계형 DB에서는 직접 M:N을 유지하지 않습니다.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. 식별자와 속성을 헷갈린다</h4>
+        <p>학번은 학생을 <b>구별하는 기준</b>이고, 이름은 그냥 속성입니다. 이름이 같을 수 있지만 학번은 같으면 안 됩니다.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. 관계 방향을 이름으로만 외운다</h4>
+        <p>1:N은 외우기보다 <b>FK가 있는 쪽이 N쪽</b>이라고 기억하세요. 시험에서 방향이 바뀌어도 원리를 알면 흔들리지 않습니다.</p>
+      </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-quiz">
+
+      <div class="sh">예상문제 (기출 수준, 15문항)</div>
+
+      <div class="card" style="margin-bottom:18px">
+        <p style="margin:0 0 12px; font-size:13px; color:var(--sub)">※ 일부 문항은 아래 예시를 기준으로 합니다.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px">
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[학생]</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>STU_ID</th><th>NAME</th><th>GRADE</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>김지훈</td><td>1</td></tr>
+                <tr><td>1002</td><td>박서연</td><td>2</td></tr>
+                <tr><td>1003</td><td>이도현</td><td>2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[과목]</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>COURSE_ID</th><th>COURSE_NAME</th></tr></thead>
+              <tbody>
+                <tr><td>C01</td><td>SQLD</td></tr>
+                <tr><td>C02</td><td>파이썬</td></tr>
+                <tr><td>C03</td><td>웹기초</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[수강]</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>STU_ID</th><th>COURSE_ID</th><th>SEMESTER</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>C01</td><td>2026-1</td></tr>
+                <tr><td>1001</td><td>C02</td><td>2026-1</td></tr>
+                <tr><td>1002</td><td>C01</td><td>2026-1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p style="margin:12px 0 0; font-size:12px; color:var(--sub)">학생 1명은 여러 과목을 들을 수 있고, 과목 1개에도 여러 학생이 들어갑니다. 그래서 수강 테이블이 필요합니다.</p>
+      </div>
+
+      <div class="qcard" data-q="1" data-answer="3">
+        <div class="qnum">Q1 · 데이터 모델링의 목적</div>
+        <div class="qbody">데이터 모델링의 가장 핵심적인 목적은 무엇인가?</div>
+        <ul class="choices">
+          <li data-c="1">① 화면 색상을 예쁘게 정리하는 것</li>
+          <li data-c="2">② SQL 문법을 빠르게 외우는 것</li>
+          <li data-c="3">③ 현실 업무를 데이터 구조로 표현하는 것</li>
+          <li data-c="4">④ 서버 속도를 무조건 빠르게 만드는 것</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>현실 업무를 데이터 구조로 표현하는 것</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>모델링은 업무를 테이블처럼 바꾸는 기초 작업입니다. 어떤 데이터를 저장할지, 어떤 관계로 묶을지, 어떤 키로 구별할지를 정해야 뒤 단계가 편해집니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 디자인은 부차적입니다.</li><li>② 문법 암기는 모델링의 목적이 아닙니다.</li><li>④ 성능은 물리 설계와 최적화의 영역입니다.</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>모델링 = <b>업무를 데이터 언어로 번역</b>하는 작업.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="1">
+        <div class="qnum">Q2 · 3층 스키마 순서</div>
+        <div class="qbody">3층 스키마의 기본 순서로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 외부 스키마 → 개념 스키마 → 내부 스키마</li>
+          <li data-c="2">② 내부 스키마 → 외부 스키마 → 개념 스키마</li>
+          <li data-c="3">③ 개념 스키마 → 외부 스키마 → 내부 스키마</li>
+          <li data-c="4">④ 외부 스키마 → 내부 스키마 → 개념 스키마</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>외부 → 개념 → 내부</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>외부는 사용자가 보는 화면, 개념은 전체 통합 구조, 내부는 실제 저장 방식입니다. 사용자 관점에서 DB 핵심 구조로 들어가고, 마지막에 물리 저장으로 내려갑니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>②~④는 관점의 흐름이 뒤섞였습니다.</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>사람이 먼저 보고, 전체 구조를 잡고, 그다음 저장한다.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="2">
+        <div class="qnum">Q3 · 외부 스키마</div>
+        <div class="qbody">외부 스키마에 대한 설명으로 가장 알맞은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① DB 파일이 실제로 어떻게 저장되는지 보여준다</li>
+          <li data-c="2">② 사용자나 응용 프로그램이 보는 데이터 뷰를 뜻한다</li>
+          <li data-c="3">③ 전체 데이터의 통합 ERD를 뜻한다</li>
+          <li data-c="4">④ 인덱스 구조만을 뜻한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>사용자 관점의 뷰</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>외부 스키마는 사용자별로 필요한 정보만 보여주는 논리적 창입니다. 학생 화면, 교사 화면처럼 같은 DB라도 보이는 모습이 다를 수 있습니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>①은 내부 스키마입니다.</li><li>③은 개념 스키마입니다.</li><li>④는 저장 최적화에 가까운 내부 영역입니다.</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>외부 = <b>밖에서 보는 화면</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="3">
+        <div class="qnum">Q4 · 개념 스키마</div>
+        <div class="qbody">개념 스키마의 특징으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 사용자별 화면만 설명한다</li>
+          <li data-c="2">② 물리 파일 구조를 설명한다</li>
+          <li data-c="3">③ DB 전체의 통합 논리 구조를 설명한다</li>
+          <li data-c="4">④ SQL 문법 오류를 검사한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>전체 통합 논리 구조</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>개념 스키마는 여러 사용자의 요구를 모아 한 번에 보는 구조입니다. ERD를 그리는 이유도 이 개념 스키마를 명확히 하기 위해서입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 외부 스키마</li><li>② 내부 스키마</li><li>④ DBMS 기능이 아닙니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>개념 = <b>전체 구조를 머릿속에 그린 설계도</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="4">
+        <div class="qnum">Q5 · 내부 스키마</div>
+        <div class="qbody">내부 스키마에 대한 설명으로 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 학생별 화면 구성</li>
+          <li data-c="2">② 업무 규칙 문서</li>
+          <li data-c="3">③ ERD의 관계선 종류</li>
+          <li data-c="4">④ 실제 저장 파일과 인덱스 구조</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>실제 저장 파일과 인덱스 구조</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>내부 스키마는 DBMS가 데이터를 어떻게 저장할지에 대한 이야기입니다. 성능, 저장공간, 접근 속도와 연결됩니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 외부 스키마</li><li>② 모델링 문서</li><li>③ ERD 기호 설명입니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>내부 = <b>DB 안쪽 저장 방식</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="1">
+        <div class="qnum">Q6 · ERD 요소</div>
+        <div class="qbody">ERD의 기본 요소로 가장 알맞은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 엔터티, 속성, 관계</li>
+          <li data-c="2">② 트랜잭션, 커서, 인덱스</li>
+          <li data-c="3">③ 컴파일, 실행, 종료</li>
+          <li data-c="4">④ SELECT, INSERT, UPDATE</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>엔터티, 속성, 관계</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>ERD는 데이터의 대상(엔터티), 그 대상의 성질(속성), 그리고 대상끼리의 연결(관계)을 한눈에 보여주는 도구입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>②는 DB 내부 기술</li><li>③은 프로그램 실행 과정</li><li>④는 SQL 문장 종류</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>ERD = <b>누가(엔터티) / 어떤 특징(속성) / 어떻게 연결(관계)</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="2">
+        <div class="qnum">Q7 · 관계의 종류</div>
+        <div class="qbody">학생 한 명이 여러 과목을 듣고, 과목 한 개도 여러 학생이 듣는다. 이 관계는?</div>
+        <ul class="choices">
+          <li data-c="1">① 1:1 관계</li>
+          <li data-c="2">② M:N 관계</li>
+          <li data-c="3">③ 1:N 관계</li>
+          <li data-c="4">④ 독립 관계</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>다대다(M:N)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>한쪽도 여러 개, 다른 쪽도 여러 개면 다대다 관계입니다. 관계형 DB에서는 보통 이 관계를 바로 두지 않고, 중간 엔터티를 만들어 풀어냅니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 서로 1개씩만 연결될 때</li><li>③ 한쪽만 여러 개일 때</li><li>④ 관계 분석이 되지 않은 상태입니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>둘 다 여러 개면 무조건 <b>M:N</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="3">
+        <div class="qnum">Q8 · M:N 해결</div>
+        <div class="qbody">학생과 과목의 M:N 관계를 논리적으로 풀기 위해 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 학생 테이블만 크게 만든다</li>
+          <li data-c="2">② 과목 테이블만 크게 만든다</li>
+          <li data-c="3">③ 수강 같은 연결 엔터티를 추가한다</li>
+          <li data-c="4">④ 관계를 삭제한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>연결 엔터티 추가</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>수강 테이블은 학생과 과목 사이의 관계 자체를 데이터로 만든 것입니다. 이 테이블 덕분에 수강일, 성적, 학기 같은 관계 속성도 함께 저장할 수 있습니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>①, ②는 구조가 깨집니다.</li><li>④는 업무를 버리는 것과 같습니다.</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>M:N은 <b>중간 테이블</b>이 해답.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="9" data-answer="1">
+        <div class="qnum">Q9 · 식별자</div>
+        <div class="qbody">엔터티를 서로 구별하기 위한 기준으로 가장 알맞은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 식별자</li>
+          <li data-c="2">② 도메인</li>
+          <li data-c="3">③ 관계</li>
+          <li data-c="4">④ 인스턴스</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>식별자</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>식별자는 엔터티를 유일하게 구분하는 기준입니다. 학생 엔터티에서는 학번처럼 절대 중복되지 않는 값이 식별자가 됩니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>도메인은 허용 값의 범위</li><li>관계는 연결</li><li>인스턴스는 실제 행(레코드)</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>식별자 = <b>구별하는 이름표</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="4">
+        <div class="qnum">Q10 · 기본키</div>
+        <div class="qbody">기본키(Primary Key)에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 중복이 가능하다</li>
+          <li data-c="2">② NULL만 허용한다</li>
+          <li data-c="3">③ 테이블마다 없어도 된다</li>
+          <li data-c="4">④ 각 행을 유일하게 식별한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>행을 유일하게 식별</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>기본키는 중복될 수 없고 NULL도 허용되지 않습니다. 데이터 모델에서 가장 중요한 식별 기준입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 중복 금지</li><li>② NULL 금지</li><li>③ 일반적으로 반드시 필요</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>PK = <b>중복 X, NULL X, 행 구분 O</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="2">
+        <div class="qnum">Q11 · 후보키</div>
+        <div class="qbody">후보키에 대한 설명으로 가장 알맞은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 무조건 숫자만 써야 한다</li>
+          <li data-c="2">② 기본키가 될 수 있는 키들의 집합이다</li>
+          <li data-c="3">③ 외래키만 의미한다</li>
+          <li data-c="4">④ 중복과 NULL을 반드시 허용한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>기본키가 될 수 있는 키들의 집합</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>후보키는 유일성과 최소성을 만족하는 식별 후보입니다. 이 중 하나를 골라 기본키로 정하고 나머지는 대체키가 될 수 있습니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 데이터 타입과는 무관합니다</li><li>③ 외래키와 다릅니다</li><li>④ 후보키는 유일해야 합니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>후보키 = <b>PK 후보들</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="4">
+        <div class="qnum">Q12 · 속성의 예</div>
+        <div class="qbody">다음 중 파생 속성(derived attribute)의 예로 가장 알맞은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 학번</li>
+          <li data-c="2">② 학생명</li>
+          <li data-c="3">③ 전화번호</li>
+          <li data-c="4">④ 나이(생년월일로부터 계산)</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>생년월일로 계산한 나이</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>파생 속성은 다른 속성으로부터 계산되는 값입니다. 계산 가능하므로 굳이 저장하지 않아도 되지만, 상황에 따라 저장 성능 때문에 함께 저장하기도 합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>①~③은 직접 입력하는 일반 속성입니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>파생 속성은 <b>계산해서 나오는 값</b>.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="13" data-answer="1">
+        <div class="qnum">Q13 · 관계의 위치</div>
+        <div class="qbody">1:N 관계에서 외래키(FK)는 보통 어느 쪽에 두는가?</div>
+        <ul class="choices">
+          <li data-c="1">① N쪽</li>
+          <li data-c="2">② 1쪽</li>
+          <li data-c="3">③ 양쪽 모두 필요 없다</li>
+          <li data-c="4">④ 무작위로 둔다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>N쪽에 둔다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>N쪽이 여러 번 반복되는 쪽이므로, 그 행이 어느 1쪽에 속하는지 알기 위해 FK를 둡니다. 예를 들어 학생(1)과 수강(N) 관계에서는 수강 테이블에 학번이 들어갑니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>② 1쪽에는 보통 PK가 있습니다</li><li>③ 연결 정보가 사라집니다</li><li>④ 관계가 깨집니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>FK는 <b>많은 쪽(N)</b>에 둔다.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="3">
+        <div class="qnum">Q14 · 모델링 순서</div>
+        <div class="qbody">데이터 모델링의 흐름으로 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 물리적 모델링 → 개념적 모델링 → 요구사항 분석</li>
+          <li data-c="2">② ERD 작성 → 요구사항 분석 → 화면 설계</li>
+          <li data-c="3">③ 요구사항 분석 → 개념적 모델링 → 논리적 모델링 → 물리적 모델링</li>
+          <li data-c="4">④ 코드 작성 → 배포 → 테스트 → 요구사항 분석</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>요구사항 → 개념 → 논리 → 물리</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>업무를 먼저 이해하고, 그다음 개체와 관계를 정리한 뒤, 테이블과 키로 바꾸고, 마지막에 저장 방식까지 구체화합니다. 이 순서를 거꾸로 하면 모델이 흔들립니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>①, ②는 순서가 뒤집혔습니다.</li><li>④는 개발 흐름입니다.</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>모델링은 <b>업무 이해 → 구조화 → 구현</b> 순서.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="15" data-answer="2">
+        <div class="qnum">Q15 · 관계 해석 종합</div>
+        <div class="qbody">아래 설명에 가장 잘 맞는 관계는? “한 학생은 여러 수강 기록을 가질 수 있고, 각 수강 기록은 한 학생에만 속한다.”</div>
+        <ul class="choices">
+          <li data-c="1">① 1:1 관계</li>
+          <li data-c="2">② 1:N 관계</li>
+          <li data-c="3">③ M:N 관계</li>
+          <li data-c="4">④ 관계가 없다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(15)">정답·해설 보기</button>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>1:N 관계</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>학생 1명에 수강 기록이 여러 개 붙는 구조이므로 1:N입니다. 이때 수강 테이블은 학생 쪽을 참조하는 외래키를 가집니다. 수강 기록은 같은 학생에 여러 번 등장할 수 있지만, 각 기록은 학생 하나만 가리킵니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 정리</span><ul><li>① 한 번만 연결될 때</li><li>③ 양쪽이 서로 여러 개일 때</li><li>④ 이미 관계를 말하고 있습니다</li></ul></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div><b>하나가 여러 개를 거느리면 1:N</b>.</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">맞힌 문항</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 15 정답</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">보기 클릭 → [정답·해설 보기] 순으로 풀어보세요</div>
+      </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-summary">
+
+      <div class="sh">한 장 정리</div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 데이터 모델링 흐름</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>요구사항 분석</li>
+            <li>개념적 모델링</li>
+            <li>논리적 모델링</li>
+            <li>물리적 모델링</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 3층 스키마</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>외부: 사용자 뷰</li>
+            <li>개념: 전체 통합 구조</li>
+            <li>내부: 저장 방식</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 ERD 핵심</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>엔터티 = 관리 대상</li>
+            <li>속성 = 특징</li>
+            <li>관계 = 연결</li>
+            <li>식별자 = 구별 기준</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 관계 규칙</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>1:N이면 FK는 N쪽</li>
+            <li>M:N은 중간 엔터티로 해결</li>
+            <li>PK는 행을 유일하게 식별</li>
+            <li>파생 속성은 계산으로 얻음</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 외우는 문장</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8">
+            <b>업무를 구조화하고, 화면을 나누고, 전체를 묶고, 저장까지 생각한다.</b><br>
+            이 문장 하나면 3층 스키마와 모델링 흐름이 같이 정리됩니다.
+          </p>
+        </div>
+
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 다음 단원 예고</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8">
+            <b>Unit 02</b>: 엔터티, 속성, 관계를 더 깊게 보고, 표준 표기와 식별자 규칙을 정리합니다.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'cert/sqld_01_data_modeling',
+  quizTotal: 15
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function revealQ(n) {
+  const card = document.querySelector(`.qcard[data-q="${n}"]`);
+  const answer = card.dataset.answer;
+  const picked = card.querySelector('.choices li.picked');
+  const choices = card.querySelectorAll('.choices li');
+
+  choices.forEach(li => {
+    if (li.dataset.c === answer) li.classList.add('correct');
+    else if (li.classList.contains('picked')) li.classList.add('wrong');
+  });
+
+  document.getElementById('exp-' + n).classList.add('show');
+
+  if (picked && picked.dataset.c === answer && !correctSet.has(n)) {
+    correctSet.add(n);
+    document.getElementById('quiz-score').textContent = correctSet.size;
+  }
+}
+</script>
+</body>
+</html>
