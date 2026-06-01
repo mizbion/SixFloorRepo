@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=AI 자격증(생성형 AI 기초 이론) -->
+<!-- meta:unit=PART 02. 생성형 AI 기초 이론 예상문제 -->
+<!-- meta:title=생성형 AI 예상문제 인터랙티브 풀이 (2급 16 + 1급 3) -->
+<!-- meta:desc=보기 선택 시 정답·해설 자동 표시, 확산모델·트랜스포머·Top-p 등 도식 반영 -->
+<!-- meta:date=2026-05-31 -->
+<!-- meta:audience=성인 직업훈련 -->
+<title>생성형 AI 기초 이론 · 예상문제 풀이</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── Gold 팔레트 ── */
+:root{
+  --bg:#f9f6f0; --card:#ffffff;
+  --surf2:#f3ede1; --surf3:#ece3d2;
+  --border:#e3d8c3; --text:#1c1410; --sub:#6b5d49;
+  --ac:#b45309; --ac-l:#fef6ec; --ac-b:#f3d9b5;
+  --header-bg:#1a0f00; --grad-end:#d97706;
+  --ok:#0d7a5f; --ok-bg:#e8f6f1; --ok-bd:#a8ddca;
+  --ng:#b91c1c; --ng-bg:#fdeceb; --ng-bd:#f3b5b1;
+  --shadow:0 1px 3px rgba(40,25,5,.07),0 6px 20px rgba(40,25,5,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+.prog{position:fixed;top:0;left:0;height:4px;background:var(--grad-end);width:0;z-index:200;transition:width .25s ease}
+
+.hd{background:linear-gradient(120deg,var(--header-bg),#3a2400);color:#fff;padding:34px 20px 30px;position:relative;overflow:hidden}
+.hd::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;background:radial-gradient(circle,var(--grad-end)55%,transparent 70%);opacity:.18;border-radius:50%}
+.hd-inner{max-width:860px;margin:0 auto;position:relative;z-index:1}
+.hd-badge{display:inline-block;font-family:'Black Han Sans';letter-spacing:1px;background:var(--grad-end);color:#1a0f00;padding:3px 14px;border-radius:20px;font-size:13px;margin-bottom:12px}
+.hd-title{display:block;font-family:'Black Han Sans';font-size:30px;line-height:1.25;margin-bottom:8px}
+.hd-meta{display:block;color:#f3d9b5;font-size:14px}
+
+.wrap{max-width:860px;margin:0 auto;padding:26px 18px 80px}
+
+.dash{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:4px 0 26px}
+.dash .d{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 8px;text-align:center;box-shadow:var(--shadow)}
+.dash .d .n{font-family:'Black Han Sans';font-size:26px;line-height:1}
+.dash .d .l{font-size:12px;color:var(--sub);margin-top:5px}
+.dash .d.ok .n{color:var(--ok)} .dash .d.ng .n{color:var(--ng)}
+.dash .d.sc .n{color:var(--ac)} .dash .d.dn .n{color:var(--text)}
+@media(max-width:560px){.dash{grid-template-columns:repeat(2,1fr)}}
+
+.sh{display:flex;align-items:center;gap:10px;margin:34px 0 16px}
+.sh .bar{width:5px;height:26px;background:var(--ac);border-radius:3px}
+.sh h2{font-family:'Black Han Sans';font-size:22px}
+.sh .tag{margin-left:auto;font-size:12px;color:var(--sub);background:var(--surf2);border:1px solid var(--border);padding:3px 11px;border-radius:20px}
+
+.q{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 20px 8px;margin-bottom:18px;box-shadow:var(--shadow);position:relative}
+.q .qno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--header-bg);color:var(--grad-end);font-family:'Black Han Sans';border-radius:9px;font-size:15px;margin-right:9px;vertical-align:-7px}
+.q .qtext{font-weight:700;font-size:16px;display:inline}
+.q .neg{color:var(--ng);text-decoration:underline;text-underline-offset:3px;font-weight:800}
+
+.scene{background:var(--surf2);border:1px dashed var(--border);border-left:4px solid var(--ac);border-radius:10px;padding:13px 16px;margin:13px 0;font-size:14.5px;color:#3a2e1c}
+.scene ul{margin:0;padding-left:18px}
+.scene li{margin:4px 0}
+.scene .sp{display:block;margin:3px 0}
+.scene .who{font-weight:700;color:var(--ac)}
+.scene code{font-family:'JetBrains Mono';background:#fff;border:1px solid var(--ac-b);padding:1px 6px;border-radius:5px;font-size:13px;color:var(--ac)}
+
+.opts{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;background:var(--surf2);border:1.5px solid var(--border);border-radius:11px;padding:11px 14px;cursor:pointer;font-size:15px;color:var(--text);font-family:inherit;transition:all .15s ease}
+.opt:hover{border-color:var(--ac-b);background:var(--ac-l)}
+.opt .mk{flex:0 0 24px;height:24px;border-radius:50%;background:var(--card);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-weight:600;font-size:13px;color:var(--sub);transition:all .15s}
+.opt .ot{flex:1;line-height:1.5;padding-top:1px}
+.opt .ot small{color:var(--sub);font-family:'JetBrains Mono';font-size:12.5px}
+.opt.correct{background:var(--ok-bg);border-color:var(--ok-bd)}
+.opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{background:var(--ng-bg);border-color:var(--ng-bd)}
+.opt.wrong .mk{background:var(--ng);border-color:var(--ng);color:#fff}
+.opt.dim{opacity:.55}
+.opt:disabled{cursor:default}
+
+.exp{margin:6px 0 14px;border-radius:11px;overflow:hidden;border:1px solid var(--ok-bd);display:none}
+.exp.show{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.exp .head{background:var(--ok);color:#fff;padding:8px 15px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+.exp.miss{border-color:var(--ng-bd)}
+.exp.miss .head{background:var(--ng)}
+.exp .body{background:var(--ok-bg);padding:14px 16px;font-size:14.5px;color:#22321f}
+.exp.miss .body{background:var(--ng-bg);color:#3a1f1d}
+.exp .body b{color:var(--ac)}
+.exp .why{margin-top:10px;padding-top:10px;border-top:1px dashed var(--ok-bd)}
+.exp.miss .why{border-top-color:var(--ng-bd)}
+.exp .why .wt{font-weight:700;font-size:13px;color:var(--sub);margin-bottom:5px}
+.exp .why ul{margin:0;padding-left:17px}
+.exp .why li{margin:3px 0;font-size:13.5px}
+.exp .why li b{color:var(--ng)}
+
+.retry{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--border);color:var(--sub);font-size:12.5px;font-family:inherit;padding:5px 12px;border-radius:18px;cursor:pointer;margin:0 0 14px;transition:all .15s}
+.retry:hover{border-color:var(--ac);color:var(--ac)}
+
+.fig{background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:16px 10px;margin:14px 0;text-align:center}
+.fig svg{max-width:100%;height:auto}
+.fig .cap{font-size:12.5px;color:var(--sub);margin-top:8px}
+
+.intro{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:8px;font-size:14.5px;color:var(--sub);box-shadow:var(--shadow)}
+.intro b{color:var(--ac)}
+
+.foot{text-align:center;color:var(--sub);font-size:13px;margin-top:40px}
+.reset-all{margin-top:14px;background:var(--header-bg);color:var(--grad-end);border:none;font-family:'Noto Sans KR';font-weight:700;font-size:14px;padding:11px 26px;border-radius:24px;cursor:pointer}
+.reset-all:hover{opacity:.9}
+
+/* 프롬프트 박스 */
+.pbox{background:#1a0f00;color:#f3d9b5;border-radius:10px;padding:13px 16px;margin:13px 0;font-family:'JetBrains Mono';font-size:13.5px;line-height:1.7;border-left:4px solid var(--grad-end)}
+.pbox .pk{color:var(--grad-end);font-weight:700;margin-right:6px}
+</style>
+</head>
+<body>
+
+<div class="prog" id="prog"></div>
+
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">PART 02</span>
+    <span class="hd-title">생성형 AI 기초 이론 · 예상문제</span>
+    <span class="hd-meta">2급 16문항 + 1급 3문항 · 보기를 누르면 정답과 해설이 나타납니다</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="intro">
+    각 문항의 <b>보기를 클릭</b>하면 정답 여부가 표시되고, 아래에 <b>문제 설명·정답 해설·오답 피하기</b>가 함께 펼쳐집니다.
+    틀린 보기는 빨간색, 정답은 초록색으로 표시됩니다. <b>다시 풀기</b>로 언제든 재시도할 수 있어요.
+  </div>
+
+  <div class="dash">
+    <div class="d sc"><div class="n" id="db-score">0</div><div class="l">점수 (5점×19)</div></div>
+    <div class="d ok"><div class="n" id="db-ok">0</div><div class="l">맞은 문항</div></div>
+    <div class="d ng"><div class="n" id="db-ng">0</div><div class="l">틀린 문항</div></div>
+    <div class="d dn"><div class="n" id="db-done">0/19</div><div class="l">푼 문항</div></div>
+  </div>
+
+  <div class="sh"><div class="bar"></div><h2>2급 예상문제</h2><span class="tag">16문항</span></div>
+  <div id="quiz-area"></div>
+
+  <div class="sh" style="margin-top:46px"><div class="bar"></div><h2>1급 예상문제</h2><span class="tag">3문항</span></div>
+  <div id="quiz-area-2"></div>
+
+  <div class="foot">
+    합격을 다지는 예상문제 · 생성형 AI 기초 이론<br>
+    <button class="reset-all" onclick="resetAll()">↻ 전체 다시 풀기</button>
+  </div>
+</div>
+
+<script>
+/* 확산 모델 도식 SVG */
+const DIFFUSION_SVG = `<div class="fig">
+<svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans KR, sans-serif">
+  <defs>
+    <marker id="dh" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#8a6d3b"/>
+    </marker>
+    <linearGradient id="img2noise" x1="0" x2="1">
+      <stop offset="0" stop-color="#b45309" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#6b5d49" stop-opacity=".25"/>
+    </linearGradient>
+  </defs>
+  <!-- forward 라벨 -->
+  <text x="310" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">학습: 노이즈 추가 (Forward)</text>
+  <!-- 4단계 박스: 이미지 → 점점 노이즈 -->
+  <g>
+    <rect x="20" y="40" width="120" height="60" rx="8" fill="#fff" stroke="#e3d8c3"/>
+    <text x="80" y="76" text-anchor="middle" font-size="12">원본 데이터</text>
+    <line x1="142" y1="70" x2="172" y2="70" stroke="#8a6d3b" stroke-width="1.6" marker-end="url(#dh)"/>
+    <rect x="175" y="40" width="120" height="60" rx="8" fill="url(#img2noise)" stroke="#e3d8c3"/>
+    <text x="235" y="76" text-anchor="middle" font-size="12" fill="#fff">노이즈 일부 추가</text>
+    <line x1="297" y1="70" x2="327" y2="70" stroke="#8a6d3b" stroke-width="1.6" marker-end="url(#dh)"/>
+    <rect x="330" y="40" width="120" height="60" rx="8" fill="#8a6d3b" stroke="#e3d8c3" opacity=".55"/>
+    <text x="390" y="76" text-anchor="middle" font-size="12" fill="#fff">노이즈 더 추가</text>
+    <line x1="452" y1="70" x2="482" y2="70" stroke="#8a6d3b" stroke-width="1.6" marker-end="url(#dh)"/>
+    <rect x="485" y="40" width="120" height="60" rx="8" fill="#3a2e1c" stroke="#e3d8c3"/>
+    <text x="545" y="76" text-anchor="middle" font-size="12" fill="#fff">완전한 노이즈</text>
+  </g>
+  <!-- reverse 라벨 -->
+  <text x="310" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#0d7a5f">생성: 노이즈 제거 (Reverse)</text>
+  <!-- 역방향 화살표: 노이즈 → 점점 깨끗 -->
+  <g>
+    <rect x="485" y="150" width="120" height="55" rx="8" fill="#3a2e1c" stroke="#e3d8c3"/>
+    <text x="545" y="182" text-anchor="middle" font-size="12" fill="#fff">무작위 노이즈</text>
+    <line x1="483" y1="178" x2="453" y2="178" stroke="#0d7a5f" stroke-width="1.6" marker-end="url(#dh)"/>
+    <rect x="330" y="150" width="120" height="55" rx="8" fill="#8a6d3b" stroke="#e3d8c3" opacity=".55"/>
+    <text x="390" y="182" text-anchor="middle" font-size="12" fill="#fff">노이즈 일부 제거</text>
+    <line x1="328" y1="178" x2="298" y2="178" stroke="#0d7a5f" stroke-width="1.6" marker-end="url(#dh)"/>
+    <rect x="175" y="150" width="120" height="55" rx="8" fill="url(#img2noise)" stroke="#e3d8c3"/>
+    <text x="235" y="182" text-anchor="middle" font-size="12" fill="#fff">노이즈 더 제거</text>
+    <line x1="173" y1="178" x2="143" y2="178" stroke="#0d7a5f" stroke-width="1.6" marker-end="url(#dh)"/>
+    <rect x="20" y="150" width="120" height="55" rx="8" fill="#fff" stroke="#e3d8c3"/>
+    <text x="80" y="182" text-anchor="middle" font-size="12">생성된 데이터</text>
+  </g>
+</svg>
+<div class="cap">확산 모델은 노이즈를 추가하는 과정을 학습하고, 역으로 노이즈를 제거해 새 데이터를 생성한다.</div>
+</div>`;
+
+/* Top-p 누적분포 도식 */
+const TOPP_SVG = `<div class="fig">
+<svg viewBox="0 0 540 200" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans KR, sans-serif">
+  <text x="270" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">다음 토큰 후보 확률 (내림차순) · Top-p = 0.9</text>
+  <!-- 막대들 -->
+  <g font-size="11" fill="#1c1410">
+    <!-- p=0.4 -->
+    <rect x="40" y="50" width="60" height="120" fill="#b45309"/>
+    <text x="70" y="185" text-anchor="middle">0.40</text>
+    <!-- p=0.25 -->
+    <rect x="115" y="80" width="60" height="90" fill="#d97706"/>
+    <text x="145" y="185" text-anchor="middle">0.25</text>
+    <!-- p=0.15 -->
+    <rect x="190" y="105" width="60" height="65" fill="#f59e0b"/>
+    <text x="220" y="185" text-anchor="middle">0.15</text>
+    <!-- p=0.10 (선택 경계 내) -->
+    <rect x="265" y="125" width="60" height="45" fill="#fbbf24"/>
+    <text x="295" y="185" text-anchor="middle">0.10</text>
+    <!-- p=0.05 (제외) -->
+    <rect x="340" y="145" width="60" height="25" fill="#d1d5db"/>
+    <text x="370" y="185" text-anchor="middle">0.05</text>
+    <!-- p=0.05 (제외) -->
+    <rect x="415" y="145" width="60" height="25" fill="#d1d5db"/>
+    <text x="445" y="185" text-anchor="middle">0.05</text>
+  </g>
+  <!-- 누적 90% 라인 -->
+  <line x1="325" y1="40" x2="325" y2="180" stroke="#0d7a5f" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="325" y="38" text-anchor="middle" font-size="11" fill="#0d7a5f" font-weight="700">누적 90% 경계</text>
+  <text x="180" y="35" text-anchor="middle" font-size="11" fill="#0d7a5f">← 이 4개만 후보</text>
+  <text x="445" y="50" text-anchor="middle" font-size="11" fill="#6b5d49">제외 →</text>
+</svg>
+<div class="cap">누적 확률이 0.9에 도달할 때까지의 토큰만 후보로 남기고 그 안에서 샘플링한다.</div>
+</div>`;
+
+/* ─────────── 문제 데이터 ─────────── */
+const Q2 = [
+{n:1, q:'생성형 AI(Generative AI)의 정의로 가장 적절한 것을 고르시오.',
+ opts:['기존 데이터를 분류하고 예측하는 데 중점을 둔 인공지능 모델이다.',
+       '주어진 데이터로부터 패턴을 학습하여 새로운 콘텐츠를 창작할 수 있는 인공지능 모델이다.',
+       '사람의 뇌 구조를 그대로 모방하여 만든 신경망 기반 인공지능이다.',
+       '오직 텍스트 데이터만 처리할 수 있는 대화형 인공지능 모델이다.'],
+ answer:1,
+ expl:'생성형 AI는 기존 데이터에서 패턴을 학습하여 <b>새롭고 독창적인 콘텐츠(텍스트, 이미지, 음성, 영상 등)를 창작</b>할 수 있는 인공지능 모델입니다. 단순히 기존 데이터를 복제하는 것이 아니라, 학습한 패턴을 기반으로 새로운 콘텐츠를 생성하는 능력을 가집니다.',
+ why:{0:'판별형 AI(Discriminative AI)의 설명으로, 데이터 분류와 예측에 중점을 둔다.',2:'생성형 AI는 사람의 뇌 구조를 그대로 모방하지는 않으며, 다양한 알고리즘과 구조를 활용한다.',3:'생성형 AI는 텍스트뿐만 아니라 이미지, 오디오, 비디오 등 다양한 형태의 데이터를 생성할 수 있다.'}},
+
+{n:2, q:'다음은 생성형 AI의 발전 과정에서 중요한 이정표를 시간순으로 나열한 것이다. 가장 올바른 순서를 고르시오.',
+ scene:'<ul><li>ㄱ. 생성적 적대 신경망(GAN) 등장</li><li>ㄴ. GPT(Generative Pre-trained Transformer) 모델 발표</li><li>ㄷ. DALL·E와 같은 텍스트-이미지 생성 모델 출시</li><li>ㄹ. 변이형 자동 인코더(VAE) 개발</li></ul>',
+ opts:['ㄱ → ㄴ → ㄷ → ㄹ','ㄹ → ㄱ → ㄴ → ㄷ','ㄱ → ㄹ → ㄴ → ㄷ','ㄹ → ㄱ → ㄷ → ㄴ'],
+ answer:1,
+ expl:'<b>VAE(2013) → GAN(2014, Ian Goodfellow) → GPT(2018, OpenAI) → DALL·E(2021~)</b> 순서가 정답입니다. 변이형 자동 인코더가 가장 먼저 등장했고, 그 다음 해에 생성적 적대 신경망이 소개되었으며, GPT 모델은 2018년에 처음 발표되었고, DALL·E와 같은 텍스트-이미지 생성 모델은 2021년 이후 대중화되었습니다.'},
+
+{n:3, q:'다음 설명에 해당하는 생성형 AI 모델 유형을 고르시오.',
+ scene:'<ul><li>이 모델은 \'노이즈 추가 과정\'과 \'노이즈 제거 과정\'의 두 단계로 작동한다.</li><li>학습 단계에서는 원본 데이터에 점진적으로 노이즈를 추가하여 완전한 노이즈 상태로 만드는 방법을 학습한다.</li><li>생성 단계에서는 반대로 무작위 노이즈로부터 시작하여 점진적으로 노이즈를 제거함으로써 실제와 유사한 데이터를 생성한다.</li><li>Stable Diffusion, DALL·E 3 등이 이 유형에 속한다.</li></ul>',
+ fig: DIFFUSION_SVG,
+ opts:['생성적 적대 신경망(GAN)','변이형 자동 인코더(VAE)','확산 모델(Diffusion Model)','자기회귀 모델(Autoregressive Model)'],
+ answer:2,
+ expl:'보기에서 설명하는 모델은 <b>확산 모델(Diffusion Model)</b>입니다. 데이터에 점진적으로 노이즈를 추가하는 forward process와 노이즈를 제거하여 데이터를 복원하는 reverse process를 학습합니다. 생성 시에는 순수한 노이즈에서 시작해 학습된 역방향 과정을 통해 노이즈를 단계적으로 제거함으로써 실제와 유사한 이미지를 생성합니다. Stable Diffusion, DALL·E 3 등이 대표적입니다.',
+ why:{0:'GAN은 생성자와 판별자 네트워크가 서로 경쟁하면서 학습하는 구조를 가진다.',1:'VAE는 인코더-디코더 구조를 가지며, 데이터를 압축된 잠재 공간으로 매핑한 후 재구성한다.',3:'자기회귀 모델은 이전에 생성된 요소들을 기반으로 다음 요소를 순차적으로 생성하는 모델이다.'}},
+
+{n:4, q:'대규모 언어 모델(LLM)의 환각(Hallucination) 현상에 대한 설명으로 가장 적절한 것을 고르시오.',
+ opts:['검색 증강 생성(RAG), 사실 확인 메커니즘, 외부 지식 소스와의 연결 등 다양한 접근 방식으로 완화할 수 있다.',
+       '모델의 규모를 키우는 것만으로 완전히 해결될 수 있는 문제이다.',
+       '모델이 학습한 데이터를 그대로 출력하는 현상을 의미한다.',
+       '모델 크기가 작을수록 더 자주 발생하므로 큰 모델만 사용하면 해결된다.'],
+ answer:0,
+ expl:'환각(Hallucination) 현상은 단순히 모델의 규모를 키우는 것만으로는 완전히 해결되지 않습니다. 오히려 모델 크기가 증가함에 따라 더 설득력 있는 거짓 정보를 생성할 가능성도 있습니다. 이 문제를 완화하기 위해서는 <b>검색 증강 생성(RAG), 사실 확인 메커니즘, 외부 지식 소스와의 연결</b> 등 다양한 접근 방식이 필요합니다.'},
+
+{n:5, q:'다음 중 생성형 AI의 필수 구성 요소로 <span class="neg">보기 어려운</span> 것을 고르시오.',
+ opts:['양질의 데이터셋','학습 알고리즘','컴퓨팅 자원(GPU 등)','사용자 인증 시스템'],
+ answer:3,
+ expl:'생성형 AI의 필수 구성 요소는 <b>데이터셋, 알고리즘, 컴퓨팅 자원</b>입니다. <b>사용자 인증 시스템은 AI 서비스의 보안과 접근 관리를 위한 요소</b>이지, 생성형 AI 자체의 필수 구성 요소는 아닙니다.'},
+
+{n:6, q:'생성형 AI의 출력 다양성을 제어하는 파라미터인 Temperature에 대한 설명으로 가장 적절한 것을 고르시오.',
+ opts:['값이 0에 가까울수록 더 창의적이고 다양한 응답을 생성한다.',
+       '값이 높을수록 더 예측 가능하고 일관된 응답을 생성한다.',
+       '값이 낮을수록 더 예측 가능하고, 값이 높을수록 더 다양하고 창의적인 응답을 생성한다.',
+       '모델이 생성할 수 있는 최대 토큰 수를 제한하는 파라미터이다.'],
+ answer:2,
+ expl:'Temperature는 생성형 AI의 출력 다양성을 제어하는 파라미터입니다. <b>값이 낮을수록(0에 가까울수록) 더 예측 가능하고 일관된 응답</b>을 생성하며, <b>값이 높을수록(1 이상) 더 다양하고 창의적인 응답</b>을 생성합니다. 일반적인 대화에서는 0.7~0.9 사이의 값이 많이 사용됩니다.',
+ why:{0:'설명이 정반대다. 값이 0에 가까울수록 예측 가능해진다.',1:'설명이 정반대다. 값이 높을수록 다양해진다.',3:'그것은 Max Tokens의 설명이다.'}},
+
+{n:7, q:'다음 중 생성형 AI에 대한 적대적 공격 유형으로 올바른 것을 고르시오.',
+ opts:['프롬프트 주입(Prompt Injection)','컴퓨팅 파워(Computing Power)','데이터 마스킹(Data Masking)','네트워크 해싱(Network Hashing)'],
+ answer:0,
+ expl:'<b>프롬프트 주입(Prompt Injection)</b>은 악의적인 사용자가 AI 시스템의 동작을 조작하기 위해 교묘한 프롬프트를 삽입하는 공격 기법입니다. 이를 통해 AI가 원래 의도와 다른 응답을 생성하도록 유도할 수 있습니다.',
+ why:{1:'컴퓨팅 파워는 적대적 공격이 아닌, 생성형 AI의 한 요소이다.',2:'데이터 마스킹은 적대적 공격이 아니라 개인정보를 보호하기 위한 기술이다.',3:'네트워크 해싱은 존재하지 않는 용어이다.'}},
+
+{n:8, q:'다음은 챗GPT에 적용할 수 있는 파라미터 설정 예시이다. 옳은 설명을 모두 고른 것은?',
+ scene:'<ul><li>ㄱ. Temperature 값을 0으로 설정하면 모델의 응답이 더 다양해진다.</li><li>ㄴ. Top-p 값이 낮을수록 더 예측 가능한 단어만 선택된다.</li><li>ㄷ. Max Tokens는 모델이 생성할 수 있는 최대 토큰 수를 제한한다.</li><li>ㄹ. Presence Penalty는 모델이 이미 사용한 토픽을 반복할 가능성을 줄여준다.</li></ul>',
+ opts:['ㄱ, ㄴ','ㄱ, ㄷ','ㄴ, ㄷ','ㄴ, ㄷ, ㄹ'],
+ answer:3,
+ expl:'<b>ㄴ, ㄷ, ㄹ 모두 옳은 설명</b>입니다. Top-p 값이 낮을수록 더 예측 가능한 단어만 선택되고, Max Tokens는 모델이 생성할 수 있는 최대 토큰 수를 제한하며, Presence Penalty는 모델이 이미 사용한 토픽을 반복할 가능성을 줄여줍니다. <b>ㄱ은 틀린 설명</b>으로, Temperature 값이 0이면 응답이 가장 결정적이고 일관성 있게 됩니다(다양해지지 않음).'},
+
+{n:9, q:'트랜스포머 아키텍처의 어텐션(Attention) 메커니즘에 대한 설명으로 <span class="neg">옳지 않은</span> 것을 고르시오.',
+ opts:['셀프 어텐션은 입력 시퀀스의 모든 요소 간 관계를 계산한다.',
+       '멀티헤드 어텐션은 여러 어텐션 계산을 병렬로 수행하지 않는다.',
+       '셀프 어텐션 메커니즘은 Query, Key, Value 벡터를 사용한다.',
+       '셀프 어텐션은 같은 시퀀스 내 요소들 간의 관계를 계산한다.'],
+ answer:1,
+ expl:'<b>멀티헤드 어텐션은 여러 어텐션 계산을 병렬로 수행하는 메커니즘</b>입니다. "병렬로 수행하지 않는다"는 설명은 틀렸습니다. 각 헤드는 입력의 다른 부분에 집중할 수 있어 다양한 특성을 포착할 수 있게 해줍니다.'},
+
+{n:10, q:'사전학습과 파인튜닝에 대한 설명으로 가장 적절한 것을 고르시오.',
+ opts:['파인튜닝은 항상 모든 모델 파라미터를 업데이트해야 한다.',
+       '사전학습에는 적은 양의 데이터만 필요하다.',
+       '파인튜닝은 사전학습된 모델을 특정 작업에 맞게 조정하는 과정이다.',
+       '사전학습은 항상 지도학습 방식으로만 진행된다.'],
+ answer:2,
+ expl:'파인튜닝은 <b>대규모 데이터로 사전학습된 모델을 특정 작업이나 도메인에 맞게 추가로 학습</b>시키는 과정입니다. 이를 통해 적은 양의 데이터로도 특정 작업에 좋은 성능을 얻을 수 있습니다.',
+ why:{0:'파인튜닝은 모든 파라미터를 업데이트하는 방식 외에도 일부 레이어만 업데이트하거나 어댑터를 추가하는 등 다양한 방법이 있다.',1:'사전학습에는 일반적으로 대규모 데이터가 필요하다.',3:'사전학습은 자기지도학습(Self-supervised learning) 방식으로 진행되는 경우가 많다 (마스킹된 단어 예측, 다음 단어 예측 등).'}},
+
+{n:11, q:'토큰화(Tokenization)에 대한 설명으로 <span class="neg">옳지 않은</span> 것을 고르시오.',
+ opts:['토큰화는 문장을 분석하기 쉬운 더 작은 단위로 나누는 과정이다.',
+       '자연어 처리에서 토큰화는 항상 단어 단위로만 수행된다.',
+       'BPE(Byte Pair Encoding)는 자주 등장하는 문자 쌍을 병합하는 토큰화 알고리즘이다.',
+       '효과적인 토큰화는 언어 모델의 성능에 중요한 영향을 미친다.'],
+ answer:1,
+ expl:'토큰화는 다양한 단위로 수행될 수 있습니다. <b>단어, 문장, 하위단어(subword), 문자 등 다양한 분류 방법이 존재</b>합니다. "항상 단어 단위로만" 수행된다는 설명은 틀렸습니다.'},
+
+{n:12, q:'다음 중 Word2Vec, FastText, BERT 임베딩에 관한 설명으로 가장 옳은 것은?',
+ opts:['Word2Vec은 단어를 쪼개질 수 없는 최소 단위로 간주하여 학습하며, 등장 빈도수가 적은 단어에 대해서는 임베딩의 정확도가 높지 않다.',
+       'FastText는 단어를 문자 수준의 n-gram으로 분리하여 학습하지만, 모르는 단어(OOV)에 대한 임베딩은 생성할 수 없다.',
+       'BERT는 단어를 자모 단위로 분리하여 학습하기 때문에 한국어와 같은 교착어에서 특히 우수한 성능을 보인다.',
+       'Word2Vec과 BERT는 문맥을 고려하는 동적 임베딩인 반면, FastText는 문맥과 무관한 정적 임베딩을 생성한다.'],
+ answer:0,
+ expl:'<b>Word2Vec은 단어를 더 이상 쪼개질 수 없는 최소 단위로 간주</b>합니다. 또한 Word2Vec은 등장 빈도수가 적은 단어(rare word)에 대해서는 임베딩의 정확도가 높지 않다는 단점이 있습니다. 참고할 수 있는 경우의 수가 적다 보니 정확하게 임베딩이 되지 않습니다.',
+ why:{1:'FastText는 문자 수준 n-gram으로 분리하기 때문에 오히려 모르는 단어(OOV)에 대해서도 임베딩을 생성할 수 있는 장점이 있다.',2:'BERT는 자모 단위가 아닌 WordPiece 토큰화 방식을 사용하며, 양방향 트랜스포머 구조로 문맥을 고려한 임베딩을 생성한다.',3:'Word2Vec과 FastText는 모두 정적 임베딩이고, 문맥을 고려하는 동적 임베딩을 생성하는 것은 BERT다.'}},
+
+{n:13, q:'다음 프롬프트를 챗GPT한테 입력했을 때 기대할 수 있는 결과로 적절한 것을 고르시오.',
+ scene:'<div class="pbox"><span class="pk">[프롬프트]</span><br>당신은 일류호텔 주방장입니다.<br>라면을 맛있게 끓이는 방법에 대해 알려주세요. <span class="pk">Temperature : 0.7</span></div>',
+ opts:['라면을 끓이는 방법을 일반적으로 알려준다.',
+       '일류호텔 주방장 역할로 라면을 맛있게 끓이는 방법을 알려준다.',
+       '일류호텔 주방장 역할로 다양한 고급 라면 레시피를 알려준다.',
+       '일류호텔 주방장 역할을 수행하지 않는다.'],
+ answer:2,
+ expl:'해당 프롬프트에서는 <b>"당신은 일류호텔 주방장입니다"라는 역할 지정</b>과 함께 <b>Temperature 값을 0.7</b>로 설정했습니다. 이는 적당한 창의성을 가진 응답을 생성하도록 하는 설정입니다. 따라서 챗GPT는 일류호텔 주방장 역할로 <b>다양한 고급 라면 레시피</b>를 알려줄 것입니다.',
+ why:{0:'단순히 라면을 끓이는 방법만 알려주는 것은 역할 지정과 Temperature 설정의 효과를 반영하지 않는다.',1:'Temperature 값이 0.7이므로 단일 레시피보다는 \'다양한\' 레시피를 알려줄 가능성이 높다.',3:'역할 지정을 명확히 했으므로 해당 역할을 수행하지 않을 가능성은 매우 낮다.'}},
+
+{n:14, q:'2025년 기준 챗GPT의 주요 기능에 대한 설명이다. <span class="neg">옳지 않은</span> 것을 고르시오.',
+ opts:['챗GPT는 실시간 웹 검색 기능을 통해 최신 정보를 제공할 수 있다.',
+       '챗GPT는 텍스트뿐만 아니라 이미지와 음성을 처리할 수 있는 멀티모달 기능을 지원한다.',
+       '챗GPT는 사용자의 과거 대화 기록을 바탕으로 개인화된 답변을 제공할 수 있다.',
+       '챗GPT는 질문에 대해 사전에 저장된 고정된 답변만 반환한다.'],
+ answer:3,
+ expl:'챗GPT는 <b>고정된 답변이 아닌, 입력에 따라 동적으로 응답을 생성</b>합니다. 이는 생성형 AI의 기본 작동 방식으로, 사전 정의된 답변만 반환하지 않습니다.',
+ why:{0:'2024년 11월 이후, 챗GPT는 실시간 웹 검색 기능을 지원한다.',1:'GPT-4 Turbo를 통해 멀티모달 기능을 도입하여 텍스트 외에도 이미지와 음성을 이해하고 처리할 수 있다.',2:'사용자가 대화 기록 저장을 허용한 경우, 과거 대화 데이터를 바탕으로 개인화된 답변을 생성할 수 있다.'}},
+
+{n:15, q:'다음 설명에 해당하는 것을 고르시오.',
+ scene:'<ul><li>모델이 다음 단어를 선택할 때 상위 확률 토큰들의 누적 분포를 제한하는 방식으로 동작한다.</li><li>값이 0.9라면, 누적 확률이 90%에 도달할 때까지의 토큰들만 고려한다.</li><li>Temperature와 함께 사용되어 텍스트 생성의 다양성과 일관성을 조절한다.</li><li>핵 샘플링(Nucleus Sampling)이라고도 불린다.</li></ul>',
+ fig: TOPP_SVG,
+ opts:['빔 서치(Beam Search)','Top-p','빈도 페널티(Frequency Penalty)','그리디 디코딩(Greedy Decoding)'],
+ answer:1,
+ expl:'보기에서 설명하는 것은 <b>\'Top-p\' 또는 \'핵 샘플링(Nucleus Sampling)\'</b> 파라미터입니다. 모델이 다음 토큰을 선택할 때 확률이 높은 토큰들의 누적 확률이 지정된 값(예: 0.9)에 도달할 때까지의 토큰들만 고려하는 방식입니다. 너무 희귀한 토큰들을 제외시키면서도 다양성을 유지할 수 있게 해줍니다.',
+ why:{0:'빔 서치(Beam Search)는 여러 가능한 시퀀스를 병렬로 탐색하면서 가장 높은 확률을 가진 시퀀스를 선택하는 방법이다.',2:'빈도 페널티(Frequency Penalty)는 자주 등장하는 토큰에 페널티를 부여하여 반복을 줄이는 파라미터이다.',3:'그리디 디코딩(Greedy Decoding)은 매 스텝마다 가장 확률이 높은 토큰만 선택하는 단순한 방법이다.'}},
+
+{n:16, q:'챗GPT의 기본 작동 원리에 대한 설명으로 가장 적절한 것을 고르시오.',
+ opts:['사전 학습을 통해 대규모 데이터셋에서 언어 패턴을 학습한다.',
+       '미세 조정을 통해 실시간으로 사용자 데이터를 학습한다.',
+       '강화 학습을 통해 모델이 스스로 데이터를 수집하여 학습한다.',
+       '트랜스포머 구조를 사용하지 않고 순환 신경망(RNN)을 기반으로 한다.'],
+ answer:0,
+ expl:'챗GPT는 <b>대규모 텍스트 데이터셋을 사용하여 사전 학습(pre-training)을 수행</b>합니다. 이 과정에서 언어 패턴, 문맥 이해 등을 학습하며, 이는 모델의 기본적인 작동 원리입니다.',
+ why:{1:'챗GPT는 사용자의 실시간 데이터를 저장하거나 학습하지 않는다. 미세 조정은 정적인 사전 준비된 데이터셋으로 이루어진다.',2:'강화 학습은 모델 성능 개선에 사용되지만, 별도 과정이며 모델이 스스로 데이터를 수집하는 것이 아니다.',3:'트랜스포머는 RNN과 다르게 Attention 메커니즘을 중심으로 설계된 구조이며, 챗GPT의 핵심 기술이다.'}},
+];
+
+const Q1 = [
+{n:1, q:'다음은 트랜스포머 모델의 핵심 구성 요소에 대한 설명이다. 이에 대한 설명으로 <span class="neg">옳지 않은</span> 것을 고르시오.',
+ scene:'<ul><li>자기주의 메커니즘(Self-Attention Mechanism)은 문장 내의 각 단어가 다른 단어들과 어떻게 관련되는지를 파악한다.</li><li>인코더-디코더 구조(Encoder-Decoder Structure)는 입력 시퀀스를 처리하고 출력 시퀀스를 생성하는 역할을 담당한다.</li><li>포지셔널 인코딩(Positional Encoding)은 시퀀스 내 단어의 위치 정보를 모델에 제공한다.</li><li>피드 포워드 네트워크(Feed Forward Network)는 자기 주의 메커니즘의 출력을 추가로 처리한다.</li></ul>',
+ opts:['피드 포워드 네트워크는 각 위치의 토큰을 독립적으로 처리한다.',
+       '포지셔널 인코딩은 RNN과 달리 위치 정보가 없는 트랜스포머 모델의 한계를 보완한다.',
+       '인코더-디코더 구조에서 인코더는 입력을 처리하고, 디코더는 출력을 생성한다.',
+       '자기주의 메커니즘은 시퀀스의 길이가 길어질수록 계산 효율성이 증가한다.'],
+ answer:3,
+ expl:'자기 주의 메커니즘은 시퀀스의 길이가 <b>길어질수록 계산 복잡도가 증가하며 효율성이 감소</b>합니다. 이는 <b>시퀀스 길이의 제곱(O(n²))에 비례하는 계산량</b>이 필요하기 때문입니다. 이러한 계산 효율성 문제를 해결하기 위해 스파스 어텐션(Sparse Attention)이나 선형 어텐션(Linear Attention) 등의 기법이 개발되었습니다.'},
+
+{n:2, q:'생성형 AI의 편향성 문제를 해결하기 위한 윤리적 관점에서 가장 <span class="neg">적절하지 않은</span> 것을 고르시오.',
+ opts:['다양한 이해관계자가 참여하는 윤리 위원회를 구성하여 AI 개발 과정을 감독한다.',
+       'AI 모델의 의사결정 과정을 투명하게 공개하고 설명 가능한 AI(Explainable AI)를 구현한다.',
+       '편향성 검증을 위해 소수 집단의 의견을 배제하고 다수의 관점만을 반영한다.',
+       '정기적인 편향성 감사(Bias Audit)를 실시하여 사회적 공정성을 지속적으로 모니터링한다.'],
+ answer:2,
+ expl:'생성형 AI의 편향성 문제 해결을 위한 윤리적 접근은 <b>포용성, 투명성, 책임성</b>을 핵심 원칙으로 합니다. 특히 <b>사회적 약자나 소수 집단의 관점을 적극적으로 반영</b>하여 AI 시스템이 모든 사용자에게 공정하게 작동하도록 보장해야 합니다. 소수 의견을 배제하는 것은 오히려 편향을 강화합니다.'},
+
+{n:3, q:'다음은 생성형 AI가 직면한 도전과제들이다. 이에 대한 설명 중 옳은 것을 고르시오.',
+ scene:'<ul><li>ㄱ. <b>환각(Hallucination)</b> - 모델이 실제로 존재하지 않는 정보를 사실인 것처럼 생성하는 현상</li><li>ㄴ. <b>편향성(Bias)</b> - 학습 데이터에 내재된 편향이 모델의 출력에 반영되는 현상</li><li>ㄷ. <b>설명 가능성(Explainability)</b> - 모델이 특정 출력을 생성한 이유나 과정을 명확히 설명하기 어려운 문제</li><li>ㄹ. <b>계산 효율성(Computational Efficiency)</b> - 대규모 모델의 학습과 추론에 필요한 계산 자원의 문제</li></ul>',
+ opts:['계산 효율성 문제는 양자 컴퓨팅의 상용화로 인해 더 이상 중요한 도전 과제가 아니다.',
+       '생성형 AI의 편향성은 데이터 전처리 단계에서만 해결할 수 있으며, 모델 학습 후에는 수정이 불가능하다.',
+       '대규모 언어 모델의 블랙박스 특성으로 인해 설명 가능성은 여전히 중요한 연구 분야이다.',
+       '대규모 언어 모델의 환각 현상은 현재까지 완전히 해결된 문제이다.'],
+ answer:2,
+ expl:'대규모 언어 모델의 <b>블랙박스 특성으로 인한 설명 가능성(Explainability) 문제는 여전히 중요한 연구 분야</b>입니다. 모델이 왜 특정 출력을 생성했는지, 내부적으로 어떤 추론 과정을 거쳤는지 이해하기 어려운 점은 특히 금융, 의료, 법률 등 중요한 결정을 내리는 분야에서 AI의 적용을 제한하는 요소입니다. 이를 해결하기 위한 해석 가능한 AI(Interpretable AI)와 설명 가능한 AI(XAI) 연구가 활발히 진행 중입니다.',
+ why:{0:'양자 컴퓨팅은 아직 상용화되지 않았고, 대규모 언어 모델의 규모가 계속 커지고 있어 계산 효율성은 여전히 중요한 도전 과제다.',1:'편향성은 데이터 전처리뿐만 아니라 모델 학습 과정, 미세 조정, 추론 단계에서도 완화할 수 있다. RLHF 같은 기법은 학습 후에도 편향을 줄인다.',3:'환각 현상은 여전히 대규모 언어 모델의 주요 문제점 중 하나로, 완전히 해결되지 않았다.'}},
+];
+
+/* ─────────── 렌더링 ─────────── */
+const answered = {};
+let totalRendered = 0;
+
+function render(list, prefix, mountId){
+  const mount = document.getElementById(mountId);
+  list.forEach(item=>{
+    totalRendered++;
+    const key = prefix + item.n;
+    const card = document.createElement('div');
+    card.className = 'q';
+    let html = `<div><span class="qno">${item.n}</span><span class="qtext">${item.q}</span></div>`;
+    if(item.scene) html += `<div class="scene">${item.scene}</div>`;
+    if(item.fig) html += item.fig;
+
+    html += `<div class="opts" id="opts-${key}">`;
+    item.opts.forEach((o,i)=>{
+      const mark = String.fromCharCode(9312+i);
+      html += `<button class="opt" data-i="${i}" onclick="pick('${key}',${i})">
+        <span class="mk">${mark}</span><span class="ot">${o}</span></button>`;
+    });
+    html += `</div>`;
+
+    let whyHtml = '';
+    if(item.why){
+      whyHtml = `<div class="why"><div class="wt">✕ 오답 피하기</div><ul>` +
+        Object.keys(item.why).map(k=>`<li><b>${String.fromCharCode(9312+(+k))}</b> ${item.why[k]}</li>`).join('') +
+        `</ul></div>`;
+    }
+    html += `<div class="exp" id="exp-${key}">
+      <div class="head" id="exph-${key}">✓ 정답 해설</div>
+      <div class="body"><b>정답: ${String.fromCharCode(9312+item.answer)}</b><br>${item.expl}${whyHtml}</div>
+    </div>`;
+    html += `<button class="retry" id="rt-${key}" style="display:none" onclick="retry('${key}')">↻ 다시 풀기</button>`;
+
+    card.innerHTML = html;
+    card._answer = item.answer;
+    mount.appendChild(card);
+  });
+}
+
+function pick(key, i){
+  if(answered[key]) return;
+  const opts = document.getElementById('opts-'+key);
+  const buttons = opts.querySelectorAll('[data-i]');
+  const card = opts.closest('.q');
+  const ans = card._answer;
+  const correct = (i===ans);
+
+  buttons.forEach(b=>{
+    const bi = +b.dataset.i;
+    b.disabled = true;
+    if(bi===ans) b.classList.add('correct');
+    else if(bi===i) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  const exp = document.getElementById('exp-'+key);
+  const exph = document.getElementById('exph-'+key);
+  if(correct){ exp.classList.remove('miss'); exph.textContent='✓ 정답입니다! · 정답 해설'; }
+  else { exp.classList.add('miss'); exph.textContent='✗ 틀렸어요 · 정답 해설'; }
+  exp.classList.add('show');
+  document.getElementById('rt-'+key).style.display='inline-flex';
+
+  answered[key] = {grade: correct?'ok':'ng'};
+  updateDash();
+}
+
+function retry(key){
+  const opts = document.getElementById('opts-'+key);
+  opts.querySelectorAll('[data-i]').forEach(b=>{
+    b.disabled=false; b.classList.remove('correct','wrong','dim');
+  });
+  document.getElementById('exp-'+key).classList.remove('show');
+  document.getElementById('rt-'+key).style.display='none';
+  delete answered[key];
+  updateDash();
+}
+
+function updateDash(){
+  let ok=0, ng=0;
+  Object.values(answered).forEach(a=>{ a.grade==='ok'?ok++:ng++; });
+  const done = ok+ng;
+  document.getElementById('db-ok').textContent = ok;
+  document.getElementById('db-ng').textContent = ng;
+  document.getElementById('db-done').textContent = done+'/'+totalRendered;
+  document.getElementById('db-score').textContent = ok*5;
+  document.getElementById('prog').style.width = (done/totalRendered*100)+'%';
+}
+
+function resetAll(){
+  Object.keys(answered).forEach(k=>retry(k));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render(Q2, 'a', 'quiz-area');
+render(Q1, 'b', 'quiz-area-2');
+updateDash();
+</script>
+</body>
+</html>
