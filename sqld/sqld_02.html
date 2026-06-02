@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=SQLD -->
+<!-- meta:unit=Unit 02. 엔터티/속성/관계/식별자 -->
+<!-- meta:title=SQLD 02 · 엔터티/속성/관계/식별자 -->
+<!-- meta:desc=엔터티, 속성, 관계, 식별자 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 -->
+<title>SQLD 02 · 엔터티/속성/관계/식별자</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f0f7ff; --card: #ffffff;
+  --surf2: #e0edff; --surf3: #c7dcff;
+  --border: #b6cdf0; --text: #0a1929; --sub: #4a6585;
+  --ac: #1d4ed8; --ac-l: #dbeafe; --ac-b: #1e40af;
+  --header-bg: #061229; --grad-end: #3b82f6;
+}
+.sqld-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.sqld-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.sqld-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.sqld-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.sqld-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; cursor: default; }
+.sqld-side .unit-list li.done { color: var(--sub); }
+.sqld-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.sqld-side .unit-list li .num { display: inline-block; width: 28px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.sqld-side .unit-list li.current .num { color: #c7dcff; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fafcff; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; padding: 14px; background: #f5f9ff; border-radius: 6px; border-left: 3px solid var(--ac); font-size: 14px; line-height: 1.7; }
+.qcard .explain.show { display: block; }
+.qcard .explain h4 { margin: 0 0 8px; color: var(--ac-b); font-size: 14px; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.03em; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #eff6ff; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+@media (max-width: 900px) {
+  .sqld-layout { grid-template-columns: 1fr; }
+  .sqld-side { position: static; }
+}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">UNIT 02</span>
+    <span class="hd-title">엔터티 · 속성 · 관계 · 식별자</span>
+    <span class="hd-meta">SQLD 자격증 · 핵심 개념 단원</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="sqld-layout">
+  <aside class="sqld-side">
+    <h3>SQLD 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">01</span>데이터 모델링 개요</li>
+      <li class="current"><span class="num">02</span>엔터티·속성·관계·식별자</li>
+      <li><span class="num">03</span>정규화·반정규화</li>
+      <li><span class="num">04</span>DDL·DML·TCL</li>
+      <li><span class="num">05</span>WHERE·함수</li>
+      <li><span class="num">06</span>GROUP BY·HAVING</li>
+      <li><span class="num">07</span>JOIN·집합·계층형</li>
+      <li><span class="num">08</span>서브쿼리·뷰·윈도우</li>
+      <li><span class="num">09</span>DCL·절차형 SQL</li>
+      <li><span class="num">10</span>종합 모의고사</li>
+    </ul>
+    <h3 style="margin-top:20px">이 단원 출제 비중</h3>
+    <div style="background:var(--surf2); height:8px; border-radius:4px; overflow:hidden">
+      <div style="background:var(--ac); width:34%; height:100%"></div>
+    </div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">ERD의 <b style="color:var(--ac-b)">핵심 요소</b>를 구분할 수 있어야 이후 단원이 쉽습니다</div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">엔터티/속성/관계/식별자, 이 네 가지를 잡아야 ERD가 보입니다</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        이 단원은 <b style="color:var(--ac-b)">ERD의 4대 구성요소</b>를 집중적으로 다룹니다. 각각의 정의와 예시, 그리고 문제에서 자주 나오는 함정까지 미니 강의로 정리했습니다.
+      </p>
+    </section>
+    <section class="goals" style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>엔터티, 속성, 관계, 식별자의 <b>정의와 역할</b>을 구분한다</li>
+        <li>학생-과목-수강 예시로 <b>ERD 구조</b>를 설명한다</li>
+        <li>1:1, 1:N, M:N 관계를 <b>문제 풀이에 연결</b>한다</li>
+        <li>기출형 예상문제 15문항을 풀며 <b>미니 강의형 해설</b>로 재학습한다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="example">💻 예제</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. 엔터티(Entity)</div>
+      <div class="card">
+        <p>엔터티는 <b>관리해야 할 대상</b>입니다. 학생, 과목, 수강, 교사, 강의실 등 <b>업무에서 구분되는 모든 것</b>이 엔터티가 됩니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>구분</th><th>설명</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>유무형</b></td><td>사람, 사물, 개념 모두 가능</td><td>학생, 과목, 주문, 부서</td></tr>
+            <tr><td><b>독립성</b></td><td>다른 엔터티와 구별 가능</td><td>학번, 과목코드 등으로 구분</td></tr>
+            <tr><td><b>반복성</b></td><td>여러 개가 반복 존재</td><td>여러 학생, 여러 과목</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>실전 팁:</b> 시험에서는 "관리 대상"이라는 표현이 나오면 엔터티를 떠올리세요.</div>
+      </div>
+      <div class="sh">2. 속성(Attribute)</div>
+      <div class="card">
+        <p>속성은 <b>엔터티의 특징</b>입니다. 학생의 이름, 학번, 전화번호처럼 <b>대상을 설명하는 정보</b>가 모두 속성입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>종류</th><th>설명</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>기본 속성</b></td><td>가장 핵심이 되는 정보</td><td>학번, 과목코드</td></tr>
+            <tr><td><b>일반 속성</b></td><td>추가로 설명하는 정보</td><td>이름, 학년, 전화번호</td></tr>
+            <tr><td><b>파생 속성</b></td><td>계산이나 조합으로 나오는 값</td><td>총점, 평균</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>실전 팁:</b> 속성은 "특징" 또는 "설명"이라는 단어와 연결하세요.</div>
+      </div>
+      <div class="sh">3. 관계(Relationship)</div>
+      <div class="card">
+        <p>관계는 <b>엔터티 사이의 연결</b>입니다. 학생이 과목을 수강한다, 교사가 강의를 담당한다 등 <b>두 엔터티가 어떻게 연결되는지</b>를 나타냅니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>종류</th><th>설명</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>1:1</b></td><td>한 엔터티가 다른 엔터티와 1:1로 연결</td><td>학생-학생증</td></tr>
+            <tr><td><b>1:N</b></td><td>한 엔터티가 여러 엔터티와 연결</td><td>학생-수강, 과목-수강</td></tr>
+            <tr><td><b>M:N</b></td><td>여러 엔터티가 여러 엔터티와 연결</td><td>학생-과목 (수강으로 풀어야 함)</td></tr>
+          </tbody>
+        </table>
+        <div class="warn"><b>주의:</b> M:N 관계는 실제 DB에서 직접 구현하지 않고, <b>중간 엔터티(수강)</b>로 풀어야 합니다.</div>
+      </div>
+      <div class="sh">4. 식별자(Identifier)</div>
+      <div class="card">
+        <p>식별자는 <b>엔터티를 구별하는 기준</b>입니다. 기본키(PK), 후보키, 대체키 등이 모두 식별자에 해당합니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>종류</th><th>설명</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>기본키(PK)</b></td><td>반드시 하나로 구분</td><td>학번, 과목코드</td></tr>
+            <tr><td><b>후보키</b></td><td>기본키가 될 수 있는 후보</td><td>이메일, 주민번호</td></tr>
+            <tr><td><b>대체키</b></td><td>기본키가 변경될 때 대체</td><td>이전 학번</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>실전 팁:</b> "구별 기준"이라는 말이 나오면 식별자를 떠올리세요.</div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-example">
+      <div class="sh">예제: 학생-과목-수강 ERD</div>
+      <div class="card">
+        <p>아래 예시는 학생, 과목, 수강 엔터티와 그 속성, 관계를 표로 정리한 것입니다.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:14px">
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[학생]</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>STU_ID(PK)</th><th>NAME</th><th>GRADE</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>김지훈</td><td>1</td></tr>
+                <tr><td>1002</td><td>박서연</td><td>2</td></tr>
+                <tr><td>1003</td><td>이도현</td><td>2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[과목]</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>COURSE_ID(PK)</th><th>COURSE_NAME</th></tr></thead>
+              <tbody>
+                <tr><td>C01</td><td>SQLD</td></tr>
+                <tr><td>C02</td><td>파이썬</td></tr>
+                <tr><td>C03</td><td>웹기초</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:6px; color:var(--ac-b); font-size:13px">[수강]</div>
+            <table class="cmp-table" style="margin:0; font-size:13px">
+              <thead><tr><th>STU_ID(FK)</th><th>COURSE_ID(FK)</th><th>SEMESTER</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>C01</td><td>2026-1</td></tr>
+                <tr><td>1001</td><td>C02</td><td>2026-1</td></tr>
+                <tr><td>1002</td><td>C01</td><td>2026-1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p style="margin:12px 0 0; font-size:12px; color:var(--sub)">수강 엔터티는 학생과 과목의 M:N 관계를 1:N, N:1로 풀어주는 역할을 합니다.</p>
+      </div>
+      <div class="sh">ERD 그림</div>
+      <div class="card">
+        <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:780px; display:block; margin:0 auto">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d4ed8"/>
+            </marker>
+          </defs>
+          <rect x="40" y="55" rx="14" ry="14" width="160" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="120" y="96" text-anchor="middle" font-family="Noto Sans KR" font-size="20" font-weight="700" fill="#1e40af">학생</text>
+          <text x="120" y="124" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">STU_ID, NAME, GRADE</text>
+          <rect x="310" y="55" rx="14" ry="14" width="160" height="100" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="390" y="96" text-anchor="middle" font-family="Noto Sans KR" font-size="20" font-weight="700" fill="#1e40af">수강</text>
+          <text x="390" y="124" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">STU_ID, COURSE_ID, SEMESTER</text>
+          <rect x="580" y="55" rx="14" ry="14" width="160" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="660" y="96" text-anchor="middle" font-family="Noto Sans KR" font-size="20" font-weight="700" fill="#1e40af">과목</text>
+          <text x="660" y="124" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">COURSE_ID, COURSE_NAME</text>
+          <line x1="200" y1="105" x2="310" y2="105" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <line x1="470" y1="105" x2="580" y2="105" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <text x="255" y="88" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">1:N</text>
+          <text x="525" y="88" text-anchor="middle" font-family="Noto Sans KR" font-size="12" fill="#4a6585">N:1</text>
+        </svg>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">SQLD 출제진이 좋아하는 함정 7가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. 엔터티와 테이블을 혼동</h4><p>엔터티는 관리 대상, 테이블은 실제 저장 구조입니다. 시험에서는 엔터티를 먼저 찾고, 그다음 테이블로 옮기는 사고가 필요합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. 속성과 엔터티를 혼동</h4><p>이름, 학번, 전화번호 등은 속성이지 엔터티가 아닙니다. "특징"이라는 단어가 나오면 속성일 가능성이 높습니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 관계를 단순 연결로만 본다</h4><p>관계는 단순히 연결만 의미하지 않고, <b>업무 규칙</b>을 반영합니다. 예를 들어, 한 학생이 여러 과목을 수강할 수 있다는 규칙이 관계로 표현됩니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. M:N 관계를 직접 구현하려 한다</h4><p>실제 DB에서는 M:N 관계를 직접 구현하지 않고, <b>중간 엔터티(수강)</b>로 풀어야 합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. 식별자와 속성을 혼동</h4><p>식별자는 구별 기준(학번, 과목코드 등), 속성은 설명(이름, 학년 등)입니다. "구별"이라는 말이 나오면 식별자를 떠올리세요.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. 후보키와 기본키를 혼동</h4><p>후보키는 기본키가 될 수 있는 모든 후보, 기본키는 그중 실제로 선택된 키입니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. 식별자 변경 시 대체키를 놓침</h4><p>기본키가 바뀌면 대체키가 필요합니다. 예전 학번, 이전 코드 등이 대체키 예시입니다.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <!-- 예상문제 15문항 (문제+해설) 영역. 실제 문제는 아래와 같이 추가. -->
+      <div class="sh">예상문제 (기출 변형, 15문항)</div>
+      <div class="qcard" data-q="1" data-answer="2">
+        <div class="qnum">Q1 · 엔터티</div>
+        <div class="qbody">다음 중 엔터티의 정의로 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">대상을 설명하는 정보</li>
+          <li data-c="2">관리해야 할 업무의 대상</li>
+          <li data-c="3">두 엔터티의 연결</li>
+          <li data-c="4">구별 기준이 되는 값</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>관리해야 할 업무의 대상</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>엔터티는 학생, 과목, 주문 등 <b>업무에서 구분되는 모든 것</b>을 의미합니다. "관리 대상"이라는 표현이 나오면 엔터티를 떠올리세요.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 속성의 정의</li><li>3: 관계의 정의</li><li>4: 식별자의 정의</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="2" data-answer="1">
+        <div class="qnum">Q2 · 속성</div>
+        <div class="qbody">속성에 대한 설명으로 옳지 않은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">엔터티의 구별 기준이 된다</li>
+          <li data-c="2">엔터티의 특징을 설명한다</li>
+          <li data-c="3">이름, 학번, 전화번호 등이 예시다</li>
+          <li data-c="4">기본/일반/파생 속성으로 나뉜다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>엔터티의 구별 기준이 된다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>속성은 "특징"이나 "설명"에 해당합니다. 구별 기준은 <b>식별자</b>의 역할입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2,3,4: 모두 속성의 특징/종류에 해당</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="3" data-answer="3">
+        <div class="qnum">Q3 · 관계</div>
+        <div class="qbody">관계(Relationship)에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">엔터티의 특징을 설명한다</li>
+          <li data-c="2">구별 기준이 되는 값이다</li>
+          <li data-c="3">두 엔터티 사이의 연결을 나타낸다</li>
+          <li data-c="4">기본키가 될 수 있는 후보</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>두 엔터티 사이의 연결을 나타낸다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>관계는 <b>엔터티와 엔터티를 연결</b>하는 역할입니다. 업무 규칙이 반영된 연결임을 기억하세요.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 속성의 정의</li><li>2: 식별자의 정의</li><li>4: 후보키의 정의</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="4" data-answer="2">
+        <div class="qnum">Q4 · 식별자</div>
+        <div class="qbody">식별자(Identifier)에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">엔터티의 특징을 설명한다</li>
+          <li data-c="2">엔터티를 구별하는 기준이 된다</li>
+          <li data-c="3">두 엔터티의 연결을 나타낸다</li>
+          <li data-c="4">엔터티의 반복성을 의미한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>엔터티를 구별하는 기준이 된다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>식별자는 <b>구별 기준</b>입니다. 학번, 과목코드, 주민번호 등이 대표적인 예시입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 속성의 정의</li><li>3: 관계의 정의</li><li>4: 엔터티의 반복성</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="5" data-answer="1">
+        <div class="qnum">Q5 · 엔터티/속성 구분</div>
+        <div class="qbody">다음 중 엔터티에 해당하지 않는 것은?</div>
+        <ul class="choices">
+          <li data-c="1">이메일</li>
+          <li data-c="2">학생</li>
+          <li data-c="3">과목</li>
+          <li data-c="4">수강</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>이메일</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>이메일은 <b>속성</b>입니다. 학생, 과목, 수강은 모두 엔터티에 해당합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2,3,4: 모두 엔터티 예시</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="6" data-answer="3">
+        <div class="qnum">Q6 · 관계</div>
+        <div class="qbody">학생과 과목이 직접적으로 M:N 관계일 때, 이를 관계형 DB에서 어떻게 구현해야 하는가?</div>
+        <ul class="choices">
+          <li data-c="1">학생 테이블에 과목 속성을 추가한다</li>
+          <li data-c="2">과목 테이블에 학생 속성을 추가한다</li>
+          <li data-c="3">중간 엔터티(수강)로 풀어낸다</li>
+          <li data-c="4">M:N 관계를 그대로 둔다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>중간 엔터티(수강)로 풀어낸다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>관계형 DB에서는 M:N 관계를 직접 구현하지 않고, <b>중간 엔터티(수강)</b>로 1:N, N:1로 풀어냅니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2: 속성 추가로는 M:N을 해결할 수 없음</li><li>4: 실제 DB에서는 허용하지 않음</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="7" data-answer="2">
+        <div class="qnum">Q7 · 식별자</div>
+        <div class="qbody">다음 중 식별자의 예시가 아닌 것은?</div>
+        <ul class="choices">
+          <li data-c="1">학번</li>
+          <li data-c="2">이름</li>
+          <li data-c="3">주민번호</li>
+          <li data-c="4">과목코드</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>이름</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>이름은 중복될 수 있으므로 식별자가 될 수 없습니다. 학번, 주민번호, 과목코드는 모두 식별자 예시입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,3,4: 모두 식별자 예시</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="8" data-answer="4">
+        <div class="qnum">Q8 · 속성</div>
+        <div class="qbody">다음 중 파생 속성에 해당하는 것은?</div>
+        <ul class="choices">
+          <li data-c="1">학번</li>
+          <li data-c="2">이름</li>
+          <li data-c="3">과목코드</li>
+          <li data-c="4">총점</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>총점</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>파생 속성은 계산이나 조합으로 나오는 값입니다. 총점, 평균 등이 대표적입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2,3: 모두 기본/일반 속성 예시</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="9" data-answer="1">
+        <div class="qnum">Q9 · 관계</div>
+        <div class="qbody">1:N 관계의 예시로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">학생-수강</li>
+          <li data-c="2">학생-학생증</li>
+          <li data-c="3">학생-과목 (M:N)</li>
+          <li data-c="4">과목-과목코드</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>학생-수강</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>한 학생이 여러 수강을 할 수 있으므로 1:N 관계입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: 1:1 관계</li><li>3: M:N 관계</li><li>4: 속성 연결</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="10" data-answer="3">
+        <div class="qnum">Q10 · 엔터티</div>
+        <div class="qbody">엔터티의 특징으로 옳지 않은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">여러 개가 반복 존재할 수 있다</li>
+          <li data-c="2">다른 엔터티와 구별 가능하다</li>
+          <li data-c="3">항상 물리 테이블과 1:1로 대응된다</li>
+          <li data-c="4">사람, 사물, 개념 모두 가능하다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>항상 물리 테이블과 1:1로 대응된다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>엔터티는 논리적 개념입니다. 실제 테이블과 1:1로 항상 대응되는 것은 아닙니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2,4: 모두 엔터티의 특징</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="11" data-answer="4">
+        <div class="qnum">Q11 · 속성</div>
+        <div class="qbody">다음 중 속성의 종류가 아닌 것은?</div>
+        <ul class="choices">
+          <li data-c="1">기본 속성</li>
+          <li data-c="2">일반 속성</li>
+          <li data-c="3">파생 속성</li>
+          <li data-c="4">관계 속성</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>관계 속성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>속성은 기본/일반/파생으로 나뉩니다. "관계 속성"은 공식 분류가 아닙니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2,3: 모두 속성의 종류</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="12" data-answer="2">
+        <div class="qnum">Q12 · 관계</div>
+        <div class="qbody">관계의 종류에 해당하지 않는 것은?</div>
+        <ul class="choices">
+          <li data-c="1">1:1</li>
+          <li data-c="2">1:2</li>
+          <li data-c="3">1:N</li>
+          <li data-c="4">M:N</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>1:2</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>관계는 1:1, 1:N, M:N으로 구분합니다. 1:2는 공식 분류가 아닙니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,3,4: 모두 관계의 종류</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="13" data-answer="1">
+        <div class="qnum">Q13 · 식별자</div>
+        <div class="qbody">식별자의 종류로 옳지 않은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">설명키</li>
+          <li data-c="2">기본키</li>
+          <li data-c="3">후보키</li>
+          <li data-c="4">대체키</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>설명키</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>식별자는 기본키, 후보키, 대체키로 나뉩니다. "설명키"는 공식 분류가 아닙니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2,3,4: 모두 식별자의 종류</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="14" data-answer="3">
+        <div class="qnum">Q14 · 엔터티/관계</div>
+        <div class="qbody">다음 중 관계의 예시가 아닌 것은?</div>
+        <ul class="choices">
+          <li data-c="1">학생-수강</li>
+          <li data-c="2">과목-수강</li>
+          <li data-c="3">학생-이름</li>
+          <li data-c="4">학생-과목(M:N)</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>학생-이름</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>학생-이름은 엔터티-속성 연결입니다. 관계는 엔터티와 엔터티 사이의 연결을 의미합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2,4: 모두 관계 예시</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="15" data-answer="2">
+        <div class="qnum">Q15 · 식별자/속성</div>
+        <div class="qbody">다음 중 식별자와 속성의 차이로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">식별자는 설명, 속성은 구별 기준</li>
+          <li data-c="2">식별자는 구별 기준, 속성은 설명</li>
+          <li data-c="3">둘 다 같은 의미</li>
+          <li data-c="4">식별자는 관계의 종류</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(15)">정답·해설 보기</button>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>식별자는 구별 기준, 속성은 설명</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>식별자는 엔터티를 구별하는 기준(학번, 과목코드 등), 속성은 대상을 설명하는 정보(이름, 학년 등)입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,4: 정의가 반대</li><li>3: 서로 다름</li></ul></div>
+        </div>
+      </div>
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">현재 점수</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 15 정답</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">정답을 고른 뒤 [정답·해설 보기]를 누르면 점수가 올라갑니다</div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">📌 핵심 요약</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">엔터티</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>관리 대상</li><li>유무형(사람, 사물, 개념)</li><li>반복 존재</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">속성</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>엔터티의 특징</li><li>기본/일반/파생 속성</li><li>설명 정보</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">관계</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>엔터티 간 연결</li><li>1:1, 1:N, M:N</li><li>업무 규칙 반영</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">식별자</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>구별 기준</li><li>기본키/후보키/대체키</li><li>중복 불가</li></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId: 'cert/sqld_02_entity_attribute_relation',
+  quizTotal: 15
+};
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+const correctSet = new Set();
+function revealQ(n) {
+  const card = document.querySelector(`.qcard[data-q="${n}"]`);
+  const answer = card.dataset.answer;
+  const picked = card.querySelector('.choices li.picked');
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    if (li.dataset.c === answer) li.classList.add('correct');
+    else if (li.classList.contains('picked')) li.classList.add('wrong');
+  });
+  document.getElementById('exp-' + n).classList.add('show');
+  if (picked && picked.dataset.c === answer && !correctSet.has(n)) {
+    correctSet.add(n);
+    document.getElementById('quiz-score').textContent = correctSet.size;
+  }
+}
+</script>
+</body>
+</html>
