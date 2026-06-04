@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=자격증(AI-POT) -->
+<!-- meta:unit=3과목. 프롬프트 엔지니어링 기술 기초 -->
+<!-- meta:title=프롬프트 정의·구성요소·LLM 플랫폼·이미지 생성 AI 정복 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>AI-POT 3과목 · 프롬프트 엔지니어링 기술 기초</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f9f6f0; --card: #ffffff; --surf2: #f4ecdc; --surf3: #ecdfc4;
+  --border: #e0d0ad; --text: #1c1208; --sub: #8a6d3b;
+  --ac: #b45309; --ac-l: #fef3e2; --ac-b: #92400e;
+  --header-bg: #1a0f00; --grad-end: #d97706;
+}
+.aipot-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.aipot-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.aipot-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.aipot-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.aipot-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; }
+.aipot-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.aipot-side .unit-list li.done { color: var(--sub); }
+.aipot-side .unit-list li .num { display: inline-block; width: 24px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.aipot-side .unit-list li.current .num { color: #ecdfc4; }
+.aipot-side .weight { background: var(--surf2); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.aipot-side .weight > div { background: var(--ac); height: 100%; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fdfaf3; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .short-ans { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.qcard .short-ans input { flex: 1; min-width: 180px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; }
+.qcard .explain.show { display: block; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #fef3e2; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+.part-head { background: var(--header-bg); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; margin: 24px 0 14px; }
+.part-head .part-tag { background: var(--grad-end); padding: 2px 10px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
+.comp-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 12px; margin: 16px 0; }
+.comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.comp-card h4 { margin: 0 0 6px; color: var(--ac-b); font-size: 14px; }
+.comp-card .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--surf3); color: var(--ac-b); margin-bottom: 8px; }
+.comp-card ul { margin: 0; padding-left: 16px; font-size: 12px; line-height: 1.7; color: var(--sub); }
+@media (max-width: 900px) { .aipot-layout { grid-template-columns: 1fr; } .aipot-side { position: static; } }
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">3과목</span>
+    <span class="hd-title">프롬프트 엔지니어링 기술 기초</span>
+    <span class="hd-meta">AI-POT 2급 · 출제비중 30%</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="aipot-layout">
+  <aside class="aipot-side">
+    <h3>AI-POT 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">1</span>인공지능 기초 이론</li>
+      <li class="done"><span class="num">2</span>생성형 AI 기초 이론</li>
+      <li class="current"><span class="num">3</span>프롬프트 엔지니어링 기초</li>
+      <li><span class="num">4</span>프롬프트 기술 활용</li>
+      <li><span class="num">5</span>업무활용과 윤리의식</li>
+    </ul>
+    <h3 style="margin-top:20px">이 과목 출제 비중</h3>
+    <div class="weight"><div style="width:30%"></div></div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">전체의 <b style="color:var(--ac-b)">약 30%</b> · 매우 중요</div>
+    <h3 style="margin-top:20px">이 과목 핵심</h3>
+    <div style="font-size:12px; color:var(--sub); line-height:1.8">
+      프롬프트 5대 구성요소<br>LLM 플랫폼별 특징<br>이미지 생성 AI 4종<br>명확성·구체성 원칙<br>구분기호
+    </div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">프롬프트 엔지니어링 기술 기초</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        <b style="color:var(--ac-b)">출제 비중 30%</b>의 핵심 과목입니다. 프롬프트의 <b>5대 구성요소</b>,
+        <b>LLM 플랫폼별 특징</b>, <b>이미지 생성 AI와 파라미터</b>가 집중 출제됩니다.
+      </p>
+    </section>
+    <section style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>프롬프트와 프롬프트 엔지니어링의 정의·중요성을 안다</li>
+        <li>프롬프트 5대 구성요소(지시·맥락·입력·제약·출력형식)를 구분한다</li>
+        <li>주요 LLM 플랫폼(GPT·Gemini·Claude·Copilot)의 특징을 비교한다</li>
+        <li>이미지 생성 AI 4종과 각 기반·파라미터를 안다</li>
+        <li>명확성·구체성 원칙과 구분기호 활용법을 익힌다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. 프롬프트와 프롬프트 엔지니어링</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>용어</th><th>정의</th></tr></thead><tbody>
+          <tr><td><b>프롬프트</b></td><td>AI에게 특정 작업·응답을 요청하기 위해 입력하는 텍스트 명령어/질문. AI 출력의 품질·방향을 결정하는 핵심 입력</td></tr>
+          <tr><td><b>프롬프트 엔지니어링</b></td><td>AI와 효과적으로 소통하기 위한 <b>입력 최적화 기술</b>. 목적에 맞는 출력을 얻기 위한 체계적 설계 방법</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 중요성:</b> ① AI 활용 효율 극대화 ② 결과물 정확도·품질 향상 ③ 불필요한 반복 작업 감소</div>
+      </div>
+
+      <div class="sh">2. 프롬프트의 5대 구성요소 (최빈출!)</div>
+      <div class="card">
+        <p>이 5가지는 <b>이름·역할·순서</b>를 모두 외워야 합니다. 가장 자주 나오는 단답·객관식 소재입니다.</p>
+        <table class="cmp-table"><thead><tr><th>구성요소</th><th>역할</th></tr></thead><tbody>
+          <tr><td><b>지시</b> (Instruction)</td><td>명확한 지시와 요구사항 전달</td></tr>
+          <tr><td><b>맥락</b> (Context)</td><td>배경 정보와 관련 상황 제공</td></tr>
+          <tr><td><b>입력</b> (Input Data)</td><td>처리할 구체적인 데이터</td></tr>
+          <tr><td><b>제약조건</b> (Constraint)</td><td>생성 결과물의 제한사항 설정</td></tr>
+          <tr><td><b>출력형식</b> (Output Format)</td><td>원하는 결과물의 형태</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 암기:</b> <b>지·맥·입·제·출</b> (지시-맥락-입력-제약-출력). 영문 첫 글자 I·C·I·C·O.</div>
+      </div>
+
+      <div class="sh">3. 주요 LLM / 멀티모달 플랫폼</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>개발사</th><th>모델</th></tr></thead><tbody>
+          <tr><td><b>OpenAI</b></td><td>GPT, o 시리즈</td></tr>
+          <tr><td><b>Google</b></td><td>Gemini (pro, flash)</td></tr>
+          <tr><td><b>Anthropic</b></td><td>Claude (Opus, Sonnet, Haiku)</td></tr>
+          <tr><td><b>Microsoft</b></td><td>Copilot</td></tr>
+        </tbody></table>
+
+        <p style="margin-top:16px"><b>주요 도구별 특징:</b></p>
+        <div class="comp-box">
+          <div class="comp-card"><h4>ChatGPT</h4><span class="badge">멀티모달·LLM</span>
+            <ul><li>텍스트·파일·이미지 입력</li><li>이미지·텍스트·Office파일·gif 생성, 딥리서치</li></ul></div>
+          <div class="comp-card"><h4>Gemini</h4><span class="badge">멀티모달·LLM</span>
+            <ul><li>텍스트·파일·이미지 입력</li><li>이미지·텍스트·영상 생성, 딥리서치</li></ul></div>
+          <div class="comp-card"><h4>Claude</h4><span class="badge">멀티모달·LLM</span>
+            <ul><li>텍스트·파일·이미지 입력</li><li>이미지·텍스트 생성, 딥리서치</li></ul></div>
+          <div class="comp-card"><h4>Copilot</h4><span class="badge">멀티모달·LLM</span>
+            <ul><li>텍스트·Office파일·이미지 입력</li><li>온라인 검색·이미지·텍스트 생성</li></ul></div>
+          <div class="comp-card"><h4>GitHub Copilot</h4><span class="badge">코드 생성·LLM</span>
+            <ul><li>코드 제안·자동완성</li><li>VS Code 등 편집기 통합 / OpenAI+MS 협력</li></ul></div>
+        </div>
+      </div>
+
+      <div class="sh">4. 합성 데이터 (Synthetic Data)</div>
+      <div class="card">
+        <p>실제 데이터를 모방하지만 <b>실제 인간의 데이터는 포함하지 않는</b> 인공 데이터입니다.
+        예: 엑셀 파일을 올려 머리말·내용의 '형태'만 학습시키고 가상 데이터 출력을 지시하는 것.</p>
+        <div class="tip"><b>💡 포인트:</b> "실제 데이터를 닮았지만 진짜 개인정보는 없는 가짜 데이터" = 합성 데이터. 개인정보 보호에 활용됩니다.</div>
+      </div>
+
+      <div class="sh">5. 이미지 생성 AI와 기반 (빈출!)</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>도구</th><th>기반</th><th>특징</th></tr></thead><tbody>
+          <tr><td><b>DALL·E</b></td><td>웹/API 기반</td><td>OpenAI 개발, DALL·E 3은 ChatGPT에서만</td></tr>
+          <tr><td><b>Midjourney</b></td><td><b>Discord 기반</b></td><td>파라미터가 <code>--</code>로 시작</td></tr>
+          <tr><td><b>Stable Diffusion</b></td><td>로컬/웹 기반</td><td>오픈소스, 파라미터가 '설정(슬라이더)' 형태</td></tr>
+          <tr><td><b>Microsoft Copilot</b></td><td>웹/앱 기반</td><td>DALL·E 기반으로 이미지 생성</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 단골 함정:</b> "Midjourney = Discord 기반"이 핵심. Stable Diffusion만 로컬 실행 가능(오픈소스).</div>
+      </div>
+
+      <div class="sh">6. 이미지 생성 AI별 파라미터</div>
+      <div class="card">
+        <p><b>미드저니 (Midjourney)</b> — 파라미터가 <code>--</code>로 시작:</p>
+        <table class="cmp-table"><thead><tr><th>파라미터</th><th>설명</th><th>값</th></tr></thead><tbody>
+          <tr><td><code>--ar</code> (aspect)</td><td>가로세로 비율</td><td>1:1, 16:9 등</td></tr>
+          <tr><td><code>--chaos</code> (-c)</td><td>생성 자유도</td><td>0~100</td></tr>
+          <tr><td><code>--stylize</code> (-s)</td><td>스타일 강조</td><td>0~1000</td></tr>
+          <tr><td><code>--quality</code> (-q)</td><td>이미지 품질</td><td>0.25, 0.5, 1</td></tr>
+          <tr><td><code>--no</code></td><td>특정 요소 제외</td><td>제외할 텍스트</td></tr>
+        </tbody></table>
+        <p style="margin-top:14px"><b>스테이블 디퓨전 (Stable Diffusion)</b> — '설정' 슬라이더 형태:</p>
+        <table class="cmp-table"><thead><tr><th>설정</th><th>설명</th></tr></thead><tbody>
+          <tr><td>Sampling Steps</td><td>이미지 생성 반복 횟수</td></tr>
+          <tr><td>CFG 스케일</td><td>프롬프트 준수 강도 (보통 1.0~20.0)</td></tr>
+          <tr><td>Seed</td><td>생성 초기값(난수). -1이면 매번 랜덤</td></tr>
+          <tr><td>Negative Prompt</td><td>제외하고 싶은 키워드</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="sh">7. 명확성과 구체성의 원칙</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>원칙</th><th>요소</th></tr></thead><tbody>
+          <tr><td><b>명확성</b></td><td>모호함 제거 + 직접적 지시 + 일관적 용어</td></tr>
+          <tr><td><b>구체성</b></td><td>상세한 정보 + 정량적 표현 + 예시와 사례</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 구분:</b> 명확성=헷갈리지 않게(모호함 제거), 구체성=자세하게(숫자·예시). 둘은 짝이지만 다릅니다.</div>
+      </div>
+
+      <div class="sh">8. 구분기호 (Delimiter)</div>
+      <div class="card">
+        <p>프롬프트를 구조적으로 작성할 때 쓰는 기호입니다. 1급에서 특히 자주 나오지만 2급도 대비하세요.</p>
+        <table class="cmp-table"><thead><tr><th>기호</th><th>용도</th></tr></thead><tbody>
+          <tr><td>큰따옴표 <code>" "</code></td><td>문자열 구분</td></tr>
+          <tr><td>중괄호 <code>{ }</code></td><td>변수·파라미터·플레이스홀더·JSON</td></tr>
+          <tr><td>삼중 백틱 <code>```</code></td><td>코드 블록</td></tr>
+          <tr><td>꺾쇠괄호 <code>&lt; &gt;</code></td><td>XML·HTML</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">AI-POT 3과목 단골 함정 8가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. 프롬프트 5대 구성요소 누락</h4><p>지시·맥락·입력·제약조건·출력형식. "5개 중 아닌 것"을 묻습니다. 'AI모델'이나 '알고리즘' 같은 보기가 함정.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. Midjourney = Discord</h4><p>미드저니는 Discord 기반이고 파라미터가 <code>--</code>로 시작. 웹 기반(DALL·E)과 혼동시킵니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. Stable Diffusion만 로컬·오픈소스</h4><p>4개 이미지 AI 중 로컬 실행·오픈소스는 Stable Diffusion. 나머지는 웹/API/앱 기반.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 명확성 vs 구체성</h4><p>명확성=모호함 제거, 구체성=상세·정량·예시. 두 원칙의 요소를 서로 바꿔 출제합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. 합성 데이터 정의</h4><p>"실제 데이터를 모방하되 진짜 개인정보는 없는" 데이터. '실제 데이터의 일부'라고 하면 오답.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. GitHub Copilot = 코드 생성</h4><p>일반 Copilot(멀티모달)과 GitHub Copilot(코드 생성)을 구분. GitHub Copilot은 코드 편집기 통합.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. 구분기호 용도</h4><p>중괄호{ }=변수/JSON, 삼중백틱```=코드블록, 큰따옴표=문자열. 용도를 바꿔 출제.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 8. 개발사-모델 짝</h4><p>OpenAI=GPT, Google=Gemini, Anthropic=Claude, MS=Copilot. 짝을 어긋나게 출제합니다.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <div class="sh">예상문제 — 실제 시험 4개 PART 형식 (40문항)</div>
+      <p style="color:var(--sub); font-size:14px">출제 비중 30%인 핵심 과목인 만큼 40문항으로 구성했습니다. 객관식 20 · 단답형 10 · 다중보기 6 · 서술형 4.</p>
+
+      <div class="part-head"><span class="part-tag">PART 1</span>객관식 (4지선다) · 1~20</div>
+
+      <div class="qcard" data-q="1" data-answer="3">
+        <div class="qnum">Q1</div>
+        <div class="qbody">프롬프트(Prompt)에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① AI 모델을 학습시키는 알고리즘이다</li>
+          <li data-c="2">② 모델의 파라미터 수를 결정한다</li>
+          <li data-c="3">③ AI에게 작업·응답을 요청하기 위해 입력하는 텍스트이다</li>
+          <li data-c="4">④ 학습 데이터를 저장하는 데이터베이스이다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>AI에 작업을 요청하는 입력 텍스트</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트는 AI에게 원하는 작업·응답을 요청하는 <b>입력 텍스트(명령어/질문)</b>입니다. AI 출력의 품질과 방향을 결정하는 핵심 입력 요소입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"프롬프트 = AI에게 던지는 입력". 알고리즘·학습과 헷갈리지 마세요.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="2">
+        <div class="qnum">Q2</div>
+        <div class="qbody">프롬프트 엔지니어링의 정의로 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 모델을 처음부터 학습시키는 과정</li>
+          <li data-c="2">② 목적에 맞는 출력을 얻기 위한 입력 최적화 기술</li>
+          <li data-c="3">③ 데이터베이스를 설계하는 기술</li>
+          <li data-c="4">④ 신경망의 가중치를 조정하는 과정</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>입력 최적화 기술</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트 엔지니어링은 AI와 효과적으로 소통하기 위한 <b>입력 최적화 기술</b>입니다. 자연어로 AI 성능을 최대한 끌어내는 체계적 설계 방법입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"프롬프트를 잘 짜는 기술 = 프롬프트 엔지니어링". 모델 학습과는 무관.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="4">
+        <div class="qnum">Q3</div>
+        <div class="qbody">다음 중 프롬프트의 5대 구성요소에 <b>해당하지 않는</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 지시(Instruction)</li>
+          <li data-c="2">② 맥락(Context)</li>
+          <li data-c="3">③ 제약조건(Constraint)</li>
+          <li data-c="4">④ 학습률(Learning Rate)</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>학습률은 구성요소가 아님</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트 5대 구성요소: <b>지시·맥락·입력·제약조건·출력형식</b>. 학습률(Learning Rate)은 모델 학습의 하이퍼파라미터로 프롬프트와 무관합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"지·맥·입·제·출". 모델 학습 용어(학습률·가중치)가 보기에 끼면 함정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="1">
+        <div class="qnum">Q4</div>
+        <div class="qbody">프롬프트 구성요소 중 '배경 정보와 관련 상황을 제공'하는 요소는?</div>
+        <ul class="choices">
+          <li data-c="1">① 맥락(Context)</li>
+          <li data-c="2">② 지시(Instruction)</li>
+          <li data-c="3">③ 출력형식(Output Format)</li>
+          <li data-c="4">④ 제약조건(Constraint)</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>맥락(Context)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>맥락은 배경·상황 정보 제공, 지시는 요구사항 전달, 출력형식은 결과물 형태 지정, 제약조건은 제한사항 설정입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"배경/상황 = 맥락(Context)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="3">
+        <div class="qnum">Q5</div>
+        <div class="qbody">개발사와 AI 모델의 짝이 <b>잘못</b> 연결된 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① OpenAI – GPT</li>
+          <li data-c="2">② Google – Gemini</li>
+          <li data-c="3">③ Anthropic – Copilot</li>
+          <li data-c="4">④ Microsoft – Copilot</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>Anthropic은 Claude (Copilot은 MS)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>OpenAI=GPT, Google=Gemini, <b>Anthropic=Claude</b>, Microsoft=Copilot. ③은 Anthropic을 Copilot과 잘못 연결한 오답입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Anthropic = Claude". 개발사-모델 짝은 통째로 외우세요.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="2">
+        <div class="qnum">Q6</div>
+        <div class="qbody">이미지 생성 AI 중 <b>Discord 기반</b>으로 동작하며 파라미터가 '--'로 시작하는 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① DALL·E</li>
+          <li data-c="2">② Midjourney</li>
+          <li data-c="3">③ Stable Diffusion</li>
+          <li data-c="4">④ Copilot</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>Midjourney (Discord 기반)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Midjourney는 Discord 메시징 플랫폼 기반이며 <code>--ar</code>, <code>--chaos</code>처럼 파라미터가 <code>--</code>로 시작합니다. DALL·E는 웹/API, Stable Diffusion은 로컬/웹입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"미드저니 = 디스코드 + 더블대시(--)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="3">
+        <div class="qnum">Q7</div>
+        <div class="qbody">이미지 생성 AI 중 <b>오픈소스</b>로 공개되어 로컬 하드웨어에서 직접 실행 가능한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① DALL·E</li>
+          <li data-c="2">② Midjourney</li>
+          <li data-c="3">③ Stable Diffusion</li>
+          <li data-c="4">④ Microsoft Copilot</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>Stable Diffusion (오픈소스·로컬)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Stable Diffusion은 Stability AI의 오픈소스 모델로, 로컬 PC에서 직접 실행할 수 있고 파라미터가 슬라이더 '설정' 형태입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"오픈소스·로컬·슬라이더 = Stable Diffusion".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="1">
+        <div class="qnum">Q8</div>
+        <div class="qbody">DALL·E에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① OpenAI가 개발했고, DALL·E 3은 ChatGPT에서 사용 가능하다</li>
+          <li data-c="2">② Discord에서만 동작한다</li>
+          <li data-c="3">③ 오픈소스로 로컬에서 실행한다</li>
+          <li data-c="4">④ Google이 개발했다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>OpenAI 개발, DALL·E 3은 ChatGPT</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>DALL·E는 OpenAI의 텍스트-이미지 모델로 웹/API 기반입니다. MS Copilot의 이미지 생성도 DALL·E를 기반으로 합니다. Discord는 Midjourney입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"DALL·E = OpenAI = 웹/API". Copilot 이미지의 엔진이기도 함.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="9" data-answer="4">
+        <div class="qnum">Q9</div>
+        <div class="qbody">합성 데이터(Synthetic Data)에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 실제 사람의 데이터를 그대로 복사한 것</li>
+          <li data-c="2">② 학습에 쓸 수 없는 무작위 노이즈</li>
+          <li data-c="3">③ 모델의 가중치를 저장한 파일</li>
+          <li data-c="4">④ 실제 데이터를 모방하되 진짜 인간 데이터는 포함하지 않는 인공 데이터</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>실제를 모방한 인공 데이터</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>합성 데이터는 실제 데이터의 '형태'만 닮은 가상 데이터로, 진짜 개인정보가 없어 개인정보 보호에 유리합니다. 엑셀 형태만 학습시켜 가상 데이터를 만드는 것이 예입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"닮았지만 진짜는 아닌 데이터 = 합성 데이터".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="2">
+        <div class="qnum">Q10</div>
+        <div class="qbody">프롬프트 작성 원칙 중 '명확성'에 해당하는 요소로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 정량적 표현, 예시와 사례</li>
+          <li data-c="2">② 모호함 제거, 직접적 지시, 일관적 용어</li>
+          <li data-c="3">③ 파라미터 조정</li>
+          <li data-c="4">④ 토큰 수 제한</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>모호함 제거·직접 지시·일관 용어</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><b>명확성</b>=모호함 제거+직접적 지시+일관적 용어. <b>구체성</b>=상세 정보+정량적 표현+예시. ①은 구체성 요소입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"명확성=헷갈리지 않게, 구체성=자세하게(숫자·예시)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="1">
+        <div class="qnum">Q11</div>
+        <div class="qbody">프롬프트 작성 원칙 중 '구체성'에 해당하는 요소로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 상세한 정보, 정량적 표현, 예시와 사례</li>
+          <li data-c="2">② 모호함 제거, 직접적 지시</li>
+          <li data-c="3">③ 일관적 용어 사용</li>
+          <li data-c="4">④ 출력 토큰 제한</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>상세·정량·예시</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>구체성은 자세한 정보와 숫자(정량), 예시·사례로 프롬프트를 풍부하게 만드는 것. ②③은 명확성 요소입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"구체성 = 숫자·예시로 자세히".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="2">
+        <div class="qnum">Q12</div>
+        <div class="qbody">GitHub Copilot에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 이미지 생성에 특화된 도구이다</li>
+          <li data-c="2">② 개발자를 위한 코드 제안·자동완성 도구이다</li>
+          <li data-c="3">③ 영상 제작 전용 도구이다</li>
+          <li data-c="4">④ 번역 전용 확장 프로그램이다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>코드 제안·자동완성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>GitHub Copilot은 코드 생성 AI로 VS Code 등 편집기에 통합되어 코드를 제안·자동완성합니다. OpenAI와 MS가 협력 개발했습니다. 일반 Copilot(멀티모달)과 구분하세요.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"GitHub Copilot = 코드 자동완성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="13" data-answer="3">
+        <div class="qnum">Q13</div>
+        <div class="qbody">프롬프트 작성 시 '코드 블록'을 구분할 때 사용하는 기호는?</div>
+        <ul class="choices">
+          <li data-c="1">① 큰따옴표 " "</li>
+          <li data-c="2">② 중괄호 { }</li>
+          <li data-c="3">③ 삼중 백틱 ```</li>
+          <li data-c="4">④ 꺾쇠괄호 &lt; &gt;</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>삼중 백틱</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>코드 블록=삼중 백틱(```), 문자열=큰따옴표, 변수·JSON=중괄호{ }, XML/HTML=꺾쇠괄호. 용도별로 외우세요.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"코드 = 백틱 3개(```)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="2">
+        <div class="qnum">Q14</div>
+        <div class="qbody">프롬프트에서 변수·플레이스홀더·JSON을 구분할 때 사용하는 기호는?</div>
+        <ul class="choices">
+          <li data-c="1">① 큰따옴표 " "</li>
+          <li data-c="2">② 중괄호 { }</li>
+          <li data-c="3">③ 삼중 백틱 ```</li>
+          <li data-c="4">④ 작은따옴표 ' '</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>중괄호 { }</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>중괄호 { }는 변수·파라미터·플레이스홀더·JSON 표기에 씁니다. JSON 자체가 중괄호로 시작/끝나는 형태이기도 합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"변수·JSON = 중괄호 { }".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="15" data-answer="4">
+        <div class="qnum">Q15</div>
+        <div class="qbody">프롬프트 엔지니어링의 중요성으로 보기 <b>어려운</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① AI 모델 활용 효율성 극대화</li>
+          <li data-c="2">② 결과물의 정확도와 품질 향상</li>
+          <li data-c="3">③ 불필요한 반복 작업 감소</li>
+          <li data-c="4">④ AI 모델의 파라미터 수 증가</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(15)">정답·해설 보기</button>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>파라미터 수 증가와 무관</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트 엔지니어링은 입력을 최적화하는 것이지 모델 자체(파라미터 수)를 바꾸지 않습니다. 효율·정확도·반복작업 감소가 핵심 가치입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"프롬프트는 입력만 다룬다. 모델 내부는 안 건드림".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="16" data-answer="1">
+        <div class="qnum">Q16</div>
+        <div class="qbody">미드저니에서 이미지의 가로세로 비율을 지정하는 파라미터는?</div>
+        <ul class="choices">
+          <li data-c="1">① --ar (--aspect)</li>
+          <li data-c="2">② --chaos</li>
+          <li data-c="3">③ --stylize</li>
+          <li data-c="4">④ --no</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(16)">정답·해설 보기</button>
+        <div class="explain" id="exp-16">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>--ar (aspect ratio)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><code>--ar</code>=비율(1:1, 16:9), <code>--chaos</code>=생성 자유도(0~100), <code>--stylize</code>=스타일 강조(0~1000), <code>--no</code>=요소 제외.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"ar = aspect ratio = 비율".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="17" data-answer="3">
+        <div class="qnum">Q17</div>
+        <div class="qbody">스테이블 디퓨전에서 이미지 생성 초기값(난수)으로, -1로 설정하면 매번 랜덤하게 생성되는 설정은?</div>
+        <ul class="choices">
+          <li data-c="1">① CFG 스케일</li>
+          <li data-c="2">② Sampling Steps</li>
+          <li data-c="3">③ Seed</li>
+          <li data-c="4">④ Negative Prompt</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(17)">정답·해설 보기</button>
+        <div class="explain" id="exp-17">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>Seed</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Seed는 이미지 생성의 초기 난수값입니다. 같은 Seed면 같은 결과, -1이면 매번 랜덤. CFG는 프롬프트 준수 강도, Negative Prompt는 제외 키워드입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Seed = 씨앗 = 초기 난수값. 같으면 같은 그림".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="18" data-answer="2">
+        <div class="qnum">Q18</div>
+        <div class="qbody">스테이블 디퓨전에서 '이미지에서 제외하고 싶은 키워드'를 작성하는 설정은?</div>
+        <ul class="choices">
+          <li data-c="1">① CFG 스케일</li>
+          <li data-c="2">② Negative Prompt</li>
+          <li data-c="3">③ Seed</li>
+          <li data-c="4">④ Batch Size</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(18)">정답·해설 보기</button>
+        <div class="explain" id="exp-18">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>Negative Prompt</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Negative Prompt는 결과에서 빼고 싶은 요소를 지정합니다. 미드저니의 <code>--no</code>와 같은 역할입니다. CFG는 준수 강도, Batch Size는 한 번에 생성할 이미지 수입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"제외 = Negative(부정) Prompt".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="19" data-answer="4">
+        <div class="qnum">Q19</div>
+        <div class="qbody">다음 중 ChatGPT가 출력으로 지원하는 것으로 보기 <b>어려운</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 텍스트 생성</li>
+          <li data-c="2">② 이미지 생성</li>
+          <li data-c="3">③ Office 계열 파일 제작</li>
+          <li data-c="4">④ 물리적 하드웨어 직접 제어</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(19)">정답·해설 보기</button>
+        <div class="explain" id="exp-19">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>하드웨어 직접 제어는 불가</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>ChatGPT는 텍스트·이미지·Office 파일·gif 생성, 딥리서치 등을 지원하지만 물리적 하드웨어를 직접 제어하지는 않습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>생성 AI는 '디지털 콘텐츠' 생성이지 물리 장치 제어가 아님.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="20" data-answer="3">
+        <div class="qnum">Q20</div>
+        <div class="qbody">다음 중 영상 제작(생성)을 출력으로 지원하는 것으로 알려진 도구는?</div>
+        <ul class="choices">
+          <li data-c="1">① GitHub Copilot</li>
+          <li data-c="2">② DeepL</li>
+          <li data-c="3">③ Gemini</li>
+          <li data-c="4">④ AIPRM</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(20)">정답·해설 보기</button>
+        <div class="explain" id="exp-20">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>Gemini (영상 제작 지원)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Gemini는 온라인 검색·이미지·텍스트 생성에 더해 영상 제작과 딥리서치를 지원합니다. GitHub Copilot은 코드, DeepL은 번역, AIPRM은 프롬프트 관리 확장입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>도구별 출력 지원 범위를 표로 정리해 비교 암기.</div></div>
+        </div>
+      </div>
+      <div class="part-head"><span class="part-tag">PART 2</span>단답형 주관식 (직접 입력) · 21~30</div>
+
+      <div class="qcard" data-q="21" data-answer="프롬프트">
+        <div class="qnum">Q21</div>
+        <div class="qbody">AI 모델에게 특정 작업이나 응답을 요청하기 위해 입력하는 텍스트 명령어나 질문을 무엇이라 하는가? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-21" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(21)">정답 확인</button></div>
+        <div class="explain" id="exp-21">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>프롬프트 (Prompt)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트는 AI 출력의 품질·방향을 결정하는 핵심 입력입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>프롬프트/Prompt 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="22" data-answer="맥락">
+        <div class="qnum">Q22</div>
+        <div class="qbody">프롬프트 5대 구성요소 중 '배경 정보와 관련 상황을 제공'하는 요소는? (한글, ○○)</div>
+        <div class="short-ans"><input type="text" id="in-22" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(22)">정답 확인</button></div>
+        <div class="explain" id="exp-22">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>맥락 (Context)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>5대 구성요소: 지시·맥락·입력·제약조건·출력형식. 맥락은 배경·상황 제공 담당.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>맥락/Context 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="23" data-answer="제약조건">
+        <div class="qnum">Q23</div>
+        <div class="qbody">프롬프트 5대 구성요소 중 '생성 결과물의 제한사항을 설정'하는 요소는? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-23" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(23)">정답 확인</button></div>
+        <div class="explain" id="exp-23">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>제약조건 (Constraint)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>제약조건은 글자 수, 형식, 포함/제외 사항 등 결과물의 제한을 설정합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"제한 = 제약조건(Constraint)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="24" data-answer="프롬프트엔지니어링">
+        <div class="qnum">Q24</div>
+        <div class="qbody">AI 모델과의 효과적인 소통을 위해 입력을 최적화하고, 목적에 맞는 출력을 얻기 위한 체계적 설계 기술을 무엇이라 하는가? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-24" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(24)">정답 확인</button></div>
+        <div class="explain" id="exp-24">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>프롬프트 엔지니어링</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>자연어로 AI 성능을 최대한 끌어내는 입력 최적화 기술입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>띄어쓰기 무시 채점이므로 '프롬프트엔지니어링'도 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="25" data-answer="합성데이터">
+        <div class="qnum">Q25</div>
+        <div class="qbody">실제 데이터를 모방하지만 실제 인간의 데이터는 포함하지 않는 인공 데이터를 무엇이라 하는가? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-25" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(25)">정답 확인</button></div>
+        <div class="explain" id="exp-25">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>합성 데이터 (Synthetic Data)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>형태만 닮은 가상 데이터로 개인정보 보호에 활용됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>합성데이터/Synthetic Data 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="26" data-answer="Midjourney">
+        <div class="qnum">Q26</div>
+        <div class="qbody">Discord 플랫폼 기반으로 동작하며 파라미터가 '--'로 시작하는 텍스트-이미지 생성 AI는? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-26" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(26)">정답 확인</button></div>
+        <div class="explain" id="exp-26">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>미드저니 (Midjourney)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Discord 기반, <code>--ar</code> 등 더블대시 파라미터가 특징입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>미드저니/Midjourney 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="27" data-answer="Seed">
+        <div class="qnum">Q27</div>
+        <div class="qbody">스테이블 디퓨전에서 이미지 생성의 초기값(난수)으로, 같은 값이면 같은 이미지가 생성되는 설정은? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-27" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(27)">정답 확인</button></div>
+        <div class="explain" id="exp-27">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Seed (시드)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Seed는 생성 초기값. -1이면 매번 랜덤 시드로 진행됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>Seed/시드 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="28" data-answer="명확성">
+        <div class="qnum">Q28</div>
+        <div class="qbody">프롬프트 작성 원칙 중 '모호함 제거 + 직접적 지시 + 일관적 용어'를 강조하는 원칙은? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-28" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(28)">정답 확인</button></div>
+        <div class="explain" id="exp-28">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>명확성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>명확성=모호함 제거. 구체성=상세 정보·정량·예시. 짝이지만 다릅니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"헷갈리지 않게 = 명확성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="29" data-answer="Claude">
+        <div class="qnum">Q29</div>
+        <div class="qbody">Anthropic이 개발한, Opus·Sonnet·Haiku 등의 모델로 구성된 LLM 서비스는? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-29" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(29)">정답 확인</button></div>
+        <div class="explain" id="exp-29">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Claude (클로드)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>개발사-모델: OpenAI=GPT, Google=Gemini, Anthropic=Claude, MS=Copilot.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>Claude/클로드 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="30" data-answer="출력형식">
+        <div class="qnum">Q30</div>
+        <div class="qbody">프롬프트 5대 구성요소 중 '원하는 결과물의 형태'를 지정하는 요소는? (한글, ○○○○)</div>
+        <div class="short-ans"><input type="text" id="in-30" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(30)">정답 확인</button></div>
+        <div class="explain" id="exp-30">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>출력형식 (Output Format)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>출력형식은 표·JSON·목록 등 결과물의 형태를 지정합니다. 5대 구성요소의 마지막입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>출력형식/출력형태 인정. 영문 Output Format.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 3</span>다중보기 선택형 (보기에서 골라 입력) · 31~36</div>
+
+      <div class="qcard" data-q="31" data-answer="Discord">
+        <div class="qnum">Q31</div>
+        <div class="qbody">보기에서 'Midjourney'가 기반으로 하는 플랫폼을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 웹/API / Discord / 로컬 / 앱</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-31" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(31)">정답 확인</button></div>
+        <div class="explain" id="exp-31">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Discord</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Midjourney=Discord, DALL·E=웹/API, Stable Diffusion=로컬/웹, Copilot=웹/앱.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>보기 단어 그대로 입력.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="32" data-answer="Claude">
+        <div class="qnum">Q32</div>
+        <div class="qbody">보기에서 'Anthropic'이 개발한 AI 모델을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; GPT / Gemini / Claude / Copilot</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-32" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(32)">정답 확인</button></div>
+        <div class="explain" id="exp-32">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Claude</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Anthropic=Claude. 나머지: OpenAI=GPT, Google=Gemini, MS=Copilot.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>개발사-모델 짝 통암기.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="33" data-answer="중괄호">
+        <div class="qnum">Q33</div>
+        <div class="qbody">보기에서 프롬프트 내 '변수·JSON'을 표시할 때 사용하는 구분기호를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 큰따옴표 / 중괄호 / 삼중백틱 / 꺾쇠괄호</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-33" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(33)">정답 확인</button></div>
+        <div class="explain" id="exp-33">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>중괄호</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>중괄호{ }=변수·JSON, 큰따옴표=문자열, 삼중백틱=코드, 꺾쇠괄호=XML/HTML.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"변수·JSON = 중괄호".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="34" data-answer="구체성">
+        <div class="qnum">Q34</div>
+        <div class="qbody">보기에서 '정량적 표현과 예시·사례 제공'을 강조하는 프롬프트 작성 원칙을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 명확성 / 구체성 / 일관성 / 간결성</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-34" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(34)">정답 확인</button></div>
+        <div class="explain" id="exp-34">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>구체성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>구체성=상세 정보+정량적 표현+예시. 명확성=모호함 제거+직접 지시+일관 용어.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"숫자·예시 = 구체성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="35" data-answer="Stable Diffusion">
+        <div class="qnum">Q35</div>
+        <div class="qbody">보기에서 '오픈소스로 공개되어 로컬에서 직접 실행 가능한' 이미지 생성 AI를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; DALL·E / Midjourney / Stable Diffusion / Copilot</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-35" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(35)">정답 확인</button></div>
+        <div class="explain" id="exp-35">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Stable Diffusion</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Stable Diffusion만 오픈소스·로컬 실행 가능하며 파라미터가 슬라이더 설정 형태입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"오픈소스·로컬 = Stable Diffusion".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="36" data-answer="삼중백틱">
+        <div class="qnum">Q36</div>
+        <div class="qbody">보기에서 프롬프트 내 '코드 블록'을 구분할 때 사용하는 기호를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 큰따옴표 / 중괄호 / 삼중백틱 / 달러기호</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-36" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(36)">정답 확인</button></div>
+        <div class="explain" id="exp-36">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>삼중백틱</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>코드 블록은 삼중 백틱(```)으로 감쌉니다. 달러기호$ $는 수학 수식 표기에 씁니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"코드 = 삼중백틱".</div></div>
+        </div>
+      </div>
+      <div class="part-head"><span class="part-tag">PART 4</span>서술형 (개념 적용) · 37~40</div>
+
+      <div class="qcard" data-q="37" data-answer="">
+        <div class="qnum">Q37</div>
+        <div class="qbody">프롬프트의 5대 구성요소를 모두 나열하고, 각각의 역할을 한 줄로 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-37" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(37)">모범답안 보기</button></div>
+        <div class="explain" id="exp-37">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>① <b>지시</b>: 명확한 요구사항 전달 ② <b>맥락</b>: 배경·상황 제공 ③ <b>입력</b>: 처리할 데이터 ④ <b>제약조건</b>: 결과물 제한 설정 ⑤ <b>출력형식</b>: 결과물의 형태 지정</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>"지·맥·입·제·출"로 순서까지 외워두면 객관식·단답형·서술형 어디서 나와도 대응할 수 있습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>I·C·I·C·O (Instruction·Context·Input·Constraint·Output).</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="38" data-answer="">
+        <div class="qnum">Q38</div>
+        <div class="qbody">이미지 생성 AI인 'Midjourney'와 'Stable Diffusion'의 차이를 '기반 플랫폼'과 '파라미터 입력 방식' 측면에서 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-38" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(38)">모범답안 보기</button></div>
+        <div class="explain" id="exp-38">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>Midjourney는 <b>Discord 기반</b>이며 파라미터를 <code>--ar</code>처럼 <b>'--'로 시작하는 텍스트</b>로 입력한다. Stable Diffusion은 <b>오픈소스·로컬/웹 기반</b>이며 파라미터를 <b>슬라이더 '설정' 형태</b>로 조정한다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>핵심 대비: Midjourney(Discord, --파라미터) vs Stable Diffusion(오픈소스 로컬, 슬라이더 설정).</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"미드저니는 명령어 타이핑(--), SD는 슬라이더 조절".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="39" data-answer="">
+        <div class="qnum">Q39</div>
+        <div class="qbody">프롬프트 작성 원칙인 '명확성'과 '구체성'은 어떻게 다른지, 각각의 핵심 요소를 들어 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-39" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(39)">모범답안 보기</button></div>
+        <div class="explain" id="exp-39">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>명확성</b>은 모호함을 없애는 것으로 직접적 지시·일관적 용어가 핵심이다. <b>구체성</b>은 자세함을 더하는 것으로 상세한 정보·정량적 표현·예시 제공이 핵심이다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>명확성=헷갈리지 않게(모호함 제거), 구체성=자세하게(숫자·예시). 둘 다 좋은 프롬프트의 조건이지만 초점이 다릅니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"명확=clear(모호 제거), 구체=detail(숫자·예시)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="40" data-answer="">
+        <div class="qnum">Q40</div>
+        <div class="qbody">합성 데이터(Synthetic Data)가 무엇인지 정의하고, 이것이 개인정보 보호 측면에서 어떤 장점을 갖는지 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-40" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(40)">모범답안 보기</button></div>
+        <div class="explain" id="exp-40">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>합성 데이터는 실제 데이터를 모방하지만 <b>실제 인간의 데이터는 포함하지 않는 인공 데이터</b>이다. 진짜 개인정보가 들어있지 않으므로, 데이터의 형태·패턴은 활용하면서도 <b>개인정보 유출 위험 없이</b> 분석·학습에 쓸 수 있다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>예: 엑셀 파일의 머리말·내용 '형태'만 학습시켜 가상 데이터를 생성. 실제 값이 아니므로 안전합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"형태는 진짜 같고 내용은 가짜 = 합성 데이터 = 개인정보 안전".</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">맞힌 문항</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 40</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">객관식은 보기 클릭 후, 주관식은 입력 후 버튼을 누르세요</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">한 장 정리</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 프롬프트 5대 구성요소</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>지시·맥락·입력·제약조건·출력형식</li>
+            <li>(지·맥·입·제·출)</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 개발사-모델</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>OpenAI = GPT, o</li>
+            <li>Google = Gemini</li>
+            <li>Anthropic = Claude</li>
+            <li>Microsoft = Copilot</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 이미지 생성 AI</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>DALL·E = 웹/API (OpenAI)</li>
+            <li>Midjourney = Discord (--)</li>
+            <li>Stable Diffusion = 오픈소스 로컬</li>
+            <li>Copilot = 웹/앱 (DALL·E 기반)</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 작성 원칙</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>명확성: 모호함 제거·직접 지시·일관 용어</li>
+            <li>구체성: 상세 정보·정량·예시</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 구분기호</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>" " = 문자열</li>
+            <li>{ } = 변수·JSON</li>
+            <li>``` = 코드 블록</li>
+            <li>&lt; &gt; = XML/HTML</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 다음 과목 예고</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8"><b>4과목(40%·최대 비중)</b>: 프롬프트 전략, N-shot, CoT, 멀티모달, 모델 실습, 확장 프로그램</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'cert/aipot_03_prompt_basics',
+  quizTotal: 40
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function bump(n) {
+  if (!correctSet.has(n)) { correctSet.add(n); document.getElementById('quiz-score').textContent = correctSet.size; }
+}
+
+function revealQ(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = card.dataset.answer;
+  const choices = card.querySelectorAll('.choices li');
+  if (choices.length) {
+    const picked = card.querySelector('.choices li.picked');
+    choices.forEach(li => {
+      if (li.dataset.c === answer) li.classList.add('correct');
+      else if (li.classList.contains('picked')) li.classList.add('wrong');
+    });
+    if (picked && picked.dataset.c === answer) bump(n);
+  }
+  document.getElementById('exp-' + n).classList.add('show');
+}
+
+function normalize(s) {
+  return (s || '').replace(/\s+/g, '').replace(/[().,'"·]/g, '').toLowerCase();
+}
+function checkShort(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = normalize(card.dataset.answer);
+  const input = normalize(document.getElementById('in-' + n).value);
+  const ok = input.length > 0 && (input.includes(answer) || answer.includes(input));
+  const el = document.getElementById('in-' + n);
+  el.style.borderColor = ok ? '#10b981' : '#ef4444';
+  el.style.background = ok ? '#d1fae5' : '#fee2e2';
+  if (ok) bump(n);
+  document.getElementById('exp-' + n).classList.add('show');
+}
+</script>
+</body>
+</html>
