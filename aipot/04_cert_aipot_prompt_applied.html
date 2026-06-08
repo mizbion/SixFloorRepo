@@ -1,0 +1,1040 @@
+<!DOCTYPE html> 
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=자격증(AI-POT) -->
+<!-- meta:unit=4과목. 프롬프트 엔지니어링 기술 기초 활용 -->
+<!-- meta:title=N-shot·CoT·멀티모달·모델실습·확장프로그램 정복 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>AI-POT 4과목 · 프롬프트 엔지니어링 기술 활용</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f9f6f0; --card: #ffffff; --surf2: #f4ecdc; --surf3: #ecdfc4;
+  --border: #e0d0ad; --text: #1c1208; --sub: #8a6d3b;
+  --ac: #b45309; --ac-l: #fef3e2; --ac-b: #92400e;
+  --header-bg: #1a0f00; --grad-end: #d97706;
+}
+.aipot-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.aipot-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.aipot-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.aipot-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.aipot-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; }
+.aipot-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.aipot-side .unit-list li.done { color: var(--sub); }
+.aipot-side .unit-list li .num { display: inline-block; width: 24px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.aipot-side .unit-list li.current .num { color: #ecdfc4; }
+.aipot-side .weight { background: var(--surf2); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.aipot-side .weight > div { background: var(--ac); height: 100%; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fdfaf3; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .short-ans { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.qcard .short-ans input { flex: 1; min-width: 180px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; }
+.qcard .explain.show { display: block; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #fef3e2; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+.part-head { background: var(--header-bg); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; margin: 24px 0 14px; }
+.part-head .part-tag { background: var(--grad-end); padding: 2px 10px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
+.viz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin: 16px 0; }
+.viz-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+.viz-card .viz-name { font-weight: 700; color: var(--ac-b); font-size: 13px; margin-top: 6px; }
+.viz-card .viz-use { font-size: 11px; color: var(--sub); margin-top: 2px; }
+@media (max-width: 900px) { .aipot-layout { grid-template-columns: 1fr; } .aipot-side { position: static; } }
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">4과목</span>
+    <span class="hd-title">프롬프트 엔지니어링 기술 활용</span>
+    <span class="hd-meta">AI-POT 2급 · 출제비중 40% (최대)</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="aipot-layout">
+  <aside class="aipot-side">
+    <h3>AI-POT 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">1</span>인공지능 기초 이론</li>
+      <li class="done"><span class="num">2</span>생성형 AI 기초 이론</li>
+      <li class="done"><span class="num">3</span>프롬프트 엔지니어링 기초</li>
+      <li class="current"><span class="num">4</span>프롬프트 기술 활용</li>
+      <li><span class="num">5</span>업무활용과 윤리의식</li>
+    </ul>
+    <h3 style="margin-top:20px">이 과목 출제 비중</h3>
+    <div class="weight"><div style="width:40%"></div></div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">전체의 <b style="color:var(--ac-b)">약 40%</b> · 최대 비중!</div>
+    <h3 style="margin-top:20px">이 과목 핵심</h3>
+    <div style="font-size:12px; color:var(--sub); line-height:1.8">
+      N-shot (Zero/One/Few)<br>생각의 사슬(CoT)<br>멀티모달 프롬프트<br>데이터 시각화 8종<br>확장 프로그램 4종
+    </div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">프롬프트 엔지니어링 기술 활용</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        <b style="color:var(--ac-b)">출제 비중 40%, 가장 중요한 과목</b>입니다. N-shot·CoT 같은 프롬프트 기법,
+        모델 실습(텍스트·코드·이미지·데이터), 확장 프로그램이 집중 출제됩니다.
+      </p>
+    </section>
+    <section style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>N-shot(Zero/One/Few-shot)과 생각의 사슬(CoT) 기법을 구분한다</li>
+        <li>멀티모달 프롬프트와 프로그래밍 언어 식별법을 안다</li>
+        <li>이미지 생성 AI 3종의 업무 활용 작성법을 구분한다</li>
+        <li>데이터 시각화 8종의 용도를 안다</li>
+        <li>주요 확장 프로그램(AIPRM·WebChatGPT·DeepL·SlidesAI)의 기능을 안다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. N-shot 프롬프팅 (최빈출!)</div>
+      <div class="card">
+        <p>프롬프트 안에 <b>예시(shot)를 몇 개 넣느냐</b>에 따라 나뉩니다. 예시 개수가 핵심입니다.</p>
+        <table class="cmp-table"><thead><tr><th>기법</th><th>예시 개수</th><th>설명</th></tr></thead><tbody>
+          <tr><td><b>Zero-shot</b><br>제로샷</td><td><b>0개</b></td><td>예시 없이 작업 설명만으로 결과 생성</td></tr>
+          <tr><td><b>One-shot</b><br>원샷</td><td><b>1개</b></td><td>입력-출력 예시 1개로 작업 패턴 제시</td></tr>
+          <tr><td><b>Few-shot</b><br>퓨샷</td><td><b>2~10개</b></td><td>소수 예시로 맥락·패턴을 명확히 전달</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 암기 필수:</b> Zero=0개, One=1개, Few=2~10개. 예시 개수를 바꿔 출제합니다.</div>
+      </div>
+
+      <div class="sh">2. 생각의 사슬 (CoT, Chain of Thought)</div>
+      <div class="card">
+        <p>복잡한 문제를 <b>작은 단위로 나눠 순차적으로(단계별로)</b> 해결하게 하는 기법입니다.</p>
+        <table class="cmp-table"><thead><tr><th>특징</th><th>설명</th></tr></thead><tbody>
+          <tr><td>체계성</td><td>복잡한 문제를 논리적 단계로 구조화</td></tr>
+          <tr><td>명확성</td><td>각 단계별 목표·실행 방안을 구체적으로 제시</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 트리거 문장:</b> "단계별로 생각해 보자(Let's think step by step)"를 붙이면 CoT가 작동합니다. 수학·논리 문제에서 정확도가 올라갑니다.</div>
+      </div>
+
+      <div class="sh">3. 멀티모달 프롬프트</div>
+      <div class="card">
+        <p>둘 이상의 데이터 유형(텍스트·이미지·오디오·비디오 등)을 <b>결합</b>한 프롬프트입니다.
+        단일 모달보다 풍부한 정보·맥락을 제공해 더 정확한 결과를 얻습니다.</p>
+        <div class="tip"><b>💡 포인트:</b> "이미지 + 텍스트를 함께 입력" 같은 게 멀티모달. 'multi(여러) + modal(양식)'.</div>
+      </div>
+
+      <div class="sh">4. 프로그래밍 언어 식별 (코드 보고 구분)</div>
+      <div class="card">
+        <p>코드 조각을 보고 어떤 언어인지 맞히는 문제가 나옵니다. 특징적 표시를 외우세요.</p>
+        <table class="cmp-table"><thead><tr><th>언어</th><th>식별 단서</th></tr></thead><tbody>
+          <tr><td><b>Python</b></td><td><code>if __name__ == "__main__":</code> 구문</td></tr>
+          <tr><td><b>JSON</b></td><td>중괄호 <code>{ }</code>로 시작·끝, <code>"key": value</code> 형태</td></tr>
+          <tr><td><b>HTML</b></td><td><code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code> 태그</td></tr>
+          <tr><td><b>Java</b></td><td>한 줄 주석 <code>// 주석</code> 형태</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="sh">5. 이미지 생성 AI 업무 활용 작성법</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>도구</th><th>작성법</th></tr></thead><tbody>
+          <tr><td><b>미드저니</b></td><td>간결·명확한 <b>키워드 중심</b> 프롬프트 → 마지막에 파라미터(<code>--ar</code>, <code>--chaos</code>)</td></tr>
+          <tr><td><b>스테이블 디퓨전</b></td><td>세부 묘사 풍부한 <b>긴 프롬프트</b> → 네거티브 프롬프트 → 슬라이더 파라미터 조정</td></tr>
+          <tr><td><b>달리 & 코파일럿</b></td><td>간결·명확한 <b>스타일 명시</b>, 의도 전달 중요, 화풍/미학 단어 활용</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 구분:</b> 미드저니=키워드+파라미터, SD=긴 묘사+네거티브, 달리=스타일·의도 중심.</div>
+      </div>
+
+      <div class="sh">6. 데이터 시각화 8종</div>
+      <div class="card">
+        <p>시각화 그림을 보고 종류를 맞히는 문제가 나옵니다. 8가지 이름과 용도를 익히세요.</p>
+        <div class="viz-grid">
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><text x="10" y="20" font-size="14" fill="#b45309" font-weight="700">AI</text><text x="38" y="30" font-size="10" fill="#d97706">data</text><text x="14" y="40" font-size="8" fill="#8a6d3b">word</text></svg>
+            <div class="viz-name">워드 클라우드</div><div class="viz-use">단어 빈도</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><rect x="12" y="30" width="10" height="15" fill="#b45309"/><rect x="28" y="20" width="10" height="25" fill="#d97706"/><rect x="44" y="25" width="10" height="20" fill="#b45309"/><rect x="60" y="12" width="10" height="33" fill="#d97706"/></svg>
+            <div class="viz-name">막대 그래프</div><div class="viz-use">크기 비교</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><circle cx="40" cy="25" r="18" fill="#f4ecdc"/><path d="M40 25 L40 7 A18 18 0 0 1 56 30 Z" fill="#b45309"/><path d="M40 25 L56 30 A18 18 0 0 1 30 41 Z" fill="#d97706"/></svg>
+            <div class="viz-name">파이 차트</div><div class="viz-use">비율/구성</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><rect x="14" y="28" width="8" height="17" fill="#b45309"/><rect x="22" y="20" width="8" height="25" fill="#b45309"/><rect x="30" y="14" width="8" height="31" fill="#b45309"/><rect x="38" y="22" width="8" height="23" fill="#b45309"/><rect x="46" y="30" width="8" height="15" fill="#b45309"/></svg>
+            <div class="viz-name">히스토그램</div><div class="viz-use">분포(구간)</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><rect x="10" y="8" width="34" height="24" fill="#b45309"/><rect x="46" y="8" width="24" height="14" fill="#d97706"/><rect x="46" y="24" width="24" height="8" fill="#ecdfc4"/><rect x="10" y="34" width="20" height="10" fill="#f5c178"/><rect x="32" y="34" width="38" height="10" fill="#fde8c8"/></svg>
+            <div class="viz-name">트리맵</div><div class="viz-use">계층/비중</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><circle cx="20" cy="38" r="2.5" fill="#b45309"/><circle cx="32" cy="30" r="2.5" fill="#b45309"/><circle cx="40" cy="32" r="2.5" fill="#b45309"/><circle cx="50" cy="20" r="2.5" fill="#b45309"/><circle cx="60" cy="16" r="2.5" fill="#b45309"/><circle cx="44" cy="24" r="2.5" fill="#b45309"/></svg>
+            <div class="viz-name">산점도</div><div class="viz-use">상관관계</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><rect x="14" y="10" width="12" height="12" fill="#b45309"/><rect x="26" y="10" width="12" height="12" fill="#d97706"/><rect x="38" y="10" width="12" height="12" fill="#fde8c8"/><rect x="14" y="22" width="12" height="12" fill="#d97706"/><rect x="26" y="22" width="12" height="12" fill="#b45309"/><rect x="38" y="22" width="12" height="12" fill="#ecdfc4"/></svg>
+            <div class="viz-name">히트맵</div><div class="viz-use">값 농도</div></div>
+          <div class="viz-card">
+            <svg viewBox="0 0 80 50" width="80" height="50"><line x1="30" y1="10" x2="30" y2="40" stroke="#8a6d3b"/><rect x="22" y="18" width="16" height="14" fill="#f5c178" stroke="#b45309"/><line x1="22" y1="25" x2="38" y2="25" stroke="#b45309" stroke-width="2"/><line x1="55" y1="8" x2="55" y2="42" stroke="#8a6d3b"/><rect x="47" y="16" width="16" height="18" fill="#f5c178" stroke="#b45309"/></svg>
+            <div class="viz-name">박스 플롯</div><div class="viz-use">분포·이상치</div></div>
+        </div>
+      </div>
+
+      <div class="sh">7. 확장 프로그램 (Extension)</div>
+      <div class="card">
+        <p>브라우저/AI의 기본 기능을 확장하는 추가 소프트웨어입니다. 4종의 기능을 구분하세요.</p>
+        <table class="cmp-table"><thead><tr><th>확장 프로그램</th><th>기능</th></tr></thead><tbody>
+          <tr><td><b>AIPRM</b></td><td>ChatGPT용 <b>프롬프트 관리·최적화</b>. 템플릿 라이브러리, 출력 형식 사전 설정</td></tr>
+          <tr><td><b>WebChatGPT</b></td><td>ChatGPT에 <b>웹 검색</b> 기능 추가. 실시간 인터넷 정보 통합</td></tr>
+          <tr><td><b>DeepL</b></td><td>고품질 <b>번역</b> 서비스. 맥락·뉘앙스 고려</td></tr>
+          <tr><td><b>SlidesAI</b></td><td>Google 슬라이드 <b>프레젠테이션 자동 생성</b></td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 단골 함정:</b> AIPRM=프롬프트 관리, WebChatGPT=웹검색, DeepL=번역, SlidesAI=PPT. 기능을 바꿔 출제합니다.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">AI-POT 4과목 단골 함정 9가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. N-shot 예시 개수</h4><p>Zero=0, One=1, Few=2~10개. "Few-shot은 예시 1개"라고 하면 오답(그건 One-shot).</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. CoT 트리거 문장</h4><p>"단계별로 생각해 보자"가 CoT의 트리거. 단순 분류·요약과 혼동시킵니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 프로그래밍 언어 단서</h4><p>Python=if __name__, JSON=중괄호, HTML=태그, Java=// 주석. 단서를 바꿔 출제.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 확장 프로그램 기능</h4><p>AIPRM(프롬프트), WebChatGPT(웹검색), DeepL(번역), SlidesAI(PPT). 기능 뒤바꾸기 주의.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. 시각화 용도</h4><p>비율=파이, 분포=히스토그램, 상관=산점도, 값 농도=히트맵. 용도를 섞어 출제.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. 이미지 AI 작성법</h4><p>미드저니=키워드+파라미터, SD=긴 묘사+네거티브, 달리=스타일·의도. 작성법을 뒤바꿈.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. 멀티모달 정의</h4><p>'둘 이상의 데이터 유형 결합'이 핵심. 텍스트만 쓰면 단일 모달.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 8. Zero-shot ≠ 학습 안 함</h4><p>Zero-shot은 '예시를 안 줌'이지 '학습을 안 함'이 아닙니다. 모델은 이미 사전학습됨.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 9. DALL·E 어원</h4><p>DALL·E = 화가 살바도르 '달리' + 픽사 로봇 '월-E'의 합성어. 어원을 묻기도 합니다.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <div class="sh">예상문제 — 실제 시험 4개 PART 형식 (50문항)</div>
+      <p style="color:var(--sub); font-size:14px">출제 비중 40%인 최대 과목인 만큼 50문항으로 구성했습니다. 객관식 24 · 단답형 14 · 다중보기 8 · 서술형 4.</p>
+
+      <div class="part-head"><span class="part-tag">PART 1</span>객관식 (4지선다) · 1~24</div>
+
+      <div class="qcard" data-q="1" data-answer="3">
+        <div class="qnum">Q1</div>
+        <div class="qbody">구체적인 예시 없이 작업 설명만으로 원하는 출력을 생성하도록 하는 프롬프트 기법은?</div>
+        <ul class="choices">
+          <li data-c="1">① Few-shot</li><li data-c="2">② One-shot</li><li data-c="3">③ Zero-shot</li><li data-c="4">④ Multi-shot</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>Zero-shot (예시 0개)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Zero-shot은 예시 없이 작업 지시만 주는 방식. One-shot은 예시 1개, Few-shot은 2~10개입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Zero = 0개 예시".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="4">
+        <div class="qnum">Q2</div>
+        <div class="qbody">프롬프트에 2~10개 정도의 예시를 제공하여 작업의 맥락과 패턴을 명확히 전달하는 기법은?</div>
+        <ul class="choices">
+          <li data-c="1">① Zero-shot</li><li data-c="2">② One-shot</li><li data-c="3">③ CoT</li><li data-c="4">④ Few-shot</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>Few-shot (2~10개)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Few-shot은 소수(2~10개)의 예시로 패턴을 보여줍니다. 1개면 One-shot, 0개면 Zero-shot.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Few = 소수 = 2~10개".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="2">
+        <div class="qnum">Q3</div>
+        <div class="qbody">"단계별로 생각해 보자"처럼 복잡한 문제를 작은 단위로 나눠 순차 해결하게 하는 기법은?</div>
+        <ul class="choices">
+          <li data-c="1">① Zero-shot</li><li data-c="2">② 생각의 사슬(CoT)</li><li data-c="3">③ 멀티모달</li><li data-c="4">④ 파인튜닝</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>생각의 사슬(CoT)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>CoT(Chain of Thought)는 문제를 논리적 단계로 구조화해 해결합니다. "단계별로 생각해 보자"가 트리거 문장입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"단계별 = CoT(생각의 사슬)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="1">
+        <div class="qnum">Q4</div>
+        <div class="qbody">둘 이상의 데이터 유형(텍스트·이미지·오디오 등)을 결합한 프롬프트를 무엇이라 하는가?</div>
+        <ul class="choices">
+          <li data-c="1">① 멀티모달 프롬프트</li><li data-c="2">② Zero-shot 프롬프트</li><li data-c="3">③ 시스템 프롬프트</li><li data-c="4">④ 네거티브 프롬프트</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>멀티모달 프롬프트</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>멀티모달은 여러 데이터 유형을 결합해 더 풍부한 정보·맥락을 제공합니다. 'multi(여러)+modal(양식)'.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"텍스트+이미지 함께 = 멀티모달".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="3">
+        <div class="qnum">Q5</div>
+        <div class="qbody">다음 코드 단서로 보아 어떤 프로그래밍 언어인가? <code>if __name__ == "__main__":</code></div>
+        <ul class="choices">
+          <li data-c="1">① Java</li><li data-c="2">② HTML</li><li data-c="3">③ Python</li><li data-c="4">④ JSON</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>Python</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div><code>if __name__ == "__main__":</code>은 Python의 대표 구문. JSON은 중괄호, HTML은 태그, Java는 // 주석이 단서입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"__main__ = Python".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="2">
+        <div class="qnum">Q6</div>
+        <div class="qbody">중괄호 <code>{ }</code>로 시작·끝나며 <code>"key": value</code> 형태가 보이는 데이터 형식은?</div>
+        <ul class="choices">
+          <li data-c="1">① Python</li><li data-c="2">② JSON</li><li data-c="3">③ HTML</li><li data-c="4">④ Java</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>JSON</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>JSON은 중괄호로 감싸고 key-value 쌍으로 데이터를 표현합니다. 데이터 교환 형식입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"중괄호 + key:value = JSON".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="1">
+        <div class="qnum">Q7</div>
+        <div class="qbody"><code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code> 태그가 보이는 언어는?</div>
+        <ul class="choices">
+          <li data-c="1">① HTML</li><li data-c="2">② Python</li><li data-c="3">③ JSON</li><li data-c="4">④ Java</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>HTML</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>HTML은 <code>&lt; &gt;</code> 태그로 문서 구조를 표현합니다. html/head/body가 대표 태그입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"꺾쇠 태그 = HTML".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="3">
+        <div class="qnum">Q8</div>
+        <div class="qbody">ChatGPT용 프롬프트 관리·최적화 크롬 확장 프로그램으로, 템플릿 라이브러리를 제공하는 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① WebChatGPT</li><li data-c="2">② DeepL</li><li data-c="3">③ AIPRM</li><li data-c="4">④ SlidesAI</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>AIPRM</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>AIPRM은 프롬프트 템플릿 관리·최적화 확장. WebChatGPT=웹검색, DeepL=번역, SlidesAI=PPT 생성입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"AIPRM = AI PRompt Manager".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="9" data-answer="1">
+        <div class="qnum">Q9</div>
+        <div class="qbody">ChatGPT에 실시간 웹 검색 기능을 추가하는 브라우저 확장 프로그램은?</div>
+        <ul class="choices">
+          <li data-c="1">① WebChatGPT</li><li data-c="2">② AIPRM</li><li data-c="3">③ DeepL</li><li data-c="4">④ SlidesAI</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>WebChatGPT</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>WebChatGPT는 실시간 인터넷 정보를 AI 응답에 통합합니다. 검색 결과 수·시간 범위·지역 등을 설정할 수 있습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Web + ChatGPT = 웹 검색 추가".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="4">
+        <div class="qnum">Q10</div>
+        <div class="qbody">맥락과 뉘앙스를 고려한 고품질 번역을 제공하는 확장 프로그램은?</div>
+        <ul class="choices">
+          <li data-c="1">① AIPRM</li><li data-c="2">② WebChatGPT</li><li data-c="3">③ SlidesAI</li><li data-c="4">④ DeepL</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>DeepL</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>DeepL은 고품질 번역 서비스·확장으로, 웹사이트 전체 또는 선택 부분을 실시간 번역합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"DeepL = 번역".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="2">
+        <div class="qnum">Q11</div>
+        <div class="qbody">Google 슬라이드를 위한 AI 기반 프레젠테이션 자동 생성 도구는?</div>
+        <ul class="choices">
+          <li data-c="1">① DeepL</li><li data-c="2">② SlidesAI</li><li data-c="3">③ AIPRM</li><li data-c="4">④ WebChatGPT</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>SlidesAI</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>SlidesAI는 텍스트 입력만으로 슬라이드 구조·내용을 자동 생성합니다. Google 슬라이드용입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Slides + AI = PPT 자동 생성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="3">
+        <div class="qnum">Q12</div>
+        <div class="qbody">데이터 시각화 중 '전체에서 각 부분이 차지하는 비율'을 표현하기에 가장 적합한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 산점도</li><li data-c="2">② 히스토그램</li><li data-c="3">③ 파이 차트</li><li data-c="4">④ 박스 플롯</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>파이 차트</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>파이 차트는 전체 대비 비율·구성을 보여줍니다. 산점도=상관관계, 히스토그램=분포, 박스플롯=분포·이상치입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"비율 = 파이(원형)".</div></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="13" data-answer="2">
+        <div class="qnum">Q13</div>
+        <div class="qbody">두 변수 간의 '상관관계'를 점의 분포로 파악하기에 가장 적합한 시각화는?</div>
+        <ul class="choices">
+          <li data-c="1">① 파이 차트</li><li data-c="2">② 산점도</li><li data-c="3">③ 워드 클라우드</li><li data-c="4">④ 막대 그래프</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>산점도</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>산점도(Scatter Plot)는 두 변수를 x·y축에 두고 점을 찍어 상관관계를 봅니다. 점이 우상향이면 양의 상관입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"상관관계 = 산점도(흩어진 점)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="1">
+        <div class="qnum">Q14</div>
+        <div class="qbody">단어의 출현 빈도를 글자 크기로 표현하는 시각화 기법은?</div>
+        <ul class="choices">
+          <li data-c="1">① 워드 클라우드</li><li data-c="2">② 히트맵</li><li data-c="3">③ 트리맵</li><li data-c="4">④ 박스 플롯</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>워드 클라우드</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>워드 클라우드는 자주 나온 단어일수록 크게 표시합니다. 텍스트 빈도 분석에 씁니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"단어 빈도 = 워드 클라우드".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="15" data-answer="3">
+        <div class="qnum">Q15</div>
+        <div class="qbody">미드저니(Midjourney) 업무 활용 프롬프트 작성법으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 세부 묘사가 풍부한 긴 문장 후 네거티브 프롬프트 작성</li>
+          <li data-c="2">② 슬라이더로 파라미터를 조절</li>
+          <li data-c="3">③ 간결·명확한 키워드 중심 후 마지막에 파라미터(--ar 등) 작성</li>
+          <li data-c="4">④ 화풍 단어 없이 코드만 입력</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(15)">정답·해설 보기</button>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>키워드 중심 + 파라미터</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>미드저니는 간결한 키워드 프롬프트 뒤에 <code>--ar</code> 등 파라미터를 붙입니다. ①은 스테이블 디퓨전 방식입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"미드저니 = 키워드 + 끝에 파라미터".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="16" data-answer="2">
+        <div class="qnum">Q16</div>
+        <div class="qbody">스테이블 디퓨전 업무 활용 프롬프트 작성법으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 간결한 키워드 후 --ar 파라미터 추가</li>
+          <li data-c="2">② 세부 묘사가 풍부한 긴 프롬프트 후 네거티브 프롬프트 작성, 슬라이더 조정</li>
+          <li data-c="3">③ Discord 채널에 명령어 입력</li>
+          <li data-c="4">④ 스타일만 간단히 명시</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(16)">정답·해설 보기</button>
+        <div class="explain" id="exp-16">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>긴 묘사 + 네거티브 + 슬라이더</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>스테이블 디퓨전은 상세한 묘사 + 제외할 요소(네거티브 프롬프트) + 슬라이더 파라미터 조정 방식입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"SD = 긴 묘사 + 네거티브 + 슬라이더".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="17" data-answer="4">
+        <div class="qnum">Q17</div>
+        <div class="qbody">DALL·E의 이름이 유래된 두 대상으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 다빈치 + 픽사</li>
+          <li data-c="2">① 다윈 + 월리</li>
+          <li data-c="3">③ 달리 + 디즈니</li>
+          <li data-c="4">④ 살바도르 달리 + 월-E(WALL-E)</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(17)">정답·해설 보기</button>
+        <div class="explain" id="exp-17">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>살바도르 달리 + 월-E</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>DALL·E는 초현실주의 화가 살바도르 달리와 픽사 로봇 월-E(WALL-E)의 합성어입니다. OpenAI 개발입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"달리(예술) + 월-E(AI 로봇) = DALL·E".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="18" data-answer="1">
+        <div class="qnum">Q18</div>
+        <div class="qbody">생성형 AI '확장 프로그램'에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① AI의 기본 기능을 확장해 특정 업무·도메인에 최적화한다</li>
+          <li data-c="2">② AI 모델 자체를 처음부터 재학습한다</li>
+          <li data-c="3">③ 하드웨어 성능을 물리적으로 높인다</li>
+          <li data-c="4">④ 인터넷 연결을 차단한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(18)">정답·해설 보기</button>
+        <div class="explain" id="exp-18">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>기본 기능 확장·최적화</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>확장 프로그램은 브라우저/AI의 기본 기능에 새 기능을 더하거나 자동화하는 추가 소프트웨어입니다. 모델 재학습과는 무관합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"확장 = 기능 추가, 재학습 아님".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="19" data-answer="3">
+        <div class="qnum">Q19</div>
+        <div class="qbody">Few-shot 프롬프팅에 대한 설명으로 <b>옳지 않은</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 보통 2~10개의 예시를 제공한다</li>
+          <li data-c="2">② 작업의 맥락과 패턴을 명확히 전달한다</li>
+          <li data-c="3">③ 예시를 전혀 제공하지 않는다</li>
+          <li data-c="4">④ Zero-shot보다 더 많은 예시를 제공한다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(19)">정답·해설 보기</button>
+        <div class="explain" id="exp-19">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>예시를 제공하지 않는 건 Zero-shot</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Few-shot은 소수의 예시(2~10개)를 줍니다. 예시를 전혀 안 주는 건 Zero-shot입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Few는 적지만 있음(2~10), Zero는 없음(0)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="20" data-answer="2">
+        <div class="qnum">Q20</div>
+        <div class="qbody">생각의 사슬(CoT) 기법이 특히 효과적인 문제 유형은?</div>
+        <ul class="choices">
+          <li data-c="1">① 단순 단어 번역</li>
+          <li data-c="2">② 여러 단계의 추론이 필요한 수학·논리 문제</li>
+          <li data-c="3">③ 이미지 색상 변경</li>
+          <li data-c="4">④ 파일 형식 변환</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(20)">정답·해설 보기</button>
+        <div class="explain" id="exp-20">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>다단계 추론(수학·논리)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>CoT는 중간 추론 과정을 단계별로 거치므로, 여러 단계가 필요한 수학·논리 문제에서 정확도가 크게 향상됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"복잡한 추론 = CoT가 빛난다".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="21" data-answer="4">
+        <div class="qnum">Q21</div>
+        <div class="qbody">한 줄 주석이 <code>// 주석</code> 형태로 나타나는 프로그래밍 언어는?</div>
+        <ul class="choices">
+          <li data-c="1">① Python</li><li data-c="2">② JSON</li><li data-c="3">③ HTML</li><li data-c="4">④ Java</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(21)">정답·해설 보기</button>
+        <div class="explain" id="exp-21">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>Java</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>Java는 <code>//</code>로 한 줄 주석을 답니다. Python은 <code>#</code>, JSON은 주석 미지원, HTML은 <code>&lt;!-- --&gt;</code>입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"// 주석 = Java(또는 C계열)".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="22" data-answer="1">
+        <div class="qnum">Q22</div>
+        <div class="qbody">데이터의 '분포와 이상치'를 사분위수로 한눈에 보기 좋은 시각화는?</div>
+        <ul class="choices">
+          <li data-c="1">① 박스 플롯</li><li data-c="2">② 파이 차트</li><li data-c="3">③ 워드 클라우드</li><li data-c="4">④ 트리맵</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(22)">정답·해설 보기</button>
+        <div class="explain" id="exp-22">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>박스 플롯</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>박스 플롯은 사분위수·중앙값·이상치를 상자와 수염으로 표현합니다. 분포와 이상치 파악에 좋습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"이상치·사분위 = 박스 플롯".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="23" data-answer="3">
+        <div class="qnum">Q23</div>
+        <div class="qbody">계층 구조와 각 항목의 비중을 면적 크기로 표현하는 시각화는?</div>
+        <ul class="choices">
+          <li data-c="1">① 산점도</li><li data-c="2">② 히스토그램</li><li data-c="3">③ 트리맵</li><li data-c="4">④ 박스 플롯</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(23)">정답·해설 보기</button>
+        <div class="explain" id="exp-23">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>트리맵</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>트리맵은 사각형 면적으로 계층·비중을 표현합니다. 큰 사각형일수록 비중이 큽니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"면적 = 비중 = 트리맵".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="24" data-answer="2">
+        <div class="qnum">Q24</div>
+        <div class="qbody">달리(DALL·E)와 코파일럿(Copilot) 이미지 생성의 업무 활용 작성법으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 슬라이더로 파라미터를 미세 조정</li>
+          <li data-c="2">② 간결·명확한 스타일 명시, 의도 전달과 화풍/미학 단어 활용</li>
+          <li data-c="3">③ Discord 명령어로 입력</li>
+          <li data-c="4">④ 네거티브 프롬프트를 반드시 먼저 작성</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(24)">정답·해설 보기</button>
+        <div class="explain" id="exp-24">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>스타일 명시·의도 전달 중심</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>달리·코파일럿은 간결하고 명확한 스타일 명시와 의도 전달이 중요하며 화풍/미학 표현 단어를 활용합니다. 슬라이더(SD)·Discord(미드저니)와 구분됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"달리·코파일럿 = 스타일·의도 중심".</div></div>
+        </div>
+      </div>
+      <div class="part-head"><span class="part-tag">PART 2</span>단답형 주관식 (직접 입력) · 25~38</div>
+
+      <div class="qcard" data-q="25" data-answer="제로샷">
+        <div class="qnum">Q25</div>
+        <div class="qbody">예시를 전혀 제공하지 않고 작업 설명만으로 출력을 생성하게 하는 프롬프트 기법은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-25" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(25)">정답 확인</button></div>
+        <div class="explain" id="exp-25">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>제로샷 (Zero-shot)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>예시 0개. One-shot(1개), Few-shot(2~10개)과 구분.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>제로샷/Zero-shot 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="26" data-answer="원샷">
+        <div class="qnum">Q26</div>
+        <div class="qbody">하나의 입력-출력 예시를 프롬프트에 포함해 작업 패턴을 보여주는 기법은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-26" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(26)">정답 확인</button></div>
+        <div class="explain" id="exp-26">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>원샷 (One-shot)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>예시 1개. 모델에게 작업 패턴을 한 번 보여줍니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>원샷/One-shot 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="27" data-answer="퓨샷">
+        <div class="qnum">Q27</div>
+        <div class="qbody">2~10개 정도의 소수 예시를 제공하는 프롬프트 기법은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-27" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(27)">정답 확인</button></div>
+        <div class="explain" id="exp-27">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>퓨샷 (Few-shot)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>예시 2~10개. 맥락·패턴을 명확히 전달합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>퓨샷/Few-shot 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="28" data-answer="생각의사슬">
+        <div class="qnum">Q28</div>
+        <div class="qbody">복잡한 문제를 작은 단위로 나누어 단계별로 해결하게 유도하는 추론 기법은? (한글 또는 영문 약어)</div>
+        <div class="short-ans"><input type="text" id="in-28" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(28)">정답 확인</button></div>
+        <div class="explain" id="exp-28">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>생각의 사슬 (CoT, Chain of Thought)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>"단계별로 생각해 보자"가 트리거. 다단계 추론에 강합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>생각의사슬/CoT/Chain of Thought 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="29" data-answer="멀티모달">
+        <div class="qnum">Q29</div>
+        <div class="qbody">텍스트·이미지·오디오 등 둘 이상의 데이터 유형을 결합한 프롬프트를 무엇이라 하는가? (한글, ○○○○ 프롬프트)</div>
+        <div class="short-ans"><input type="text" id="in-29" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(29)">정답 확인</button></div>
+        <div class="explain" id="exp-29">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>멀티모달 (프롬프트)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>여러 데이터 유형 결합 = 멀티모달. 단일 모달보다 풍부한 맥락 제공.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>멀티모달/Multimodal 모두 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="30" data-answer="AIPRM">
+        <div class="qnum">Q30</div>
+        <div class="qbody">ChatGPT용 프롬프트 템플릿 관리·최적화 크롬 확장 프로그램의 이름은? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-30" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(30)">정답 확인</button></div>
+        <div class="explain" id="exp-30">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>AIPRM</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>프롬프트 템플릿 라이브러리·출력 형식 사전 설정 제공.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>AI PRompt Manager.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="31" data-answer="DeepL">
+        <div class="qnum">Q31</div>
+        <div class="qbody">맥락과 뉘앙스를 고려한 고품질 번역을 제공하는 확장 프로그램은? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-31" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(31)">정답 확인</button></div>
+        <div class="explain" id="exp-31">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>DeepL</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>웹사이트 전체/부분 실시간 번역 제공.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>DeepL = 번역.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="32" data-answer="산점도">
+        <div class="qnum">Q32</div>
+        <div class="qbody">두 변수 간 상관관계를 점의 분포로 보여주는 데이터 시각화 기법은? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-32" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(32)">정답 확인</button></div>
+        <div class="explain" id="exp-32">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>산점도 (Scatter Plot)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>x·y축에 점을 찍어 상관관계를 파악합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>산점도/Scatter Plot 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="33" data-answer="히트맵">
+        <div class="qnum">Q33</div>
+        <div class="qbody">값의 크기를 색상 농도로 표현하여 한눈에 패턴을 보여주는 시각화 기법은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-33" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(33)">정답 확인</button></div>
+        <div class="explain" id="exp-33">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>히트맵 (Heat Map)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>색이 진할수록 값이 큼. 상관행렬 시각화 등에 자주 씁니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"색 농도 = 히트맵".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="34" data-answer="Python">
+        <div class="qnum">Q34</div>
+        <div class="qbody"><code>if __name__ == "__main__":</code> 구문이 등장하면 어떤 프로그래밍 언어로 판단하는가? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-34" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(34)">정답 확인</button></div>
+        <div class="explain" id="exp-34">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Python (파이썬)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>__main__ 구문은 Python의 대표 식별 단서입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>Python/파이썬 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="35" data-answer="SlidesAI">
+        <div class="qnum">Q35</div>
+        <div class="qbody">텍스트 입력만으로 Google 슬라이드 프레젠테이션을 자동 생성하는 확장 도구는? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-35" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(35)">정답 확인</button></div>
+        <div class="explain" id="exp-35">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>SlidesAI</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>텍스트만으로 슬라이드 구조·내용 자동 생성.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>SlidesAI = PPT 자동 생성.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="36" data-answer="WebChatGPT">
+        <div class="qnum">Q36</div>
+        <div class="qbody">ChatGPT에 실시간 웹 검색 기능을 추가하는 브라우저 확장 프로그램은? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-36" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(36)">정답 확인</button></div>
+        <div class="explain" id="exp-36">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>WebChatGPT</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>실시간 인터넷 정보를 AI 응답에 통합.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>Web+ChatGPT = 웹검색 추가.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="37" data-answer="네거티브프롬프트">
+        <div class="qnum">Q37</div>
+        <div class="qbody">스테이블 디퓨전에서 이미지에 포함하고 싶지 않은 요소를 지정하는 프롬프트는? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-37" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(37)">정답 확인</button></div>
+        <div class="explain" id="exp-37">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>네거티브 프롬프트 (Negative Prompt)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>제외할 키워드를 지정. 미드저니의 <code>--no</code>와 같은 역할입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>네거티브프롬프트/Negative Prompt 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="38" data-answer="Java">
+        <div class="qnum">Q38</div>
+        <div class="qbody">한 줄 주석이 <code>//</code> 형태로 나타나는 것이 식별 단서인 프로그래밍 언어는? (영문)</div>
+        <div class="short-ans"><input type="text" id="in-38" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(38)">정답 확인</button></div>
+        <div class="explain" id="exp-38">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Java (자바)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>// 한 줄 주석은 Java(C계열)의 단서. Python은 #입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>Java/자바 인정.</div></div>
+        </div>
+      </div>
+      <div class="part-head"><span class="part-tag">PART 3</span>다중보기 선택형 (보기에서 골라 입력) · 39~46</div>
+
+      <div class="qcard" data-q="39" data-answer="제로샷">
+        <div class="qnum">Q39</div>
+        <div class="qbody">보기에서 '예시 0개'로 작업을 수행하는 프롬프트 기법을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 제로샷 / 원샷 / 퓨샷 / 멀티샷</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-39" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(39)">정답 확인</button></div>
+        <div class="explain" id="exp-39">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>제로샷</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>제로샷=0개, 원샷=1개, 퓨샷=2~10개.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>보기 단어 그대로 입력.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="40" data-answer="히스토그램">
+        <div class="qnum">Q40</div>
+        <div class="qbody">보기에서 '데이터를 구간으로 나눠 분포를 막대로 표현'하는 시각화를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 파이 차트 / 히스토그램 / 산점도 / 워드 클라우드</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-40" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(40)">정답 확인</button></div>
+        <div class="explain" id="exp-40">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>히스토그램</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>히스토그램은 연속 데이터를 구간(bin)으로 나눠 분포를 봅니다. 막대 그래프와 비슷하지만 '분포'가 핵심입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"구간별 분포 = 히스토그램".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="41" data-answer="CoT">
+        <div class="qnum">Q41</div>
+        <div class="qbody">보기에서 '단계별로 생각해 보자'를 활용해 다단계 추론을 유도하는 기법을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; CoT / RAG / GAN / NLP</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-41" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(41)">정답 확인</button></div>
+        <div class="explain" id="exp-41">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>CoT</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>CoT(생각의 사슬)는 단계별 추론 기법. RAG=검색증강생성, GAN=이미지 생성, NLP=자연어 처리.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>단계별 추론 = CoT.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="42" data-answer="DeepL">
+        <div class="qnum">Q42</div>
+        <div class="qbody">보기에서 '번역'을 담당하는 확장 프로그램을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; AIPRM / WebChatGPT / DeepL / SlidesAI</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-42" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(42)">정답 확인</button></div>
+        <div class="explain" id="exp-42">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>DeepL</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>DeepL=번역, AIPRM=프롬프트 관리, WebChatGPT=웹검색, SlidesAI=PPT.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>4종 기능 통암기.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="43" data-answer="HTML">
+        <div class="qnum">Q43</div>
+        <div class="qbody">보기에서 <code>&lt;html&gt;, &lt;head&gt;, &lt;body&gt;</code> 태그가 단서인 언어를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; Python / Java / HTML / JSON</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-43" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(43)">정답 확인</button></div>
+        <div class="explain" id="exp-43">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>HTML</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>html/head/body 태그 = HTML. 꺾쇠괄호 태그가 단서입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>태그 = HTML.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="44" data-answer="파이차트">
+        <div class="qnum">Q44</div>
+        <div class="qbody">보기에서 '전체 대비 비율'을 원형으로 표현하는 시각화를 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 파이 차트 / 박스 플롯 / 히트맵 / 트리맵</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-44" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(44)">정답 확인</button></div>
+        <div class="explain" id="exp-44">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>파이 차트</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>비율·구성 = 파이 차트. 트리맵도 비중을 보지만 면적·계층 중심입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"원형 비율 = 파이".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="45" data-answer="멀티모달">
+        <div class="qnum">Q45</div>
+        <div class="qbody">보기에서 '텍스트와 이미지를 함께 입력'하는 프롬프트 유형을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 단일모달 / 멀티모달 / 제로샷 / 시스템</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-45" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(45)">정답 확인</button></div>
+        <div class="explain" id="exp-45">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>멀티모달</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>둘 이상 데이터 유형 결합 = 멀티모달. 텍스트만이면 단일모달.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>여러 양식 = 멀티모달.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="46" data-answer="Discord">
+        <div class="qnum">Q46</div>
+        <div class="qbody">보기에서 미드저니의 업무 활용 시 명령을 입력하는 플랫폼을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; Discord / 로컬 / Excel / Slack</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-46" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(46)">정답 확인</button></div>
+        <div class="explain" id="exp-46">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>Discord</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>미드저니는 Discord 기반. 키워드 + 파라미터(--ar 등)로 작성합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>미드저니 = Discord.</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 4</span>서술형 (개념 적용) · 47~50</div>
+
+      <div class="qcard" data-q="47" data-answer="">
+        <div class="qnum">Q47</div>
+        <div class="qbody">N-shot 프롬프팅의 세 가지(Zero-shot, One-shot, Few-shot)를 예시 개수 기준으로 구분하여 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-47" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(47)">모범답안 보기</button></div>
+        <div class="explain" id="exp-47">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>Zero-shot</b>은 예시 없이(0개) 작업 설명만, <b>One-shot</b>은 예시 1개, <b>Few-shot</b>은 2~10개의 소수 예시를 제공하는 기법이다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>핵심은 '예시 개수'. 0 → 1 → 2~10개 순으로 늘어납니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"Zero=0, One=1, Few=2~10".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="48" data-answer="">
+        <div class="qnum">Q48</div>
+        <div class="qbody">생각의 사슬(CoT) 기법이 무엇이며, 어떤 종류의 문제에서 특히 효과적인지 그 이유와 함께 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-48" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(48)">모범답안 보기</button></div>
+        <div class="explain" id="exp-48">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div>CoT는 복잡한 문제를 작은 단위로 나누어 <b>단계별로 순차 해결</b>하게 하는 기법이다. 중간 추론 과정을 명시하므로 <b>여러 단계의 추론이 필요한 수학·논리 문제</b>에서 정확도가 높아진다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>트리거: "단계별로 생각해 보자". 체계성·명확성이 특징입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"복잡한 추론을 단계로 쪼개 정확도↑".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="49" data-answer="">
+        <div class="qnum">Q49</div>
+        <div class="qbody">미드저니·스테이블 디퓨전·달리(코파일럿) 세 이미지 생성 AI의 업무 활용 프롬프트 작성법 차이를 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-49" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(49)">모범답안 보기</button></div>
+        <div class="explain" id="exp-49">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>미드저니</b>는 간결한 키워드 중심 + 마지막에 파라미터(--ar 등). <b>스테이블 디퓨전</b>은 세부 묘사가 풍부한 긴 프롬프트 + 네거티브 프롬프트 + 슬라이더 조정. <b>달리·코파일럿</b>은 간결·명확한 스타일 명시와 의도 전달 중심(화풍·미학 단어 활용).</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>미드저니=키워드+파라미터, SD=긴 묘사+네거티브, 달리=스타일·의도.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"키워드 / 긴묘사 / 스타일" 세 단어로 구분.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="50" data-answer="">
+        <div class="qnum">Q50</div>
+        <div class="qbody">확장 프로그램 AIPRM·WebChatGPT·DeepL·SlidesAI의 각 핵심 기능을 한 줄씩 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-50" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(50)">모범답안 보기</button></div>
+        <div class="explain" id="exp-50">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>AIPRM</b>: ChatGPT용 프롬프트 관리·템플릿 제공. <b>WebChatGPT</b>: ChatGPT에 실시간 웹 검색 추가. <b>DeepL</b>: 고품질 번역. <b>SlidesAI</b>: Google 슬라이드 자동 생성.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>기능을 서로 바꿔 출제하므로 4종을 짝지어 외워야 합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"프롬프트 / 웹검색 / 번역 / PPT".</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">맞힌 문항</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 50</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">객관식은 보기 클릭 후, 주관식은 입력 후 버튼을 누르세요</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">한 장 정리</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 N-shot</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>Zero-shot: 예시 0개</li>
+            <li>One-shot: 예시 1개</li>
+            <li>Few-shot: 예시 2~10개</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 CoT · 멀티모달</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>CoT: 단계별 추론 ("단계별로 생각")</li>
+            <li>멀티모달: 둘 이상 데이터 결합</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 언어 식별</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>Python: if __name__</li>
+            <li>JSON: 중괄호 + key:value</li>
+            <li>HTML: 태그</li>
+            <li>Java: // 주석</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 시각화 8종</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>비율=파이, 분포=히스토그램</li>
+            <li>상관=산점도, 농도=히트맵</li>
+            <li>빈도=워드클라우드, 비중=트리맵</li>
+            <li>이상치=박스플롯, 비교=막대</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 확장 프로그램</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>AIPRM: 프롬프트 관리</li>
+            <li>WebChatGPT: 웹 검색</li>
+            <li>DeepL: 번역</li>
+            <li>SlidesAI: PPT 생성</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 다음 과목 예고</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8"><b>5과목(10%)</b>: 비즈니스 적용, 생산성, AI 저작권, 윤리 원칙·10대 요건</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'cert/aipot_04_prompt_applied',
+  quizTotal: 50
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function bump(n) {
+  if (!correctSet.has(n)) { correctSet.add(n); document.getElementById('quiz-score').textContent = correctSet.size; }
+}
+
+function revealQ(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = card.dataset.answer;
+  const choices = card.querySelectorAll('.choices li');
+  if (choices.length) {
+    const picked = card.querySelector('.choices li.picked');
+    choices.forEach(li => {
+      if (li.dataset.c === answer) li.classList.add('correct');
+      else if (li.classList.contains('picked')) li.classList.add('wrong');
+    });
+    if (picked && picked.dataset.c === answer) bump(n);
+  }
+  document.getElementById('exp-' + n).classList.add('show');
+}
+
+function normalize(s) {
+  return (s || '').replace(/\s+/g, '').replace(/[().,'"·\-]/g, '').toLowerCase();
+}
+function checkShort(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = normalize(card.dataset.answer);
+  const input = normalize(document.getElementById('in-' + n).value);
+  const ok = input.length > 0 && (input.includes(answer) || answer.includes(input));
+  const el = document.getElementById('in-' + n);
+  el.style.borderColor = ok ? '#10b981' : '#ef4444';
+  el.style.background = ok ? '#d1fae5' : '#fee2e2';
+  if (ok) bump(n);
+  document.getElementById('exp-' + n).classList.add('show');
+}
+</script>
+</body>
+</html>
