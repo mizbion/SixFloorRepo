@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head> 
+<meta charset="UTF-8">
+<!-- meta:subject=자격증(AI-POT) -->
+<!-- meta:unit=5과목. 프롬프트 엔지니어링 업무활용과 윤리의식 -->
+<!-- meta:title=비즈니스 적용·저작권·AI 윤리 정복 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>AI-POT 5과목 · 업무활용과 윤리의식</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f9f6f0; --card: #ffffff; --surf2: #f4ecdc; --surf3: #ecdfc4;
+  --border: #e0d0ad; --text: #1c1208; --sub: #8a6d3b;
+  --ac: #b45309; --ac-l: #fef3e2; --ac-b: #92400e;
+  --header-bg: #1a0f00; --grad-end: #d97706;
+}
+.aipot-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.aipot-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.aipot-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.aipot-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.aipot-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; }
+.aipot-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.aipot-side .unit-list li.done { color: var(--sub); }
+.aipot-side .unit-list li .num { display: inline-block; width: 24px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.aipot-side .unit-list li.current .num { color: #ecdfc4; }
+.aipot-side .weight { background: var(--surf2); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.aipot-side .weight > div { background: var(--ac); height: 100%; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fdfaf3; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .short-ans { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.qcard .short-ans input { flex: 1; min-width: 180px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; }
+.qcard .explain.show { display: block; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #fef3e2; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+.part-head { background: var(--header-bg); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; margin: 24px 0 14px; }
+.part-head .part-tag { background: var(--grad-end); padding: 2px 10px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
+.flow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 14px 0; }
+.flow .step { background: var(--ac-l); border: 1px solid var(--ac); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--ac-b); }
+.flow .arrow { color: var(--ac); font-size: 16px; }
+@media (max-width: 900px) { .aipot-layout { grid-template-columns: 1fr; } .aipot-side { position: static; } }
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">5과목</span>
+    <span class="hd-title">업무활용과 윤리의식</span>
+    <span class="hd-meta">AI-POT 2급 · 출제비중 10%</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="aipot-layout">
+  <aside class="aipot-side">
+    <h3>AI-POT 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">1</span>인공지능 기초 이론</li>
+      <li class="done"><span class="num">2</span>생성형 AI 기초 이론</li>
+      <li class="done"><span class="num">3</span>프롬프트 엔지니어링 기초</li>
+      <li class="done"><span class="num">4</span>프롬프트 기술 활용</li>
+      <li class="current"><span class="num">5</span>업무활용과 윤리의식</li>
+    </ul>
+    <h3 style="margin-top:20px">이 과목 출제 비중</h3>
+    <div class="weight"><div style="width:10%"></div></div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">전체의 <b style="color:var(--ac-b)">약 10%</b></div>
+    <h3 style="margin-top:20px">이 과목 핵심</h3>
+    <div style="font-size:12px; color:var(--sub); line-height:1.8">
+      AI 도입 단계·체크리스트<br>저작권법·AI 산출물<br>포토가드·글레이즈<br>윤리 3원칙·10대 요건<br>투명성·설명 가능성
+    </div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">업무활용과 윤리의식</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        AI-POT 마지막 과목입니다. <b style="color:var(--ac-b)">저작권법·AI 윤리 원칙</b>이 핵심이며,
+        용어와 사례를 짝짓는 문제가 주로 출제됩니다.
+      </p>
+    </section>
+    <section style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>기업의 AI 도입 단계와 윤리적 의사결정 체크리스트를 안다</li>
+        <li>대한민국 저작권법과 AI 산출물의 저작권 인정 여부를 구분한다</li>
+        <li>이미지 무단 학습 방지 기술(포토가드·글레이즈)을 안다</li>
+        <li>프롬프트 엔지니어 윤리 3원칙과 AI 윤리 10대 요건을 이해한다</li>
+        <li>투명성과 설명 가능성의 개념을 설명한다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. 기업의 생성형 AI 도입 단계</div>
+      <div class="card">
+        <div class="flow">
+          <span class="step">도입 계획 수립</span><span class="arrow">▶</span>
+          <span class="step">파일럿 테스트</span><span class="arrow">▶</span>
+          <span class="step">결과 검증</span><span class="arrow">▶</span>
+          <span class="step">확장</span>
+        </div>
+        <div class="tip"><b>💡 순서:</b> 계획 → 파일럿(소규모 시험) → 결과 검증 → 필요성 확인 후 확장. 작게 시작해 검증 후 키웁니다.</div>
+      </div>
+
+      <div class="sh">2. AI 도입 윤리적 의사결정 체크리스트</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>영역</th><th>점검 질문</th></tr></thead><tbody>
+          <tr><td><b>공정성</b></td><td>특정 집단을 차별하지 않는가?</td></tr>
+          <tr><td><b>투명성</b></td><td>의사결정 과정을 설명할 수 있는가?</td></tr>
+          <tr><td><b>책임성</b></td><td>문제 발생 시 책임 소재가 명확한가?</td></tr>
+          <tr><td><b>개인정보</b></td><td>개인정보가 적절히 보호되는가?</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="sh">3. AI 도입 윤리 평가 기준 (위험 유형)</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>위험 유형</th><th>사례</th></tr></thead><tbody>
+          <tr><td><b>편향성</b></td><td>특정 집단에 불리한 콘텐츠 생성</td></tr>
+          <tr><td><b>허위정보</b></td><td>부정확한 정보 생성 (환각 현상)</td></tr>
+          <tr><td><b>저작권 침해</b></td><td>타인 저작물과 유사한 콘텐츠 생성</td></tr>
+          <tr><td><b>개인정보 침해</b></td><td>개인정보 유출 또는 추론</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="sh">4. 대한민국 저작권법과 AI 산출물</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>구분</th><th>핵심</th></tr></thead><tbody>
+          <tr><td><b>저작물 정의</b><br>(제2조 1호)</td><td>'인간의 사상 또는 감정을 표현한 창작물'</td></tr>
+          <tr><td><b>저작자</b><br>(제2조 2호)</td><td>저작물을 창작한 자. <b>자연인만</b> 저작자 가능 → AI 자체는 저작권자 불가</td></tr>
+          <tr><td><b>순수 AI 산출물</b></td><td>인간의 창작적 기여가 없음 → <b>저작권 등록 불가</b></td></tr>
+          <tr><td><b>편집 저작물</b></td><td>AI 산출물을 인간이 선택·배열에 창작성 부여 → <b>편집저작물로 등록 가능</b></td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 핵심:</b> AI는 저작자가 될 수 없습니다(자연인만 가능). 순수 AI 산출물=등록 불가, 인간이 창작적으로 편집=편집저작물 등록 가능.</div>
+      </div>
+
+      <div class="sh">5. 개발자·이용자의 AI 활용 윤리</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>주체</th><th>윤리 원칙</th></tr></thead><tbody>
+          <tr><td><b>개발자</b></td><td>학습 이용 권한을 저작권자로부터 적법하게 확보. 웹 공개 저작물(블로그·카페)도 무단 학습 불가. 자유이용 저작물(Public Domain) 활용 가능</td></tr>
+          <tr><td><b>이용자</b></td><td>기존 저작물을 그대로 입력 금지. 유사 결과물 생성 유도 금지. 본인/타인 개인정보 입력 금지</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="sh">6. 이미지 무단 학습 방지 기술</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>기술</th><th>개발</th><th>원리</th></tr></thead><tbody>
+          <tr><td><b>포토가드</b><br>PhotoGuard</td><td>MIT CSAIL</td><td>사람은 인식 못하는 조작을 넣어, AI가 학습·편집 시 이미지 형체가 붕괴</td></tr>
+          <tr><td><b>글레이즈</b><br>Glaze</td><td>시카고대</td><td>미세한 픽셀 변화(섭동)로 AI의 스타일 학습·모방을 방지</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 구분:</b> 포토가드=MIT(형체 붕괴), 글레이즈=시카고대(스타일 모방 방지). 개발 기관으로 구분하세요.</div>
+      </div>
+
+      <div class="sh">7. 프롬프트 엔지니어 윤리 3원칙</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>원칙</th><th>의미</th></tr></thead><tbody>
+          <tr><td><b>인간 존엄성</b></td><td>AI는 도우미이지 주인이 될 수 없다</td></tr>
+          <tr><td><b>사회의 공공선</b></td><td>특정 집단이 아닌 모든 사람에게 도움이 되어야 한다</td></tr>
+          <tr><td><b>기술의 합목적성</b></td><td>처음 만들어진 좋은 목적대로 사용되어야 한다</td></tr>
+        </tbody></table>
+        <div class="warn"><b>⚠️ 한국 AI 윤리 가이드라인의 3대 기본 원칙</b>이기도 합니다.</div>
+      </div>
+
+      <div class="sh">8. AI 윤리 10대 핵심 요건</div>
+      <div class="card">
+        <p>인권보장 · 프라이버시 보호 · 다양성 존중 · 침해금지 · 공공성 · 연대성 · 데이터 관리 · 책임성 · 안전성 · 투명성</p>
+        <div class="tip"><b>💡 출제 방식:</b> 특정 사례·설명이 어느 요건에 해당하는지 묻습니다. 예: "결정 과정을 설명 가능" = 투명성, "최소 수집·안전 관리" = 프라이버시 보호.</div>
+      </div>
+
+      <div class="sh">9. 투명성과 설명 가능성</div>
+      <div class="card">
+        <table class="cmp-table"><thead><tr><th>개념</th><th>의미</th></tr></thead><tbody>
+          <tr><td><b>투명성</b></td><td>AI의 작동 방식·의사결정 과정·데이터 사용을 공개·이해 가능하게</td></tr>
+          <tr><td><b>설명 가능성</b></td><td>특정 결정·예측의 이유를 이해하기 쉽게 설명. '<b>블랙박스</b>' 의사결정을 지양하고 과정 추적 가능</td></tr>
+        </tbody></table>
+        <div class="tip"><b>💡 키워드:</b> "블랙박스 지양 + 과정 추적 가능" = 설명 가능성. 투명성은 '공개', 설명 가능성은 '이유 설명'.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">AI-POT 5과목 단골 함정 7가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. AI는 저작자가 될 수 없다</h4><p>저작권법상 <b>자연인만</b> 저작자가 됩니다. "AI가 저작권자가 될 수 있다"는 오답.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. 순수 AI vs 편집 저작물</h4><p>순수 AI 산출물=등록 불가, 인간이 창작적으로 선택·배열=편집저작물 등록 가능.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 웹 공개 = 자유이용 아님</h4><p>블로그·카페에 공개된 저작물도 무단 학습 불가. 공개≠자유이용.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 포토가드 vs 글레이즈</h4><p>포토가드=MIT(형체 붕괴), 글레이즈=시카고대(스타일 모방 방지). 기관·원리를 바꿔 출제.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. 윤리 3원칙</h4><p>인간 존엄성·공공선·합목적성. '효율성'이나 '수익성' 같은 보기는 함정.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. 투명성 vs 설명 가능성</h4><p>투명성=공개/이해, 설명 가능성=결정 이유 설명(블랙박스 지양). 두 개념을 바꿔 출제.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. 도입 단계 순서</h4><p>계획→파일럿→결과검증→확장. 검증 없이 바로 확장하면 오답.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <div class="sh">예상문제 — 실제 시험 4개 PART 형식 (25문항)</div>
+      <p style="color:var(--sub); font-size:14px">객관식 12 · 단답형 7 · 다중보기 3 · 서술형 3 으로 구성했습니다.</p>
+
+      <div class="part-head"><span class="part-tag">PART 1</span>객관식 (4지선다) · 1~12</div>
+
+      <div class="qcard" data-q="1" data-answer="2">
+        <div class="qnum">Q1</div>
+        <div class="qbody">기업의 생성형 AI 도입 단계 순서로 가장 적절한 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 확장 → 도입 계획 → 파일럿 → 결과 검증</li>
+          <li data-c="2">② 도입 계획 → 파일럿 테스트 → 결과 검증 → 확장</li>
+          <li data-c="3">③ 파일럿 → 확장 → 도입 계획 → 결과 검증</li>
+          <li data-c="4">④ 결과 검증 → 확장 → 파일럿 → 도입 계획</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>계획 → 파일럿 → 검증 → 확장</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>작게 시작(파일럿)해서 결과를 검증한 뒤 필요성을 확인하고 확장합니다. 검증 없이 바로 확장하면 위험합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"계획-파일럿-검증-확장".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="4">
+        <div class="qnum">Q2</div>
+        <div class="qbody">대한민국 저작권법상 '저작자'가 될 수 있는 대상으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① AI 모델 자체</li>
+          <li data-c="2">② 기업의 서버</li>
+          <li data-c="3">③ 학습 데이터셋</li>
+          <li data-c="4">④ 자연인(사람)</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>자연인(사람)만 가능</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>현행법상 저작자는 '저작물을 창작한 자'이며 자연인만 될 수 있습니다. AI 자체는 저작권자가 될 수 없습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"저작자 = 사람만". AI는 도구일 뿐.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="3">
+        <div class="qnum">Q3</div>
+        <div class="qbody">생성형 AI 산출물의 저작권에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 모든 AI 산출물은 자동으로 저작권이 등록된다</li>
+          <li data-c="2">② AI가 저작권자가 된다</li>
+          <li data-c="3">③ 순수 AI 산출물은 등록 불가하나, 인간이 창작적으로 편집하면 편집저작물로 등록 가능하다</li>
+          <li data-c="4">④ AI 산출물은 어떤 경우에도 저작권을 가질 수 없다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>순수 AI=불가, 편집저작물=가능</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>인간 창작적 기여가 없는 순수 AI 산출물은 등록 불가. 하지만 AI 산출물을 인간이 선택·배열하여 창작성을 더하면 편집저작물로 등록 가능합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"인간의 창작적 기여 = 등록 열쇠".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="1">
+        <div class="qnum">Q4</div>
+        <div class="qbody">MIT CSAIL이 개발했으며, 사람은 인식 못하는 조작을 넣어 AI가 학습·편집 시 이미지 형체가 붕괴되도록 하는 기술은?</div>
+        <ul class="choices">
+          <li data-c="1">① 포토가드(PhotoGuard)</li>
+          <li data-c="2">② 글레이즈(Glaze)</li>
+          <li data-c="3">③ 워터마크</li>
+          <li data-c="4">④ 딥페이크</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>포토가드 (MIT)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>포토가드는 MIT CSAIL 개발로, AI가 이미지를 학습·편집하면 형체가 붕괴됩니다. 글레이즈(시카고대)는 스타일 모방 방지가 목적입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"포토가드=MIT=형체 붕괴".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="2">
+        <div class="qnum">Q5</div>
+        <div class="qbody">시카고대 연구진이 개발했으며, 미세한 픽셀 변화로 AI의 스타일 학습·모방을 방지하는 기술은?</div>
+        <ul class="choices">
+          <li data-c="1">① 포토가드</li>
+          <li data-c="2">② 글레이즈(Glaze)</li>
+          <li data-c="3">③ CAPTCHA</li>
+          <li data-c="4">④ 토큰화</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>글레이즈 (시카고대)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>글레이즈는 미세한 픽셀 변화(섭동)로 AI가 화가의 화풍을 학습·모방하지 못하게 합니다. 포토가드(MIT)는 형체 붕괴가 목적입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"글레이즈=시카고대=스타일 보호".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="4">
+        <div class="qnum">Q6</div>
+        <div class="qbody">프롬프트 엔지니어 윤리 3원칙에 <b>해당하지 않는</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 인간 존엄성의 원칙</li>
+          <li data-c="2">② 사회의 공공선 원칙</li>
+          <li data-c="3">③ 기술의 합목적성 원칙</li>
+          <li data-c="4">④ 이윤 극대화의 원칙</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ④</span><div>이윤 극대화는 윤리 원칙 아님</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>3원칙: 인간 존엄성, 사회의 공공선, 기술의 합목적성. 한국 AI 윤리 가이드라인의 3대 기본 원칙입니다. 이윤·효율은 윤리 원칙이 아닙니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"존엄성·공공선·합목적성". 돈 관련 보기는 함정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="3">
+        <div class="qnum">Q7</div>
+        <div class="qbody">AI 시스템의 특정 결정·예측 이유를 이해하기 쉽게 설명하고 '블랙박스'를 지양하는 개념은?</div>
+        <ul class="choices">
+          <li data-c="1">① 공정성</li>
+          <li data-c="2">② 안전성</li>
+          <li data-c="3">③ 설명 가능성</li>
+          <li data-c="4">④ 효율성</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>설명 가능성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>설명 가능성은 AI 결정의 이유를 추적·설명할 수 있어야 한다는 개념으로 블랙박스를 지양합니다. 투명성은 작동 방식의 '공개'에 초점이 있습니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"블랙박스 지양 = 설명 가능성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="2">
+        <div class="qnum">Q8</div>
+        <div class="qbody">개발자의 생성형 AI 활용 윤리로 <b>옳지 않은</b> 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 학습 이용 권한을 저작권자로부터 적법하게 확보한다</li>
+          <li data-c="2">② 웹에 공개된 블로그·카페 글은 자유롭게 무단 학습해도 된다</li>
+          <li data-c="3">③ 자유이용 저작물(Public Domain)을 활용할 수 있다</li>
+          <li data-c="4">④ 저작권자의 허락 없이 학습에 이용하면 안 된다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>공개 글도 무단 학습 불가</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>웹에 공개됐다고 자유이용은 아닙니다. 블로그·카페 글도 저작권자 허락 없이 학습에 쓰면 안 됩니다. 공개 ≠ 자유이용.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"공개됐어도 무단 학습 금지".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="9" data-answer="1">
+        <div class="qnum">Q9</div>
+        <div class="qbody">이용자의 생성형 AI 활용 윤리로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">① 본인·타인의 개인정보를 포함한 데이터를 입력하지 않는다</li>
+          <li data-c="2">② 기존 저작물을 그대로 입력해 유사 결과물을 만든다</li>
+          <li data-c="3">③ 타인 저작물과 똑같은 결과를 유도한다</li>
+          <li data-c="4">④ 개인정보는 자유롭게 입력해도 된다</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>개인정보 입력 금지</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>이용자는 기존 저작물 그대로 입력·유사 결과 유도·개인정보 입력을 모두 피해야 합니다. ②③④는 금지 행위입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"개인정보·저작물 그대로 입력 금지".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="3">
+        <div class="qnum">Q10</div>
+        <div class="qbody">AI 도입 윤리적 의사결정 체크리스트에서 '문제 발생 시 책임 소재가 명확한가'를 점검하는 영역은?</div>
+        <ul class="choices">
+          <li data-c="1">① 공정성</li>
+          <li data-c="2">② 투명성</li>
+          <li data-c="3">③ 책임성</li>
+          <li data-c="4">④ 개인정보</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ③</span><div>책임성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>4영역: 공정성(차별), 투명성(설명 가능), 책임성(책임 소재), 개인정보(보호). '책임 소재'는 책임성입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"책임 소재 = 책임성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="2">
+        <div class="qnum">Q11</div>
+        <div class="qbody">AI 도입 윤리 평가에서 '부정확한 정보 생성(환각 현상)'은 어떤 위험 유형에 해당하는가?</div>
+        <ul class="choices">
+          <li data-c="1">① 편향성</li>
+          <li data-c="2">② 허위정보</li>
+          <li data-c="3">③ 저작권 침해</li>
+          <li data-c="4">④ 개인정보 침해</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ②</span><div>허위정보</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>위험 유형: 편향성(차별), 허위정보(환각), 저작권 침해(유사 콘텐츠), 개인정보 침해(유출). 환각은 허위정보입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"환각 = 허위정보".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="1">
+        <div class="qnum">Q12</div>
+        <div class="qbody">디즈니 캐릭터 생성을 요청하는 대신 '20세기 초반 애니메이션 스타일의 오리지널 캐릭터'를 요청하도록 프롬프트를 수정했다. 이는 어떤 이슈에 대응한 것인가?</div>
+        <ul class="choices">
+          <li data-c="1">① 저작권 준수</li>
+          <li data-c="2">② 개인정보 보호</li>
+          <li data-c="3">③ 안전성 확보</li>
+          <li data-c="4">④ 정확성 검증</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답 ①</span><div>저작권 준수</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>특정 IP(디즈니 캐릭터) 대신 오리지널 캐릭터를 요청하는 것은 타인 저작물 침해를 피하려는 저작권 준수 대응입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"특정 캐릭터→오리지널 = 저작권 회피".</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 2</span>단답형 주관식 (직접 입력) · 13~19</div>
+
+      <div class="qcard" data-q="13" data-answer="자연인">
+        <div class="qnum">Q13</div>
+        <div class="qbody">대한민국 저작권법상 저작자가 될 수 있는 것은 오직 '○○○'뿐이다. (한글 3글자)</div>
+        <div class="short-ans"><input type="text" id="in-13" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(13)">정답 확인</button></div>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>자연인 (사람)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>AI는 저작자가 될 수 없고 자연인만 가능합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>자연인/사람 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="포토가드">
+        <div class="qnum">Q14</div>
+        <div class="qbody">MIT CSAIL이 개발했으며, AI가 이미지를 학습·편집하면 형체가 붕괴되도록 하는 무단 학습 방지 기술은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-14" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(14)">정답 확인</button></div>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>포토가드 (PhotoGuard)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>MIT 개발, 형체 붕괴. 글레이즈(시카고대, 스타일 보호)와 구분.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>포토가드/PhotoGuard 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="15" data-answer="글레이즈">
+        <div class="qnum">Q15</div>
+        <div class="qbody">시카고대 연구진이 개발했으며, 미세한 픽셀 변화로 AI의 화풍 학습·모방을 방지하는 기술은? (한글 또는 영문)</div>
+        <div class="short-ans"><input type="text" id="in-15" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(15)">정답 확인</button></div>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>글레이즈 (Glaze)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>시카고대 개발, 스타일 모방 방지. 포토가드(MIT, 형체 붕괴)와 구분.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>글레이즈/Glaze 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="16" data-answer="편집저작물">
+        <div class="qnum">Q16</div>
+        <div class="qbody">AI 산출물을 인간이 창작적으로 선택·배열한 경우, 무엇으로 저작권 등록이 가능한가? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-16" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(16)">정답 확인</button></div>
+        <div class="explain" id="exp-16">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>편집저작물</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>순수 AI 산출물은 등록 불가하나, 인간의 선택·배열에 창작성이 있으면 편집저작물로 등록 가능합니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>편집저작물/편집 저작물 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="17" data-answer="설명가능성">
+        <div class="qnum">Q17</div>
+        <div class="qbody">AI의 특정 결정·예측 이유를 이해하기 쉽게 설명하고 '블랙박스'를 지양하는 윤리 개념은? (한글)</div>
+        <div class="short-ans"><input type="text" id="in-17" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(17)">정답 확인</button></div>
+        <div class="explain" id="exp-17">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>설명 가능성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>설명 가능성은 결정 이유 설명·과정 추적. 투명성은 작동 방식 공개입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>설명가능성/설명 가능성 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="18" data-answer="공공선">
+        <div class="qnum">Q18</div>
+        <div class="qbody">프롬프트 엔지니어 윤리 3원칙 중 'AI는 특정 집단이 아닌 모든 사람에게 도움이 되어야 한다'는 원칙은? (한글, 사회의 ○○○)</div>
+        <div class="short-ans"><input type="text" id="in-18" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(18)">정답 확인</button></div>
+        <div class="explain" id="exp-18">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>공공선 (사회의 공공선)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>3원칙: 인간 존엄성, 사회의 공공선, 기술의 합목적성.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>공공선 인정.</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="19" data-answer="파일럿">
+        <div class="qnum">Q19</div>
+        <div class="qbody">기업의 AI 도입 단계 중, 본격 확장 전에 소규모로 시험 적용해보는 단계는? (한글, ○○○ 테스트)</div>
+        <div class="short-ans"><input type="text" id="in-19" placeholder="답 입력"><button class="reveal-btn" onclick="checkShort(19)">정답 확인</button></div>
+        <div class="explain" id="exp-19">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>파일럿 (테스트)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>도입 단계: 계획 → 파일럿 → 결과 검증 → 확장. 파일럿은 소규모 시험 적용입니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>파일럿/Pilot 인정.</div></div>
+        </div>
+      </div>
+      <div class="part-head"><span class="part-tag">PART 3</span>다중보기 선택형 (보기에서 골라 입력) · 20~22</div>
+
+      <div class="qcard" data-q="20" data-answer="투명성">
+        <div class="qnum">Q20</div>
+        <div class="qbody">보기에서 '의사결정 과정을 설명할 수 있는가'를 점검하는 윤리 의사결정 영역을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 공정성 / 투명성 / 책임성 / 개인정보</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-20" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(20)">정답 확인</button></div>
+        <div class="explain" id="exp-20">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>투명성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>투명성=설명 가능, 공정성=차별 여부, 책임성=책임 소재, 개인정보=보호 여부.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"설명 가능 = 투명성".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="21" data-answer="저작권침해">
+        <div class="qnum">Q21</div>
+        <div class="qbody">보기에서 '타인의 저작물과 유사한 콘텐츠 생성'이 해당하는 AI 도입 윤리 위험 유형을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 편향성 / 허위정보 / 저작권 침해 / 개인정보 침해</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-21" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(21)">정답 확인</button></div>
+        <div class="explain" id="exp-21">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>저작권 침해</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>편향성=차별 콘텐츠, 허위정보=환각, 저작권 침해=유사 콘텐츠, 개인정보 침해=유출·추론.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"유사 콘텐츠 = 저작권 침해".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="22" data-answer="합목적성">
+        <div class="qnum">Q22</div>
+        <div class="qbody">보기에서 'AI는 처음 만들어진 좋은 목적대로 사용되어야 한다'는 윤리 원칙을 골라 작성하시오.
+          <div style="background:var(--surf2); padding:8px 12px; border-radius:6px; margin-top:8px; font-size:13px">&lt;보기&gt; 인간 존엄성 / 공공선 / 합목적성 / 효율성</div>
+        </div>
+        <div class="short-ans"><input type="text" id="in-22" placeholder="보기에서 골라 입력"><button class="reveal-btn" onclick="checkShort(22)">정답 확인</button></div>
+        <div class="explain" id="exp-22">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>합목적성 (기술의 합목적성)</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>3원칙: 인간 존엄성, 공공선, 합목적성. '효율성'은 윤리 원칙이 아닙니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"좋은 목적대로 = 합목적성".</div></div>
+        </div>
+      </div>
+
+      <div class="part-head"><span class="part-tag">PART 4</span>서술형 (개념 적용) · 23~25</div>
+
+      <div class="qcard" data-q="23" data-answer="">
+        <div class="qnum">Q23</div>
+        <div class="qbody">생성형 AI 산출물의 저작권에 대해, '순수 AI 산출물'과 '편집 저작물'의 차이를 저작권 등록 가능 여부와 함께 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-23" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(23)">모범답안 보기</button></div>
+        <div class="explain" id="exp-23">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>순수 AI 산출물</b>은 인간의 창작적 기여가 없어 <b>저작권 등록이 불가</b>하다. 반면 AI 산출물을 <b>인간이 창작적으로 선택·배열</b>한 경우 <b>편집저작물로 등록이 가능</b>하다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>핵심은 '인간의 창작적 기여' 유무. 자연인만 저작자가 될 수 있다는 원칙과 연결됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"인간 기여 없음→불가, 인간이 편집→편집저작물 가능".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="24" data-answer="">
+        <div class="qnum">Q24</div>
+        <div class="qbody">이미지 무단 학습 방지 기술인 '포토가드'와 '글레이즈'의 차이를 개발 기관과 작동 원리(목적) 측면에서 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-24" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(24)">모범답안 보기</button></div>
+        <div class="explain" id="exp-24">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>포토가드</b>는 MIT CSAIL이 개발했으며, AI가 이미지를 학습·편집할 때 <b>이미지 형체가 붕괴</b>되도록 한다. <b>글레이즈</b>는 시카고대가 개발했으며, 미세한 픽셀 변화로 AI가 <b>스타일(화풍)을 학습·모방하지 못하게</b> 막는다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>포토가드=MIT·형체 붕괴, 글레이즈=시카고대·스타일 보호.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"포토가드=형체, 글레이즈=스타일".</div></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="25" data-answer="">
+        <div class="qnum">Q25</div>
+        <div class="qbody">AI 윤리에서 '투명성'과 '설명 가능성'은 어떻게 다른지 각각의 핵심을 들어 서술하시오.</div>
+        <div class="short-ans"><input type="text" id="in-25" placeholder="핵심 키워드 입력 후 확인"><button class="reveal-btn" onclick="revealQ(25)">모범답안 보기</button></div>
+        <div class="explain" id="exp-25">
+          <div class="exp-block exp-answer"><span class="exp-label">모범답안</span><div><b>투명성</b>은 AI의 작동 방식·의사결정 과정·데이터 사용을 <b>공개하고 이해 가능</b>하게 하는 것이다. <b>설명 가능성</b>은 AI의 특정 결정·예측의 <b>이유를 이해하기 쉽게 설명</b>하는 능력으로, '블랙박스' 의사결정을 지양하고 과정을 추적할 수 있어야 한다는 것이다.</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">개념 복습</span><div>투명성='공개', 설명 가능성='이유 설명·추적'. 둘 다 AI 윤리 10대 요건에 포함됩니다.</div></div>
+          <div class="exp-block exp-tip"><span class="exp-label">암기 팁</span><div>"투명성=공개, 설명가능성=이유(블랙박스 지양)".</div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">맞힌 문항</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 25</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">객관식은 보기 클릭 후, 주관식은 입력 후 버튼을 누르세요</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">한 장 정리</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 AI 도입 단계</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>계획 → 파일럿 → 검증 → 확장</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 저작권</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>저작자 = 자연인만</li>
+            <li>순수 AI 산출물 = 등록 불가</li>
+            <li>인간 편집 = 편집저작물 등록 가능</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 무단 학습 방지</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>포토가드: MIT, 형체 붕괴</li>
+            <li>글레이즈: 시카고대, 스타일 보호</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 윤리 3원칙</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>인간 존엄성</li>
+            <li>사회의 공공선</li>
+            <li>기술의 합목적성</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 투명성 vs 설명가능성</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9">
+            <li>투명성: 작동 방식 공개</li>
+            <li>설명 가능성: 결정 이유 설명(블랙박스 지양)</li>
+          </ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">📌 전 과목 완주!</h4>
+          <p style="margin:0; font-size:13px; line-height:1.8">1~5과목 이론 학습 완료. 이제 <b>종합 모의고사</b>로 실전 점검하세요.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId:  'cert/aipot_05_ethics',
+  quizTotal: 25
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function bump(n) {
+  if (!correctSet.has(n)) { correctSet.add(n); document.getElementById('quiz-score').textContent = correctSet.size; }
+}
+
+function revealQ(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = card.dataset.answer;
+  const choices = card.querySelectorAll('.choices li');
+  if (choices.length) {
+    const picked = card.querySelector('.choices li.picked');
+    choices.forEach(li => {
+      if (li.dataset.c === answer) li.classList.add('correct');
+      else if (li.classList.contains('picked')) li.classList.add('wrong');
+    });
+    if (picked && picked.dataset.c === answer) bump(n);
+  }
+  document.getElementById('exp-' + n).classList.add('show');
+}
+
+function normalize(s) {
+  return (s || '').replace(/\s+/g, '').replace(/[().,'"·\-]/g, '').toLowerCase();
+}
+function checkShort(n) {
+  const card = document.querySelector('.qcard[data-q="' + n + '"]');
+  const answer = normalize(card.dataset.answer);
+  const input = normalize(document.getElementById('in-' + n).value);
+  const ok = input.length > 0 && (input.includes(answer) || answer.includes(input));
+  const el = document.getElementById('in-' + n);
+  el.style.borderColor = ok ? '#10b981' : '#ef4444';
+  el.style.background = ok ? '#d1fae5' : '#fee2e2';
+  if (ok) bump(n);
+  document.getElementById('exp-' + n).classList.add('show');
+}
+</script>
+</body>
+</html>
