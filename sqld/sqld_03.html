@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=SQLD -->
+<!-- meta:unit=개념 -->
+<!-- meta:title=03.정규화/반정규화/트랜잭션 -->
+<!-- meta:desc=정규화, 반정규화, 트랜잭션  -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>SQLD 03 · 정규화/반정규화/트랜잭션</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f0f7ff; --card: #ffffff;
+  --surf2: #e0edff; --surf3: #c7dcff;
+  --border: #b6cdf0; --text: #0a1929; --sub: #4a6585;
+  --ac: #1d4ed8; --ac-l: #dbeafe; --ac-b: #1e40af;
+  --header-bg: #061229; --grad-end: #3b82f6;
+}
+.sqld-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.sqld-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.sqld-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.sqld-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.sqld-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; cursor: default; }
+.sqld-side .unit-list li.done { color: var(--sub); }
+.sqld-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.sqld-side .unit-list li .num { display: inline-block; width: 28px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.sqld-side .unit-list li.current .num { color: #c7dcff; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fafcff; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; padding: 14px; background: #f5f9ff; border-radius: 6px; border-left: 3px solid var(--ac); font-size: 14px; line-height: 1.7; }
+.qcard .explain.show { display: block; }
+.qcard .explain h4 { margin: 0 0 8px; color: var(--ac-b); font-size: 14px; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.03em; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #eff6ff; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+.exp-block .mini-tbl { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 13px; }
+.exp-block .mini-tbl td, .exp-block .mini-tbl th { border: 1px solid var(--border); padding: 5px 8px; }
+.exp-block .mini-tbl th { background: var(--surf2); }
+.qcard .explain code { background: #fff; padding: 1px 5px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); border: 1px solid var(--border); }
+@media (max-width: 900px) {
+  .sqld-layout { grid-template-columns: 1fr; }
+  .sqld-side { position: static; }
+}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">UNIT 03</span>
+    <span class="hd-title">정규화 · 반정규화 · 트랜잭션</span>
+    <span class="hd-meta">SQLD 자격증 · 데이터 구조 최적화</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="sqld-layout">
+  <aside class="sqld-side">
+    <h3>SQLD 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">01</span>데이터 모델링 개요</li>
+      <li class="done"><span class="num">02</span>엔터티·속성·관계·식별자</li>
+      <li class="current"><span class="num">03</span>정규화·반정규화·트랜잭션</li>
+      <li><span class="num">04</span>DDL·DML·TCL</li>
+      <li><span class="num">05</span>WHERE·함수</li>
+      <li><span class="num">06</span>GROUP BY·HAVING</li>
+      <li><span class="num">07</span>JOIN·집합·계층형</li>
+      <li><span class="num">08</span>서브쿼리·뷰·윈도우</li>
+      <li><span class="num">09</span>DCL·절차형 SQL</li>
+      <li><span class="num">10</span>종합 모의고사</li>
+    </ul>
+    <h3 style="margin-top:20px">이 단원 출제 비중</h3>
+    <div style="background:var(--surf2); height:8px; border-radius:4px; overflow:hidden">
+      <div style="background:var(--ac); width:38%; height:100%"></div>
+    </div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">정규화/반정규화/트랜잭션은 <b style="color:var(--ac-b)">실전 SQL 설계의 핵심</b>입니다</div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">정규화/반정규화/트랜잭션, 데이터 구조의 뼈대를 잡는 단원</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        이 단원은 <b style="color:var(--ac-b)">정규화, 반정규화, 트랜잭션</b>의 정의와 실제 적용, 그리고 문제에서 자주 나오는 함정까지 미니 강의로 정리했습니다.
+      </p>
+    </section>
+    <section class="goals" style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>정규화/반정규화의 <b>정의와 목적</b>을 구분한다</li>
+        <li>1~3차 정규화의 <b>조건과 예시</b>를 설명한다</li>
+        <li>트랜잭션의 <b>ACID 원칙</b>과 주요 명령을 구분한다</li>
+        <li>기출형 예상문제 15문항을 풀며 <b>미니 강의형 해설</b>로 재학습한다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="example">💻 예제</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. 정규화(Normalization)</div>
+      <div class="card">
+        <p>정규화는 <b>데이터의 중복과 이상 현상(Anomaly)을 제거</b>하고, <b>데이터 구조를 체계적으로 분해</b>하는 과정입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>차수</th><th>조건</th><th>핵심</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>1차 정규화</b></td><td>모든 속성 값이 원자값(더 이상 나눌 수 없음)</td><td>반복/중첩 컬럼 제거</td><td>전화번호1, 전화번호2 → 전화번호 테이블 분리</td></tr>
+            <tr><td><b>2차 정규화</b></td><td>부분적 함수 종속 제거(기본키 전체에만 종속)</td><td>복합키의 일부에만 종속된 속성 분리</td><td>학번+과목 → 성적, 이름은 학번에만 종속</td></tr>
+            <tr><td><b>3차 정규화</b></td><td>이행적 함수 종속 제거(키가 아닌 속성에 종속된 속성 분리)</td><td>비키 속성 간 종속 제거</td><td>학번 → 학과코드 → 학과명</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>핵심:</b> 정규화는 <b>중복/이상 현상</b>을 막고, <b>데이터 무결성</b>을 높입니다.</div>
+      </div>
+      <div class="sh">2. 반정규화(Denormalization)</div>
+      <div class="card">
+        <p>반정규화는 <b>성능 향상</b>을 위해 일부러 중복을 허용하거나 테이블을 합치는 과정입니다. 조회 속도가 중요한 경우 사용합니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>기법</th><th>설명</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>테이블 통합</b></td><td>자주 조인되는 테이블을 합침</td><td>학생+수강 통합</td></tr>
+            <tr><td><b>중복 컬럼 추가</b></td><td>조회 속도를 위해 컬럼 중복</td><td>학생 테이블에 학과명 추가</td></tr>
+            <tr><td><b>요약 테이블</b></td><td>집계 결과를 별도 저장</td><td>월별 매출 요약 테이블</td></tr>
+          </tbody>
+        </table>
+        <div class="warn"><b>주의:</b> 반정규화는 <b>성능은 좋아지지만, 무결성 관리가 어려워질 수 있음</b>을 기억하세요.</div>
+      </div>
+      <div class="sh">3. 트랜잭션(Transaction)</div>
+      <div class="card">
+        <p>트랜잭션은 <b>데이터베이스에서 하나의 논리적 작업 단위</b>입니다. 여러 작업이 한 번에 성공하거나, 모두 실패해야 합니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>특징(ACID)</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td><b>원자성(Atomicity)</b></td><td>모두 성공/모두 실패</td></tr>
+            <tr><td><b>일관성(Consistency)</b></td><td>작업 전후 데이터 일관성 유지</td></tr>
+            <tr><td><b>고립성(Isolation)</b></td><td>동시 실행 시 서로 영향 없음</td></tr>
+            <tr><td><b>지속성(Durability)</b></td><td>커밋된 결과는 영구 보존</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>주요 명령:</b> <code>COMMIT</code>, <code>ROLLBACK</code>, <code>SAVEPOINT</code> 등으로 트랜잭션을 제어합니다.</div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-example">
+      <div class="sh">예제: 정규화 전후 테이블 비교</div>
+      <div class="card">
+        <p>아래는 정규화 전후의 테이블 구조 변화 예시입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>정규화 전</th><th>정규화 후</th></tr></thead>
+          <tbody>
+            <tr><td>학생(학번, 이름, 과목1, 과목2, 점수1, 점수2)</td><td>학생(학번, 이름), 수강(학번, 과목, 점수)</td></tr>
+            <tr><td>중복, 이상 현상 발생</td><td>중복 최소화, 무결성 향상</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sh">트랜잭션 명령 예시</div>
+      <div class="card">
+        <table class="cmp-table">
+          <thead><tr><th>명령</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td>COMMIT</td><td>변경 내용 영구 반영</td></tr>
+            <tr><td>ROLLBACK</td><td>변경 내용 취소</td></tr>
+            <tr><td>SAVEPOINT</td><td>중간 저장점 설정</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">SQLD 출제진이 좋아하는 함정 7가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. 정규화는 무조건 좋은 것?</h4><p>정규화는 중복/이상 현상을 막지만, <b>성능 저하</b>가 발생할 수 있습니다. 실무에서는 반정규화도 필요합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. 1차/2차/3차 정규화 조건 혼동</h4><p>1차: 원자값, 2차: 부분적 종속 제거, 3차: 이행적 종속 제거를 구분하세요.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. 반정규화는 무결성에 영향 없음?</h4><p>반정규화는 성능은 좋아지지만, <b>무결성 관리가 어려워질 수 있음</b>을 기억하세요.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. 트랜잭션은 부분 성공 가능?</h4><p>트랜잭션은 <b>모두 성공/모두 실패</b>가 원칙입니다. 일부만 성공은 허용되지 않습니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. ACID 원칙 순서 혼동</h4><p>원자성, 일관성, 고립성, 지속성(Atomicity, Consistency, Isolation, Durability) 순서와 의미를 구분하세요.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. SAVEPOINT는 취소 명령?</h4><p>SAVEPOINT는 <b>중간 저장점</b>을 만드는 명령입니다. 취소(ROLLBACK)와는 다릅니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. COMMIT/ROLLBACK 혼동</h4><p>COMMIT은 영구 반영, ROLLBACK은 취소입니다. 반대로 외우지 않도록 주의하세요.</p></div>
+    </div>
+    <div class="tab-panel" id="tab-quiz">
+      <!-- 예상문제 15문항 (문제+해설) 영역. 실제 문제는 아래와 같이 추가. -->
+      <div class="sh">예상문제 (기출 변형, 15문항)</div>
+      <!-- 문제 1~15: 각 문제는 엔터티/속성/관계/식별자/정규화/반정규화/트랜잭션/ACID/명령/실무 응용 등 골고루 출제 -->
+      <div class="qcard" data-q="1" data-answer="2">
+        <div class="qnum">Q1 · 정규화</div>
+        <div class="qbody">정규화의 주된 목적은 무엇인가?</div>
+        <ul class="choices">
+          <li data-c="1">데이터 조회 속도 향상</li>
+          <li data-c="2">중복과 이상 현상 제거</li>
+          <li data-c="3">테이블 수 최소화</li>
+          <li data-c="4">트랜잭션 관리</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>중복과 이상 현상 제거</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>정규화는 <b>중복 데이터와 이상 현상(Anomaly)</b>을 제거하고, 데이터 무결성을 높이는 과정입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 반정규화의 목적</li><li>3: 정규화로 테이블 수가 늘기도 함</li><li>4: 트랜잭션과 관련</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="2" data-answer="3">
+        <div class="qnum">Q2 · 1차 정규화</div>
+        <div class="qbody">1차 정규화의 조건으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">부분적 함수 종속 제거</li>
+          <li data-c="2">이행적 함수 종속 제거</li>
+          <li data-c="3">모든 속성 값이 원자값</li>
+          <li data-c="4">중복 컬럼 허용</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>모든 속성 값이 원자값</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>1차 정규화는 <b>모든 속성 값이 더 이상 나눌 수 없는 원자값</b>이어야 합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 2차 정규화 조건</li><li>2: 3차 정규화 조건</li><li>4: 정규화와 반대</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="3" data-answer="1">
+        <div class="qnum">Q3 · 2차 정규화</div>
+        <div class="qbody">2차 정규화의 조건으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">부분적 함수 종속 제거</li>
+          <li data-c="2">이행적 함수 종속 제거</li>
+          <li data-c="3">중복 컬럼 허용</li>
+          <li data-c="4">모든 속성 값이 원자값</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>부분적 함수 종속 제거</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>2차 정규화는 <b>복합키의 일부에만 종속된 속성</b>을 분리하는 과정입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: 3차 정규화 조건</li><li>3: 반정규화</li><li>4: 1차 정규화 조건</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="4" data-answer="2">
+        <div class="qnum">Q4 · 3차 정규화</div>
+        <div class="qbody">3차 정규화의 조건으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">모든 속성 값이 원자값</li>
+          <li data-c="2">이행적 함수 종속 제거</li>
+          <li data-c="3">부분적 함수 종속 제거</li>
+          <li data-c="4">중복 컬럼 허용</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>이행적 함수 종속 제거</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>3차 정규화는 <b>키가 아닌 속성에 종속된 속성</b>을 분리하는 과정입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 1차 정규화 조건</li><li>3: 2차 정규화 조건</li><li>4: 반정규화</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="5" data-answer="4">
+        <div class="qnum">Q5 · 반정규화</div>
+        <div class="qbody">반정규화의 주된 목적은 무엇인가?</div>
+        <ul class="choices">
+          <li data-c="1">중복과 이상 현상 제거</li>
+          <li data-c="2">데이터 무결성 강화</li>
+          <li data-c="3">테이블 수 최소화</li>
+          <li data-c="4">성능 향상</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>성능 향상</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>반정규화는 <b>조회 속도 등 성능 향상</b>을 위해 일부러 중복을 허용하거나 테이블을 합치는 과정입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2: 정규화의 목적</li><li>3: 결과적으로 늘기도 함</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="6" data-answer="1">
+        <div class="qnum">Q6 · 트랜잭션</div>
+        <div class="qbody">트랜잭션의 정의로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">하나의 논리적 작업 단위</li>
+          <li data-c="2">데이터 중복 제거 과정</li>
+          <li data-c="3">테이블 통합 과정</li>
+          <li data-c="4">데이터 조회 명령</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>하나의 논리적 작업 단위</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>트랜잭션은 <b>여러 작업이 한 번에 성공하거나 모두 실패해야 하는 논리적 작업 단위</b>입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: 정규화</li><li>3: 반정규화</li><li>4: SELECT 등</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="7" data-answer="2">
+        <div class="qnum">Q7 · ACID</div>
+        <div class="qbody">트랜잭션의 ACID 원칙에 해당하지 않는 것은?</div>
+        <ul class="choices">
+          <li data-c="1">원자성</li>
+          <li data-c="2">집계성</li>
+          <li data-c="3">일관성</li>
+          <li data-c="4">고립성</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>집계성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>ACID는 원자성(Atomicity), 일관성(Consistency), 고립성(Isolation), 지속성(Durability)입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,3,4: 모두 ACID 원칙</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="8" data-answer="3">
+        <div class="qnum">Q8 · COMMIT</div>
+        <div class="qbody">COMMIT 명령의 역할로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">변경 내용 취소</li>
+          <li data-c="2">중간 저장점 설정</li>
+          <li data-c="3">변경 내용 영구 반영</li>
+          <li data-c="4">데이터 조회</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>변경 내용 영구 반영</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>COMMIT은 <b>트랜잭션에서 변경된 내용을 영구적으로 반영</b>하는 명령입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: ROLLBACK</li><li>2: SAVEPOINT</li><li>4: SELECT 등</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="9" data-answer="1">
+        <div class="qnum">Q9 · ROLLBACK</div>
+        <div class="qbody">ROLLBACK 명령의 역할로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">변경 내용 취소</li>
+          <li data-c="2">변경 내용 영구 반영</li>
+          <li data-c="3">중간 저장점 설정</li>
+          <li data-c="4">데이터 조회</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>변경 내용 취소</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>ROLLBACK은 <b>트랜잭션에서 변경된 내용을 취소</b>하는 명령입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: COMMIT</li><li>3: SAVEPOINT</li><li>4: SELECT 등</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="10" data-answer="2">
+        <div class="qnum">Q10 · SAVEPOINT</div>
+        <div class="qbody">SAVEPOINT 명령의 역할로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">변경 내용 취소</li>
+          <li data-c="2">중간 저장점 설정</li>
+          <li data-c="3">변경 내용 영구 반영</li>
+          <li data-c="4">데이터 조회</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>중간 저장점 설정</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>SAVEPOINT는 <b>트랜잭션 내에서 중간 저장점</b>을 만드는 명령입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: ROLLBACK</li><li>3: COMMIT</li><li>4: SELECT 등</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="11" data-answer="3">
+        <div class="qnum">Q11 · 정규화/반정규화</div>
+        <div class="qbody">정규화와 반정규화의 차이로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">정규화는 성능 향상, 반정규화는 중복 제거</li>
+          <li data-c="2">둘 다 중복을 허용한다</li>
+          <li data-c="3">정규화는 중복 제거, 반정규화는 성능 향상</li>
+          <li data-c="4">둘 다 무결성 강화</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>정규화는 중복 제거, 반정규화는 성능 향상</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>정규화는 <b>중복/이상 현상 제거</b>, 반정규화는 <b>성능 향상</b>이 목적입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 반대로 외운 경우</li><li>2,4: 둘 다 아님</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="12" data-answer="4">
+        <div class="qnum">Q12 · 트랜잭션/ACID</div>
+        <div class="qbody">트랜잭션의 ACID 원칙 중 "고립성"의 의미로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">모두 성공/모두 실패</li>
+          <li data-c="2">작업 전후 데이터 일관성 유지</li>
+          <li data-c="3">커밋된 결과는 영구 보존</li>
+          <li data-c="4">동시 실행 시 서로 영향 없음</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>동시 실행 시 서로 영향 없음</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>고립성(Isolation)은 <b>동시 실행되는 트랜잭션이 서로 영향을 주지 않음</b>을 의미합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 원자성</li><li>2: 일관성</li><li>3: 지속성</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="13" data-answer="2">
+        <div class="qnum">Q13 · 정규화</div>
+        <div class="qbody">정규화의 결과로 옳지 않은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">중복 데이터 감소</li>
+          <li data-c="2">조회 성능 무조건 향상</li>
+          <li data-c="3">이상 현상 감소</li>
+          <li data-c="4">무결성 향상</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>조회 성능 무조건 향상</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>정규화는 중복/이상 현상 감소, 무결성 향상에는 도움이 되지만, <b>조회 성능이 항상 좋아지는 것은 아닙니다</b>.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,3,4: 모두 정규화의 효과</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="14" data-answer="1">
+        <div class="qnum">Q14 · 트랜잭션</div>
+        <div class="qbody">트랜잭션에서 "모두 성공/모두 실패"의 원칙은 무엇이라 하는가?</div>
+        <ul class="choices">
+          <li data-c="1">원자성</li>
+          <li data-c="2">일관성</li>
+          <li data-c="3">고립성</li>
+          <li data-c="4">지속성</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>원자성</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>트랜잭션의 <b>원자성(Atomicity)</b>은 모두 성공하거나 모두 실패해야 함을 의미합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: 일관성</li><li>3: 고립성</li><li>4: 지속성</li></ul></div>
+        </div>
+      </div>
+      <div class="qcard" data-q="15" data-answer="4">
+        <div class="qnum">Q15 · 실무 응용</div>
+        <div class="qbody">다음 중 반정규화가 필요한 상황으로 옳은 것은?</div>
+        <ul class="choices">
+          <li data-c="1">중복 데이터가 많아 무결성이 중요할 때</li>
+          <li data-c="2">테이블 수를 줄이고 싶을 때</li>
+          <li data-c="3">트랜잭션 관리가 필요할 때</li>
+          <li data-c="4">조회 성능이 중요한 대용량 시스템에서</li>
+        </ul>
+        <button class="reveal-btn" onclick="revealQ(15)">정답·해설 보기</button>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>조회 성능이 중요한 대용량 시스템에서</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>반정규화는 <b>조회 성능이 중요한 대용량 시스템</b>에서 일부러 중복을 허용하거나 테이블을 합치는 기법입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 정규화가 더 적합</li><li>2: 목적이 다름</li><li>3: 트랜잭션과 관련</li></ul></div>
+        </div>
+      </div>
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">현재 점수</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 15 정답</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">정답을 고른 뒤 [정답·해설 보기]를 누르면 점수가 올라갑니다</div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">📌 핵심 요약</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">정규화</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>중복/이상 현상 제거</li><li>1~3차 정규화 조건</li><li>무결성 향상</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">반정규화</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>성능 향상 목적</li><li>중복 허용/테이블 통합</li><li>무결성 관리 주의</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">트랜잭션</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>논리적 작업 단위</li><li>ACID 원칙</li><li>COMMIT/ROLLBACK/SAVEPOINT</li></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId: 'cert/sqld_03_normalization_transaction',
+  quizTotal: 15
+};
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+const correctSet = new Set();
+function revealQ(n) {
+  const card = document.querySelector(`.qcard[data-q="${n}"]`);
+  const answer = card.dataset.answer;
+  const picked = card.querySelector('.choices li.picked');
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    if (li.dataset.c === answer) li.classList.add('correct');
+    else if (li.classList.contains('picked')) li.classList.add('wrong');
+  });
+  document.getElementById('exp-' + n).classList.add('show');
+  if (picked && picked.dataset.c === answer && !correctSet.has(n)) {
+    correctSet.add(n);
+    document.getElementById('quiz-score').textContent = correctSet.size;
+  }
+}
+</script>
+</body>
+</html>
