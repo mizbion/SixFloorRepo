@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=SQLD -->
+<!-- meta:unit=개념-->
+<!-- meta:title=04.DDL/DML/TCL -->
+<!-- meta:desc=DDL, DML, TCL 핵심 문법과 출제 함정을 미니 강의형 해설과 15문항 예상문제로 정리 -->
+<!-- meta:date=2026-05-20 -->
+<!-- meta:audience=고3 직업계 (자격증반) -->
+<title>SQLD 04 · DDL/DML/TCL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lecture_common.css">
+<style>
+:root {
+  --bg: #f0f7ff; --card: #ffffff;
+  --surf2: #e0edff; --surf3: #c7dcff;
+  --border: #b6cdf0; --text: #0a1929; --sub: #4a6585;
+  --ac: #1d4ed8; --ac-l: #dbeafe; --ac-b: #1e40af;
+  --header-bg: #061229; --grad-end: #3b82f6;
+}
+.sqld-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+.sqld-side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; height: fit-content; position: sticky; top: 80px; }
+.sqld-side h3 { font-size: 13px; color: var(--sub); margin: 0 0 10px; letter-spacing: 0.05em; }
+.sqld-side .unit-list { list-style: none; padding: 0; margin: 0; }
+.sqld-side .unit-list li { padding: 8px 10px; font-size: 13px; color: var(--text); border-radius: 6px; margin-bottom: 2px; cursor: default; }
+.sqld-side .unit-list li.done { color: var(--sub); }
+.sqld-side .unit-list li.current { background: var(--ac); color: #fff; font-weight: 600; }
+.sqld-side .unit-list li .num { display: inline-block; width: 28px; color: var(--sub); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.sqld-side .unit-list li.current .num { color: #c7dcff; }
+.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: none; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: inherit; transition: all 0.15s; }
+.tab-btn:hover { color: var(--ac); }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cmp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; background: var(--card); }
+.cmp-table th { background: var(--surf2); color: var(--ac-b); padding: 10px 12px; text-align: left; border: 1px solid var(--border); font-weight: 700; }
+.cmp-table td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:nth-child(even) td { background: #fafcff; }
+.cmp-table code { background: var(--surf2); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ac-b); }
+.warn { background: #fff3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.warn b { color: #92400e; }
+.tip { background: var(--ac-l); border-left: 4px solid var(--ac); padding: 12px 16px; border-radius: 4px; margin: 14px 0; font-size: 14px; }
+.tip b { color: var(--ac-b); }
+.qcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.qcard .qnum { display: inline-block; background: var(--ac); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+.qcard .qbody { font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.qcard .choices { list-style: none; padding: 0; margin: 0 0 14px; }
+.qcard .choices li { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.qcard .choices li:hover { background: var(--ac-l); border-color: var(--ac); }
+.qcard .choices li.picked { background: var(--ac-l); border-color: var(--ac); font-weight: 600; }
+.qcard .choices li.correct { background: #d1fae5; border-color: #10b981; }
+.qcard .choices li.wrong { background: #fee2e2; border-color: #ef4444; }
+.qcard .reveal-btn { background: var(--ac); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 13px; }
+.qcard .explain { display: none; margin-top: 14px; padding: 14px; background: #f5f9ff; border-radius: 6px; border-left: 3px solid var(--ac); font-size: 14px; line-height: 1.7; }
+.qcard .explain.show { display: block; }
+.exp-block { margin: 12px 0; padding: 12px 14px; border-radius: 6px; }
+.exp-block .exp-label { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.03em; }
+.exp-answer { background: #d1fae5; border-left: 3px solid #10b981; }
+.exp-answer .exp-label { background: #10b981; color: #fff; }
+.exp-concept { background: #eff6ff; border-left: 3px solid var(--ac); }
+.exp-concept .exp-label { background: var(--ac); color: #fff; }
+.exp-wrong { background: #fef2f2; border-left: 3px solid #ef4444; }
+.exp-wrong .exp-label { background: #ef4444; color: #fff; }
+.exp-tip { background: #fffbeb; border-left: 3px solid #f59e0b; }
+.exp-tip .exp-label { background: #f59e0b; color: #fff; }
+.exp-block ul { margin: 4px 0 0; padding-left: 18px; line-height: 1.8; }
+@media (max-width: 900px) {
+  .sqld-layout { grid-template-columns: 1fr; }
+  .sqld-side { position: static; }
+}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-inner">
+    <span class="hd-badge">UNIT 04</span>
+    <span class="hd-title">DDL · DML · TCL</span>
+    <span class="hd-meta">SQLD 자격증 · SQL 기본 명령 체계</span>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+<div class="sqld-layout">
+  <aside class="sqld-side">
+    <h3>SQLD 학습 로드맵</h3>
+    <ul class="unit-list">
+      <li class="done"><span class="num">01</span>데이터 모델링 개요</li>
+      <li class="done"><span class="num">02</span>엔터티·속성·관계·식별자</li>
+      <li class="done"><span class="num">03</span>정규화·반정규화·트랜잭션</li>
+      <li class="current"><span class="num">04</span>DDL·DML·TCL</li>
+      <li><span class="num">05</span>WHERE·함수</li>
+      <li><span class="num">06</span>GROUP BY·HAVING</li>
+      <li><span class="num">07</span>JOIN·집합·계층형</li>
+      <li><span class="num">08</span>서브쿼리·뷰·윈도우</li>
+      <li><span class="num">09</span>DCL·절차형 SQL</li>
+      <li><span class="num">10</span>종합 모의고사</li>
+    </ul>
+    <h3 style="margin-top:20px">이 단원 출제 비중</h3>
+    <div style="background:var(--surf2); height:8px; border-radius:4px; overflow:hidden">
+      <div style="background:var(--ac); width:35%; height:100%"></div>
+    </div>
+    <div style="font-size:12px; color:var(--sub); margin-top:6px">DDL/DML/TCL은 <b style="color:var(--ac-b)">문법 구분 문제</b>가 자주 출제됩니다</div>
+  </aside>
+  <main>
+    <section class="hero">
+      <h1 style="margin:0 0 8px; font-size:28px; color:var(--text)">DDL/DML/TCL, SQL 명령의 뼈대를 구분하는 단원</h1>
+      <p style="margin:0; color:var(--sub); font-size:15px; line-height:1.7">
+        시험에서는 <b style="color:var(--ac-b)">명령어 분류, 실행 결과, COMMIT/ROLLBACK 동작</b>을 섞어 출제합니다.
+        이 단원에서 헷갈리는 포인트를 표와 문제로 확실히 잡아봅시다.
+      </p>
+    </section>
+    <section class="goals" style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin:18px 0">
+      <h3 style="margin:0 0 10px; color:var(--ac-b); font-size:15px">🎯 학습목표</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; line-height:2; color:var(--text)">
+        <li>DDL, DML, TCL의 <b>역할 차이</b>를 구분한다</li>
+        <li><code>CREATE/ALTER/DROP</code>과 <code>INSERT/UPDATE/DELETE/SELECT</code>를 정확히 분류한다</li>
+        <li><code>COMMIT/ROLLBACK/SAVEPOINT</code>의 동작을 설명한다</li>
+        <li>예상문제 15문항을 통해 <b>미니 강의형 해설</b>로 실수를 줄인다</li>
+      </ol>
+    </section>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="concept">📘 개념</button>
+      <button class="tab-btn" data-tab="example">💻 예제</button>
+      <button class="tab-btn" data-tab="trap">⚠️ 함정</button>
+      <button class="tab-btn" data-tab="quiz">📝 예상문제</button>
+      <button class="tab-btn" data-tab="summary">📌 요약</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-concept">
+      <div class="sh">1. DDL (Data Definition Language)</div>
+      <div class="card">
+        <p>DDL은 <b>데이터베이스 객체(테이블, 인덱스, 뷰 등)의 구조를 정의/변경/삭제</b>하는 명령어입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>명령</th><th>의미</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>CREATE</b></td><td>객체 생성</td><td><code>CREATE TABLE student (...)</code></td></tr>
+            <tr><td><b>ALTER</b></td><td>객체 구조 변경</td><td><code>ALTER TABLE student ADD email VARCHAR2(50)</code></td></tr>
+            <tr><td><b>DROP</b></td><td>객체 삭제</td><td><code>DROP TABLE student</code></td></tr>
+            <tr><td><b>TRUNCATE</b></td><td>테이블 데이터 전체 삭제(구조 유지)</td><td><code>TRUNCATE TABLE student</code></td></tr>
+          </tbody>
+        </table>
+        <div class="warn"><b>주의:</b> DDL은 보통 <b>자동 커밋(Auto Commit)</b> 특성이 있어 ROLLBACK이 되지 않는 경우가 많습니다.</div>
+      </div>
+
+      <div class="sh">2. DML (Data Manipulation Language)</div>
+      <div class="card">
+        <p>DML은 <b>테이블 안의 데이터(행)를 조회/삽입/수정/삭제</b>하는 명령어입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>명령</th><th>의미</th><th>예시</th></tr></thead>
+          <tbody>
+            <tr><td><b>SELECT</b></td><td>데이터 조회</td><td><code>SELECT * FROM student</code></td></tr>
+            <tr><td><b>INSERT</b></td><td>데이터 삽입</td><td><code>INSERT INTO student VALUES (...)</code></td></tr>
+            <tr><td><b>UPDATE</b></td><td>데이터 수정</td><td><code>UPDATE student SET grade='A'</code></td></tr>
+            <tr><td><b>DELETE</b></td><td>데이터 삭제</td><td><code>DELETE FROM student WHERE id=1</code></td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>핵심:</b> DML 결과는 <code>COMMIT</code> 전까지 취소(ROLLBACK) 가능하다는 점이 자주 출제됩니다.</div>
+      </div>
+
+      <div class="sh">3. TCL (Transaction Control Language)</div>
+      <div class="card">
+        <p>TCL은 <b>트랜잭션 경계를 제어</b>하는 명령어입니다.</p>
+        <table class="cmp-table">
+          <thead><tr><th>명령</th><th>역할</th></tr></thead>
+          <tbody>
+            <tr><td><b>COMMIT</b></td><td>DML 변경 사항 영구 반영</td></tr>
+            <tr><td><b>ROLLBACK</b></td><td>마지막 COMMIT 이후 변경 사항 취소</td></tr>
+            <tr><td><b>SAVEPOINT</b></td><td>중간 복구 지점 지정</td></tr>
+          </tbody>
+        </table>
+        <div class="tip"><b>실전 포인트:</b> SAVEPOINT를 잡아두면 전체 롤백이 아니라 <b>특정 지점까지 부분 롤백</b>이 가능합니다.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-example">
+      <div class="sh">예제 1: 명령 분류 퀵체크</div>
+      <div class="card">
+        <table class="cmp-table">
+          <thead><tr><th>SQL</th><th>분류</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td><code>CREATE TABLE emp (...)</code></td><td>DDL</td><td>테이블 구조 생성</td></tr>
+            <tr><td><code>INSERT INTO emp VALUES (...)</code></td><td>DML</td><td>행 삽입</td></tr>
+            <tr><td><code>UPDATE emp SET sal=sal*1.1</code></td><td>DML</td><td>행 수정</td></tr>
+            <tr><td><code>ROLLBACK</code></td><td>TCL</td><td>트랜잭션 취소</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sh">예제 2: COMMIT/ROLLBACK 흐름</div>
+      <div class="card">
+        <table class="cmp-table">
+          <thead><tr><th>순서</th><th>실행문</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>INSERT INTO emp VALUES (1001, 'KIM')</code></td><td>삽입되었지만 아직 확정 아님</td></tr>
+            <tr><td>2</td><td><code>ROLLBACK</code></td><td>1번 삽입 취소</td></tr>
+            <tr><td>3</td><td><code>INSERT INTO emp VALUES (1002, 'LEE')</code></td><td>삽입 대기</td></tr>
+            <tr><td>4</td><td><code>COMMIT</code></td><td>1002 행 확정</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-trap">
+      <div class="sh">SQLD 출제진이 좋아하는 함정 7가지</div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 1. TRUNCATE는 DML이다?</h4><p><b>TRUNCATE는 DDL</b>로 분류합니다. DELETE와 혼동하기 쉬운 대표 함정입니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 2. SELECT는 DML이 아니다?</h4><p>시험 기준 분류에서는 <b>SELECT도 DML 범주</b>로 다룹니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 3. DDL도 ROLLBACK 가능하다?</h4><p>대부분 DBMS에서 DDL은 자동 커밋 특성이 있어 일반적으로 롤백 대상이 아닙니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 4. DELETE와 TRUNCATE는 완전히 같다?</h4><p>둘 다 삭제지만 성격이 다릅니다. DELETE는 DML, TRUNCATE는 DDL입니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 5. COMMIT은 데이터 조회 명령이다?</h4><p>COMMIT은 <b>TCL</b>로 트랜잭션 확정 명령입니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 6. SAVEPOINT 후 ROLLBACK은 전체만 가능?</h4><p>SAVEPOINT 지점까지 부분 롤백이 가능합니다.</p></div>
+      <div class="card"><h4 style="margin:0 0 8px; color:var(--ac-b)">🪤 함정 7. DROP과 TRUNCATE 차이 무시</h4><p>DROP은 객체 자체 삭제, TRUNCATE는 데이터만 전체 삭제(구조 유지)입니다.</p></div>
+    </div>
+
+    <div class="tab-panel" id="tab-quiz">
+      <div class="sh">예상문제 (기출 변형, 15문항)</div>
+
+      <div class="qcard" data-q="1" data-answer="2">
+        <div class="qnum">Q1 · 분류</div>
+        <div class="qbody">다음 중 DDL에 해당하는 명령은?</div>
+        <ul class="choices"><li data-c="1">INSERT</li><li data-c="2">ALTER</li><li data-c="3">ROLLBACK</li><li data-c="4">UPDATE</li></ul>
+        <button class="reveal-btn" onclick="revealQ(1)">정답·해설 보기</button>
+        <div class="explain" id="exp-1">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>ALTER</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div><b>ALTER는 객체 구조를 변경</b>하는 DDL입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,4: DML</li><li>3: TCL</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="2" data-answer="3">
+        <div class="qnum">Q2 · 분류</div>
+        <div class="qbody">다음 중 DML에 해당하지 않는 것은?</div>
+        <ul class="choices"><li data-c="1">SELECT</li><li data-c="2">DELETE</li><li data-c="3">CREATE</li><li data-c="4">UPDATE</li></ul>
+        <button class="reveal-btn" onclick="revealQ(2)">정답·해설 보기</button>
+        <div class="explain" id="exp-2">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>CREATE</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>CREATE는 <b>DDL</b>입니다. 테이블 구조를 생성합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2,4: 모두 DML</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="3" data-answer="1">
+        <div class="qnum">Q3 · TCL</div>
+        <div class="qbody">다음 중 TCL 명령으로 옳은 것은?</div>
+        <ul class="choices"><li data-c="1">COMMIT</li><li data-c="2">DROP</li><li data-c="3">TRUNCATE</li><li data-c="4">INSERT</li></ul>
+        <button class="reveal-btn" onclick="revealQ(3)">정답·해설 보기</button>
+        <div class="explain" id="exp-3">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>COMMIT</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>TCL은 <b>트랜잭션 경계 제어</b>를 담당하며 COMMIT/ROLLBACK/SAVEPOINT가 핵심입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2,3: DDL</li><li>4: DML</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="4" data-answer="4">
+        <div class="qnum">Q4 · DELETE vs TRUNCATE</div>
+        <div class="qbody">다음 설명 중 옳은 것은?</div>
+        <ul class="choices"><li data-c="1">DELETE는 DDL이다</li><li data-c="2">TRUNCATE는 TCL이다</li><li data-c="3">TRUNCATE는 행 단위 조건 삭제가 가능하다</li><li data-c="4">DELETE는 DML, TRUNCATE는 DDL이다</li></ul>
+        <button class="reveal-btn" onclick="revealQ(4)">정답·해설 보기</button>
+        <div class="explain" id="exp-4">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>DELETE는 DML, TRUNCATE는 DDL이다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>SQLD 단골 문제입니다. <b>DELETE는 데이터 조작, TRUNCATE는 구조 관련 명령</b>으로 분류합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 반대</li><li>2: TRUNCATE는 DDL</li><li>3: TRUNCATE는 조건절 사용 불가</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="5" data-answer="2">
+        <div class="qnum">Q5 · COMMIT</div>
+        <div class="qbody">COMMIT의 역할은 무엇인가?</div>
+        <ul class="choices"><li data-c="1">구조 변경 취소</li><li data-c="2">변경된 데이터 확정</li><li data-c="3">테이블 삭제</li><li data-c="4">조회 결과 정렬</li></ul>
+        <button class="reveal-btn" onclick="revealQ(5)">정답·해설 보기</button>
+        <div class="explain" id="exp-5">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>변경된 데이터 확정</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>COMMIT은 트랜잭션의 변경 내용을 <b>영구 반영</b>합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 보통 불가</li><li>3: DROP</li><li>4: ORDER BY 관련</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="6" data-answer="1">
+        <div class="qnum">Q6 · ROLLBACK</div>
+        <div class="qbody">ROLLBACK 명령에 대한 설명으로 옳은 것은?</div>
+        <ul class="choices"><li data-c="1">마지막 COMMIT 이후 변경을 취소한다</li><li data-c="2">테이블 구조를 초기화한다</li><li data-c="3">데이터를 영구 반영한다</li><li data-c="4">조회 대상을 제한한다</li></ul>
+        <button class="reveal-btn" onclick="revealQ(6)">정답·해설 보기</button>
+        <div class="explain" id="exp-6">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>마지막 COMMIT 이후 변경을 취소한다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>ROLLBACK은 DML 작업 결과를 되돌리는 TCL 명령입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: DDL 개념과 혼동</li><li>3: COMMIT</li><li>4: WHERE 절 역할</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="7" data-answer="4">
+        <div class="qnum">Q7 · SAVEPOINT</div>
+        <div class="qbody">SAVEPOINT의 기능은?</div>
+        <ul class="choices"><li data-c="1">테이블 복사</li><li data-c="2">인덱스 생성</li><li data-c="3">전체 롤백 강제</li><li data-c="4">부분 롤백 기준점 지정</li></ul>
+        <button class="reveal-btn" onclick="revealQ(7)">정답·해설 보기</button>
+        <div class="explain" id="exp-7">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>부분 롤백 기준점 지정</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>SAVEPOINT는 트랜잭션 중간 지점을 저장해 <b>그 지점까지 되돌릴 수 있게</b> 합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,2: DDL 작업</li><li>3: SAVEPOINT 자체 기능 아님</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="8" data-answer="2">
+        <div class="qnum">Q8 · DDL</div>
+        <div class="qbody">다음 중 테이블을 삭제하는 DDL 명령은?</div>
+        <ul class="choices"><li data-c="1">DELETE</li><li data-c="2">DROP</li><li data-c="3">ROLLBACK</li><li data-c="4">UPDATE</li></ul>
+        <button class="reveal-btn" onclick="revealQ(8)">정답·해설 보기</button>
+        <div class="explain" id="exp-8">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>DROP</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>DROP은 객체 자체를 제거합니다. 복구가 어려우므로 주의가 필요합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,4: DML</li><li>3: TCL</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="9" data-answer="3">
+        <div class="qnum">Q9 · DML</div>
+        <div class="qbody">다음 중 데이터 조회를 수행하는 명령은?</div>
+        <ul class="choices"><li data-c="1">ALTER</li><li data-c="2">COMMIT</li><li data-c="3">SELECT</li><li data-c="4">TRUNCATE</li></ul>
+        <button class="reveal-btn" onclick="revealQ(9)">정답·해설 보기</button>
+        <div class="explain" id="exp-9">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>SELECT</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>SELECT는 데이터를 읽는 대표 DML 명령입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1,4: DDL</li><li>2: TCL</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="10" data-answer="1">
+        <div class="qnum">Q10 · 자동 커밋</div>
+        <div class="qbody">시험 관점에서 DDL의 특징으로 가장 적절한 것은?</div>
+        <ul class="choices"><li data-c="1">대체로 자동 커밋 성격을 가진다</li><li data-c="2">반드시 SAVEPOINT가 필요하다</li><li data-c="3">항상 WHERE 절이 필요하다</li><li data-c="4">조회 전용 명령만 포함한다</li></ul>
+        <button class="reveal-btn" onclick="revealQ(10)">정답·해설 보기</button>
+        <div class="explain" id="exp-10">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>대체로 자동 커밋 성격을 가진다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>DBMS별 차이는 있지만 SQLD에서는 DDL의 자동 커밋 특성을 자주 묻습니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2,3,4: DDL 일반 특성과 무관</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="11" data-answer="4">
+        <div class="qnum">Q11 · 분류 종합</div>
+        <div class="qbody">다음 짝이 바르게 연결된 것은?</div>
+        <ul class="choices"><li data-c="1">INSERT - DDL</li><li data-c="2">DROP - DML</li><li data-c="3">ROLLBACK - DDL</li><li data-c="4">UPDATE - DML</li></ul>
+        <button class="reveal-btn" onclick="revealQ(11)">정답·해설 보기</button>
+        <div class="explain" id="exp-11">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>UPDATE - DML</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>UPDATE는 데이터 행을 수정하는 DML입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: INSERT는 DML</li><li>2: DROP은 DDL</li><li>3: ROLLBACK은 TCL</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="12" data-answer="2">
+        <div class="qnum">Q12 · 실행 시나리오</div>
+        <div class="qbody">INSERT 후 COMMIT을 하지 않은 상태에서 ROLLBACK을 실행하면?</div>
+        <ul class="choices"><li data-c="1">테이블이 삭제된다</li><li data-c="2">삽입한 행이 취소된다</li><li data-c="3">자동으로 COMMIT 된다</li><li data-c="4">문법 오류가 발생한다</li></ul>
+        <button class="reveal-btn" onclick="revealQ(12)">정답·해설 보기</button>
+        <div class="explain" id="exp-12">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>삽입한 행이 취소된다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>COMMIT 전 DML 변경은 ROLLBACK으로 되돌릴 수 있습니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: DROP이 아님</li><li>3: 자동 커밋 아님</li><li>4: 정상 동작</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="13" data-answer="1">
+        <div class="qnum">Q13 · ALTER</div>
+        <div class="qbody">기존 테이블에 컬럼을 추가하려면 어떤 명령을 사용해야 하는가?</div>
+        <ul class="choices"><li data-c="1">ALTER TABLE</li><li data-c="2">UPDATE TABLE</li><li data-c="3">INSERT TABLE</li><li data-c="4">SELECT TABLE</li></ul>
+        <button class="reveal-btn" onclick="revealQ(13)">정답·해설 보기</button>
+        <div class="explain" id="exp-13">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>ALTER TABLE</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>테이블 구조 변경(컬럼 추가/수정/삭제)은 ALTER TABLE로 수행합니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>2: 존재하지 않는 문법</li><li>3: 행 삽입 개념과 혼동</li><li>4: 조회 명령</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="14" data-answer="3">
+        <div class="qnum">Q14 · TRUNCATE</div>
+        <div class="qbody">TRUNCATE TABLE에 대한 설명으로 가장 적절한 것은?</div>
+        <ul class="choices"><li data-c="1">조건절로 일부 행만 삭제한다</li><li data-c="2">TCL 명령이다</li><li data-c="3">테이블 구조는 유지하고 데이터를 전체 삭제한다</li><li data-c="4">행 단위로 로그를 남겨 ROLLBACK이 항상 가능하다</li></ul>
+        <button class="reveal-btn" onclick="revealQ(14)">정답·해설 보기</button>
+        <div class="explain" id="exp-14">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>테이블 구조는 유지하고 데이터를 전체 삭제한다</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>TRUNCATE는 행 전체를 빠르게 비우며, 객체 구조는 남겨둡니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: DELETE 특징</li><li>2: DDL</li><li>4: 시험 관점에서 부적절한 설명</li></ul></div>
+        </div>
+      </div>
+
+      <div class="qcard" data-q="15" data-answer="4">
+        <div class="qnum">Q15 · 종합</div>
+        <div class="qbody">다음 중 올바른 실행 순서는?</div>
+        <ul class="choices"><li data-c="1">COMMIT → INSERT → ROLLBACK</li><li data-c="2">ROLLBACK → CREATE TABLE → SAVEPOINT</li><li data-c="3">DROP TABLE → UPDATE → SAVEPOINT</li><li data-c="4">INSERT → SAVEPOINT s1 → UPDATE → ROLLBACK TO s1</li></ul>
+        <button class="reveal-btn" onclick="revealQ(15)">정답·해설 보기</button>
+        <div class="explain" id="exp-15">
+          <div class="exp-block exp-answer"><span class="exp-label">정답</span><div>INSERT → SAVEPOINT s1 → UPDATE → ROLLBACK TO s1</div></div>
+          <div class="exp-block exp-concept"><span class="exp-label">미니 강의</span><div>SAVEPOINT를 기준으로 부분 롤백하는 전형적인 트랜잭션 제어 시나리오입니다.</div></div>
+          <div class="exp-block exp-wrong"><span class="exp-label">오답 해설</span><ul><li>1: 트랜잭션 흐름이 비합리적</li><li>2,3: DDL과 TCL 순서를 섞어 함정으로 만든 선택지</li></ul></div>
+        </div>
+      </div>
+
+      <div style="background:var(--card); border:2px solid var(--ac); border-radius:10px; padding:18px; margin-top:20px; text-align:center">
+        <div style="font-size:14px; color:var(--sub); margin-bottom:8px">현재 점수</div>
+        <div style="font-size:24px; font-weight:700; color:var(--ac-b)"><span id="quiz-score">0</span> / 15 정답</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:6px">정답을 고른 뒤 [정답·해설 보기]를 누르면 점수가 올라갑니다</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-summary">
+      <div class="sh">📌 핵심 요약</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px">
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">DDL</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>구조 정의/변경/삭제</li><li>CREATE/ALTER/DROP/TRUNCATE</li><li>자동 커밋 성격 주의</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">DML</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>데이터 조회/삽입/수정/삭제</li><li>SELECT/INSERT/UPDATE/DELETE</li><li>COMMIT 전 ROLLBACK 가능</li></ul>
+        </div>
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:4px solid var(--ac)">
+          <h4 style="margin:0 0 8px; color:var(--ac-b)">TCL</h4>
+          <ul style="margin:0; padding-left:18px; font-size:13px; line-height:1.9"><li>트랜잭션 제어</li><li>COMMIT/ROLLBACK/SAVEPOINT</li><li>부분 롤백 흐름 익히기</li></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="lecture_common.js"></script>
+<script>
+window.LECTURE_CONFIG = {
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbwsDBzpDxc4FJTPdJBbISEaHsKGiFyT3GAWt5PfAJuYl-MkeXGPgMstFn2qUO29_3cS/exec',
+  lessonId: 'cert/sqld_04_ddl_dml_tcl',
+  quizTotal: 15
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.qcard').forEach(card => {
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    li.addEventListener('click', () => {
+      choices.forEach(c => c.classList.remove('picked'));
+      li.classList.add('picked');
+    });
+  });
+});
+
+const correctSet = new Set();
+function revealQ(n) {
+  const card = document.querySelector(`.qcard[data-q="${n}"]`);
+  const answer = card.dataset.answer;
+  const picked = card.querySelector('.choices li.picked');
+  const choices = card.querySelectorAll('.choices li');
+  choices.forEach(li => {
+    if (li.dataset.c === answer) li.classList.add('correct');
+    else if (li.classList.contains('picked')) li.classList.add('wrong');
+  });
+  document.getElementById('exp-' + n).classList.add('show');
+  if (picked && picked.dataset.c === answer && !correctSet.has(n)) {
+    correctSet.add(n);
+    document.getElementById('quiz-score').textContent = correctSet.size;
+  }
+}
+</script>
+</body>
+</html>
