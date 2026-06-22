@@ -100,6 +100,45 @@
   }
   .search-area input::placeholder { color: var(--muted2); }
 
+  .topbar-tools {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    border-right: 1.5px solid var(--border2);
+    flex-shrink: 0;
+  }
+  .quick-link-btn {
+    height: 34px;
+    padding: 0 11px;
+    border-radius: 10px;
+    border: 1.5px solid #f1d6a6;
+    background: #fff7ea;
+    color: #8a4a00;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: transform .18s, box-shadow .18s, border-color .18s;
+  }
+  .quick-link-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+  .quick-link-text {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -.1px;
+    white-space: nowrap;
+  }
+  .quick-link-btn:hover {
+    transform: translateY(-2px);
+    border-color: #e8bf72;
+    box-shadow: 0 5px 14px rgba(196,124,10,.24);
+  }
+
   .topbar-stats {
     display: flex;
     align-items: center;
@@ -299,6 +338,7 @@
   .backtop.show { opacity:1; }
 
   @media(max-width:640px){
+    .topbar-tools,
     .topbar-stats { display:none; }
     .topbar-inner, .subnav, .main { padding-left:16px; padding-right:16px; }
     .card-grid { grid-template-columns:1fr; }
@@ -316,6 +356,25 @@
     <div class="search-area">
       <span class="search-icon">🔍</span>
       <input id="searchInput" type="text" placeholder="교안 제목·설명 검색…" oninput="onSearch()">
+    </div>
+    <div class="topbar-tools">
+      <a
+        class="quick-link-btn"
+        href="https://www.programiz.com/java-programming/online-compiler/"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Programiz Java Online Compiler 열기"
+        aria-label="Programiz Java Online Compiler 열기"
+      >
+        <svg class="quick-link-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path d="M18 49h28c0 5-4 9-9 9H27c-5 0-9-4-9-9z" fill="#0f5d9d"/>
+          <path d="M44 47h6c4 0 7-3 7-6s-3-6-7-6h-4v4h4c2 0 3 1 3 2s-1 2-3 2h-6z" fill="#0f5d9d"/>
+          <path d="M24 43c6 2 10 2 16 0-1-5-3-9-8-9s-7 4-8 9z" fill="#2f7cf6"/>
+          <path d="M32 9c-6 6 5 8 1 14-2 3-6 4-8 8 5-3 10-5 12-10 2-5-4-7-1-12 2-2 4-3 5-5-3 1-6 2-9 5z" fill="#e8720c"/>
+          <path d="M41 17c2 3 1 6-1 8 4-1 6-5 5-8-1-3-4-4-6-5 1 2 1 3 2 5z" fill="#e8720c"/>
+        </svg>
+        <span class="quick-link-text">Java 컴파일러</span>
+      </a>
     </div>
     <div class="topbar-stats">
       <div class="stat-chip">교안 <span class="stat-val" id="statTotal">0</span>개</div>
