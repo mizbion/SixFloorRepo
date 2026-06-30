@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- meta:subject=JAVA -->
+<!-- meta:unit=자바프로그래밍기초 -->
+<!-- meta:title=2.프로그램 구조와 출력문 -->
+<!-- meta:desc=자바 2회차 슬라이드 -->
+<!-- meta:date=2026-06-09 -->
+<title>2회차 | 자바 구조와 출력문</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef2f1;
+    --panel: #fcfefd;
+    --ink: #19201c;
+    --sub: #5f6d66;
+    --line: #cad8d0;
+    --brand: #1f6f59;
+    --brand2: #2c5f8f;
+    --alert: #955212;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 10% 0%, #dff0ea 0%, transparent 30%),
+      radial-gradient(circle at 90% 100%, #e5ecf8 0%, transparent 32%),
+      var(--bg);
+  }
+  .deck { max-width: 980px; margin: 0 auto; padding: 24px 18px 92px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; color: var(--sub); font-size: 13px; margin-bottom: 12px; }
+  .badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 4px 10px; }
+  .slide { display: none; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 34px; min-height: 540px; box-shadow: 0 10px 30px rgba(20, 35, 28, 0.08); }
+  .slide.active { display: block; }
+  h1 { margin: 0 0 8px; font-size: 34px; }
+  h2 { margin: 0 0 16px; font-size: 25px; }
+  p { margin: 0 0 12px; line-height: 1.75; }
+  ul, ol { line-height: 1.8; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: #fff; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .mono { font-family: 'JetBrains Mono', monospace; background: #15211d; color: #ecf8f2; border-radius: 10px; padding: 14px; font-size: 13px; overflow-x: auto; line-height: 1.75; white-space: pre-wrap; }
+  .line { margin: 8px 0 12px; border-left: 5px solid var(--brand2); padding-left: 12px; color: #23475f; }
+  .warn { margin: 8px 0 12px; border-left: 5px solid var(--alert); padding-left: 12px; color: #6b3c0f; }
+  .controls { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(17, 27, 23, 0.93); color: #edf7f3; padding: 10px 16px; display: flex; justify-content: center; gap: 10px; }
+  button { border: none; background: #edf7f3; color: #122019; border-radius: 8px; padding: 9px 14px; font-weight: 700; cursor: pointer; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .counter { font-family: 'JetBrains Mono', monospace; font-size: 12px; min-width: 64px; text-align: center; align-self: center; }
+  @media (max-width: 760px) {
+    .slide { padding: 22px; min-height: auto; }
+    h1 { font-size: 26px; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="topbar">
+    <span class="badge">JAVA PROGRAMMING · LESSON 02</span>
+  </div>
+
+  <section class="slide active">
+    <h1>자바 프로그램 구조와 출력문</h1>
+    <p>오늘은 자바 코드의 뼈대를 정확히 읽고, 직접 쓰고, 수정할 수 있도록 연습합니다.</p>
+    <div class="grid2">
+      <div class="card"><h3>학습 목표</h3><ul><li>클래스와 main 구조 이해</li><li>print/println 차이 이해</li><li>주석 작성 습관</li></ul></div>
+      <div class="card"><h3>오늘 산출물</h3><ul><li>자기소개 콘솔 출력</li><li>오류 수정 1회 이상</li><li>주석 포함 소스</li></ul></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>자바 파일 기본 구조</h2>
+    <div class="mono">public class Main1 {
+  public static void main(String[] args) {
+    System.out.println("자바 시작");
+  }
+}</div>
+    <ol>
+      <li>클래스 선언: 파일의 큰 틀</li>
+      <li>main 메서드: 프로그램 시작점</li>
+      <li>명령문: 실행할 코드(끝에 세미콜론)</li>
+    </ol>
+  </section>
+
+  <section class="slide">
+    <h2>출력문 3가지</h2>
+    <div class="grid2">
+      <div class="card"><h3>println</h3><p>출력 후 줄바꿈</p><div class="mono">System.out.println("A");
+System.out.println("B");</div></div>
+      <div class="card"><h3>print</h3><p>출력 후 줄바꿈 없음</p><div class="mono">System.out.print("A ");
+System.out.print("B");</div></div>
+      <div class="card"><h3>문자열 결합</h3><p>+ 연산으로 문장 만들기</p><div class="mono">String name = "민수";
+System.out.println("이름: " + name);</div></div>
+      <div class="card"><h3>주석</h3><p>코드 설명 기록</p><div class="mono">// 한 줄 주석
+/* 여러 줄 주석 */</div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>실습 A: 그대로 따라쓰기</h2>
+    <div class="mono">public class Main2 {
+  public static void main(String[] args) {
+    System.out.println("이름: 홍길동");
+    System.out.println("희망진로: 개발자");
+    System.out.println("한 줄 각오: 포기하지 않는다");
+  }
+}</div>
+    <ul>
+      <li>코드를 직접 입력해 실행</li>
+      <li>이름/진로/각오를 본인 정보로 변경</li>
+      <li>실행 결과 스크린샷 저장</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h2>실습 B: 오류 찾고 수정하기</h2>
+    <div class="mono">public class Main3 {
+  public static void main(String[] args) {
+    System.out.println("Hello Java")
+  }
+}</div>
+    <p>질문: 왜 실행이 안될까요?</p>
+    <ul>
+      <li>문장 끝에 ; 누락 확인</li>
+      <li>오류 메시지에서 line 번호 확인</li>
+      <li>수정 후 다시 실행</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h2>실습 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card"><h3>예제 1: println 연속 출력</h3><div class="mono">public class Main4 {
+  public static void main(String[] args) {
+    System.out.println("Java");
+    System.out.println("Programming");
+  }
+}</div></div>
+      <div class="card"><h3>예제 2: print 조합</h3><div class="mono">public class Main5 {
+  public static void main(String[] args) {
+    System.out.print("A");
+    System.out.print("B");
+    System.out.println("C");
+  }
+}</div></div>
+      <div class="card"><h3>예제 3: 문자열 결합</h3><div class="mono">public class Main6 {
+  public static void main(String[] args) {
+    String cls = "3학년";
+    System.out.println("대상: " + cls);
+  }
+}</div></div>
+      <div class="card"><h3>예제 4: 주석 포함</h3><div class="mono">public class Main7 {
+  public static void main(String[] args) {
+    // 한 줄 설명
+    System.out.println("주석 연습");
+  }
+}</div></div>
+      <div class="card"><h3>예제 5: 특수문자 출력</h3><div class="mono">public class Main8 {
+  public static void main(String[] args) {
+    System.out.println("줄바꿈\\n문자는 문자 그대로");
+    System.out.println("탭\\t문자도 가능");
+  }
+}</div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>정리 + 과제</h2>
+    <div class="card">
+      <h3>정리</h3>
+      <ul>
+        <li>main 메서드는 시작점</li>
+        <li>print와 println은 줄바꿈 차이</li>
+        <li>세미콜론과 중괄호 문법</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>과제</h3>
+      <p>자기소개 프로그램(5줄 이상) 작성 + 주석 3개 이상 추가</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>과제 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card"><h3>과제 예제 1</h3><div class="mono">public class Main9 {
+  public static void main(String[] args) {
+    // 이름 소개
+    System.out.println("이름: 이자바");
+    System.out.println("관심분야: 웹개발");
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 2</h3><div class="mono">public class Main10 {
+  public static void main(String[] args) {
+    System.out.println("1. 아침운동");
+    System.out.println("2. 코딩연습");
+    System.out.println("3. 복습");
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 3</h3><div class="mono">public class Main11 {
+  public static void main(String[] args) {
+    String school = "OO고";
+    System.out.println("학교: " + school);
+    System.out.println("학과: IT과");
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 4</h3><div class="mono">public class Main12 {
+  public static void main(String[] args) {
+    System.out.print("희망직무: ");
+    System.out.println("앱개발");
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 5</h3><div class="mono">public class Main13 {
+  public static void main(String[] args) {
+    // 5줄 이상 출력 조건 충족
+    System.out.println("자바");
+    System.out.println("수업");
+    System.out.println("과제");
+    System.out.println("완료");
+    System.out.println("제출");
+  }
+}</div></div>
+    </div>
+  </section>
+</div>
+
+<div class="controls">
+  <button id="prevBtn">이전</button>
+  <span class="counter" id="counter">1 / 6</span>
+  <button id="nextBtn">다음</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  let idx = 0;
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  prevBtn.addEventListener('click', () => { if (idx > 0) { idx -= 1; render(); } });
+  nextBtn.addEventListener('click', () => { if (idx < slides.length - 1) { idx += 1; render(); } });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') nextBtn.click();
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevBtn.click();
+  });
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- meta:subject=JAVA -->
+<!-- meta:unit=자바프로그래밍기초 -->
+<!-- meta:title=4.연산자와 형변환 -->
+<!-- meta:desc=자바 4회차 슬라이드 -->
+<!-- meta:date=2026-06-09 -->
+<title>4회차 | 연산자와 형변환</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f5f4ee; --panel:#fffdfa; --ink:#211a10; --sub:#6f6452; --line:#dbcdb7; --brand:#87552d; --brand2:#355f8c; --ok:#256f47; --warn:#a85b1e; }
+  *{box-sizing:border-box;} body{margin:0;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:radial-gradient(circle at 8% 8%, #f0e1c5 0%, transparent 32%),radial-gradient(circle at 90% 90%, #dde8f6 0%, transparent 30%),var(--bg);} 
+  .deck{max-width:980px;margin:0 auto;padding:24px 18px 92px;} .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--sub);font-size:13px;} .badge{font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;}
+  .slide{display:none;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px;min-height:540px;box-shadow:0 10px 30px rgba(40,28,16,.08);} .slide.active{display:block;}
+  h1{margin:0 0 8px;font-size:34px;} h2{margin:0 0 16px;font-size:25px;} p{margin:0 0 12px;line-height:1.75;} ul{line-height:1.8;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;} .card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;} .card h3{margin:0 0 8px;font-size:17px;}
+  .mono{font-family:'JetBrains Mono',monospace;background:#1f1a14;color:#f6efe6;border-radius:10px;padding:14px;font-size:13px;overflow-x:auto;line-height:1.75;white-space:pre-wrap;}
+  .tip{border-left:5px solid var(--brand2);padding-left:12px;color:#234660;} .good{border-left:5px solid var(--ok);padding-left:12px;color:#1f5537;} .warn{border-left:5px solid var(--warn);padding-left:12px;color:#6f3d12;}
+  .controls{position:fixed;left:0;right:0;bottom:0;background:rgba(28,20,13,.93);color:#f8f1e8;padding:10px 16px;display:flex;justify-content:center;gap:10px;}
+  button{border:none;background:#f8f1e8;color:#24170f;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;} button:disabled{opacity:.4;cursor:not-allowed;} .counter{font-family:'JetBrains Mono',monospace;font-size:12px;min-width:64px;text-align:center;align-self:center;}
+  @media (max-width:760px){.slide{padding:22px;min-height:auto;} h1{font-size:26px;} .grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="topbar"><span class="badge">JAVA PROGRAMMING · LESSON 04</span></div>
+
+  <section class="slide active">
+    <h1>연산자와 형변환</h1>
+    <p>숫자 계산, 조건 비교, 논리 판단을 코드로 정확하게 표현합니다.</p>
+    <div class="grid2">
+      <div class="card"><h3>학습 목표</h3><ul><li>산술/비교/논리 연산자 구분</li><li>형변환이 필요한 상황 판단</li><li>연산 결과 예측 후 검증</li></ul></div>
+      <div class="card"><h3>오늘 산출물</h3><ul><li>주문 금액 계산 코드</li><li>조건 판단 코드</li><li>연산 실수 체크리스트</li></ul></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>연산자 핵심 정리</h2>
+    <ul>
+      <li>산술: +, -, *, /, %</li>
+      <li>비교: ==, !=, &gt;, &lt;, &gt;=, &lt;=</li>
+      <li>논리: &amp;&amp;, ||, !</li>
+    </ul>
+    <p class="tip">조건문에 들어가는 식은 최종적으로 true/false가 되어야 합니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>실습 A: 주문 금액 계산</h2>
+    <div class="mono">public class Main1 {
+  public static void main(String[] args) {
+    int ramen = 4500;
+    int kimbap = 3500;
+    int qty = 2;
+
+    int total = ramen + (kimbap * qty);
+    System.out.println("총금액: " + total);
+  }
+}</div>
+    <p class="good">괄호를 사용하면 연산 우선순위를 명확히 할 수 있습니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>실습 B: 형변환과 비교</h2>
+    <div class="mono">public class Main2 {
+  public static void main(String[] args) {
+    int a = 7, b = 2;
+    double div = (double) a / b;
+    boolean pass = div &gt;= 3.5;
+
+    System.out.println("나눗셈 결과: " + div);
+    System.out.println("기준 통과: " + pass);
+  }
+}</div>
+    <p class="warn">int / int 는 정수 결과가 되므로 소수점이 사라집니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>실습 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card"><h3>예제 1: 나머지 판정</h3><div class="mono">public class Main3 {
+  public static void main(String[] args) {
+    int n = 17;
+    System.out.println(n % 2);
+  }
+}</div></div>
+      <div class="card"><h3>예제 2: 증가 연산</h3><div class="mono">public class Main4 {
+  public static void main(String[] args) {
+    int x = 5;
+    x++;
+    System.out.println(x);
+  }
+}</div></div>
+      <div class="card"><h3>예제 3: 비교 결과</h3><div class="mono">public class Main5 {
+  public static void main(String[] args) {
+    int a = 10, b = 7;
+    System.out.println(a &gt; b);
+    System.out.println(a == b);
+  }
+}</div></div>
+      <div class="card"><h3>예제 4: 논리 결합</h3><div class="mono">public class Main6 {
+  public static void main(String[] args) {
+    int temp = 26;
+    boolean rain = false;
+    System.out.println(temp &gt; 25 &amp;&amp; !rain);
+  }
+}</div></div>
+      <div class="card"><h3>예제 5: 우선순위</h3><div class="mono">public class Main7 {
+  public static void main(String[] args) {
+    int r1 = 10 + 2 * 3;
+    int r2 = (10 + 2) * 3;
+    System.out.println(r1);
+    System.out.println(r2);
+  }
+}</div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>정리 + 과제</h2>
+    <div class="card"><h3>정리</h3><ul><li>연산자 종류에 맞는 문법을 사용한다.</li><li>형변환이 필요한 지점을 확인한다.</li><li>조건식 결과를 예측하고 실행으로 검증한다.</li></ul></div>
+    <div class="card"><h3>과제</h3><p>쇼핑 계산기 작성: 상품 3개 가격 합, 할인 적용, 결제 가능 여부 출력</p></div>
+  </section>
+
+  <section class="slide">
+    <h2>과제 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card"><h3>과제 예제 1: 평균 계산</h3><div class="mono">public class Main8 {
+  public static void main(String[] args) {
+    int kor = 80, eng = 90, math = 70;
+    double avg = (kor + eng + math) / 3.0;
+    System.out.println(avg);
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 2: 할인 적용</h3><div class="mono">public class Main9 {
+  public static void main(String[] args) {
+    int price = 12000;
+    int discount = 1500;
+    System.out.println(price - discount);
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 3: 성인 판정</h3><div class="mono">public class Main10 {
+  public static void main(String[] args) {
+    int age = 20;
+    System.out.println(age &gt;= 19);
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 4: 복합 조건</h3><div class="mono">public class Main11 {
+  public static void main(String[] args) {
+    int money = 8000;
+    boolean open = true;
+    System.out.println(money &gt;= 7000 &amp;&amp; open);
+  }
+}</div></div>
+      <div class="card"><h3>과제 예제 5: 최종 계산</h3><div class="mono">public class Main12 {
+  public static void main(String[] args) {
+    int a = 5, b = 4, c = 3;
+    System.out.println((a + b) * c);
+  }
+}</div></div>
+    </div>
+  </section>
+</div>
+
+<div class="controls">
+  <button id="prevBtn">이전</button>
+  <span class="counter" id="counter">1 / 7</span>
+  <button id="nextBtn">다음</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  let idx = 0;
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  prevBtn.addEventListener('click', () => { if (idx > 0) { idx -= 1; render(); } });
+  nextBtn.addEventListener('click', () => { if (idx < slides.length - 1) { idx += 1; render(); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') prevBtn.click(); if (e.key === 'ArrowRight') nextBtn.click(); });
+  render();
+</script>
+</body>
+</html>

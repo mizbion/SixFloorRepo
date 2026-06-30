@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- meta:subject=JAVA -->
+<!-- meta:unit=자바프로그래밍기초 -->
+<!-- meta:title=1.OT와 개발환경 -->
+<!-- meta:desc=자바 1회차 슬라이드 -->
+<!-- meta:date=2026-06-09 -->
+<title>1회차 | 자바 OT와 개발환경</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3efe7;
+    --panel: #fffdf8;
+    --ink: #1f1a14;
+    --sub: #6f6253;
+    --line: #d8ccba;
+    --brand: #b3472d;
+    --brand2: #0f6a8f;
+    --ok: #1f8a4c;
+    --warn: #b7791f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 20% 10%, #efe3cf 0%, transparent 35%),
+      radial-gradient(circle at 85% 85%, #e1efe9 0%, transparent 30%),
+      var(--bg);
+    min-height: 100vh;
+  }
+  .deck {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 18px 92px;
+  }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    color: var(--sub);
+    font-size: 13px;
+  }
+  .badge {
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .slide {
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 34px;
+    box-shadow: 0 10px 30px rgba(41, 27, 14, 0.08);
+    min-height: 540px;
+  }
+  .slide.active { display: block; }
+  h1 {
+    margin: 0 0 10px;
+    font-size: 34px;
+    line-height: 1.25;
+  }
+  h2 {
+    margin: 0 0 16px;
+    font-size: 25px;
+  }
+  p { margin: 0 0 12px; line-height: 1.75; }
+  ul { margin: 10px 0 0; padding-left: 20px; line-height: 1.8; }
+  li { margin-bottom: 6px; }
+  .hero {
+    display: grid;
+    gap: 16px;
+  }
+  .hero .title-flag {
+    display: inline-block;
+    background: linear-gradient(120deg, var(--brand), #d27f2b);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+  }
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: #201a14;
+    color: #f4ede3;
+    border-radius: 10px;
+    padding: 14px;
+    overflow-x: auto;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .tip { border-left: 5px solid var(--brand2); padding-left: 12px; color: #234b5f; }
+  .check { border-left: 5px solid var(--ok); padding-left: 12px; color: #1e5a34; }
+  .warn { border-left: 5px solid var(--warn); padding-left: 12px; color: #734e11; }
+  .controls {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 20, 13, 0.93);
+    color: #f7f1e8;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 10;
+  }
+  button {
+    border: none;
+    background: #f7f1e8;
+    color: #20160f;
+    border-radius: 8px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    min-width: 64px;
+    text-align: center;
+    align-self: center;
+  }
+  @media (max-width: 760px) {
+    .slide { padding: 22px; min-height: auto; }
+    h1 { font-size: 26px; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="topbar">
+    <span class="badge">JAVA PROGRAMMING · LESSON 01</span>
+  </div>
+
+  <section class="slide active">
+    <div class="hero">
+      <span class="title-flag">1회차</span>
+      <h1>오리엔테이션 + 개발환경 설치</h1>
+      <p>오늘 목표는 "내 컴퓨터에서 자바 코드가 실제로 실행되는 경험"을 만드는 것입니다.</p>
+      <div class="grid2">
+        <div class="card"><h3>수업 목표</h3><ul><li>과목 운영 방식 이해</li><li>JDK/IDE 설치 완료</li><li>첫 실행 성공</li></ul></div>
+        <div class="card"><h3>오늘 결과물</h3><ul><li>Hello Java 출력</li><li>실행 화면 캡처</li><li>설치 체크리스트</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>개발환경 설치 순서</h2>
+    <ol>
+      <li>JDK 설치</li>
+      <li>IDE 설치 (Eclipse 또는 IntelliJ)</li>
+      <li>새 프로젝트 만들기</li>
+      <li>실행 버튼으로 콘솔 출력 확인</li>
+    </ol>
+    <p class="warn">설치 중 경로/권한 문제로 지연될 수 있습니다. 에러가 나면 메시지를 읽고 함께 해결합니다.</p>
+    <div class="mono">public class Main1 {
+  public static void main(String[] args) {
+    System.out.println("Hello Java");
+  }
+}</div>
+  </section>
+
+  <section class="slide">
+    <h2>실습 미션</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>미션 A</h3>
+        <p>위 코드를 직접 입력해 실행하기</p>
+      </div>
+      <div class="card">
+        <h3>미션 B</h3>
+        <p>문구를 자신의 이름으로 바꿔 재실행</p>
+      </div>
+      <div class="card">
+        <h3>미션 C</h3>
+        <p>오타를 일부러 넣고 에러 원인 찾기</p>
+      </div>
+      <div class="card">
+        <h3>미션 D</h3>
+        <p>정상 실행 화면 캡처 제출</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>실습 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>예제 1: 기본 출력</h3>
+        <div class="mono">public class Main2 {
+  public static void main(String[] args) {
+    System.out.println("Hello Java");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>예제 2: 이름 출력</h3>
+        <div class="mono">public class Main3 {
+  public static void main(String[] args) {
+    System.out.println("이름: 김자바");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>예제 3: 두 줄 출력</h3>
+        <div class="mono">public class Main4 {
+  public static void main(String[] args) {
+    System.out.println("학과: 소프트웨어과");
+    System.out.println("목표: 정보처리산업기사");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>예제 4: print + println</h3>
+        <div class="mono">public class Main5 {
+  public static void main(String[] args) {
+    System.out.print("JAVA ");
+    System.out.println("START");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>예제 5: 이스케이프 문자</h3>
+        <div class="mono">public class Main6 {
+  public static void main(String[] args) {
+    System.out.println("\"자바\" 수업 시작");
+    System.out.println("C:\\Java\\workspace");
+  }
+}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>자주 발생하는 오류와 대응</h2>
+    <div class="card"><h3>1) 클래스 이름/파일 이름 불일치</h3><p>파일명과 public class 이름을 동일하게 맞춥니다.</p></div>
+    <div class="card"><h3>2) 세미콜론 누락</h3><p>자바 문장 끝에는 대부분 ; 가 필요합니다.</p></div>
+    <div class="card"><h3>3) main 메서드 오타</h3><p>메서드 시그니처를 샘플 그대로 확인합니다.</p></div>
+  </section>
+
+  <section class="slide">
+    <h2>정리 + 과제</h2>
+    <ul>
+      <li>설치 성공 + 첫 실행 성공</li>
+      <li>체크 포인트: 실행 버튼, 콘솔, 수정 후 재실행</li>
+    </ul>
+    <div class="card">
+      <h3>과제</h3>
+      <p>자기소개 3줄 출력 프로그램 작성 후 실행 화면 제출</p>
+      <div class="mono">예) 이름 / 희망진로 / 한 줄 각오</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>과제 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>과제 예제 1: 자기소개 3줄</h3>
+        <div class="mono">public class Main7 {
+  public static void main(String[] args) {
+    System.out.println("이름: 박코드");
+    System.out.println("희망직무: 백엔드");
+    System.out.println("각오: 매일 30분 코딩");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>과제 예제 2: 학교 정보</h3>
+        <div class="mono">public class Main8 {
+  public static void main(String[] args) {
+    System.out.println("학교: OO직업고");
+    System.out.println("학년: 3학년");
+    System.out.println("반: 2반");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>과제 예제 3: 시간표 안내</h3>
+        <div class="mono">public class Main9 {
+  public static void main(String[] args) {
+    System.out.println("1교시: Java");
+    System.out.println("2교시: DB");
+    System.out.println("3교시: 프로젝트");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>과제 예제 4: 진로 목표</h3>
+        <div class="mono">public class Main10 {
+  public static void main(String[] args) {
+    System.out.print("단기목표: ");
+    System.out.println("포트폴리오 3개 완성");
+    System.out.println("장기목표: 개발자 취업");
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>과제 예제 5: 오류 수정 후 실행</h3>
+        <div class="mono">public class Main11 {
+  public static void main(String[] args) {
+    // 아래 문장을 수정해서 실행해보기
+    System.out.println("오류 없는 자바 실행!");
+  }
+}</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="controls">
+  <button id="prevBtn">이전</button>
+  <span class="counter" id="counter">1 / 6</span>
+  <button id="nextBtn">다음</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  let idx = 0;
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  prevBtn.addEventListener('click', () => { if (idx > 0) { idx -= 1; render(); } });
+  nextBtn.addEventListener('click', () => { if (idx < slides.length - 1) { idx += 1; render(); } });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') nextBtn.click();
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevBtn.click();
+  });
+
+  render();
+</script>
+</body>
+</html>

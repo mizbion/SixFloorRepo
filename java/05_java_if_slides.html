@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- meta:subject=JAVA -->
+<!-- meta:unit=자바프로그래밍기초 -->
+<!-- meta:title=5.조건문 if -->
+<!-- meta:desc=자바 5회차 슬라이드 -->
+<!-- meta:date=2026-06-09 -->
+<title>5회차 | 조건문 if</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f5f4ee; --panel:#fffdfa; --ink:#211a10; --sub:#6f6452; --line:#dbcdb7; --brand:#87552d; --brand2:#355f8c; --ok:#256f47; --warn:#a85b1e; }
+  *{box-sizing:border-box;} body{margin:0;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:radial-gradient(circle at 8% 8%, #f0e1c5 0%, transparent 32%),radial-gradient(circle at 90% 90%, #dde8f6 0%, transparent 30%),var(--bg);} 
+  .deck{max-width:980px;margin:0 auto;padding:24px 18px 92px;} .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--sub);font-size:13px;} .badge{font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;}
+  .slide{display:none;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px;min-height:540px;box-shadow:0 10px 30px rgba(40,28,16,.08);} .slide.active{display:block;}
+  h1{margin:0 0 8px;font-size:34px;} h2{margin:0 0 16px;font-size:25px;} p{margin:0 0 12px;line-height:1.75;} ul{line-height:1.8;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;} .card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;} .card h3{margin:0 0 8px;font-size:17px;}
+  .mono{font-family:'JetBrains Mono',monospace;background:#1f1a14;color:#f6efe6;border-radius:10px;padding:14px;font-size:13px;overflow-x:auto;line-height:1.75;white-space:pre-wrap;}
+  .tip{border-left:5px solid var(--brand2);padding-left:12px;color:#234660;} .good{border-left:5px solid var(--ok);padding-left:12px;color:#1f5537;} .warn{border-left:5px solid var(--warn);padding-left:12px;color:#6f3d12;}
+  .controls{position:fixed;left:0;right:0;bottom:0;background:rgba(28,20,13,.93);color:#f8f1e8;padding:10px 16px;display:flex;justify-content:center;gap:10px;}
+  button{border:none;background:#f8f1e8;color:#24170f;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;} button:disabled{opacity:.4;cursor:not-allowed;} .counter{font-family:'JetBrains Mono',monospace;font-size:12px;min-width:64px;text-align:center;align-self:center;}
+  @media (max-width:760px){.slide{padding:22px;min-height:auto;} h1{font-size:26px;} .grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="topbar"><span class="badge">JAVA PROGRAMMING · LESSON 05</span></div>
+
+  <section class="slide active">
+    <h1>조건문 if</h1>
+    <p>상황에 따라 실행 경로를 나누는 분기 로직을 작성합니다.</p>
+    <div class="grid2">
+      <div class="card"><h3>학습 목표</h3><ul><li>if / else if / else 구조 이해</li><li>조건식 설계 능력 강화</li><li>중첩 분기 작성</li></ul></div>
+      <div class="card"><h3>오늘 산출물</h3><ul><li>등급 판정 코드</li><li>로그인 조건 코드</li><li>조건문 과제 5개</li></ul></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>조건문 핵심</h2>
+    <ul>
+      <li>if(조건) { ... } : 조건이 true면 실행</li>
+      <li>else if : 추가 조건 분기</li>
+      <li>else : 모든 조건이 false일 때 실행</li>
+    </ul>
+    <p class="tip">조건 순서를 잘못 배치하면 의도와 다른 분기가 실행될 수 있습니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>실습 A: 점수 등급 판정</h2>
+    <div class="mono">public class Main1 {
+  public static void main(String[] args) {
+    int score = 86;
+
+    if (score >= 90) {
+      System.out.println("A");
+    } else if (score >= 80) {
+      System.out.println("B");
+    } else if (score >= 70) {
+      System.out.println("C");
+    } else {
+      System.out.println("재시험");
+    }
+  }
+}</div>
+    <p class="good">범위 분기는 큰 값 조건부터 작성하는 습관이 안전합니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>실습 B: 로그인 분기</h2>
+    <div class="mono">public class Main2 {
+  public static void main(String[] args) {
+    boolean idOk = true;
+    boolean pwOk = false;
+
+    if (idOk && pwOk) {
+      System.out.println("로그인 성공");
+    } else {
+      System.out.println("로그인 실패");
+    }
+  }
+}</div>
+    <p class="warn">논리 연산자(&amp;&amp;, ||)를 잘못 쓰면 보안 로직 오류가 발생할 수 있습니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>실습 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card"><h3>예제 1: 단일 if</h3><div class="mono">public class Main3 {
+  public static void main(String[] args) {
+    int temp = 31;
+    if (temp >= 30) System.out.println("더움");
+  }
+}</div></div>
+      <div class="card"><h3>예제 2: if-else</h3><div class="mono">public class Main4 {
+  public static void main(String[] args) {
+    int n = 12;
+    if (n % 2 == 0) System.out.println("짝수");
+    else System.out.println("홀수");
+  }
+}</div></div>
+      <div class="card"><h3>예제 3: else if</h3><div class="mono">public class Main5 {
+  public static void main(String[] args) {
+    int dust = 85;
+    if (dust >= 150) System.out.println("매우나쁨");
+    else if (dust >= 80) System.out.println("나쁨");
+    else System.out.println("보통");
+  }
+}</div></div>
+      <div class="card"><h3>예제 4: 중첩 if</h3><div class="mono">public class Main6 {
+  public static void main(String[] args) {
+    int age = 22;
+    boolean student = true;
+    if (age >= 19) {
+      if (student) System.out.println("학생요금");
+    }
+  }
+}</div></div>
+      <div class="card"><h3>예제 5: 복합 조건</h3><div class="mono">public class Main7 {
+  public static void main(String[] args) {
+    int money = 8000;
+    boolean open = true;
+    if (money >= 7000 && open) System.out.println("주문가능");
+  }
+}</div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>정리 + 과제</h2>
+    <div class="card"><h3>정리</h3><ul><li>조건식은 true/false 결과가 나와야 한다.</li><li>분기 순서를 논리적으로 설계한다.</li><li>복합조건은 괄호로 명확히 표현한다.</li></ul></div>
+    <div class="card"><h3>과제</h3><p>영화관 입장 판정 프로그램: 나이, 보호자 동반, 상영등급 조건 처리</p></div>
+  </section>
+
+  <section class="slide">
+    <h2>과제 코드 예제 5개</h2>
+    <div class="grid2">
+      <div class="card"><h3>과제 1: 출석 판정</h3><div class="mono">public class Main8 {
+  public static void main(String[] args) {
+    int late = 2;
+    if (late == 0) System.out.println("정시");
+    else System.out.println("지각");
+  }
+}</div></div>
+      <div class="card"><h3>과제 2: 합격/불합격</h3><div class="mono">public class Main9 {
+  public static void main(String[] args) {
+    int score = 59;
+    if (score >= 60) System.out.println("PASS");
+    else System.out.println("FAIL");
+  }
+}</div></div>
+      <div class="card"><h3>과제 3: 배송비</h3><div class="mono">public class Main10 {
+  public static void main(String[] args) {
+    int price = 18000;
+    if (price >= 20000) System.out.println("무료배송");
+    else System.out.println("배송비 3000원");
+  }
+}</div></div>
+      <div class="card"><h3>과제 4: 시간대</h3><div class="mono">public class Main11 {
+  public static void main(String[] args) {
+    int hour = 14;
+    if (hour < 12) System.out.println("오전");
+    else if (hour < 18) System.out.println("오후");
+    else System.out.println("저녁");
+  }
+}</div></div>
+      <div class="card"><h3>과제 5: 권한 분기</h3><div class="mono">public class Main12 {
+  public static void main(String[] args) {
+    boolean admin = false;
+    if (admin) System.out.println("관리자");
+    else System.out.println("일반 사용자");
+  }
+}</div></div>
+    </div>
+  </section>
+</div>
+
+<div class="controls">
+  <button id="prevBtn">이전</button>
+  <span class="counter" id="counter">1 / 7</span>
+  <button id="nextBtn">다음</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  let idx = 0;
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  prevBtn.addEventListener('click', () => { if (idx > 0) { idx -= 1; render(); } });
+  nextBtn.addEventListener('click', () => { if (idx < slides.length - 1) { idx += 1; render(); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') prevBtn.click(); if (e.key === 'ArrowRight') nextBtn.click(); });
+  render();
+</script>
+</body>
+</html>
