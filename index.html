@@ -1009,6 +1009,17 @@ const ICONS = {
 let activeTab   = 'all';
 let searchQuery = '';
 
+function getLeadingLessonNumber(lesson) {
+  const titleMatch = String(lesson.title || '').match(/^\s*(\d+)/);
+  if (titleMatch) return parseInt(titleMatch[1], 10);
+
+  const fileName = String(lesson.url || '').split('/').pop() || '';
+  const urlMatch = fileName.match(/^(\d+)/);
+  if (urlMatch) return parseInt(urlMatch[1], 10);
+
+  return Number.NEGATIVE_INFINITY;
+}
+
 /* ── 초기화 ─────────────────────────────── */
 function init() {
   const subjects = [...new Set(LESSONS.map(l => l.subject))];
@@ -1075,7 +1086,14 @@ function buildSections(subjects, palMap) {
 
     /* 단원 그룹 */
     units.forEach(unit => {
-      const unitLessons = lessons.filter(l => l.unit === unit);
+      let unitLessons = lessons.filter(l => l.unit === unit);
+      if (subject === 'JAVA') {
+        unitLessons = [...unitLessons].sort((a, b) => {
+          const n = getLeadingLessonNumber(b) - getLeadingLessonNumber(a);
+          if (n !== 0) return n;
+          return String(b.date || '').localeCompare(String(a.date || ''));
+        });
+      }
       const grp = document.createElement('div');
       grp.className = 'unit-group';
       grp.dataset.unit = unit;
