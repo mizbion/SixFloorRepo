@@ -6,8 +6,11 @@ on:
       - 'py/**/*.html'
       - 'ai/**/*.html'
       - 'web/**/*.html'
+      - 'java/**/*.html'
       - 'aipot/**/*.html'
       - 'sqld/**/*.html'
+      - '.github/workflows/update-index.yml'
+      - 'scripts/update_index.py'
     branches:
       - main
 
