@@ -140,13 +140,48 @@
     box-shadow: 0 5px 14px rgba(196,124,10,.24);
   }
   .quick-link-btn.ai-contest {
-    border-color: #9bc8f4;
-    background: #eff7ff;
-    color: #124d88;
+    border-color: #4dff72;
+    background: #e9ffef;
+    color: #047a2e;
+    box-shadow: 0 0 0 1px rgba(77,255,114,.25), 0 0 14px rgba(77,255,114,.35);
   }
   .quick-link-btn.ai-contest:hover {
-    border-color: #5da6eb;
-    box-shadow: 0 5px 14px rgba(17,105,181,.22);
+    border-color: #1eff56;
+    box-shadow: 0 6px 16px rgba(30,255,86,.36), 0 0 20px rgba(30,255,86,.28);
+  }
+  .quick-link-btn.aipot-test {
+    border-color: #ff82c2;
+    background: linear-gradient(135deg, #ffe2f2 0%, #ffd0ec 50%, #ffc3e8 100%);
+    color: #a50c63;
+    position: relative;
+    overflow: hidden;
+    animation: pinkPulse 1.8s ease-in-out infinite;
+  }
+  .quick-link-btn.aipot-test::after {
+    content: '';
+    position: absolute;
+    top: -120%;
+    left: -40%;
+    width: 36%;
+    height: 340%;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.72), rgba(255,255,255,0));
+    transform: rotate(18deg);
+    animation: pinkShine 2.4s linear infinite;
+    pointer-events: none;
+  }
+  .quick-link-btn.aipot-test:hover {
+    border-color: #ff4ca7;
+    box-shadow: 0 6px 18px rgba(255,76,167,.4), 0 0 20px rgba(255,125,200,.34);
+  }
+  @keyframes pinkPulse {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(255,82,170,.24), 0 0 8px rgba(255,82,170,.18); }
+    50% { box-shadow: 0 0 0 1px rgba(255,82,170,.34), 0 0 16px rgba(255,82,170,.34); }
+  }
+  @keyframes pinkShine {
+    0% { left: -45%; opacity: .1; }
+    18% { opacity: .75; }
+    38% { left: 120%; opacity: 0; }
+    100% { left: 120%; opacity: 0; }
   }
 
   .topbar-stats {
@@ -398,6 +433,20 @@
           <circle cx="32" cy="26" r="5" fill="#ffffff"/>
         </svg>
         <span class="quick-link-text">생성형AI부작용찾기경진대회</span>
+      </a>
+      <a
+        class="quick-link-btn aipot-test"
+        href="https://license.kpc.or.kr/html/aiexam/aipot2/"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="AIPOT 모의테스트 열기"
+        aria-label="AIPOT 모의테스트 열기"
+      >
+        <svg class="quick-link-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path d="M32 8l7 14 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z" fill="#ff5faf"/>
+          <path d="M22 31h20v4H22zm0 8h14v4H22z" fill="#ffffff"/>
+        </svg>
+        <span class="quick-link-text">AIPOT모의테스트</span>
       </a>
     </div>
     <div class="topbar-stats">
