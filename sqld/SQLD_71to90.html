@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>SQLD 71~90번 개념 인터랙티브</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fffbeb; --card:#ffffff; --surf2:#fef3c7; --surf3:#fde59a;
+  --border:#fbd777; --text:#3a2a05; --sub:#8a6d1f;
+  --ac:#d97706; --ac-l:#fef1da; --ac-b:#f6c877;
+  --header-bg:#1c1208; --grad-end:#f59e0b;
+  --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#3a2408); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#fbdf9f; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(217,119,6,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(120,80,0,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.sqlcode{background:#2b1a02; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#fde9c0; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#5c3d05; border-left:3px solid #fbbf24; padding-left:11px;}
+.sqlcode .ln.err{background:#4c1d1d; border-left:3px solid #f87171; padding-left:11px;}
+.errbox{margin-top:14px; background:#fef2f2; border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+table.atab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.atab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.atab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.atab tr.hl td{background:var(--ac-l);}
+table.atab tr.dim td{opacity:.28;}
+table.atab tr.subtotal td{background:#fde59a; font-weight:700;}
+table.atab tr.grand td{background:var(--ac); color:#fff; font-weight:700;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+.frame{outline:2px solid #f59e0b; outline-offset:-2px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 71~90번, 눈으로 이해하기</h1>
+  <p>순위·누적합 윈도우함수 / 서브쿼리 ALL·ANY / ROLLUP 조합 — 인터랙티브 체험</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q77</span>순위·누적합</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q79</span>서브쿼리 ALL·ANY</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q80·82</span>ROLLUP 조합</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q78</span>월별 매출 ROLLUP</button>
+  </div>
+
+  <!-- ===== TAB 0: 순위·누적합 ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>🏆 부서별 순위 + 누적급여 (ROW_NUMBER / SUM OVER)</h2>
+      <div class="desc">부서를 고르면 급여 순위가 매겨지고, "누적 실행" 버튼을 누르면 사원번호 순으로 급여가 하나씩 누적되는 과정을 볼 수 있습니다. (Q77번 관련)</div>
+      <div class="inputrow" style="margin-bottom:12px;">
+        <select id="winDeptSelect" onchange="renderWinTable()" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+      </div>
+      <div class="sqlcode">
+        <div class="ln active">SELECT EMPNO, ENAME, SAL,</div>
+        <div class="ln active">&nbsp;&nbsp;ROW_NUMBER() OVER(PARTITION BY DEPTNO ORDER BY SAL DESC) AS 순위,</div>
+        <div class="ln active">&nbsp;&nbsp;SUM(SAL) OVER(PARTITION BY DEPTNO ORDER BY EMPNO</div>
+        <div class="ln active">&nbsp;&nbsp;&nbsp;&nbsp;ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS 누적급여</div>
+        <div class="ln active">FROM EMP;</div>
+      </div>
+      <button class="runbtn" onclick="runCumulate()">▶ 누적 실행 (EMPNO 순)</button>
+      <button class="resetbtn" onclick="resetWin()">⟲ 초기화</button>
+      <div id="winTable" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: 서브쿼리 ALL·ANY ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>⚖️ 다중행 서브쿼리 — 단일행 연산자를 쓰면?</h2>
+      <div class="desc">서브쿼리가 부서별 최고연봉 4개(여러 행)를 반환할 때, <code>=</code>나 <code>&gt;=</code>를 그냥 쓰면 오류가 납니다. ALL/ANY로 바꿔야 하는 이유를 확인해보세요. (Q79번 관련)</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="modebtn on" id="subErr" onclick="setSubMode('err')">❌ 단일행 연산자(=)</button>
+        <button class="modebtn" id="subAll" onclick="setSubMode('all')">✅ &gt;= ALL (모든 부서보다 높음)</button>
+        <button class="modebtn" id="subAny" onclick="setSubMode('any')">✅ &gt;= ANY (한 부서라도 높음)</button>
+      </div>
+      <div class="sqlcode" id="subSql"></div>
+      <div class="errbox" id="subErrBox" style="display:none;"></div>
+      <div id="subResultTab" style="margin-top:12px;"></div>
+      <div class="hint" id="subHint"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: ROLLUP 조합 ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>🏢 부서명 × 직급 ROLLUP</h2>
+      <div class="desc">DEPT와 EMP를 조인해서 부서명·직급별 인원수와 급여합을 ROLLUP으로 소계까지 만들어봅니다. (Q80번 관련)</div>
+      <button class="runbtn" onclick="runDeptJobRollup()">▶ ROLLUP 실행</button>
+      <div id="deptJobTab" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔗 ROLLUP(A,B) vs ROLLUP((A,B)) — 묶는 방식의 차이</h2>
+      <div class="desc">괄호를 어디에 두느냐에 따라 소계가 생기는 지점이 달라집니다. (Q82번 관련)</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="rollupSep" onclick="setRollupCombo(false)">ROLLUP (JOB, DEPTNO)</button>
+        <button class="modebtn" id="rollupGrp" onclick="setRollupCombo(true)">ROLLUP ((JOB, DEPTNO))</button>
+      </div>
+      <div id="rollupComboTab"></div>
+      <div class="hint" id="rollupComboHint"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 월별 매출 ROLLUP ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>🛒 상품별·월별 매출 ROLLUP</h2>
+      <div class="desc">상품을 고르면 그 상품의 월별 매출과 소계·총계가 만들어집니다. (Q78번 관련)</div>
+      <div class="inputrow" style="margin-bottom:12px;">
+        <select id="prodMonthSelect" onchange="renderProdMonthRollup()" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+      </div>
+      <div id="prodMonthTab"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ 공통 데이터 ============ */
+const EMP = [
+  {emp:7369,name:'SMITH',dept:20,sal:800},{emp:7499,name:'ALLEN',dept:30,sal:1600},{emp:7521,name:'WARD',dept:30,sal:1250},
+  {emp:7566,name:'JONES',dept:20,sal:2975},{emp:7654,name:'MARTIN',dept:30,sal:1250},{emp:7698,name:'BLAKE',dept:30,sal:2850},
+  {emp:7782,name:'CLARK',dept:10,sal:2450},{emp:7788,name:'SCOTT',dept:20,sal:3000},{emp:7839,name:'KING',dept:10,sal:5000},
+  {emp:7844,name:'TURNER',dept:30,sal:1500},{emp:7876,name:'ADAMS',dept:20,sal:1100},{emp:7900,name:'JAMES',dept:30,sal:950},
+  {emp:7902,name:'FORD',dept:20,sal:3000},{emp:7934,name:'MILLER',dept:10,sal:1300},{emp:8001,name:'LEE',dept:20,sal:3200},
+  {emp:8002,name:'PARK',dept:30,sal:1400},{emp:8003,name:'CHOI',dept:10,sal:1100},{emp:8006,name:'JO',dept:40,sal:3500},
+];
+const EMP_JOB = {7369:'CLERK',7499:'SALESMAN',7521:'SALESMAN',7566:'MANAGER',7654:'SALESMAN',7698:'MANAGER',
+  7782:'MANAGER',7788:'ANALYST',7839:'PRESIDENT',7844:'SALESMAN',7876:'CLERK',7900:'CLERK',7902:'ANALYST',
+  7934:'CLERK',8001:'ANALYST',8002:'SALESMAN',8003:'CLERK',8006:'ANALYST'};
+const DEPT_NAME = {10:'ACCOUNTING',20:'RESEARCH',30:'SALES',40:'OPERATIONS'};
+const PRODUCTS = [
+  {id:'P001',name:'삼성 갤럭시 S24'},{id:'P002',name:'LG 휘센 에어컨'},{id:'P003',name:'애플 맥북 에어 M3'},
+  {id:'P004',name:'다이슨 V15 청소기'},{id:'P005',name:'소니 노이즈캔슬링 헤드폰'},{id:'P006',name:'시디즈 T50 의자'},
+  {id:'P007',name:'데스커 모션데스크'},{id:'P010',name:'모나미 볼펜 153 세트'},{id:'P011',name:'라미 사파리 만년필'},
+  {id:'P012',name:'3M 포스트잇 대용량'},{id:'P013',name:'나이키 에어포스 1'},{id:'P014',name:'아디다스 슈퍼스타'},
+  {id:'P015',name:'파타고니아 레트로X'},
+];
+const ORDERS = [
+  {date:'2024-01-02',prod:'P001',amt:1150000},{date:'2024-01-03',prod:'P003',amt:1590000},
+  {date:'2024-01-10',prod:'P002',amt:2300000},{date:'2024-01-12',prod:'P001',amt:1150000},
+  {date:'2024-01-15',prod:'P010',amt:150000},{date:'2024-01-18',prod:'P007',amt:600000},
+  {date:'2024-01-20',prod:'P013',amt:139000},{date:'2024-01-25',prod:'P014',amt:110000},
+  {date:'2024-01-30',prod:'P015',amt:560000},{date:'2024-02-01',prod:'P003',amt:1590000},
+  {date:'2024-02-05',prod:'P012',amt:60000},{date:'2024-02-08',prod:'P001',amt:1150000},
+  {date:'2024-02-10',prod:'P006',amt:350000},{date:'2024-02-15',prod:'P011',amt:110000},
+  {date:'2024-02-18',prod:'P014',amt:110000},{date:'2024-02-20',prod:'P004',amt:890000},
+  {date:'2024-02-25',prod:'P007',amt:600000},{date:'2024-02-28',prod:'P013',amt:278000},
+  {date:'2024-03-01',prod:'P001',amt:1150000},{date:'2024-03-10',prod:'P015',amt:280000},
+  {date:'2024-03-12',prod:'P010',amt:300000},{date:'2024-03-15',prod:'P012',amt:120000},
+  {date:'2024-03-18',prod:'P011',amt:55000},{date:'2024-03-20',prod:'P002',amt:2300000},
+  {date:'2024-03-25',prod:'P003',amt:3180000},{date:'2024-03-28',prod:'P006',amt:350000},
+  {date:'2024-03-30',prod:'P004',amt:890000},
+];
+
+/* ============ TAB 0: 순위·누적합 ============ */
+function initWinDeptSelect(){
+  document.getElementById('winDeptSelect').innerHTML = Object.keys(DEPT_NAME).map(no=>`<option value="${no}">${no} · ${DEPT_NAME[no]}</option>`).join('');
+}
+function renderWinTable(){
+  const dno = +document.getElementById('winDeptSelect').value || 10;
+  const rows = EMP.filter(e=>e.dept===dno).sort((a,b)=>a.emp-b.emp);
+  const ranked = [...rows].sort((a,b)=>b.sal-a.sal);
+  const rankMap = {};
+  ranked.forEach((r,i)=>{ rankMap[r.emp] = i+1; });
+  document.getElementById('winTable').innerHTML = `<table class="atab" id="winBody"><tr><th>EMPNO</th><th>ENAME</th><th>SAL</th><th>순위</th><th>누적급여</th></tr>
+    ${rows.map((r,i)=>`<tr id="wr${i}"><td>${r.emp}</td><td>${r.name}</td><td>${r.sal}</td><td>${rankMap[r.emp]}위</td><td id="cum${i}">-</td></tr>`).join('')}</table>`;
+}
+function resetWin(){ renderWinTable(); }
+function runCumulate(){
+  renderWinTable();
+  const dno = +document.getElementById('winDeptSelect').value || 10;
+  const rows = EMP.filter(e=>e.dept===dno).sort((a,b)=>a.emp-b.emp);
+  let cum = 0;
+  rows.forEach((r,i)=>{
+    setTimeout(()=>{
+      cum += r.sal;
+      document.getElementById('wr'+i).classList.add('hl','frame');
+      document.getElementById('cum'+i).textContent = cum.toLocaleString();
+      setTimeout(()=>document.getElementById('wr'+i).classList.remove('frame'), 300);
+    }, i*450);
+  });
+}
+initWinDeptSelect(); renderWinTable();
+
+/* ============ TAB 1: 서브쿼리 ALL/ANY ============ */
+function deptMaxSal(){
+  const byDept = {};
+  EMP.forEach(e=>{ byDept[e.dept] = Math.max(byDept[e.dept]||0, e.sal); });
+  return byDept;
+}
+function setSubMode(m){
+  ['Err','All','Any'].forEach(k=>document.getElementById('sub'+k).classList.toggle('on', k.toLowerCase()===m));
+  const maxByDept = deptMaxSal();
+  const maxList = Object.values(maxByDept);
+  document.getElementById('subErrBox').style.display = 'none';
+  if(m==='err'){
+    document.getElementById('subSql').innerHTML = `<div class="ln active">SELECT EMPNO, ENAME, SAL FROM EMP</div><div class="ln err">WHERE SAL >= (SELECT MAX(SAL) FROM EMP GROUP BY DEPTNO);</div>`;
+    document.getElementById('subErrBox').style.display = 'block';
+    document.getElementById('subErrBox').textContent = `🚫 오류: 서브쿼리가 부서별 최고연봉 ${maxList.length}개(${maxList.join(', ')})를 반환합니다. 단일행 연산자 '>='는 값을 1개만 받을 수 있어서 오류가 납니다.`;
+    document.getElementById('subResultTab').innerHTML = '';
+    document.getElementById('subHint').textContent = '';
+  } else if(m==='all'){
+    const th = Math.max(...maxList);
+    document.getElementById('subSql').innerHTML = `<div class="ln active">SELECT EMPNO, ENAME, SAL FROM EMP</div><div class="ln active">WHERE SAL >= ALL (SELECT MAX(SAL) FROM EMP GROUP BY DEPTNO);</div>`;
+    const rows = EMP.filter(e=>e.sal >= th);
+    document.getElementById('subResultTab').innerHTML = `<table class="atab"><tr><th>EMPNO</th><th>ENAME</th><th>SAL</th></tr>${rows.map(r=>`<tr class="hl"><td>${r.emp}</td><td>${r.name}</td><td>${r.sal}</td></tr>`).join('')}</table>`;
+    document.getElementById('subHint').textContent = `ALL = 모든 부서 최고연봉(${maxList.join(', ')}) 중 가장 큰 값(${th}) 이상인 사람만 → ${rows.length}명`;
+  } else {
+    const th = Math.min(...maxList);
+    document.getElementById('subSql').innerHTML = `<div class="ln active">SELECT EMPNO, ENAME, SAL FROM EMP</div><div class="ln active">WHERE SAL >= ANY (SELECT MAX(SAL) FROM EMP GROUP BY DEPTNO);</div>`;
+    const rows = EMP.filter(e=>e.sal >= th);
+    document.getElementById('subResultTab').innerHTML = `<table class="atab"><tr><th>EMPNO</th><th>ENAME</th><th>SAL</th></tr>${rows.map(r=>`<tr class="hl"><td>${r.emp}</td><td>${r.name}</td><td>${r.sal}</td></tr>`).join('')}</table>`;
+    document.getElementById('subHint').textContent = `ANY = 부서 최고연봉 중 가장 작은 값(${th}) 이상이면 통과 → ${rows.length}명 (ALL보다 조건이 느슨함)`;
+  }
+}
+setSubMode('err');
+
+/* ============ TAB 2-1: 부서명 × 직급 ROLLUP ============ */
+function resetDeptJobRollup(){
+  document.getElementById('deptJobTab').innerHTML = `<div class="hint">버튼을 눌러 실행해보세요.</div>`;
+}
+function runDeptJobRollup(){
+  const byDept = {};
+  EMP.forEach(e=>{
+    const dn = DEPT_NAME[e.dept];
+    byDept[dn] = byDept[dn] || {};
+    byDept[dn][EMP_JOB[e.emp]] = byDept[dn][EMP_JOB[e.emp]] || {cnt:0, sum:0};
+    byDept[dn][EMP_JOB[e.emp]].cnt++;
+    byDept[dn][EMP_JOB[e.emp]].sum += e.sal;
+  });
+  document.getElementById('deptJobTab').innerHTML = `<table class="atab" id="djrBody"><tr><th>DNAME</th><th>JOB</th><th>인원수</th><th>급여합</th></tr></table>`;
+  const tbl = document.getElementById('djrBody');
+  let grandCnt = 0, grandSum = 0;
+  const depts = Object.keys(byDept);
+  let delay = 0;
+  depts.forEach(dn=>{
+    let subCnt = 0, subSum = 0;
+    Object.keys(byDept[dn]).forEach(job=>{
+      const v = byDept[dn][job];
+      subCnt += v.cnt; subSum += v.sum;
+      setTimeout(()=>{
+        const tr = document.createElement('tr');
+        tr.className = 'hl';
+        tr.innerHTML = `<td>${dn}</td><td>${job}</td><td>${v.cnt}</td><td>${v.sum.toLocaleString()}</td>`;
+        tbl.appendChild(tr);
+      }, delay);
+      delay += 160;
+    });
+    setTimeout(()=>{
+      const tr = document.createElement('tr');
+      tr.className = 'subtotal';
+      tr.innerHTML = `<td>${dn}</td><td>소계</td><td>${subCnt}</td><td>${subSum.toLocaleString()}</td>`;
+      tbl.appendChild(tr);
+    }, delay);
+    delay += 220;
+    grandCnt += subCnt; grandSum += subSum;
+  });
+  setTimeout(()=>{
+    const tr = document.createElement('tr');
+    tr.className = 'grand';
+    tr.innerHTML = `<td colspan="2">전체 합계</td><td>${grandCnt}</td><td>${grandSum.toLocaleString()}</td>`;
+    tbl.appendChild(tr);
+  }, delay);
+}
+
+/* ============ TAB 2-2: ROLLUP 조합 차이 ============ */
+function setRollupCombo(grouped){
+  document.getElementById('rollupSep').classList.toggle('on', !grouped);
+  document.getElementById('rollupGrp').classList.toggle('on', grouped);
+  const byJobDept = {};
+  EMP.forEach(e=>{
+    const job = EMP_JOB[e.emp];
+    byJobDept[job] = byJobDept[job] || {};
+    byJobDept[job][e.dept] = byJobDept[job][e.dept] || [];
+    byJobDept[job][e.dept].push(e.sal);
+  });
+  let html = '<table class="atab"><tr><th>JOB</th><th>DEPTNO</th><th>AVG(SAL)</th></tr>';
+  Object.keys(byJobDept).forEach(job=>{
+    let allSals = [];
+    Object.keys(byJobDept[job]).forEach(d=>{
+      const sals = byJobDept[job][d];
+      allSals = allSals.concat(sals);
+      const avg = (sals.reduce((a,b)=>a+b,0)/sals.length).toFixed(0);
+      html += `<tr class="hl"><td>${job}</td><td>${d}</td><td>${avg}</td></tr>`;
+    });
+    if(!grouped){
+      const avg = (allSals.reduce((a,b)=>a+b,0)/allSals.length).toFixed(0);
+      html += `<tr class="subtotal"><td>${job}</td><td>소계</td><td>${avg}</td></tr>`;
+    }
+  });
+  html += '</table>';
+  document.getElementById('rollupComboTab').innerHTML = html;
+  document.getElementById('rollupComboHint').textContent = grouped
+    ? 'ROLLUP((JOB,DEPTNO))처럼 괄호로 묶으면 JOB·DEPTNO 조합을 하나의 단위로 취급해서, 그 사이 단계 소계 없이 전체합계 하나만 추가됩니다.'
+    : 'ROLLUP(JOB,DEPTNO)는 JOB 기준 소계가 별도로 생깁니다 (직급별 평균 급여 요약).';
+}
+resetDeptJobRollup(); setRollupCombo(false);
+
+/* ============ TAB 3: 상품별·월별 매출 ROLLUP ============ */
+function initProdMonthSelect(){
+  document.getElementById('prodMonthSelect').innerHTML = PRODUCTS.map(p=>`<option value="${p.id}">${p.id} · ${p.name}</option>`).join('');
+}
+function renderProdMonthRollup(){
+  const pid = document.getElementById('prodMonthSelect').value || PRODUCTS[0].id;
+  const rows = ORDERS.filter(o=>o.prod===pid);
+  const byMonth = {};
+  rows.forEach(o=>{ const m = o.date.slice(0,7); byMonth[m] = (byMonth[m]||0)+o.amt; });
+  let html = '<table class="atab"><tr><th>PROD_ID</th><th>주문월</th><th>매출액</th></tr>';
+  let grand = 0;
+  Object.keys(byMonth).sort().forEach(m=>{
+    html += `<tr class="hl"><td>${pid}</td><td>${m}</td><td>${byMonth[m].toLocaleString()}</td></tr>`;
+    grand += byMonth[m];
+  });
+  html += `<tr class="grand"><td colspan="2">${pid} 합계</td><td>${grand.toLocaleString()}</td></tr>`;
+  html += '</table>';
+  if(rows.length===0) html = '<div class="hint">이 상품은 주문 이력이 없습니다.</div>';
+  document.getElementById('prodMonthTab').innerHTML = html;
+}
+initProdMonthSelect(); renderProdMonthRollup();
+</script>
+</body>
+</html>

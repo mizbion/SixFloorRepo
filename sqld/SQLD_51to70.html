@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>SQLD 51~70번 개념 인터랙티브</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf5ff; --card:#ffffff; --surf2:#f2e6ff; --surf3:#e9d4fb;
+  --border:#dcbdf5; --text:#2a1440; --sub:#7a5f99;
+  --ac:#7c3aed; --ac-l:#f0e6ff; --ac-b:#c9a8f5;
+  --header-bg:#1a0a2e; --grad-end:#a855f7;
+  --red:#dc2626; --red-l:#fee2e2; --amber:#b45309; --amber-l:#fef3c7;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#2e1250); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#d8b8f7; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(124,58,237,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(70,10,110,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.badge{display:inline-block; font-size:11px; padding:2px 9px; border-radius:20px; background:var(--ac-l); color:var(--ac); font-weight:700; margin-right:6px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.sqlcode{background:#1f0f38; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#ecdcff; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#43217a; border-left:3px solid #c084fc; padding-left:11px;}
+table.ptab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.ptab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.ptab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.ptab tr.hl td{background:var(--ac-l);}
+table.ptab tr.subtotal td{background:#e9d4fb; font-weight:700;}
+table.ptab tr.grand td{background:#7c3aed; color:#fff; font-weight:700;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+.venn{display:flex; align-items:center; justify-content:center; gap:8px; margin:14px 0;}
+.vcircle{width:110px; height:110px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; opacity:.85;}
+.tree{font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.tnode{padding:5px 10px; margin:2px 0; border-radius:8px; cursor:pointer; border:1px solid transparent; transition:.15s; display:inline-block;}
+.tnode:hover{background:var(--surf2);}
+.tnode.hlnode{background:var(--ac); color:#fff;}
+.tnode.dimnode{opacity:.25;}
+.barrow{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+.barlabel{width:80px; font-size:12px; font-weight:700; flex-shrink:0;}
+.barwrap{flex:1; background:var(--surf2); border-radius:6px; overflow:hidden;}
+.bar{height:22px; border-radius:6px; background:var(--ac); transition:width .5s ease; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:700; white-space:nowrap;}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 51~70번, 눈으로 이해하기</h1>
+  <p>집합연산자 / ROLLUP·CUBE / 계층형 질의 / 급여비중·누적합 — 인터랙티브 체험</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q53</span>집합연산자</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q52·57</span>ROLLUP·CUBE</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q64</span>계층형 질의</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q58·66</span>급여비중·누적합</button>
+  </div>
+
+  <!-- ===== TAB 0: 집합연산자 ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>🔵🟣 UNION · INTERSECT · MINUS</h2>
+      <div class="desc">PRODUCTS 전체 상품(15개)과 실제로 주문된 적 있는 상품을 집합으로 비교해봅니다. (Q53번 관련)</div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+        <button class="modebtn on" id="setUNION" onclick="setSetOp('UNION')">UNION</button>
+        <button class="modebtn" id="setINTERSECT" onclick="setSetOp('INTERSECT')">INTERSECT</button>
+        <button class="modebtn" id="setMINUS" onclick="setSetOp('MINUS')">MINUS (A-B)</button>
+      </div>
+
+      <div class="sqlcode" id="setSql"></div>
+
+      <div class="venn">
+        <div class="vcircle" style="background:#7c3aed;">A: 전체 상품<br>(15개)</div>
+        <div class="vcircle" style="background:#a855f7; margin-left:-30px;">B: 주문된 상품<br>(주문내역 기준)</div>
+      </div>
+
+      <div id="setResultTab"></div>
+      <div class="resultbox" id="setResultText"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: ROLLUP · CUBE ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>➕ ROLLUP — 소계와 총계를 자동으로</h2>
+      <div class="desc">PRODUCTS를 CATEGORY로 묶을 때, 일반 GROUP BY와 ROLLUP의 결과가 어떻게 다른지 비교해보세요. (Q52번 관련)</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="rollupOff" onclick="setRollup(false)">일반 GROUP BY</button>
+        <button class="modebtn" id="rollupOn" onclick="setRollup(true)">GROUP BY ROLLUP</button>
+      </div>
+      <div id="rollupTab"></div>
+    </div>
+
+    <div class="card">
+      <h2>📊 급여등급 × 직급 소계 (SALGRADE + EMP)</h2>
+      <div class="desc">우리 ERD에 실제 있는 SALGRADE와 EMP를 조인해서, 등급별로 직급 소계까지 만들어봅니다. (Q57번 관련)</div>
+      <button class="runbtn" onclick="runGradeRollup()">▶ ROLLUP 집계 실행</button>
+      <div id="gradeRollupTab" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: 계층형 질의 ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>🌳 CONNECT BY — ORG_CHART 조직도 트리</h2>
+      <div class="desc">이름을 클릭하면 그 사람 기준으로 <code>START WITH ID=n CONNECT BY PRIOR ID=PID</code> (자기 아래 조직 전부)가 강조됩니다. 다시 누르면 해제됩니다. (Q64번 관련)</div>
+      <div class="tree" id="orgTree"></div>
+      <div class="hint" id="orgHint">조직도 상의 아무 이름이나 눌러보세요.</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 급여비중 · 누적합 ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>💰 부서별 급여비중 (RATIO_TO_REPORT)</h2>
+      <div class="desc">부서를 고르면 그 부서 안에서 각 사원이 차지하는 급여 비중을 막대로 보여줍니다. (Q58번 관련)</div>
+      <div class="inputrow" style="margin-bottom:12px;">
+        <select id="deptRatioSelect" onchange="renderRatio()" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+      </div>
+      <div id="ratioBars"></div>
+    </div>
+
+    <div class="card">
+      <h2>📈 날짜별 누적 주문금액</h2>
+      <div class="desc">슬라이더로 날짜를 이동하면, 그날까지의 누적 매출이 셀프 조인 방식으로 쌓이는 걸 확인할 수 있습니다. (Q66번 관련)</div>
+      <div class="inputrow" style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:13px; color:var(--sub); min-width:90px;">날짜 위치</span>
+        <input type="range" min="0" max="29" step="1" value="29" id="cumSlider" oninput="renderCumulative()" style="flex:1; accent-color:var(--ac)">
+      </div>
+      <div class="resultbox" id="cumResult"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ 공통 데이터 ============ */
+const PRODUCTS = [
+  {id:'P001',name:'삼성 갤럭시 S24',cat:'가전'},{id:'P002',name:'LG 휘센 에어컨',cat:'가전'},
+  {id:'P003',name:'애플 맥북 에어 M3',cat:'가전'},{id:'P004',name:'다이슨 V15 청소기',cat:'가전'},
+  {id:'P005',name:'소니 노이즈캔슬링 헤드폰',cat:'가전'},{id:'P006',name:'시디즈 T50 의자',cat:'가구'},
+  {id:'P007',name:'데스커 모션데스크',cat:'가구'},{id:'P008',name:'이케아 빌리 책장',cat:'가구'},
+  {id:'P009',name:'일룸 쿠시노 침대',cat:'가구'},{id:'P010',name:'모나미 볼펜 153 세트',cat:'문구'},
+  {id:'P011',name:'라미 사파리 만년필',cat:'문구'},{id:'P012',name:'3M 포스트잇 대용량',cat:'문구'},
+  {id:'P013',name:'나이키 에어포스 1',cat:'패션'},{id:'P014',name:'아디다스 슈퍼스타',cat:'패션'},
+  {id:'P015',name:'파타고니아 레트로X',cat:'패션'},
+];
+const PRODUCTS_PRICE = {P001:1150000,P002:2300000,P003:1590000,P004:890000,P005:450000,P006:350000,P007:600000,
+  P008:99000,P009:1200000,P010:15000,P011:55000,P012:12000,P013:139000,P014:110000,P015:280000};
+const ORDERS = [
+  {date:'2024-01-02',prod:'P001',amt:1150000},{date:'2024-01-03',prod:'P003',amt:1590000},{date:'2024-01-05',prod:'P005',amt:900000},
+  {date:'2024-01-10',prod:'P002',amt:2300000},{date:'2024-01-12',prod:'P001',amt:1150000},{date:'2024-01-15',prod:'P010',amt:150000},
+  {date:'2024-01-18',prod:'P007',amt:600000},{date:'2024-01-20',prod:'P013',amt:139000},{date:'2024-01-25',prod:'P014',amt:110000},
+  {date:'2024-01-30',prod:'P015',amt:560000},{date:'2024-02-01',prod:'P003',amt:1590000},{date:'2024-02-05',prod:'P012',amt:60000},
+  {date:'2024-02-08',prod:'P001',amt:1150000},{date:'2024-02-10',prod:'P006',amt:350000},{date:'2024-02-12',prod:'P009',amt:1200000},
+  {date:'2024-02-15',prod:'P011',amt:110000},{date:'2024-02-18',prod:'P014',amt:110000},{date:'2024-02-20',prod:'P004',amt:890000},
+  {date:'2024-02-25',prod:'P007',amt:600000},{date:'2024-02-28',prod:'P013',amt:278000},{date:'2024-03-01',prod:'P001',amt:1150000},
+  {date:'2024-03-05',prod:'P005',amt:1350000},{date:'2024-03-10',prod:'P015',amt:280000},{date:'2024-03-12',prod:'P010',amt:300000},
+  {date:'2024-03-15',prod:'P012',amt:120000},{date:'2024-03-18',prod:'P011',amt:55000},{date:'2024-03-20',prod:'P002',amt:2300000},
+  {date:'2024-03-25',prod:'P003',amt:3180000},{date:'2024-03-28',prod:'P006',amt:350000},{date:'2024-03-30',prod:'P004',amt:890000},
+];
+const EMP = [
+  {emp:7369,name:'SMITH',dept:20,sal:800},{emp:7499,name:'ALLEN',dept:30,sal:1600},{emp:7521,name:'WARD',dept:30,sal:1250},
+  {emp:7566,name:'JONES',dept:20,sal:2975},{emp:7654,name:'MARTIN',dept:30,sal:1250},{emp:7698,name:'BLAKE',dept:30,sal:2850},
+  {emp:7782,name:'CLARK',dept:10,sal:2450},{emp:7788,name:'SCOTT',dept:20,sal:3000},{emp:7839,name:'KING',dept:10,sal:5000},
+  {emp:7844,name:'TURNER',dept:30,sal:1500},{emp:7876,name:'ADAMS',dept:20,sal:1100},{emp:7900,name:'JAMES',dept:30,sal:950},
+  {emp:7902,name:'FORD',dept:20,sal:3000},{emp:7934,name:'MILLER',dept:10,sal:1300},{emp:8001,name:'LEE',dept:20,sal:3200},
+  {emp:8002,name:'PARK',dept:30,sal:1400},{emp:8003,name:'CHOI',dept:10,sal:1100},{emp:8006,name:'JO',dept:40,sal:3500},
+];
+const EMP_JOB = {7369:'CLERK',7499:'SALESMAN',7521:'SALESMAN',7566:'MANAGER',7654:'SALESMAN',7698:'MANAGER',
+  7782:'MANAGER',7788:'ANALYST',7839:'PRESIDENT',7844:'SALESMAN',7876:'CLERK',7900:'CLERK',7902:'ANALYST',
+  7934:'CLERK',8001:'ANALYST',8002:'SALESMAN',8003:'CLERK',8006:'ANALYST'};
+const SALGRADE = [{grade:1,lo:0,hi:1200},{grade:2,lo:1200.01,hi:1400},{grade:3,lo:1400.01,hi:2000},
+  {grade:4,lo:2000.01,hi:3000},{grade:5,lo:3000.01,hi:5000},{grade:6,lo:5000.01,hi:99999}];
+const DEPT_NAME = {10:'ACCOUNTING',20:'RESEARCH',30:'SALES',40:'OPERATIONS'};
+const ORG = [
+  {id:1,name:'홍길동',pid:null,pos:'대표이사'},{id:2,name:'이순신',pid:1,pos:'영업전무'},{id:3,name:'강감찬',pid:1,pos:'기술전무'},
+  {id:4,name:'유관순',pid:2,pos:'영업1팀장'},{id:5,name:'안중근',pid:2,pos:'영업2팀장'},{id:6,name:'윤봉길',pid:3,pos:'개발1팀장'},
+  {id:7,name:'김좌진',pid:3,pos:'개발2팀장'},{id:8,name:'김구',pid:4,pos:'영업1팀과장'},{id:9,name:'신익희',pid:5,pos:'영업2팀과장'},
+  {id:10,name:'조소앙',pid:6,pos:'개발1팀과장'},{id:11,name:'지청천',pid:7,pos:'개발2팀과장'},{id:12,name:'홍범도',pid:8,pos:'영업1팀대리'},
+  {id:13,name:'이범석',pid:9,pos:'영업2팀대리'},{id:14,name:'김원봉',pid:10,pos:'개발1팀대리'},{id:15,name:'나석주',pid:12,pos:'영업1팀사원'},
+  {id:16,name:'김마리아',pid:13,pos:'영업2팀사원'},{id:17,name:'유림',pid:14,pos:'개발1팀사원'},{id:18,name:'박열',pid:11,pos:'개발2팀사원'},
+];
+
+/* ============ TAB 0: 집합연산자 ============ */
+let curSetOp = 'UNION';
+function setSetOp(op){
+  curSetOp = op;
+  ['UNION','INTERSECT','MINUS'].forEach(k=>document.getElementById('set'+k).classList.toggle('on', k===op));
+  renderSetOp();
+}
+function renderSetOp(){
+  const allIds = PRODUCTS.map(p=>p.id);
+  const orderedIds = [...new Set(ORDERS.map(o=>o.prod))];
+  let resultIds = [];
+  let sqlB = 'SELECT DISTINCT PROD_ID FROM ORDERS';
+  if(curSetOp==='UNION'){
+    resultIds = [...new Set([...allIds, ...orderedIds])];
+    document.getElementById('setSql').innerHTML = `<div class="ln active">SELECT PROD_ID FROM PRODUCTS</div><div class="ln active">UNION</div><div class="ln active">${sqlB};</div>`;
+  } else if(curSetOp==='INTERSECT'){
+    resultIds = allIds.filter(id=>orderedIds.includes(id));
+    document.getElementById('setSql').innerHTML = `<div class="ln active">SELECT PROD_ID FROM PRODUCTS</div><div class="ln active">INTERSECT</div><div class="ln active">${sqlB};</div>`;
+  } else {
+    resultIds = allIds.filter(id=>!orderedIds.includes(id));
+    document.getElementById('setSql').innerHTML = `<div class="ln active">SELECT PROD_ID FROM PRODUCTS</div><div class="ln active">MINUS</div><div class="ln active">${sqlB};</div>`;
+  }
+  const rows = resultIds.map(id=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    return `<tr class="hl"><td>${id}</td><td>${p?p.name:'(주문에만 존재)'}</td></tr>`;
+  }).join('');
+  document.getElementById('setResultTab').innerHTML = `<table class="ptab"><tr><th>PROD_ID</th><th>PROD_NAME</th></tr>${rows}</table>`;
+  let expl = '';
+  if(curSetOp==='UNION') expl = `UNION 결과 = ${resultIds.length}건 (전체 상품 15개와 동일 — 주문된 상품은 다 PRODUCTS 안에 있으니까요)`;
+  else if(curSetOp==='INTERSECT') expl = `INTERSECT 결과 = ${resultIds.length}건 (한 번이라도 주문된 적 있는 상품만)`;
+  else expl = `MINUS 결과 = ${resultIds.length}건 (한 번도 주문된 적 없는 상품 — P008 이케아 빌리 책장)`;
+  document.getElementById('setResultText').textContent = expl;
+}
+renderSetOp();
+
+/* ============ TAB 1-1: ROLLUP ============ */
+function setRollup(on){
+  document.getElementById('rollupOff').classList.toggle('on', !on);
+  document.getElementById('rollupOn').classList.toggle('on', on);
+  const cats = {};
+  PRODUCTS.forEach(p=>{ cats[p.cat] = (cats[p.cat]||0) + PRODUCTS_PRICE[p.id]; });
+  let html = '<table class="ptab"><tr><th>CATEGORY</th><th>SUM(PRICE)</th></tr>';
+  let grand = 0;
+  Object.keys(cats).forEach(c=>{ html += `<tr class="hl"><td>${c}</td><td>${cats[c].toLocaleString()}</td></tr>`; grand += cats[c]; });
+  if(on) html += `<tr class="grand"><td>전체 합계</td><td>${grand.toLocaleString()}</td></tr>`;
+  html += '</table>';
+  document.getElementById('rollupTab').innerHTML = html;
+}
+setRollup(false);
+
+/* ============ TAB 1-2: SALGRADE + EMP ROLLUP ============ */
+function runGradeRollup(){
+  const rows = EMP.map(e=>{
+    const g = SALGRADE.find(s=>e.sal>=s.lo && e.sal<=s.hi);
+    return {grade:g.grade, job:EMP_JOB[e.emp], sal:e.sal};
+  });
+  const byGrade = {};
+  rows.forEach(r=>{
+    byGrade[r.grade] = byGrade[r.grade] || {};
+    byGrade[r.grade][r.job] = (byGrade[r.grade][r.job]||0) + r.sal;
+  });
+  let html = '<table class="ptab"><tr><th>GRADE</th><th>JOB</th><th>SUM(SAL)</th></tr>';
+  Object.keys(byGrade).sort((a,b)=>a-b).forEach(g=>{
+    let sub = 0;
+    Object.keys(byGrade[g]).forEach(job=>{
+      html += `<tr class="hl"><td>${g}</td><td>${job}</td><td>${byGrade[g][job].toLocaleString()}</td></tr>`;
+      sub += byGrade[g][job];
+    });
+    html += `<tr class="subtotal"><td>${g}</td><td>소계</td><td>${sub.toLocaleString()}</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('gradeRollupTab').innerHTML = html;
+}
+
+/* ============ TAB 2: 계층형 질의 트리 ============ */
+let orgSelected = null;
+function getDescendants(id){
+  const direct = ORG.filter(o=>o.pid===id);
+  let all = [...direct];
+  direct.forEach(d=>{ all = all.concat(getDescendants(d.id)); });
+  return all;
+}
+function buildTreeHtml(pid, depth){
+  const children = ORG.filter(o=>o.pid===pid);
+  return children.map(c=>{
+    const indent = '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(depth);
+    return `<div>${indent}<span class="tnode" id="tn${c.id}" onclick="toggleOrgNode(${c.id})">${c.name} <span style="opacity:.6">(${c.pos})</span></span></div>`
+      + buildTreeHtml(c.id, depth+1);
+  }).join('');
+}
+function renderOrgTree(){
+  document.getElementById('orgTree').innerHTML = buildTreeHtml(null, 0);
+}
+function toggleOrgNode(id){
+  if(orgSelected === id){
+    orgSelected = null;
+    ORG.forEach(o=>{ const el = document.getElementById('tn'+o.id); el.classList.remove('hlnode','dimnode'); });
+    document.getElementById('orgHint').textContent = '조직도 상의 아무 이름이나 눌러보세요.';
+    return;
+  }
+  orgSelected = id;
+  const desc = getDescendants(id).map(d=>d.id);
+  const subtreeIds = [id, ...desc];
+  ORG.forEach(o=>{
+    const el = document.getElementById('tn'+o.id);
+    el.classList.toggle('hlnode', subtreeIds.includes(o.id));
+    el.classList.toggle('dimnode', !subtreeIds.includes(o.id));
+  });
+  const person = ORG.find(o=>o.id===id);
+  document.getElementById('orgHint').textContent = `START WITH ID=${id} (${person.name}) CONNECT BY PRIOR ID=PID → 본인 포함 ${subtreeIds.length}명이 조회됩니다 (하위 조직 전체).`;
+}
+renderOrgTree();
+
+/* ============ TAB 3-1: 급여비중 ============ */
+function initDeptRatioSelect(){
+  document.getElementById('deptRatioSelect').innerHTML = Object.keys(DEPT_NAME).map(no=>`<option value="${no}">${no} · ${DEPT_NAME[no]}</option>`).join('');
+}
+function renderRatio(){
+  const dno = +document.getElementById('deptRatioSelect').value || 10;
+  const rows = EMP.filter(e=>e.dept===dno);
+  const total = rows.reduce((s,r)=>s+r.sal,0);
+  document.getElementById('ratioBars').innerHTML = rows.map(r=>{
+    const pct = (r.sal/total*100).toFixed(1);
+    return `<div class="barrow"><div class="barlabel">${r.name}</div><div class="barwrap"><div class="bar" style="width:${pct}%">${pct}%</div></div></div>`;
+  }).join('') + `<div class="hint">부서 총 급여 ${total.toLocaleString()}원 기준 RATIO_TO_REPORT(SAL) OVER (PARTITION BY DEPTNO)</div>`;
+}
+
+/* ============ TAB 3-2: 누적 주문금액 ============ */
+function renderCumulative(){
+  const idx = +document.getElementById('cumSlider').value;
+  let sum = 0;
+  for(let i=0;i<=idx;i++) sum += ORDERS[i].amt;
+  const o = ORDERS[idx];
+  document.getElementById('cumResult').textContent = `${o.date} 까지 누적 주문금액 = ${sum.toLocaleString()}원 (${idx+1}건 합산)`;
+}
+
+/* ============ 초기 렌더 ============ */
+initDeptRatioSelect(); renderRatio(); renderCumulative();
+</script>
+</body>
+</html>

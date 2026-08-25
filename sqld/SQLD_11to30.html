@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>SQLD 11~30번 개념 인터랙티브</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f9f6f0; --card:#ffffff; --surf2:#f5efe0; --surf3:#efe4cc;
+  --border:#e3d3a8; --text:#2e2410; --sub:#8a7550;
+  --ac:#b45309; --ac-l:#fdf1e0; --ac-b:#f0cb96;
+  --header-bg:#1a0f00; --grad-end:#d97706;
+  --red:#dc2626; --red-l:#fee2e2; --amber:#b45309; --amber-l:#fef3c7;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#2e1a02); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#f0d9a8; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(180,83,9,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(120,80,10,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.badge{display:inline-block; font-size:11px; padding:2px 9px; border-radius:20px; background:var(--ac-l); color:var(--ac); font-weight:700; margin-right:6px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.sqlcode{background:#2b1a05; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#fbe8c8; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#5c3a0a; border-left:3px solid #f59e0b; padding-left:11px;}
+.sqlcode .ln.err{background:#4c1d1d; border-left:3px solid #f87171; padding-left:11px;}
+.errbox{margin-top:14px; background:#fef2f2; border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+table.gtab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.gtab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.gtab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.gtab tr.hl td{background:var(--ac-l);}
+table.gtab tr.dim td{opacity:.28;}
+table.gtab tr.match td{background:#ecfdf5;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+.inputrow{display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.inputrow input[type=text]{flex:1; min-width:160px; padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:13px;}
+.inputrow select{padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;}
+.pill{display:inline-block; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; margin:3px; background:var(--surf2); border:1px solid var(--border); cursor:pointer; transition:.2s;}
+.pill.cat-가전{background:#e0f2fe; border-color:#7dd3fc;}
+.pill.cat-가구{background:#fef3c7; border-color:#fcd34d;}
+.pill.cat-문구{background:#f3e8ff; border-color:#d8b4fe;}
+.pill.cat-패션{background:#fce7f3; border-color:#f9a8d4;}
+.bar{height:22px; border-radius:6px; background:var(--ac); transition:width .5s ease; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:700; white-space:nowrap;}
+.barrow{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+.barlabel{width:70px; font-size:12px; font-weight:700; flex-shrink:0;}
+.barwrap{flex:1; background:var(--surf2); border-radius:6px; overflow:hidden;}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 11~30번, 눈으로 이해하기</h1>
+  <p>문자·날짜 함수 / CASE·그룹핑 함정 / NULLIF·서브쿼리 — 인터랙티브 체험</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q11·12·22·24</span>문자함수 실험실</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q13·30</span>날짜 필터&연산</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q14·17·18·29</span>CASE·그룹핑 함정</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q19·20·21·23·25</span>NULLIF·서브쿼리</button>
+  </div>
+
+  <!-- ===== TAB 0: 문자함수 실험실 ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>🔤 문자함수 미리보기</h2>
+      <div class="desc">상품을 고르고 함수 버튼을 누르면 결과가 바로 나타납니다. (Q12, 24번 관련)</div>
+      <div class="inputrow">
+        <select id="prodSelect" onchange="renderFnResult()"></select>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="modebtn on" id="fnUPPER" onclick="setFn('UPPER')">UPPER()</button>
+        <button class="modebtn" id="fnLOWER" onclick="setFn('LOWER')">LOWER()</button>
+        <button class="modebtn" id="fnLTRIM" onclick="setFn('LTRIM')">LTRIM('  '||x)</button>
+        <button class="modebtn" id="fnSUBSTR" onclick="setFn('SUBSTR')">SUBSTR(x,1,3)</button>
+        <button class="modebtn" id="fnLENGTH" onclick="setFn('LENGTH')">LENGTH(x)</button>
+      </div>
+      <div class="resultbox" id="fnResult">결과가 여기에 표시됩니다.</div>
+    </div>
+
+    <div class="card">
+      <h2>🔍 LIKE 패턴 매칭기</h2>
+      <div class="desc">패턴을 입력하면 실제 PRODUCTS 15개 중 어떤 게 걸리는지 실시간으로 초록색이 됩니다. <code>_</code>는 글자 1개, <code>%</code>는 0개 이상을 뜻해요. (Q22번 관련)</div>
+      <div class="inputrow">
+        <input type="text" id="likeInput" value="P00_" oninput="renderLikeTable()">
+        <span style="font-size:12px; color:var(--sub);">예: P00_ / %청소기% / P01%</span>
+      </div>
+      <div id="likeTable"></div>
+      <div class="resultbox" id="likeResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>🕳️ 빈 문자열 vs NULL</h2>
+      <div class="desc">STUDENTS에 TEL을 빈 문자열(<code>''</code>)로 새 학생을 등록하면, DB마다 결과가 다릅니다. 버튼을 눌러 확인해보세요. (Q11번 관련)</div>
+      <button class="runbtn" onclick="runEmptyNull()">▶ INSERT 후 IS NULL 조회 실행</button>
+      <div class="resultbox" id="emptyNullResult">버튼을 눌러보세요.</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: 날짜 필터 & 연산 ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>📅 월별 주문 필터</h2>
+      <div class="desc">슬라이더로 월을 바꾸면 실제 ORDERS 30건 중 해당 월 주문만 강조됩니다. (Q13번 관련)</div>
+      <div class="inputrow">
+        <span style="font-size:13px; color:var(--sub); min-width:60px;">2024년</span>
+        <input type="range" min="1" max="3" step="1" value="1" id="monthSlider" oninput="renderOrdersTable()" style="flex:1; accent-color:var(--ac)">
+        <span id="monthVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac);">1월</span>
+      </div>
+      <div id="ordersTable"></div>
+      <div class="resultbox" id="ordersResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>➕ 날짜 연산 (오라클)</h2>
+      <div class="desc">오라클에서 날짜에 숫자를 더하면 '일(day)' 단위로 계산됩니다. 슬라이더로 더할 시간을 바꿔보세요. (Q30번 관련)</div>
+      <div class="inputrow">
+        <span style="font-size:13px; color:var(--sub); min-width:90px;">더할 시간(분)</span>
+        <input type="range" min="0" max="180" step="10" value="30" id="minSlider" oninput="renderDateCalc()" style="flex:1; accent-color:var(--ac)">
+        <span id="minVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac);">30분</span>
+      </div>
+      <div class="sqlcode" id="dateCalcCode"></div>
+      <div class="resultbox" id="dateCalcResult"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: CASE·그룹핑 함정 ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>🏷️ CASE 분류기</h2>
+      <div class="desc">상품 카드를 누르면 CASE문이 어떤 라벨을 붙이는지 확인할 수 있습니다. (Q17번 관련)</div>
+      <div id="caseGrid" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;"></div>
+      <div class="resultbox" id="caseResult">상품을 클릭해보세요.</div>
+    </div>
+
+    <div class="card">
+      <h2>📊 성적 등급 피벗 카운터</h2>
+      <div class="desc">과목을 고르면 실제 ENROLL 데이터에서 A/B/C대 인원수가 막대로 나타납니다. GRADE는 'A+','B0'처럼 부호가 붙어있어 LIKE 'A%'로 앞글자만 비교합니다. (Q18번 관련)</div>
+      <div class="inputrow">
+        <select id="subSelect" onchange="renderGradePivot()"></select>
+      </div>
+      <div id="gradeBars"></div>
+    </div>
+
+    <div class="card">
+      <h2>⚠️ GROUP BY 별칭 함정</h2>
+      <div class="desc">ORDER BY에는 SELECT/GROUP BY에 없는 칼럼을 쓸 수 없습니다. 두 버전을 비교해보세요. (Q14, 29번 관련)</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="aliasWrong" onclick="setAliasMode(true)">❌ DISC_RATE로 정렬</button>
+        <button class="modebtn" id="aliasRight" onclick="setAliasMode(false)">✅ 별칭(합계)으로 정렬</button>
+      </div>
+      <div class="sqlcode" id="aliasCode"></div>
+      <div class="errbox" id="aliasErr" style="display:none;"></div>
+      <div id="aliasTable"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: NULLIF·서브쿼리 응용 ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>🚫 NULLIF로 특정 값 가리기</h2>
+      <div class="desc">NULLIF(MGR, 7698)는 MGR이 7698이면 NULL로, 아니면 그대로 보여줍니다. (Q20번 관련)</div>
+      <button class="runbtn" onclick="runNullif()">▶ NULLIF(MGR, 7698) 적용</button>
+      <button class="resetbtn" onclick="resetNullif()">⟲ 초기화</button>
+      <div id="nullifTable" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔢 ORDER BY 칼럼 번호</h2>
+      <div class="desc">칼럼 이름 대신 SELECT에 나열된 순서 번호로도 정렬할 수 있습니다. DEPT의 1번째(DNAME) 기준으로 정렬해봅니다. (Q21번 관련)</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="deptAsc" onclick="setDeptOrder('asc')">ORDER BY 1 (오름차순)</button>
+        <button class="modebtn" id="deptDesc" onclick="setDeptOrder('desc')">ORDER BY 3 DESC (DEPTNO 내림차순)</button>
+      </div>
+      <div id="deptTable"></div>
+    </div>
+
+    <div class="card">
+      <h2>🎓 전공별 평균 점수</h2>
+      <div class="desc">STUDENTS와 ENROLL을 조인해서 전공별 평균 점수를 비교합니다. (Q23번 관련)</div>
+      <div id="majorBars"></div>
+    </div>
+
+    <div class="card">
+      <h2>🛒 상품별 최초 주문일 찾기</h2>
+      <div class="desc">상품을 고르면 그 상품의 모든 주문 중 가장 빠른 날짜(서브쿼리 MIN)가 강조됩니다. (Q25번 관련)</div>
+      <div class="inputrow">
+        <select id="prodOrderSelect" onchange="renderFirstOrder()"></select>
+      </div>
+      <div id="firstOrderTable"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ 공통 데이터 ============ */
+const PRODUCTS = [
+  {id:'P001',name:'삼성 갤럭시 S24',cat:'가전',price:1150000,rate:0.05},
+  {id:'P002',name:'LG 휘센 에어컨',cat:'가전',price:2300000,rate:0.1},
+  {id:'P003',name:'애플 맥북 에어 M3',cat:'가전',price:1590000,rate:null},
+  {id:'P004',name:'다이슨 V15 청소기',cat:'가전',price:890000,rate:0.15},
+  {id:'P005',name:'소니 노이즈캔슬링 헤드폰',cat:'가전',price:450000,rate:null},
+  {id:'P006',name:'시디즈 T50 의자',cat:'가구',price:350000,rate:0.08},
+  {id:'P007',name:'데스커 모션데스크',cat:'가구',price:600000,rate:0.12},
+  {id:'P008',name:'이케아 빌리 책장',cat:'가구',price:99000,rate:null},
+  {id:'P009',name:'일룸 쿠시노 침대',cat:'가구',price:1200000,rate:0.05},
+  {id:'P010',name:'모나미 볼펜 153 세트',cat:'문구',price:15000,rate:null},
+  {id:'P011',name:'라미 사파리 만년필',cat:'문구',price:55000,rate:0.2},
+  {id:'P012',name:'3M 포스트잇 대용량',cat:'문구',price:12000,rate:null},
+  {id:'P013',name:'나이키 에어포스 1',cat:'패션',price:139000,rate:null},
+  {id:'P014',name:'아디다스 슈퍼스타',cat:'패션',price:110000,rate:0.1},
+  {id:'P015',name:'파타고니아 레트로X',cat:'패션',price:280000,rate:0.05},
+];
+const ORDERS = [
+  {id:'ORD_001',cust:'CUST_01',date:'2024-01-02',prod:'P001',qty:1,amt:1150000},
+  {id:'ORD_002',cust:'CUST_02',date:'2024-01-03',prod:'P003',qty:1,amt:1590000},
+  {id:'ORD_003',cust:'CUST_03',date:'2024-01-05',prod:'P005',qty:2,amt:900000},
+  {id:'ORD_004',cust:'CUST_01',date:'2024-01-10',prod:'P002',qty:1,amt:2300000},
+  {id:'ORD_005',cust:'CUST_04',date:'2024-01-12',prod:'P001',qty:1,amt:1150000},
+  {id:'ORD_006',cust:'CUST_05',date:'2024-01-15',prod:'P010',qty:10,amt:150000},
+  {id:'ORD_007',cust:'CUST_02',date:'2024-01-18',prod:'P007',qty:1,amt:600000},
+  {id:'ORD_008',cust:'CUST_06',date:'2024-01-20',prod:'P013',qty:1,amt:139000},
+  {id:'ORD_009',cust:'CUST_03',date:'2024-01-25',prod:'P014',qty:1,amt:110000},
+  {id:'ORD_010',cust:'CUST_07',date:'2024-01-30',prod:'P015',qty:2,amt:560000},
+  {id:'ORD_011',cust:'CUST_01',date:'2024-02-01',prod:'P003',qty:1,amt:1590000},
+  {id:'ORD_012',cust:'CUST_08',date:'2024-02-05',prod:'P012',qty:5,amt:60000},
+  {id:'ORD_013',cust:'CUST_04',date:'2024-02-08',prod:'P001',qty:1,amt:1150000},
+  {id:'ORD_014',cust:'CUST_02',date:'2024-02-10',prod:'P006',qty:1,amt:350000},
+  {id:'ORD_015',cust:'CUST_09',date:'2024-02-12',prod:'P009',qty:1,amt:1200000},
+  {id:'ORD_016',cust:'CUST_05',date:'2024-02-15',prod:'P011',qty:2,amt:110000},
+  {id:'ORD_017',cust:'CUST_10',date:'2024-02-18',prod:'P014',qty:1,amt:110000},
+  {id:'ORD_018',cust:'CUST_01',date:'2024-02-20',prod:'P004',qty:1,amt:890000},
+  {id:'ORD_019',cust:'CUST_03',date:'2024-02-25',prod:'P007',qty:1,amt:600000},
+  {id:'ORD_020',cust:'CUST_06',date:'2024-02-28',prod:'P013',qty:2,amt:278000},
+  {id:'ORD_021',cust:'CUST_02',date:'2024-03-01',prod:'P001',qty:1,amt:1150000},
+  {id:'ORD_022',cust:'CUST_04',date:'2024-03-05',prod:'P005',qty:3,amt:1350000},
+  {id:'ORD_023',cust:'CUST_07',date:'2024-03-10',prod:'P015',qty:1,amt:280000},
+  {id:'ORD_024',cust:'CUST_01',date:'2024-03-12',prod:'P010',qty:20,amt:300000},
+  {id:'ORD_025',cust:'CUST_08',date:'2024-03-15',prod:'P012',qty:10,amt:120000},
+  {id:'ORD_026',cust:'CUST_05',date:'2024-03-18',prod:'P011',qty:1,amt:55000},
+  {id:'ORD_027',cust:'CUST_09',date:'2024-03-20',prod:'P002',qty:1,amt:2300000},
+  {id:'ORD_028',cust:'CUST_02',date:'2024-03-25',prod:'P003',qty:2,amt:3180000},
+  {id:'ORD_029',cust:'CUST_10',date:'2024-03-28',prod:'P006',qty:1,amt:350000},
+  {id:'ORD_030',cust:'CUST_03',date:'2024-03-30',prod:'P004',qty:1,amt:890000},
+];
+const STUDENTS = [
+  {id:'S2021001',name:'강하늘',major:'컴퓨터공학'},{id:'S2021002',name:'박보검',major:'경영학'},
+  {id:'S2021003',name:'김지원',major:'데이터과학'},{id:'S2022001',name:'윤아',major:'컴퓨터공학'},
+  {id:'S2022002',name:'차은우',major:'산업디자인'},{id:'S2022003',name:'수지',major:'경영학'},
+  {id:'S2023001',name:'송중기',major:'데이터과학'},{id:'S2023002',name:'아이유',major:'컴퓨터공학'},
+  {id:'S2023003',name:'현빈',major:'산업디자인'},{id:'S2023004',name:'손예진',major:'경영학'},
+];
+const ENROLL = [
+  {stu:'S2021001',sub:'C001',score:95,grade:'A+'},{stu:'S2021001',sub:'C002',score:92,grade:'A0'},
+  {stu:'S2021001',sub:'C003',score:85,grade:'B+'},{stu:'S2021002',sub:'C005',score:88,grade:'B+'},
+  {stu:'S2021002',sub:'C006',score:90,grade:'A0'},{stu:'S2021002',sub:'C007',score:82,grade:'B0'},
+  {stu:'S2021003',sub:'C008',score:91,grade:'A0'},{stu:'S2021003',sub:'C010',score:96,grade:'A+'},
+  {stu:'S2021003',sub:'C011',score:88,grade:'B+'},{stu:'S2022001',sub:'C001',score:80,grade:'B0'},
+  {stu:'S2022001',sub:'C002',score:85,grade:'B+'},{stu:'S2022001',sub:'C009',score:100,grade:'A+'},
+  {stu:'S2022002',sub:'C012',score:95,grade:'A+'},{stu:'S2022002',sub:'C013',score:91,grade:'A0'},
+  {stu:'S2022002',sub:'C015',score:88,grade:'B+'},{stu:'S2022003',sub:'C005',score:76,grade:'C+'},
+  {stu:'S2022003',sub:'C006',score:82,grade:'B0'},{stu:'S2022003',sub:'C007',score:90,grade:'A0'},
+  {stu:'S2023001',sub:'C008',score:88,grade:'B+'},{stu:'S2023001',sub:'C009',score:95,grade:'A+'},
+  {stu:'S2023001',sub:'C010',score:78,grade:'C+'},{stu:'S2023002',sub:'C001',score:92,grade:'A0'},
+  {stu:'S2023002',sub:'C003',score:90,grade:'A0'},{stu:'S2023002',sub:'C004',score:85,grade:'B+'},
+  {stu:'S2023003',sub:'C012',score:85,grade:'B+'},{stu:'S2023003',sub:'C014',score:92,grade:'A0'},
+  {stu:'S2023004',sub:'C005',score:91,grade:'A0'},{stu:'S2023004',sub:'C006',score:88,grade:'B+'},
+  {stu:'S2023004',sub:'C007',score:72,grade:'C0'},
+];
+const COURSES = [{id:'C001',name:'데이터베이스 개론'},{id:'C002',name:'SQL 실무 및 활용'},{id:'C003',name:'자료구조'},
+  {id:'C004',name:'운영체제'},{id:'C005',name:'경영학원론'},{id:'C006',name:'마케팅원론'},{id:'C007',name:'재무관리'},
+  {id:'C008',name:'빅데이터 분석 기초'},{id:'C009',name:'파이썬 프로그래밍'},{id:'C010',name:'머신러닝 입문'},
+  {id:'C011',name:'인공지능 개론'},{id:'C012',name:'디자인 씽킹'},{id:'C013',name:'UX/UI 디자인 실무'},
+  {id:'C014',name:'시각 디자인 기초'},{id:'C015',name:'교양: 논리와 사고'}];
+const DEPT = [{no:10,name:'ACCOUNTING',loc:'SEOUL'},{no:20,name:'RESEARCH',loc:'BUSAN'},
+  {no:30,name:'SALES',loc:'DAEGU'},{no:40,name:'OPERATIONS',loc:'INCHEON'}];
+const EMP20 = [
+  {emp:7369,name:'SMITH',mgr:7902},{emp:7499,name:'ALLEN',mgr:7698},{emp:7521,name:'WARD',mgr:7698},
+  {emp:7566,name:'JONES',mgr:7839},{emp:7654,name:'MARTIN',mgr:7698},{emp:7698,name:'BLAKE',mgr:7839},
+  {emp:7782,name:'CLARK',mgr:7839},{emp:7788,name:'SCOTT',mgr:7566},{emp:7839,name:'KING',mgr:null},
+  {emp:7844,name:'TURNER',mgr:7698},{emp:7876,name:'ADAMS',mgr:7788},{emp:7900,name:'JAMES',mgr:7698},
+];
+
+/* ============ TAB 0-1: 문자함수 미리보기 ============ */
+let curFn = 'UPPER';
+function initProdSelect(){
+  document.getElementById('prodSelect').innerHTML = PRODUCTS.map(p=>`<option value="${p.id}">${p.id} · ${p.name}</option>`).join('');
+}
+function setFn(f){
+  curFn = f;
+  ['UPPER','LOWER','LTRIM','SUBSTR','LENGTH'].forEach(k=>document.getElementById('fn'+k).classList.toggle('on', k===f));
+  renderFnResult();
+}
+function renderFnResult(){
+  const p = PRODUCTS.find(x=>x.id===document.getElementById('prodSelect').value) || PRODUCTS[0];
+  const x = p.name;
+  let out = '';
+  if(curFn==='UPPER') out = `UPPER('${x}') = '${x.toUpperCase()}'`;
+  else if(curFn==='LOWER') out = `LOWER('${x}') = '${x.toLowerCase()}'`;
+  else if(curFn==='LTRIM') out = `LTRIM('  ${x}') = '${x}'  (앞 공백만 제거됨)`;
+  else if(curFn==='SUBSTR') out = `SUBSTR('${x}', 1, 3) = '${x.substring(0,3)}'`;
+  else if(curFn==='LENGTH') out = `LENGTH('${x}') = ${x.length}`;
+  document.getElementById('fnResult').textContent = out;
+}
+
+/* ============ TAB 0-2: LIKE 패턴 매칭기 ============ */
+function likeToRegex(pattern){
+  const esc = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = esc.replace(/_/g,'.').replace(/%/g,'.*');
+  return new RegExp('^'+re+'$');
+}
+function renderLikeTable(){
+  const pat = document.getElementById('likeInput').value || '%';
+  let re;
+  try{ re = likeToRegex(pat); }catch(e){ re = /^$/; }
+  let matchCount = 0;
+  const rows = PRODUCTS.map(p=>{
+    const idMatch = re.test(p.id);
+    const nameMatch = re.test(p.name);
+    const isMatch = idMatch || nameMatch;
+    if(isMatch) matchCount++;
+    return `<tr class="${isMatch?'match':'dim'}"><td>${p.id}</td><td>${p.name}</td></tr>`;
+  }).join('');
+  document.getElementById('likeTable').innerHTML = `<table class="gtab"><tr><th>PROD_ID</th><th>PROD_NAME</th></tr>${rows}</table>`;
+  document.getElementById('likeResult').textContent = `패턴 '${pat}' → ${matchCount}건 매칭 (PROD_ID 또는 PROD_NAME 기준)`;
+}
+
+/* ============ TAB 0-3: 빈문자열 vs NULL ============ */
+function runEmptyNull(){
+  document.getElementById('emptyNullResult').innerHTML =
+    `INSERT INTO STUDENTS (STU_ID, NAME, TEL) VALUES ('S2024011','테스트학생','');<br>SELECT * FROM STUDENTS WHERE TEL IS NULL;<br><br>
+     🟠 오라클: 방금 넣은 행이 조회됨 (빈 문자열 = NULL 취급)<br>
+     🔵 SQL Server: 방금 넣은 행이 조회되지 않음 (빈 문자열 ≠ NULL)`;
+}
+
+/* ============ TAB 1-1: 월별 주문 필터 ============ */
+function renderOrdersTable(){
+  const m = +document.getElementById('monthSlider').value;
+  document.getElementById('monthVal').textContent = m+'월';
+  let cnt = 0;
+  const rows = ORDERS.map(o=>{
+    const om = +o.date.split('-')[1];
+    const match = om===m;
+    if(match) cnt++;
+    return `<tr class="${match?'hl':'dim'}"><td>${o.id}</td><td>${o.date}</td><td>${o.prod}</td><td>${o.amt.toLocaleString()}</td></tr>`;
+  }).join('');
+  document.getElementById('ordersTable').innerHTML = `<table class="gtab"><tr><th>ORDER_ID</th><th>ORDER_DATE</th><th>PROD_ID</th><th>AMOUNT</th></tr>${rows}</table>`;
+  document.getElementById('ordersResult').textContent = `WHERE ORDER_DATE >= '2024-${String(m).padStart(2,'0')}-01' AND ORDER_DATE < '2024-${String(m+1).padStart(2,'0')}-01' → ${cnt}건`;
+}
+
+/* ============ TAB 1-2: 날짜 연산 ============ */
+function renderDateCalc(){
+  const min = +document.getElementById('minSlider').value;
+  document.getElementById('minVal').textContent = min+'분';
+  document.getElementById('dateCalcCode').innerHTML =
+    `<div class="ln active">SELECT TO_CHAR(ORDER_DATE + ${min}/1440, 'YYYY.MM.DD HH24:MI:SS')</div>
+     <div class="ln active">FROM ORDERS WHERE ORDER_ID = 'ORD_001';</div>`;
+  const base = new Date('2024-01-02T00:00:00');
+  base.setMinutes(base.getMinutes()+min);
+  const pad = n=>String(n).padStart(2,'0');
+  const out = `${base.getFullYear()}.${pad(base.getMonth()+1)}.${pad(base.getDate())} ${pad(base.getHours())}:${pad(base.getMinutes())}:${pad(base.getSeconds())}`;
+  document.getElementById('dateCalcResult').textContent = `ORD_001 (2024.01.02 00:00:00) + ${min}분 → ${out}`;
+}
+
+/* ============ TAB 2-1: CASE 분류기 ============ */
+function renderCaseGrid(){
+  document.getElementById('caseGrid').innerHTML = PRODUCTS.map(p=>
+    `<span class="pill cat-${p.cat}" onclick="showCaseResult('${p.id}')">${p.name}</span>`).join('');
+}
+function showCaseResult(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  const label = p.cat==='가전' ? '전자제품' : '기타';
+  document.getElementById('caseResult').innerHTML =
+    `CASE CATEGORY WHEN '가전' THEN '전자제품' ELSE '기타' END<br>
+     → <b>${p.name}</b> (CATEGORY='${p.cat}') 결과: <b style="color:var(--ac)">${label}</b>`;
+}
+
+/* ============ TAB 2-2: 성적 등급 피벗 ============ */
+function initSubSelect(){
+  document.getElementById('subSelect').innerHTML = COURSES.map(c=>`<option value="${c.id}">${c.id} · ${c.name}</option>`).join('');
+}
+function renderGradePivot(){
+  const sub = document.getElementById('subSelect').value || COURSES[0].id;
+  const rows = ENROLL.filter(e=>e.sub===sub);
+  const a = rows.filter(r=>r.grade[0]==='A').length;
+  const b = rows.filter(r=>r.grade[0]==='B').length;
+  const c = rows.filter(r=>r.grade[0]==='C').length;
+  const max = Math.max(a,b,c,1);
+  const bar = (label,val,color)=>`<div class="barrow"><div class="barlabel">${label}대</div><div class="barwrap"><div class="bar" style="width:${val/max*100}%;background:${color}">${val}명</div></div></div>`;
+  document.getElementById('gradeBars').innerHTML = bar('A',a,'#16a34a') + bar('B',b,'#0d7a6e') + bar('C',c,'#b45309') + `<div class="hint">전체 수강 ${rows.length}건 (GRADE LIKE 'A%'/'B%'/'C%' 기준)</div>`;
+}
+
+/* ============ TAB 2-3: GROUP BY 별칭 함정 ============ */
+let aliasWrongMode = true;
+function setAliasMode(wrong){
+  aliasWrongMode = wrong;
+  document.getElementById('aliasWrong').classList.toggle('on', wrong);
+  document.getElementById('aliasRight').classList.toggle('on', !wrong);
+  renderAlias();
+}
+function renderAlias(){
+  const cats = {};
+  PRODUCTS.forEach(p=>{ cats[p.cat] = (cats[p.cat]||0) + p.price; });
+  const catList = Object.keys(cats).map(k=>({cat:k, sum:cats[k]}));
+  if(aliasWrongMode){
+    document.getElementById('aliasCode').innerHTML =
+      `<div class="ln active">SELECT CATEGORY, SUM(PRICE) AS 합계</div>
+       <div class="ln active">FROM PRODUCTS</div>
+       <div class="ln active">GROUP BY CATEGORY</div>
+       <div class="ln err">ORDER BY DISC_RATE DESC;</div>`;
+    document.getElementById('aliasErr').style.display = 'block';
+    document.getElementById('aliasErr').textContent = '🚫 오류: DISC_RATE는 SELECT 목록에도, GROUP BY에도 없는 칼럼이라 정렬 기준으로 쓸 수 없습니다.';
+    document.getElementById('aliasTable').innerHTML = '';
+  } else {
+    document.getElementById('aliasCode').innerHTML =
+      `<div class="ln active">SELECT CATEGORY, SUM(PRICE) AS 합계</div>
+       <div class="ln active">FROM PRODUCTS</div>
+       <div class="ln active">GROUP BY CATEGORY</div>
+       <div class="ln active">ORDER BY 합계 DESC;</div>`;
+    document.getElementById('aliasErr').style.display = 'none';
+    catList.sort((a,b)=>b.sum-a.sum);
+    document.getElementById('aliasTable').innerHTML = `<table class="gtab"><tr><th>CATEGORY</th><th>합계</th></tr>
+      ${catList.map(c=>`<tr class="hl"><td>${c.cat}</td><td>${c.sum.toLocaleString()}</td></tr>`).join('')}</table>`;
+  }
+}
+
+/* ============ TAB 3-1: NULLIF ============ */
+function renderNullif(useNullif){
+  document.getElementById('nullifTable').innerHTML = `<table class="gtab"><tr><th>EMPNO</th><th>ENAME</th><th>${useNullif?'NULLIF(MGR,7698)':'MGR'}</th></tr>
+    ${EMP20.map(e=>{
+      const hide = useNullif && e.mgr===7698;
+      return `<tr class="${hide?'hl':''}"><td>${e.emp}</td><td>${e.name}</td><td>${hide ? '<span class="pill" style="background:#fee2e2;border-color:#fca5a5">NULL</span>' : (e.mgr===null?'':e.mgr)}</td></tr>`;
+    }).join('')}</table>`;
+}
+function runNullif(){ renderNullif(true); }
+function resetNullif(){ renderNullif(false); }
+
+/* ============ TAB 3-2: ORDER BY 칼럼번호 ============ */
+function setDeptOrder(mode){
+  document.getElementById('deptAsc').classList.toggle('on', mode==='asc');
+  document.getElementById('deptDesc').classList.toggle('on', mode==='desc');
+  let rows = [...DEPT];
+  if(mode==='asc') rows.sort((a,b)=>a.name.localeCompare(b.name));
+  else rows.sort((a,b)=>b.no-a.no);
+  document.getElementById('deptTable').innerHTML = `<table class="gtab"><tr><th>① DNAME</th><th>② LOC</th><th>③ DEPTNO</th></tr>
+    ${rows.map(d=>`<tr class="hl"><td>${d.name}</td><td>${d.loc}</td><td>${d.no}</td></tr>`).join('')}</table>`;
+}
+
+/* ============ TAB 3-3: 전공별 평균 점수 ============ */
+function renderMajorBars(){
+  const majors = {};
+  STUDENTS.forEach(s=>{
+    const scores = ENROLL.filter(e=>e.stu===s.id).map(e=>e.score);
+    if(!majors[s.major]) majors[s.major] = [];
+    majors[s.major].push(...scores);
+  });
+  const rows = Object.keys(majors).map(m=>({major:m, avg: majors[m].reduce((a,b)=>a+b,0)/majors[m].length}));
+  rows.sort((a,b)=>b.major.localeCompare(a.major));
+  const max = 100;
+  document.getElementById('majorBars').innerHTML = rows.map(r=>
+    `<div class="barrow"><div class="barlabel" style="width:100px;">${r.major}</div><div class="barwrap"><div class="bar" style="width:${r.avg}%">${r.avg.toFixed(1)}점</div></div></div>`
+  ).join('') + `<div class="hint">SELECT MAJOR, AVG(SCORE) FROM STUDENTS JOIN ENROLL ... GROUP BY MAJOR ORDER BY MAJOR DESC;</div>`;
+}
+
+/* ============ TAB 3-4: 상품별 최초 주문일 ============ */
+function initProdOrderSelect(){
+  document.getElementById('prodOrderSelect').innerHTML = PRODUCTS.map(p=>`<option value="${p.id}">${p.id} · ${p.name}</option>`).join('');
+}
+function renderFirstOrder(){
+  const pid = document.getElementById('prodOrderSelect').value || PRODUCTS[0].id;
+  const rows = ORDERS.filter(o=>o.prod===pid);
+  if(rows.length===0){
+    document.getElementById('firstOrderTable').innerHTML = `<div class="hint">이 상품은 주문 이력이 없습니다.</div>`;
+    return;
+  }
+  const minDate = rows.reduce((min,r)=> r.date < min ? r.date : min, rows[0].date);
+  document.getElementById('firstOrderTable').innerHTML = `<table class="gtab"><tr><th>ORDER_ID</th><th>ORDER_DATE</th><th>QTY</th></tr>
+    ${rows.map(r=>`<tr class="${r.date===minDate?'hl':''}"><td>${r.id}</td><td>${r.date}${r.date===minDate?' 🏆최초':''}</td><td>${r.qty}</td></tr>`).join('')}</table>`;
+}
+
+/* ============ 초기 렌더 ============ */
+initProdSelect(); renderFnResult(); renderLikeTable();
+renderOrdersTable(); renderDateCalc();
+renderCaseGrid(); initSubSelect(); renderGradePivot(); renderAlias();
+renderNullif(false); setDeptOrder('asc'); renderMajorBars();
+initProdOrderSelect(); renderFirstOrder();
+</script>
+</body>
+</html>

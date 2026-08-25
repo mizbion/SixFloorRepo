@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>SQLD 111~126번 개념 인터랙티브</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff7ed; --card:#ffffff; --surf2:#ffe9d3; --surf3:#fed8ae;
+  --border:#fbc48a; --text:#331705; --sub:#9a6a3a;
+  --ac:#c2410c; --ac-l:#fdece0; --ac-b:#f7b988;
+  --header-bg:#1c0a05; --grad-end:#ea580c;
+  --red:#dc2626; --red-l:#fee2e2; --green:#16a34a; --green-l:#dcfce7;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#3a1608); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#fbcc9f; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(194,65,12,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(120,50,0,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.sqlcode{background:#2b1204; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#fde3c8; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#5c2c05; border-left:3px solid #fb923c; padding-left:11px;}
+.errbox{margin-top:14px; background:#fef2f2; border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox{margin-top:14px; background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+table.otab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.otab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.otab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.otab tr.hl td{background:var(--ac-l);}
+table.otab tr.newrow td{background:var(--green-l);}
+table.otab tr.changedrow td{background:#fef3c7;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+.timeline{position:relative; display:flex; align-items:center; margin:18px 4px 34px;}
+.timeline .dot{width:16px; height:16px; border-radius:50%; background:var(--border); border:2px solid var(--card); cursor:pointer; position:relative; flex-shrink:0; z-index:2; transition:.2s;}
+.timeline .dot.on{background:var(--ac); transform:scale(1.3);}
+.timeline .dot.sp{background:#d97706;}
+.timeline .seg{flex:1; height:3px; background:var(--border);}
+.timeline .lbl{position:absolute; top:22px; left:50%; transform:translateX(-50%); font-size:10px; color:var(--sub); white-space:nowrap;}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 111~126번, 눈으로 이해하기</h1>
+  <p>트랜잭션 심화 / TOP-N 동점자 / DISTINCT 함정 / 삭제 정책 — 인터랙티브 체험</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q123·124</span>트랜잭션 심화</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q125</span>TOP-N 동점자</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q111</span>DISTINCT 함정</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q113·114</span>삭제 정책·제약위반</button>
+  </div>
+
+  <!-- ===== TAB 0: 트랜잭션 심화 (2단계 SAVEPOINT) ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>⏱️ PRODUCTS 2단계 SAVEPOINT 타임라인</h2>
+      <div class="desc">P001 상품명을 두 번 바꾼 뒤, 첫 번째 저장 지점(sp1)으로 되돌려봅니다. 타임라인 점을 클릭해 단계별 상태를 확인하세요. (Q123, 124번 관련)</div>
+
+      <div class="timeline" id="txTimeline"></div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="runbtn" onclick="stepTx(-1)">◀ 이전</button>
+        <button class="runbtn" onclick="stepTx(1)">다음 ▶</button>
+      </div>
+      <div class="sqlcode" id="txCmdBox"></div>
+      <div id="txTable" style="margin-top:12px;"></div>
+      <div class="hint" id="txExplain"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: TOP-N 동점자 ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>🏅 TOP-N, 동점자는 포함할까 말까</h2>
+      <div class="desc">ENROLL 점수 상위 N위를 뽑을 때, WITH TIES를 쓰면 동점자가 몇 명 더 딸려오는지 확인해보세요. (Q125번 관련)</div>
+      <div class="inputrow" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--sub); min-width:50px;">N =</span>
+        <input type="range" min="1" max="8" step="1" value="3" id="topNSlider" oninput="renderTopN()" style="flex:1; accent-color:var(--ac)">
+        <span id="topNVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac);">3</span>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="tiesOff" onclick="setTies(false)">일반 TOP N</button>
+        <button class="modebtn" id="tiesOn" onclick="setTies(true)">TOP N WITH TIES</button>
+      </div>
+      <div id="topNTable"></div>
+      <div class="resultbox" id="topNResult"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: DISTINCT 함정 ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>🎯 DISTINCT는 '조합' 단위로 중복을 제거한다</h2>
+      <div class="desc">STUDENTS를 MAJOR 하나만 DISTINCT 할 때와, (MAJOR, YEAR) 두 칼럼을 같이 DISTINCT 할 때 결과 건수가 다릅니다. (Q111번 관련)</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="distMajor" onclick="setDistinctMode('major')">DISTINCT MAJOR</button>
+        <button class="modebtn" id="distBoth" onclick="setDistinctMode('both')">DISTINCT (MAJOR, YEAR)</button>
+      </div>
+      <div id="distinctTable"></div>
+      <div class="resultbox" id="distinctResult"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 삭제 정책·제약위반 ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>🚫 과목을 삭제하면? (RESTRICT 정책)</h2>
+      <div class="desc">COURSES(부모)에 RESTRICT가 걸려있으면, ENROLL(자식)이 참조 중인 과목은 삭제할 수 없습니다. (Q113번 관련)</div>
+      <div class="inputrow" style="margin-bottom:10px;">
+        <select id="courseDeleteSelect" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+        <button class="runbtn" style="margin-top:0;" onclick="runDeleteCourse()">🗑️ DELETE 시도</button>
+      </div>
+      <div id="courseDeleteResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>⚠️ NOT NULL 제약조건 위반</h2>
+      <div class="desc">PRICE가 NOT NULL인 테이블에 값을 빼고 넣으면 어떻게 되는지 확인해보세요. (Q114번 관련)</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="modebtn" onclick="tryInsertPrice(true)">INSERT ('PT001', 'A') ← PRICE 생략</button>
+        <button class="modebtn" onclick="tryInsertPrice(false)">INSERT ('PT002', 1000, 'A') ← 정상</button>
+      </div>
+      <div id="priceResultBox"></div>
+      <div id="priceTable" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ 공통 데이터 ============ */
+const STUDENTS = [
+  {id:'S2021001',name:'강하늘',major:'컴퓨터공학',year:4},{id:'S2021002',name:'박보검',major:'경영학',year:4},
+  {id:'S2021003',name:'김지원',major:'데이터과학',year:4},{id:'S2022001',name:'윤아',major:'컴퓨터공학',year:3},
+  {id:'S2022002',name:'차은우',major:'산업디자인',year:3},{id:'S2022003',name:'수지',major:'경영학',year:3},
+  {id:'S2023001',name:'송중기',major:'데이터과학',year:2},{id:'S2023002',name:'아이유',major:'컴퓨터공학',year:2},
+  {id:'S2023003',name:'현빈',major:'산업디자인',year:2},{id:'S2023004',name:'손예진',major:'경영학',year:2},
+];
+const COURSES = [{id:'C001',name:'데이터베이스 개론'},{id:'C002',name:'SQL 실무 및 활용'},{id:'C009',name:'파이썬 프로그래밍'},{id:'C015',name:'교양: 논리와 사고'}];
+const ENROLL_SUBS = ['C001','C001','C001','C001','C001','C001','C002','C009','C009','C009','C009','C015','C015','C015','C015','C015','C015','C015','C015'];
+
+/* ============ TAB 0: 트랜잭션 심화 (2단계 SAVEPOINT) ============ */
+const TX_STEPS = [
+  {label:'BEGIN', cmd:'-- 초기 상태', name:'삼성 갤럭시 S24', price:1150000, cls:''},
+  {label:'UPDATE①', cmd:"UPDATE PRODUCTS SET PROD_NAME='스마트TV' WHERE PROD_ID='P001';", name:'스마트TV', price:1150000, cls:'changedrow'},
+  {label:'SAVEPOINT sp1', cmd:'SAVEPOINT sp1;', name:'스마트TV', price:1150000, cls:'', sp:true},
+  {label:'UPDATE②', cmd:"UPDATE PRODUCTS SET PROD_NAME='평면TV' WHERE PROD_ID='P001';", name:'평면TV', price:1150000, cls:'changedrow'},
+  {label:'UPDATE③', cmd:"UPDATE PRODUCTS SET PRICE=999000 WHERE PROD_ID='P001';", name:'평면TV', price:999000, cls:'changedrow'},
+  {label:'ROLLBACK TO sp1', cmd:'ROLLBACK TO sp1;', name:'스마트TV', price:1150000, cls:'newrow'},
+  {label:'COMMIT', cmd:'COMMIT;', name:'스마트TV', price:1150000, cls:'newrow'},
+];
+let curTx = 0;
+function renderTimeline(){
+  let html = '';
+  TX_STEPS.forEach((s,i)=>{
+    html += `<div class="dot ${i===curTx?'on':''} ${s.sp?'sp':''}" style="position:relative" onclick="jumpTx(${i})">
+      <span class="lbl">${s.label.replace(/[①②③]/,'')}</span>
+    </div>`;
+    if(i < TX_STEPS.length-1) html += `<div class="seg"></div>`;
+  });
+  document.getElementById('txTimeline').innerHTML = html;
+}
+function jumpTx(i){ curTx = i; renderTxStep(); }
+function stepTx(dir){
+  curTx = Math.max(0, Math.min(TX_STEPS.length-1, curTx+dir));
+  renderTxStep();
+}
+function renderTxStep(){
+  renderTimeline();
+  const s = TX_STEPS[curTx];
+  document.getElementById('txCmdBox').innerHTML = `<div class="ln active">${s.cmd}</div>`;
+  document.getElementById('txTable').innerHTML = `<table class="otab"><tr><th>PROD_ID</th><th>PROD_NAME</th><th>PRICE</th></tr>
+    <tr class="${s.cls}"><td>P001</td><td>${s.name}</td><td>${s.price.toLocaleString()}</td></tr></table>`;
+  let expl = '';
+  if(curTx===0) expl = '초기 상태입니다.';
+  else if(curTx===1) expl = '상품명이 "스마트TV"로 바뀝니다.';
+  else if(curTx===2) expl = '지금 상태(스마트TV, 1,150,000)를 sp1이라는 이름으로 저장해둡니다.';
+  else if(curTx===3) expl = '상품명이 다시 "평면TV"로 바뀝니다.';
+  else if(curTx===4) expl = '가격도 999,000으로 바뀝니다.';
+  else if(curTx===5) expl = 'sp1 시점으로 되돌아갑니다. UPDATE②·UPDATE③은 모두 취소되고, sp1 이전(UPDATE①)까지만 유지됩니다.';
+  else if(curTx===6) expl = '되돌아간 상태(스마트TV, 1,150,000)가 최종 확정됩니다.';
+  document.getElementById('txExplain').textContent = '💬 ' + expl;
+}
+renderTxStep();
+
+/* ============ TAB 1: TOP-N 동점자 ============ */
+// 실제 ENROLL 데이터 (SCORE 상위 구간, 동점자 포함)
+const SCORES = [
+  {name:'윤아(C009)', score:100},{name:'차은우(C012)', score:95},{name:'강하늘(C001)', score:95},
+  {name:'김지원(C010)', score:96},{name:'송중기(C009)', score:95},{name:'박보검(C006)', score:90},
+  {name:'아이유(C001)', score:92},{name:'현빈(C014)', score:92},{name:'차은우(C013)', score:91},
+  {name:'손예진(C005)', score:91},{name:'김지원(C008)', score:91},{name:'강하늘(C002)', score:92},
+];
+let tiesMode = false;
+function setTies(on){
+  tiesMode = on;
+  document.getElementById('tiesOff').classList.toggle('on', !on);
+  document.getElementById('tiesOn').classList.toggle('on', on);
+  renderTopN();
+}
+function renderTopN(){
+  const n = +document.getElementById('topNSlider').value;
+  document.getElementById('topNVal').textContent = n;
+  const sorted = [...SCORES].sort((a,b)=>b.score-a.score);
+  let rows;
+  if(!tiesMode){
+    rows = sorted.slice(0,n);
+  } else {
+    const cutScore = sorted[n-1].score;
+    rows = sorted.filter(r=>r.score >= cutScore);
+  }
+  document.getElementById('topNTable').innerHTML = `<table class="otab"><tr><th>수강 정보</th><th>SCORE</th></tr>
+    ${rows.map(r=>`<tr class="hl"><td>${r.name}</td><td>${r.score}</td></tr>`).join('')}</table>`;
+  document.getElementById('topNResult').textContent = tiesMode
+    ? `TOP ${n} WITH TIES → 실제로는 ${rows.length}건 조회됨 (경계 점수 ${sorted[n-1].score}점 동점자까지 포함)`
+    : `TOP ${n} → ${rows.length}건 (동점자 여부와 무관하게 딱 N건만)`;
+}
+renderTopN();
+
+/* ============ TAB 2: DISTINCT 함정 ============ */
+let distMode = 'major';
+function setDistinctMode(m){
+  distMode = m;
+  document.getElementById('distMajor').classList.toggle('on', m==='major');
+  document.getElementById('distBoth').classList.toggle('on', m==='both');
+  renderDistinct();
+}
+function renderDistinct(){
+  if(distMode==='major'){
+    const set = [...new Set(STUDENTS.map(s=>s.major))];
+    document.getElementById('distinctTable').innerHTML = `<table class="otab"><tr><th>MAJOR</th></tr>${set.map(m=>`<tr class="hl"><td>${m}</td></tr>`).join('')}</table>`;
+    document.getElementById('distinctResult').textContent = `DISTINCT MAJOR → ${set.length}건`;
+  } else {
+    const seen = new Set();
+    const rows = [];
+    STUDENTS.forEach(s=>{
+      const key = s.major+'|'+s.year;
+      if(!seen.has(key)){ seen.add(key); rows.push({major:s.major, year:s.year}); }
+    });
+    document.getElementById('distinctTable').innerHTML = `<table class="otab"><tr><th>MAJOR</th><th>YEAR</th></tr>${rows.map(r=>`<tr class="hl"><td>${r.major}</td><td>${r.year}</td></tr>`).join('')}</table>`;
+    document.getElementById('distinctResult').textContent = `DISTINCT (MAJOR, YEAR) → ${rows.length}건  (MAJOR만 볼 때보다 더 잘게 쪼개짐)`;
+  }
+}
+renderDistinct();
+
+/* ============ TAB 3-1: RESTRICT 삭제 ============ */
+function initCourseSelect(){
+  document.getElementById('courseDeleteSelect').innerHTML = COURSES.map(c=>`<option value="${c.id}">${c.id} · ${c.name}</option>`).join('');
+}
+function runDeleteCourse(){
+  const cid = document.getElementById('courseDeleteSelect').value || COURSES[0].id;
+  const cnt = ENROLL_SUBS.filter(s=>s===cid).length;
+  if(cnt>0){
+    document.getElementById('courseDeleteResult').innerHTML = `<div class="errbox">🚫 삭제 거부: ${cid} 과목은 ENROLL에서 ${cnt}건이 참조 중이라 RESTRICT 정책 때문에 삭제할 수 없습니다.</div>`;
+  } else {
+    document.getElementById('courseDeleteResult').innerHTML = `<div class="okbox">✅ 이 과목은 참조하는 수강 기록이 없어 정상 삭제되었습니다.</div>`;
+  }
+}
+initCourseSelect();
+
+/* ============ TAB 3-2: NOT NULL 위반 ============ */
+let priceRows = [];
+function tryInsertPrice(missing){
+  if(missing){
+    document.getElementById('priceResultBox').innerHTML = `<div class="errbox">🚫 오류: PRICE는 NOT NULL 칼럼이라 값을 반드시 넣어야 합니다. ('PT001', NULL, 'A')는 삽입될 수 없습니다.</div>`;
+    return;
+  }
+  priceRows.push({id:'PT002', price:1000, note:'A'});
+  document.getElementById('priceResultBox').innerHTML = `<div class="okbox">✅ 정상 삽입됨: ('PT002', 1000, 'A') — NOTE는 NULL 허용이라 값이 없어도 되지만 PRICE는 반드시 있어야 합니다.</div>`;
+  document.getElementById('priceTable').innerHTML = `<table class="otab"><tr><th>PROD_ID</th><th>PRICE</th><th>NOTE</th></tr>
+    ${priceRows.map(r=>`<tr class="hl"><td>${r.id}</td><td>${r.price}</td><td>${r.note}</td></tr>`).join('')}</table>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- meta:subject=SQLD -->
+<!-- meta:unit=2과목 -->
+<!-- meta:title=SQLD 1~10번 개념 -->
+<!-- meta:date=2026-06-17 -->
+<title>SQLD 1~10번 개념</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f9f7; --card:#ffffff; --surf2:#e6f5f1; --surf3:#d9efe9;
+  --border:#c8e6de; --text:#16302a; --sub:#5b7d74;
+  --ac:#0d7a6e; --ac-l:#e3f5f1; --ac-b:#a7ddd1;
+  --header-bg:#0a1612; --grad-end:#14b8a6;
+  --red:#dc2626; --red-l:#fee2e2; --amber:#b45309; --amber-l:#fef3c7;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#0d2620); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#9fd8cc; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(13,122,110,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(20,80,70,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.badge{display:inline-block; font-size:11px; padding:2px 9px; border-radius:20px; background:var(--ac-l); color:var(--ac); font-weight:700; margin-right:6px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+
+/* ── 탭0: 분류 게임 ── */
+.famchip{border:1.5px solid; border-radius:10px; padding:8px 12px; font-size:12.5px; font-weight:700; flex:1; min-width:150px;}
+.famchip span{display:block; font-weight:400; font-size:11px; margin-top:2px; opacity:.85;}
+.cmdcard{border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; background:var(--card); transition:.2s; cursor:pointer;}
+.cmdcard code{font-family:'JetBrains Mono',monospace; font-size:12.5px; display:block; white-space:pre-wrap; word-break:break-all;}
+.cmdcard .choices{display:none; gap:5px; margin-top:9px; flex-wrap:wrap;}
+.cmdcard.open .choices{display:flex;}
+.cmdcard .cbtn{font-size:11px; padding:4px 9px; border-radius:7px; border:1px solid var(--border); background:var(--surf2); cursor:pointer; font-weight:700;}
+.cmdcard.correct{background:#ecfdf5; border-color:#6ee7b7;}
+.cmdcard.correct .choices{display:none;}
+.cmdcard.correct::after{content:'✅ 정답!'; display:block; font-size:11.5px; color:#047857; margin-top:6px; font-weight:700;}
+.cmdcard.shake{animation:shake .35s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+
+/* ── 탭1: 실행순서 추적기 ── */
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.sqlcode{background:#0f2d28; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#d8f3ec; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#134e3f; border-left:3px solid #34d399; padding-left:11px;}
+.sqlcode .ln.err{background:#4c1d1d; border-left:3px solid #f87171; padding-left:11px;}
+.sqlcode .ln.dim{opacity:.35;}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.errbox{margin-top:14px; background:#fef2f2; border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.groupbox{border:1.5px solid var(--border); border-radius:12px; padding:12px; background:var(--surf2); transition:.3s;}
+.groupbox h4{font-size:13px; margin-bottom:8px;}
+.groupbox .chip{display:inline-block; background:var(--card); border:1px solid var(--border); border-radius:6px; padding:2px 7px; font-size:11px; margin:2px; font-family:'JetBrains Mono',monospace;}
+.groupbox .avgline{margin-top:8px; font-size:12.5px; font-weight:700;}
+.groupbox.pass{background:#ecfdf5; border-color:#6ee7b7;}
+.groupbox.fail{opacity:.3;}
+
+/* ── 탭2: NULL 계산기 ── */
+table.ntab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.ntab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.ntab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.ntab tr.hl td{background:var(--ac-l);}
+table.ntab tr.skip td{background:#fef2f2; opacity:.5;}
+table.ntab tr.done td{background:#f0fdf4;}
+.nullchip{color:#b91c1c; font-weight:700; font-size:11px; background:#fee2e2; padding:1px 7px; border-radius:6px;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+
+/* ── 탭3: 트랜잭션 타임라인 ── */
+.timeline{display:flex; align-items:center; margin:18px 4px;}
+.timeline{position:relative; margin-bottom:34px !important;}
+.timeline .dot{width:16px; height:16px; border-radius:50%; background:var(--border); border:2px solid var(--card); cursor:pointer; position:relative; flex-shrink:0; z-index:2; transition:.2s;}
+.timeline .dot.on{background:var(--ac); transform:scale(1.3);}
+.timeline .dot.sp{background:var(--amber);}
+.timeline .seg{flex:1; height:3px; background:var(--border);}
+.timeline .lbl{position:absolute; top:22px; left:50%; transform:translateX(-50%); font-size:10px; color:var(--sub); white-space:nowrap;}
+.txcmd{background:#0f2d28; color:#d8f3ec; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:13px;}
+table.ttab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.ttab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.ttab td{padding:6px 9px; border-top:1px solid var(--border);}
+table.ttab tr.newrow td{background:#ecfdf5;}
+table.ttab tr.changedrow td{background:#fef9c3;}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 1~10번 이해하기</h1>
+  <p>DDL·DML·DCL·TCL / WHERE·HAVING / NULL / 트랜잭션</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q1·3·5·6</span>SQL 4형제 분류</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q7·8</span>실행순서 추적기</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q9·10</span>NULL 계산기</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q2·3</span>트랜잭션 타임라인</button>
+  </div>
+
+  <!-- ===== TAB 0: SQL 4형제 분류 게임 ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>🧩 SQL 명령어, 어느 가족일까?</h2>
+      <div class="desc">아래 카드를 클릭하면 4개의 분류 버튼이 나타나요. 맞는 가족(DDL·DML·DCL·TCL)을 골라보세요. (Q1, 3, 5, 6번 관련)</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;" id="famLegend">
+        <div class="famchip" data-f="DDL" style="background:#eef2ff;color:#4338ca;border-color:#c7d2fe">DDL <span>구조를 만들고 바꾼다</span></div>
+        <div class="famchip" data-f="DML" style="background:#ecfdf5;color:#047857;border-color:#a7f3d0">DML <span>데이터를 다룬다</span></div>
+        <div class="famchip" data-f="DCL" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa">DCL <span>권한을 주고 뺏는다</span></div>
+        <div class="famchip" data-f="TCL" style="background:#fdf2f8;color:#be185d;border-color:#fbcfe8">TCL <span>거래를 확정/취소한다</span></div>
+      </div>
+      <div id="cmdGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;"></div>
+      <div class="hint" id="famProgress">0 / 10 완료</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: 실행순서 추적기 ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>🔍 SQL은 이 순서로 실행된다 — WHERE vs HAVING</h2>
+      <div class="desc">화면에 보이는 순서(SELECT→FROM→WHERE→GROUP BY→HAVING)와 실제 실행 순서는 다릅니다. 버튼을 눌러 한 줄씩 실행해보세요. (Q7, 8번 관련)</div>
+
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button class="modebtn on" id="modeWrong" onclick="setMode('wrong')">❌ WHERE에 집계함수 (오류 버전)</button>
+        <button class="modebtn" id="modeRight" onclick="setMode('right')">✅ HAVING 사용 (올바른 버전)</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <span style="font-size:13px; color:var(--sub); min-width:120px;">평균급여 기준값</span>
+        <input type="range" min="500" max="3600" step="100" value="1800" id="threshSlider" oninput="onThreshChange()" style="flex:1; accent-color:var(--ac)">
+        <span id="threshVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac); min-width:60px; text-align:right;">1800</span>
+      </div>
+
+      <div class="sqlcode" id="sqlLines"></div>
+
+      <button class="runbtn" onclick="runTracker()">▶ 한 단계씩 실행</button>
+      <button class="resetbtn" onclick="resetTracker()">⟲ 처음부터</button>
+
+      <div class="errbox" id="errBox" style="display:none;"></div>
+
+      <div id="groupStage" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-top:16px;"></div>
+
+      <div class="hint" id="trackerStatus">▶ 버튼을 눌러 실행을 시작하세요.</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: NULL 계산기 ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>🕳️ NULL은 0이 아니다 — 집계함수 애니메이션</h2>
+      <div class="desc">PRODUCTS 테이블의 DISC_RATE(할인율)에는 NULL이 섞여 있습니다. 계산 버튼을 누르면 NULL을 건너뛰는 과정이 한 줄씩 재생됩니다. (Q9, 10번 관련)</div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+        <button class="modebtn on" id="nullModeSum" onclick="setNullMode('SUM')">SUM(DISC_RATE)</button>
+        <button class="modebtn" id="nullModeAvg" onclick="setNullMode('AVG')">AVG(DISC_RATE)</button>
+        <button class="modebtn" id="nullModeCntCol" onclick="setNullMode('COUNTCOL')">COUNT(DISC_RATE)</button>
+        <button class="modebtn" id="nullModeCntStar" onclick="setNullMode('COUNTSTAR')">COUNT(*)</button>
+      </div>
+
+      <div id="nullTable" style="border:1px solid var(--border); border-radius:12px; overflow:hidden;"></div>
+
+      <button class="runbtn" onclick="runNullCalc()">▶ 계산 실행</button>
+      <button class="resetbtn" onclick="resetNullCalc()">⟲ 초기화</button>
+
+      <div class="resultbox" id="nullResult">계산 버튼을 눌러보세요.</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 트랜잭션 타임라인 ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>⏱️ SAVEPOINT는 '되감기 지점'이다</h2>
+      <div class="desc">EMP 테이블에 사원을 등록하고 급여를 바꿨다가, SAVEPOINT 지점으로 되돌려봅니다. 타임라인의 점을 눌러 각 단계의 테이블 상태를 확인하세요. (Q2, 3번 관련)</div>
+
+      <div class="timeline" id="timeline"></div>
+
+      <div style="display:flex; gap:8px; margin:14px 0;">
+        <button class="runbtn" id="prevStepBtn" onclick="stepTx(-1)">◀ 이전</button>
+        <button class="runbtn" id="nextStepBtn" onclick="stepTx(1)">다음 ▶</button>
+      </div>
+
+      <div class="txcmd" id="txCmdBox"></div>
+
+      <div id="txTable" style="border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-top:12px;"></div>
+
+      <div class="hint" id="txExplain"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ TAB 0: SQL 4형제 분류 게임 ============ */
+const CMDS = [
+  {sql:"CREATE TABLE PRODUCTS_TEST (\n  PROD_ID VARCHAR(10) PRIMARY KEY\n);", fam:'DDL', tip:'테이블 구조를 새로 만드는 명령 → DDL'},
+  {sql:"ALTER TABLE DEPT ADD (MANAGER_ID INT);", fam:'DDL', tip:'기존 구조를 변경하는 명령 → DDL'},
+  {sql:"DROP TABLE PRODUCTS_TEST;", fam:'DDL', tip:'테이블 자체를 삭제하는 명령 → DDL'},
+  {sql:"UPDATE STUDENTS SET YEAR=3\nWHERE STU_ID='S2023001';", fam:'DML', tip:'저장된 데이터 값을 바꾸는 명령 → DML'},
+  {sql:"SELECT * FROM EMP;", fam:'DML', tip:'데이터를 조회하는 명령 → DML'},
+  {sql:"DELETE FROM EMP WHERE EMPNO=9001;", fam:'DML', tip:'데이터를 삭제하는 명령 → DML'},
+  {sql:"GRANT SELECT ON EMP TO STUDENT_ROLE;", fam:'DCL', tip:'권한을 부여하는 명령 → DCL'},
+  {sql:"REVOKE SELECT ON EMP FROM STUDENT_ROLE;", fam:'DCL', tip:'권한을 회수하는 명령 → DCL'},
+  {sql:"COMMIT;", fam:'TCL', tip:'트랜잭션을 확정하는 명령 → TCL'},
+  {sql:"ROLLBACK TO sp1;", fam:'TCL', tip:'트랜잭션을 되돌리는 명령 → TCL'},
+];
+const FAMS = ['DDL','DML','DCL','TCL'];
+let famDone = 0;
+
+function renderCmdGrid(){
+  const grid = document.getElementById('cmdGrid');
+  grid.innerHTML = CMDS.map((c,i)=>`
+    <div class="cmdcard" id="cmd${i}" onclick="toggleCard(${i})">
+      <code>${c.sql.replace(/</g,'&lt;')}</code>
+      <div class="choices">
+        ${FAMS.map(f=>`<button class="cbtn" onclick="event.stopPropagation(); chooseFam(${i},'${f}')">${f}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleCard(i){
+  const el = document.getElementById('cmd'+i);
+  if(el.classList.contains('correct')) return;
+  el.classList.toggle('open');
+}
+function chooseFam(i, fam){
+  const el = document.getElementById('cmd'+i);
+  if(el.classList.contains('correct')) return;
+  if(fam === CMDS[i].fam){
+    el.classList.add('correct');
+    el.classList.remove('open');
+    famDone++;
+    document.getElementById('famProgress').textContent = famDone+' / 10 완료' + (famDone===10 ? ' 🎉 전부 맞혔어요!' : '');
+  } else {
+    el.classList.add('shake');
+    setTimeout(()=>el.classList.remove('shake'), 350);
+  }
+}
+renderCmdGrid();
+
+/* ============ TAB 1: 실행순서 추적기 (WHERE vs HAVING) ============ */
+const EMP = [
+  {emp:7369,name:'SMITH',dept:20,sal:800},{emp:7499,name:'ALLEN',dept:30,sal:1600},
+  {emp:7521,name:'WARD',dept:30,sal:1250},{emp:7566,name:'JONES',dept:20,sal:2975},
+  {emp:7654,name:'MARTIN',dept:30,sal:1250},{emp:7698,name:'BLAKE',dept:30,sal:2850},
+  {emp:7782,name:'CLARK',dept:10,sal:2450},{emp:7788,name:'SCOTT',dept:20,sal:3000},
+  {emp:7839,name:'KING',dept:10,sal:5000},{emp:7844,name:'TURNER',dept:30,sal:1500},
+  {emp:7876,name:'ADAMS',dept:20,sal:1100},{emp:7900,name:'JAMES',dept:30,sal:950},
+  {emp:7902,name:'FORD',dept:20,sal:3000},{emp:7934,name:'MILLER',dept:10,sal:1300},
+  {emp:8001,name:'LEE',dept:20,sal:3200},{emp:8002,name:'PARK',dept:30,sal:1400},
+  {emp:8003,name:'CHOI',dept:10,sal:1100},{emp:8006,name:'JO',dept:40,sal:3500},
+];
+let curMode = 'wrong';
+let curStep = -1;
+
+function setMode(m){
+  curMode = m;
+  document.getElementById('modeWrong').classList.toggle('on', m==='wrong');
+  document.getElementById('modeRight').classList.toggle('on', m==='right');
+  resetTracker();
+}
+function onThreshChange(){
+  document.getElementById('threshVal').textContent = document.getElementById('threshSlider').value;
+  resetTracker();
+}
+function renderSqlLines(){
+  const th = document.getElementById('threshSlider').value;
+  let html = '';
+  if(curMode==='wrong'){
+    html += `<div class="ln" id="lnSELECT">SELECT DEPTNO, ROUND(AVG(SAL),2)</div>`;
+    html += `<div class="ln" id="lnFROM">FROM EMP</div>`;
+    html += `<div class="ln" id="lnWHERE">WHERE AVG(SAL) &gt;= ${th}</div>`;
+    html += `<div class="ln" id="lnGROUPBY">GROUP BY DEPTNO;</div>`;
+  } else {
+    html += `<div class="ln" id="lnSELECT">SELECT DEPTNO, ROUND(AVG(SAL),2)</div>`;
+    html += `<div class="ln" id="lnFROM">FROM EMP</div>`;
+    html += `<div class="ln" id="lnGROUPBY">GROUP BY DEPTNO</div>`;
+    html += `<div class="ln" id="lnHAVING">HAVING AVG(SAL) &gt;= ${th};</div>`;
+  }
+  document.getElementById('sqlLines').innerHTML = html;
+  document.getElementById('errBox').style.display = 'none';
+  document.getElementById('groupStage').innerHTML = '';
+}
+function groupData(){
+  const g = {};
+  EMP.forEach(e=>{ (g[e.dept] = g[e.dept]||[]).push(e); });
+  return Object.keys(g).sort((a,b)=>a-b).map(d=>{
+    const rows = g[d];
+    const avg = rows.reduce((s,r)=>s+r.sal,0) / rows.length;
+    return {dept:d, rows, avg:Math.round(avg*100)/100};
+  });
+}
+function renderGroups(withHaving){
+  const th = +document.getElementById('threshSlider').value;
+  const groups = groupData();
+  const stage = document.getElementById('groupStage');
+  stage.innerHTML = groups.map(g=>{
+    const pass = g.avg >= th;
+    const cls = withHaving ? (pass ? 'pass' : 'fail') : '';
+    return `<div class="groupbox ${cls}">
+      <h4>DEPTNO = ${g.dept}</h4>
+      ${g.rows.map(r=>`<span class="chip">${r.name} ${r.sal}</span>`).join('')}
+      <div class="avgline">AVG(SAL) = ${g.avg}${withHaving ? (pass?' ✅ 통과':' ❌ 제외') : ''}</div>
+    </div>`;
+  }).join('');
+}
+function runTracker(){
+  const seq = curMode==='wrong' ? ['FROM','WHERE'] : ['FROM','GROUPBY','HAVING','SELECT'];
+  if(curStep >= seq.length-1) return;
+  curStep++;
+  const role = seq[curStep];
+  // 이전 단계까지 active 유지, 새 role만 처리
+  document.querySelectorAll('.sqlcode .ln').forEach(el=>el.classList.remove('active','err'));
+  for(let i=0;i<=curStep;i++){
+    const r = seq[i];
+    const el = document.getElementById('ln'+r);
+    if(el) el.classList.add(r==='WHERE' && curMode==='wrong' ? 'err' : 'active');
+  }
+  const status = document.getElementById('trackerStatus');
+  if(role==='FROM'){
+    status.textContent = '① FROM EMP → 먼저 EMP 테이블 전체를 대상으로 삼습니다.';
+  } else if(role==='WHERE'){
+    status.textContent = '② WHERE 실행 시도 → 오류 발생!';
+    document.getElementById('errBox').style.display = 'block';
+    document.getElementById('errBox').innerHTML = '🚫 ORA-00934: group function is not allowed here<br>WHERE는 GROUP BY보다 먼저 실행되기 때문에, 이 시점에는 아직 부서별 평균(AVG)이 계산되지 않았습니다. 그래서 WHERE에는 집계함수를 쓸 수 없습니다.';
+  } else if(role==='GROUPBY'){
+    status.textContent = '② GROUP BY DEPTNO → 부서별로 묶어서 평균을 계산합니다.';
+    renderGroups(false);
+  } else if(role==='HAVING'){
+    status.textContent = '③ HAVING AVG(SAL) >= 기준값 → 그룹별 평균을 조건으로 걸러냅니다.';
+    renderGroups(true);
+  } else if(role==='SELECT'){
+    status.textContent = '④ SELECT → 최종 통과한 부서만 결과로 출력됩니다. HAVING은 GROUP BY 이후라서 집계함수를 자유롭게 쓸 수 있습니다.';
+  }
+}
+function resetTracker(){
+  curStep = -1;
+  renderSqlLines();
+  document.getElementById('trackerStatus').textContent = '▶ 버튼을 눌러 실행을 시작하세요.';
+}
+renderSqlLines();
+
+/* ============ TAB 2: NULL 계산기 ============ */
+const PRODUCTS = [
+  {id:'P001',name:'삼성 갤럭시 S24',rate:0.05},{id:'P002',name:'LG 휘센 에어컨',rate:0.1},
+  {id:'P003',name:'애플 맥북 에어 M3',rate:null},{id:'P004',name:'다이슨 V15 청소기',rate:0.15},
+  {id:'P005',name:'소니 노이즈캔슬링 헤드폰',rate:null},{id:'P006',name:'시디즈 T50 의자',rate:0.08},
+  {id:'P007',name:'데스커 모션데스크',rate:0.12},{id:'P008',name:'이케아 빌리 책장',rate:null},
+  {id:'P009',name:'일룸 쿠시노 침대',rate:0.05},{id:'P010',name:'모나미 볼펜 153 세트',rate:null},
+  {id:'P011',name:'라미 사파리 만년필',rate:0.2},{id:'P012',name:'3M 포스트잇 대용량',rate:null},
+  {id:'P013',name:'나이키 에어포스 1',rate:null},{id:'P014',name:'아디다스 슈퍼스타',rate:0.1},
+  {id:'P015',name:'파타고니아 레트로X',rate:0.05},
+];
+let nullMode = 'SUM';
+function setNullMode(m){
+  nullMode = m;
+  ['Sum','Avg','CntCol','CntStar'].forEach(k=>{});
+  document.getElementById('nullModeSum').classList.toggle('on', m==='SUM');
+  document.getElementById('nullModeAvg').classList.toggle('on', m==='AVG');
+  document.getElementById('nullModeCntCol').classList.toggle('on', m==='COUNTCOL');
+  document.getElementById('nullModeCntStar').classList.toggle('on', m==='COUNTSTAR');
+  resetNullCalc();
+}
+function renderNullTable(){
+  const html = `<table class="ntab">
+    <tr><th>PROD_ID</th><th>PROD_NAME</th><th>DISC_RATE</th></tr>
+    ${PRODUCTS.map((p,i)=>`<tr id="nrow${i}"><td>${p.id}</td><td>${p.name}</td><td>${p.rate===null ? '<span class="nullchip">NULL</span>' : p.rate}</td></tr>`).join('')}
+  </table>`;
+  document.getElementById('nullTable').innerHTML = html;
+}
+function resetNullCalc(){
+  renderNullTable();
+  document.getElementById('nullResult').textContent = '계산 버튼을 눌러보세요.';
+}
+function runNullCalc(){
+  renderNullTable();
+  let sum = 0, cnt = 0;
+  const total = PRODUCTS.length;
+  PRODUCTS.forEach((p,i)=>{
+    setTimeout(()=>{
+      const row = document.getElementById('nrow'+i);
+      const isNull = p.rate===null;
+      if(nullMode==='COUNTSTAR'){
+        row.classList.add('hl');
+        cnt++;
+      } else if(isNull){
+        row.classList.add('skip');
+      } else {
+        row.classList.add('hl');
+        sum += p.rate;
+        cnt++;
+      }
+      setTimeout(()=>{ if(!row.classList.contains('skip')){ row.classList.remove('hl'); row.classList.add('done'); } }, 260);
+
+      if(i===total-1){
+        setTimeout(()=>{
+          let text = '';
+          if(nullMode==='SUM') text = `SUM(DISC_RATE) = ${sum.toFixed(2)}  (NULL ${total-cnt}건은 계산에서 제외됨)`;
+          else if(nullMode==='AVG') text = `AVG(DISC_RATE) = ${(sum/cnt).toFixed(4)}  (분모는 NULL이 아닌 ${cnt}건만 포함)`;
+          else if(nullMode==='COUNTCOL') text = `COUNT(DISC_RATE) = ${cnt}건  (NULL ${total-cnt}건 제외)`;
+          else if(nullMode==='COUNTSTAR') text = `COUNT(*) = ${cnt}건  (NULL 여부와 무관하게 행 전체를 셈)`;
+          document.getElementById('nullResult').textContent = text;
+        }, 300);
+      }
+    }, i*130);
+  });
+}
+resetNullCalc();
+
+/* ============ TAB 3: 트랜잭션 타임라인 ============ */
+const TX_BASE = [
+  {emp:7369,name:'SMITH',dept:20,sal:800},
+  {emp:7566,name:'JONES',dept:20,sal:2975},
+  {emp:7698,name:'BLAKE',dept:30,sal:2850},
+  {emp:7839,name:'KING',dept:10,sal:5000},
+];
+const TX_STEPS = [
+  {label:'BEGIN', sp:false, cmd:'-- 초기 상태', explain:'EMP 테이블에 4명의 사원이 있는 상태에서 시작합니다.'},
+  {label:'INSERT', sp:false, cmd:"INSERT INTO EMP (EMPNO, ENAME, DEPTNO)\nVALUES (9001, 'TEST', 10);", explain:'새 사원(9001)이 추가됩니다. 아직 COMMIT 전이라 이 트랜잭션 안에서만 보이는 상태입니다.'},
+  {label:'SAVEPOINT sp1', sp:true, cmd:'SAVEPOINT sp1;', explain:'지금까지의 상태를 sp1이라는 이름으로 저장해둡니다. 나중에 여기로 되돌아올 수 있는 "되감기 지점"입니다.'},
+  {label:'UPDATE', sp:false, cmd:'UPDATE EMP SET SAL = 9999\nWHERE EMPNO = 9001;', explain:'9001번 사원의 급여가 9999로 바뀝니다.'},
+  {label:'ROLLBACK TO sp1', sp:false, cmd:'ROLLBACK TO sp1;', explain:'sp1 시점으로 되돌아갑니다. UPDATE(급여 변경)는 취소되지만, sp1보다 먼저 실행된 INSERT는 그대로 유지됩니다.'},
+  {label:'COMMIT', sp:false, cmd:'COMMIT;', explain:'현재 상태(9001 신규 등록, 급여는 원래 상태)가 최종 확정됩니다.'},
+];
+let curTx = 0;
+function txTableRows(step){
+  let rows = TX_BASE.map(r=>({...r, cls:''}));
+  if(step>=1){ rows.push({emp:9001,name:'TEST',dept:10,sal:null,cls:'newrow'}); }
+  if(step===3){ rows[rows.length-1] = {...rows[rows.length-1], sal:9999, cls:'changedrow'}; }
+  if(step>=4){ rows[rows.length-1] = {...rows[rows.length-1], sal:null, cls: step===4 ? 'changedrow' : 'newrow'}; }
+  return rows;
+}
+function renderTimeline(){
+  let html = '';
+  TX_STEPS.forEach((s,i)=>{
+    html += `<div class="dot ${i===curTx?'on':''} ${s.sp?'sp':''}" style="position:relative" onclick="jumpTx(${i})">
+      <span class="lbl">${s.label.split(' ')[0]}</span>
+    </div>`;
+    if(i < TX_STEPS.length-1) html += `<div class="seg"></div>`;
+  });
+  document.getElementById('timeline').innerHTML = html;
+}
+function jumpTx(i){ curTx = i; renderTxStep(); }
+function stepTx(dir){
+  curTx = Math.max(0, Math.min(TX_STEPS.length-1, curTx+dir));
+  renderTxStep();
+}
+function renderTxStep(){
+  renderTimeline();
+  const s = TX_STEPS[curTx];
+  document.getElementById('txCmdBox').textContent = s.cmd;
+  document.getElementById('txExplain').textContent = '💬 ' + s.explain;
+  const rows = txTableRows(curTx);
+  document.getElementById('txTable').innerHTML = `<table class="ttab">
+    <tr><th>EMPNO</th><th>ENAME</th><th>DEPTNO</th><th>SAL</th></tr>
+    ${rows.map(r=>`<tr class="${r.cls}"><td>${r.emp}</td><td>${r.name}</td><td>${r.dept}</td><td>${r.sal===null?'<span class="nullchip">NULL</span>':r.sal}</td></tr>`).join('')}
+  </table>`;
+}
+renderTxStep();
+</script>
+</body>
+</html>

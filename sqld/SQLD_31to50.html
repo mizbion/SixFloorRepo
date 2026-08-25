@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>SQLD 31~50번 개념 인터랙티브</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f7ff; --card:#ffffff; --surf2:#e4f0ff; --surf3:#d3e6ff;
+  --border:#bcd7f7; --text:#0f1f38; --sub:#5c7291;
+  --ac:#1d4ed8; --ac-l:#e6edff; --ac-b:#a8c2f5;
+  --header-bg:#061229; --grad-end:#3b82f6;
+  --red:#dc2626; --red-l:#fee2e2; --amber:#b45309; --amber-l:#fef3c7;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#0b1e42); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#a9c5f5; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(29,78,216,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(10,40,90,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.badge{display:inline-block; font-size:11px; padding:2px 9px; border-radius:20px; background:var(--ac-l); color:var(--ac); font-weight:700; margin-right:6px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.sqlcode{background:#0a1a33; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#d3e6ff; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#173a6b; border-left:3px solid #60a5fa; padding-left:11px;}
+.sqlcode .ln.err{background:#4c1d1d; border-left:3px solid #f87171; padding-left:11px;}
+.errbox{margin-top:14px; background:#fef2f2; border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+table.btab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.btab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.btab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.btab tr.hl td{background:var(--ac-l);}
+table.btab tr.dim td{opacity:.28;}
+table.btab tr.nullrow td{background:#fef2f2;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+.twocol{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+@media(max-width:640px){.twocol{grid-template-columns:1fr;}}
+.minitab{width:100%; border-collapse:collapse; font-size:11.5px;}
+.minitab th{background:var(--surf3); padding:5px 7px; text-align:left;}
+.minitab td{padding:5px 7px; border-top:1px solid var(--border);}
+.minitab tr.usedrow td{background:var(--ac-l);}
+.minitab tr.deadrow td{opacity:.3;}
+.grid120{display:grid; grid-template-columns:repeat(6,1fr); gap:2px; margin-top:10px;}
+.gcell{aspect-ratio:1; background:var(--surf2); border-radius:3px; transition:.15s;}
+.gcell.on{background:var(--ac);}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 31~50번, 눈으로 이해하기</h1>
+  <p>INNER JOIN / OUTER JOIN / CROSS JOIN / 다중테이블 조인 — 인터랙티브 체험</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q32·42</span>INNER JOIN 매칭</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q44·47</span>OUTER JOIN</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q43</span>CROSS JOIN</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q34·40</span>다중테이블 조인</button>
+  </div>
+
+  <!-- ===== TAB 0: INNER JOIN 매칭 ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>🔗 INNER JOIN — 매칭되는 것만 남긴다</h2>
+      <div class="desc">EMP(20명)와 DEPT(6개 부서)를 DEPTNO로 연결합니다. 실행 버튼을 누르면 매칭 쌍이 하나씩 결과에 쌓이고, 매칭 안 되는 행은 흐려집니다. (Q32, 42번 관련)</div>
+
+      <div class="sqlcode" id="innerSql">
+        <div class="ln" id="il1">SELECT ENAME, DNAME</div>
+        <div class="ln" id="il2">FROM EMP</div>
+        <div class="ln" id="il3">INNER JOIN DEPT USING (DEPTNO);</div>
+      </div>
+
+      <div class="twocol" style="margin-top:14px;">
+        <div>
+          <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:var(--sub);">EMP (20건)</div>
+          <div id="innerEmpTab"></div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:var(--sub);">DEPT (6건)</div>
+          <div id="innerDeptTab"></div>
+        </div>
+      </div>
+
+      <button class="runbtn" onclick="runInnerJoin()">▶ JOIN 실행</button>
+      <button class="resetbtn" onclick="resetInnerJoin()">⟲ 초기화</button>
+
+      <div style="margin-top:14px; font-size:12px; font-weight:700; color:var(--sub);">JOIN 결과</div>
+      <div id="innerResultTab"></div>
+      <div class="hint" id="innerHint">DEPTNO가 없는 JUNG·KANG, 사원이 없는 MARKETING(50)·PLANNING(60)은 결과에서 빠집니다.</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: OUTER JOIN ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>👐 LEFT OUTER JOIN — ON절 vs WHERE절</h2>
+      <div class="desc">기준(왼쪽)인 DEPT 6개는 무조건 다 살립니다. 조건을 ON에 두느냐 WHERE에 두느냐에 따라 결과가 완전히 달라집니다. (Q44, 47번 관련)</div>
+
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn on" id="outerOn" onclick="setOuterMode('on')">ON절에 조건 (SAL≥2000)</button>
+        <button class="modebtn" id="outerWhere" onclick="setOuterMode('where')">WHERE절에 조건 (SAL≥2000)</button>
+      </div>
+
+      <div class="sqlcode" id="outerSql"></div>
+
+      <div style="margin-top:14px;" id="outerResultTab"></div>
+      <div class="hint" id="outerHint"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: CROSS JOIN ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>💥 CROSS JOIN — 모든 조합을 다 만든다</h2>
+      <div class="desc">CROSS JOIN은 조건 없이 두 테이블의 모든 행을 곱합니다. EMP(20) × DEPT(6) = 120건이 만들어지는 과정을 칸이 채워지는 것으로 확인해보세요. (Q43번 관련)</div>
+
+      <div class="sqlcode">
+        <div class="ln active">SELECT COUNT(*) FROM EMP CROSS JOIN DEPT;</div>
+      </div>
+
+      <button class="runbtn" onclick="runCrossJoin()">▶ 카티시안 곱 채우기</button>
+      <button class="resetbtn" onclick="resetCrossJoin()">⟲ 초기화</button>
+
+      <div class="grid120" id="crossGrid"></div>
+      <div class="resultbox" id="crossResult">EMP 20건 × DEPT 6건 = ?</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 다중테이블 조인 실전 ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>🎓 3개 테이블 조인 — 90점 이상 수강 내역</h2>
+      <div class="desc">STUDENTS-ENROLL-COURSES를 조인해서 점수 90점 이상인 수강 기록만 뽑아봅니다. (Q34번 관련)</div>
+      <button class="runbtn" onclick="runTripleJoin()">▶ 3테이블 조인 실행</button>
+      <div id="tripleResultTab" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>📚 3과목 이상 수강한 학생 찾기</h2>
+      <div class="desc">STUDENTS와 ENROLL을 조인 후 GROUP BY + HAVING으로 3과목 이상 들은 학생만 걸러냅니다. (Q40번 관련)</div>
+      <div class="inputrow" style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="font-size:13px; color:var(--sub); min-width:100px;">기준 과목 수</span>
+        <input type="range" min="1" max="3" step="1" value="3" id="minSubSlider" oninput="runMinSubjects()" style="flex:1; accent-color:var(--ac)">
+        <span id="minSubVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac);">3개</span>
+      </div>
+      <div id="minSubResultTab"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ 공통 데이터 (실제 SQL실습데이터.xlsx 기준) ============ */
+const EMP = [
+  {emp:7369,name:'SMITH',dept:20},{emp:7499,name:'ALLEN',dept:30},{emp:7521,name:'WARD',dept:30},
+  {emp:7566,name:'JONES',dept:20},{emp:7654,name:'MARTIN',dept:30},{emp:7698,name:'BLAKE',dept:30},
+  {emp:7782,name:'CLARK',dept:10},{emp:7788,name:'SCOTT',dept:20},{emp:7839,name:'KING',dept:10},
+  {emp:7844,name:'TURNER',dept:30},{emp:7876,name:'ADAMS',dept:20},{emp:7900,name:'JAMES',dept:30},
+  {emp:7902,name:'FORD',dept:20},{emp:7934,name:'MILLER',dept:10},{emp:8001,name:'LEE',dept:20},
+  {emp:8002,name:'PARK',dept:30},{emp:8003,name:'CHOI',dept:10},{emp:8004,name:'JUNG',dept:null},
+  {emp:8005,name:'KANG',dept:null},{emp:8006,name:'JO',dept:40},
+];
+const EMP_SAL = {7369:800,7499:1600,7521:1250,7566:2975,7654:1250,7698:2850,7782:2450,7788:3000,7839:5000,7844:1500,
+  7876:1100,7900:950,7902:3000,7934:1300,8001:3200,8002:1400,8003:1100,8004:2900,8005:900,8006:3500};
+const DEPT = [
+  {no:10,name:'ACCOUNTING',loc:'NEW YORK'},{no:20,name:'RESEARCH',loc:'DALLAS'},
+  {no:30,name:'SALES',loc:'CHICAGO'},{no:40,name:'OPERATIONS',loc:'BOSTON'},
+  {no:50,name:'MARKETING',loc:'SEOUL'},{no:60,name:'PLANNING',loc:'TOKYO'},
+];
+const STUDENTS = [
+  {id:'S2021001',name:'강하늘'},{id:'S2021002',name:'박보검'},{id:'S2021003',name:'김지원'},
+  {id:'S2022001',name:'윤아'},{id:'S2022002',name:'차은우'},{id:'S2022003',name:'수지'},
+  {id:'S2023001',name:'송중기'},{id:'S2023002',name:'아이유'},{id:'S2023003',name:'현빈'},{id:'S2023004',name:'손예진'},
+];
+const COURSES = {C001:'데이터베이스 개론',C002:'SQL 실무 및 활용',C003:'자료구조',C004:'운영체제',C005:'경영학원론',
+  C006:'마케팅원론',C007:'재무관리',C008:'빅데이터 분석 기초',C009:'파이썬 프로그래밍',C010:'머신러닝 입문',
+  C011:'인공지능 개론',C012:'디자인 씽킹',C013:'UX/UI 디자인 실무',C014:'시각 디자인 기초',C015:'교양: 논리와 사고'};
+const ENROLL = [
+  {stu:'S2021001',sub:'C001',score:95},{stu:'S2021001',sub:'C002',score:92},{stu:'S2021001',sub:'C003',score:85},
+  {stu:'S2021002',sub:'C005',score:88},{stu:'S2021002',sub:'C006',score:90},{stu:'S2021002',sub:'C007',score:82},
+  {stu:'S2021003',sub:'C008',score:91},{stu:'S2021003',sub:'C010',score:96},{stu:'S2021003',sub:'C011',score:88},
+  {stu:'S2022001',sub:'C001',score:80},{stu:'S2022001',sub:'C002',score:85},{stu:'S2022001',sub:'C009',score:100},
+  {stu:'S2022002',sub:'C012',score:95},{stu:'S2022002',sub:'C013',score:91},{stu:'S2022002',sub:'C015',score:88},
+  {stu:'S2022003',sub:'C005',score:76},{stu:'S2022003',sub:'C006',score:82},{stu:'S2022003',sub:'C007',score:90},
+  {stu:'S2023001',sub:'C008',score:88},{stu:'S2023001',sub:'C009',score:95},{stu:'S2023001',sub:'C010',score:78},
+  {stu:'S2023002',sub:'C001',score:92},{stu:'S2023002',sub:'C003',score:90},{stu:'S2023002',sub:'C004',score:85},
+  {stu:'S2023003',sub:'C012',score:85},{stu:'S2023003',sub:'C014',score:92},
+  {stu:'S2023004',sub:'C005',score:91},{stu:'S2023004',sub:'C006',score:88},{stu:'S2023004',sub:'C007',score:72},
+];
+
+/* ============ TAB 0: INNER JOIN 매칭 ============ */
+function renderInnerBase(){
+  document.getElementById('innerEmpTab').innerHTML = `<table class="minitab" id="innerEmpBody"><tr><th>EMPNO</th><th>ENAME</th><th>DEPTNO</th></tr>
+    ${EMP.map((e,i)=>`<tr id="ie${i}"><td>${e.emp}</td><td>${e.name}</td><td>${e.dept===null?'<i>NULL</i>':e.dept}</td></tr>`).join('')}</table>`;
+  document.getElementById('innerDeptTab').innerHTML = `<table class="minitab" id="innerDeptBody"><tr><th>DEPTNO</th><th>DNAME</th></tr>
+    ${DEPT.map((d,i)=>`<tr id="id${i}"><td>${d.no}</td><td>${d.name}</td></tr>`).join('')}</table>`;
+  document.getElementById('innerResultTab').innerHTML = `<table class="btab"><tr><th>ENAME</th><th>DNAME</th></tr></table>`;
+}
+function resetInnerJoin(){
+  renderInnerBase();
+  document.querySelectorAll('#il1,#il2,#il3').forEach(el=>el.classList.remove('active'));
+}
+function runInnerJoin(){
+  renderInnerBase();
+  document.getElementById('il2').classList.add('active');
+  const matched = EMP.filter(e=>e.dept!==null && DEPT.some(d=>d.no===e.dept));
+  let rowsHtml = '<tr><th>ENAME</th><th>DNAME</th></tr>';
+  matched.forEach((e,idx)=>{
+    setTimeout(()=>{
+      document.getElementById('il3').classList.add('active');
+      const empIdx = EMP.indexOf(e);
+      const dept = DEPT.find(d=>d.no===e.dept);
+      const deptIdx = DEPT.indexOf(dept);
+      document.getElementById('ie'+empIdx).classList.add('usedrow');
+      document.getElementById('id'+deptIdx).classList.add('usedrow');
+      rowsHtml += `<tr class="hl"><td>${e.name}</td><td>${dept.name}</td></tr>`;
+      document.getElementById('innerResultTab').innerHTML = `<table class="btab">${rowsHtml}</table>`;
+      if(idx===matched.length-1){
+        EMP.forEach((e2,i2)=>{ if(!document.getElementById('ie'+i2).classList.contains('usedrow')) document.getElementById('ie'+i2).classList.add('deadrow'); });
+        DEPT.forEach((d2,i2)=>{ if(!document.getElementById('id'+i2).classList.contains('usedrow')) document.getElementById('id'+i2).classList.add('deadrow'); });
+        document.getElementById('innerHint').textContent = `총 ${matched.length}건 매칭. DEPTNO가 NULL인 JUNG·KANG, 사원이 없는 MARKETING(50)·PLANNING(60)은 결과에서 자동으로 빠졌습니다.`;
+      }
+    }, idx*90);
+  });
+}
+resetInnerJoin();
+
+/* ============ TAB 1: OUTER JOIN ============ */
+let outerMode = 'on';
+function setOuterMode(m){
+  outerMode = m;
+  document.getElementById('outerOn').classList.toggle('on', m==='on');
+  document.getElementById('outerWhere').classList.toggle('on', m==='where');
+  renderOuter();
+}
+function renderOuter(){
+  if(outerMode==='on'){
+    document.getElementById('outerSql').innerHTML =
+      `<div class="ln active">SELECT D.DEPTNO, D.DNAME, E.ENAME, E.SAL</div>
+       <div class="ln active">FROM DEPT D LEFT OUTER JOIN EMP E</div>
+       <div class="ln active">ON (D.DEPTNO = E.DEPTNO AND E.SAL >= 2000);</div>`;
+    let html = '<table class="btab"><tr><th>DEPTNO</th><th>DNAME</th><th>ENAME</th><th>SAL</th></tr>';
+    DEPT.forEach(d=>{
+      const matches = EMP.filter(e=>e.dept===d.no && EMP_SAL[e.emp]>=2000);
+      if(matches.length===0){
+        html += `<tr class="nullrow"><td>${d.no}</td><td>${d.name}</td><td><i>NULL</i></td><td><i>NULL</i></td></tr>`;
+      } else {
+        matches.forEach(e=>{ html += `<tr class="hl"><td>${d.no}</td><td>${d.name}</td><td>${e.name}</td><td>${EMP_SAL[e.emp]}</td></tr>`; });
+      }
+    });
+    html += '</table>';
+    document.getElementById('outerResultTab').innerHTML = html;
+    document.getElementById('outerHint').textContent = 'DEPT 6개 부서가 전부 살아있습니다. SAL 조건에 안 맞는 사원만 NULL로 채워지고, 부서 자체는 사라지지 않습니다.';
+  } else {
+    document.getElementById('outerSql').innerHTML =
+      `<div class="ln active">SELECT D.DEPTNO, D.DNAME, E.ENAME, E.SAL</div>
+       <div class="ln active">FROM DEPT D LEFT OUTER JOIN EMP E</div>
+       <div class="ln active">ON (D.DEPTNO = E.DEPTNO)</div>
+       <div class="ln err">WHERE E.SAL >= 2000;</div>`;
+    let html = '<table class="btab"><tr><th>DEPTNO</th><th>DNAME</th><th>ENAME</th><th>SAL</th></tr>';
+    DEPT.forEach(d=>{
+      const matches = EMP.filter(e=>e.dept===d.no && EMP_SAL[e.emp]>=2000);
+      matches.forEach(e=>{ html += `<tr class="hl"><td>${d.no}</td><td>${d.name}</td><td>${e.name}</td><td>${EMP_SAL[e.emp]}</td></tr>`; });
+    });
+    html += '</table>';
+    document.getElementById('outerResultTab').innerHTML = html;
+    document.getElementById('outerHint').textContent = 'WHERE절에서 걸러버리면 사원이 없거나 조건에 안 맞는 부서(MARKETING, PLANNING 포함)는 통째로 사라집니다. 사실상 INNER JOIN처럼 동작합니다.';
+  }
+}
+renderOuter();
+
+/* ============ TAB 2: CROSS JOIN ============ */
+function resetCrossJoin(){
+  document.getElementById('crossGrid').innerHTML = Array.from({length:120}).map((_,i)=>`<div class="gcell" id="gc${i}"></div>`).join('');
+  document.getElementById('crossResult').textContent = 'EMP 20건 × DEPT 6건 = ?';
+}
+function runCrossJoin(){
+  resetCrossJoin();
+  for(let i=0;i<120;i++){
+    setTimeout(()=>{
+      document.getElementById('gc'+i).classList.add('on');
+      if(i===119){
+        document.getElementById('crossResult').textContent = 'EMP 20건 × DEPT 6건 = 120건 (실제 매칭 여부와 무관하게 모든 조합)';
+      }
+    }, i*12);
+  }
+}
+resetCrossJoin();
+
+/* ============ TAB 3-1: 3테이블 조인 (90점 이상) ============ */
+function runTripleJoin(){
+  const rows = ENROLL.filter(e=>e.score>=90).map(e=>{
+    const stu = STUDENTS.find(s=>s.id===e.stu);
+    return {name:stu.name, sub:COURSES[e.sub], score:e.score};
+  });
+  document.getElementById('tripleResultTab').innerHTML = `<table class="btab"><tr><th>학생</th><th>과목</th><th>점수</th></tr>
+    ${rows.map(r=>`<tr class="hl"><td>${r.name}</td><td>${r.sub}</td><td>${r.score}</td></tr>`).join('')}</table>
+    <div class="hint">총 ${rows.length}건. STUDENTS·ENROLL·COURSES 3개 테이블을 STU_ID, SUB_ID로 연결해야 학생 이름과 과목명을 동시에 볼 수 있습니다.</div>`;
+}
+
+/* ============ TAB 3-2: N과목 이상 수강 학생 ============ */
+function runMinSubjects(){
+  const n = +document.getElementById('minSubSlider').value;
+  document.getElementById('minSubVal').textContent = n+'개';
+  const counts = {};
+  ENROLL.forEach(e=>{ counts[e.stu] = (counts[e.stu]||0)+1; });
+  const rows = STUDENTS.filter(s=>(counts[s.id]||0) >= n);
+  document.getElementById('minSubResultTab').innerHTML = `<table class="btab"><tr><th>학번</th><th>이름</th><th>수강과목수</th></tr>
+    ${rows.map(s=>`<tr class="hl"><td>${s.id}</td><td>${s.name}</td><td>${counts[s.id]}</td></tr>`).join('')}</table>
+    <div class="hint">HAVING COUNT(SUB_ID) >= ${n} → ${rows.length}명</div>`;
+}
+runMinSubjects();
+</script>
+</body>
+</html>

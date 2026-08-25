@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>SQLD 91~110번 개념 인터랙티브</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fdf2f4; --card:#ffffff; --surf2:#fce4e8; --surf3:#fbd0d9;
+  --border:#f6b8c6; --text:#3a0f18; --sub:#95576a;
+  --ac:#be123c; --ac-l:#fde8ec; --ac-b:#f5a8bb;
+  --header-bg:#1f0a10; --grad-end:#f43f5e;
+  --red:#dc2626; --red-l:#fee2e2; --green:#16a34a; --green-l:#dcfce7;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--header-bg),#3a1420); color:#fff; padding:28px 20px; text-align:center;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:26px; letter-spacing:.5px; margin-bottom:6px;}
+header p{color:#f6b8c6; font-size:13.5px;}
+.wrap{max-width:900px; margin:0 auto; padding:0 16px;}
+.tabbar{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:10;}
+.tab{flex:1; min-width:140px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); cursor:pointer; text-align:center; font-weight:700; font-size:13.5px; color:var(--sub); transition:.15s;}
+.tab.on{background:var(--ac); color:#fff; border-color:var(--ac); box-shadow:0 4px 14px rgba(190,18,60,.28);}
+.tab .n{display:block; font-size:11px; opacity:.75; margin-bottom:2px; font-weight:500;}
+.panel{display:none;}
+.panel.on{display:block; animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 20px; margin-bottom:18px; box-shadow:0 2px 10px rgba(120,10,40,.05);}
+.card h2{font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+.card .desc{color:var(--sub); font-size:13.5px; margin-bottom:16px;}
+.hint{background:var(--surf2); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--sub); margin-top:14px;}
+.modebtn{padding:8px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.modebtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+.runbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13px; cursor:pointer; margin-right:8px;}
+.resetbtn{margin-top:12px; padding:9px 18px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13px; cursor:pointer;}
+.sqlcode{background:#2b0a13; border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#fbdce3; line-height:2.1;}
+.sqlcode .ln{padding:2px 8px; border-radius:6px; transition:.25s;}
+.sqlcode .ln.active{background:#5c1a2a; border-left:3px solid #fb7185; padding-left:11px;}
+.errbox{margin-top:14px; background:#fef2f2; border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox{margin-top:14px; background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+table.rtab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.rtab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.rtab td{padding:6px 9px; border-top:1px solid var(--border); transition:.25s;}
+table.rtab tr.hl td{background:var(--ac-l);}
+table.rtab tr.dim td{opacity:.28; text-decoration:line-through;}
+table.rtab tr.nullset td{background:#fef3c7;}
+.resultbox{margin-top:14px; background:var(--surf2); border-radius:10px; padding:14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ac);}
+.rankbadge{display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; background:var(--ac-l); color:var(--ac);}
+</style>
+</head>
+<body>
+<header>
+  <h1>SQL 91~110번, 눈으로 이해하기</h1>
+  <p>순위함수 동점자 / PK·FK 제약조건 / 참조무결성 / MERGE·DDL 변경 — 인터랙티브 체험</p>
+</header>
+
+<div class="wrap">
+  <div class="tabbar">
+    <button class="tab on" id="tabbtn0" onclick="showTab(0)"><span class="n">Q98</span>순위함수 동점자</button>
+    <button class="tab" id="tabbtn1" onclick="showTab(1)"><span class="n">Q99·107</span>PK 제약조건</button>
+    <button class="tab" id="tabbtn2" onclick="showTab(2)"><span class="n">Q102·108</span>참조무결성</button>
+    <button class="tab" id="tabbtn3" onclick="showTab(3)"><span class="n">Q106·100·110</span>MERGE·DDL 변경</button>
+  </div>
+
+  <!-- ===== TAB 0: 순위함수 동점자 ===== -->
+  <div class="panel on" id="panel0">
+    <div class="card">
+      <h2>🥇 RANK vs DENSE_RANK vs ROW_NUMBER</h2>
+      <div class="desc">실제 EMP 데이터에는 급여가 겹치는 사원들이 있습니다(3000·1250·1100). 동점자가 있을 때 세 함수가 어떻게 다르게 순위를 매기는지 확인해보세요. (Q98번 관련)</div>
+      <button class="runbtn" onclick="runRankCompare()">▶ 세 함수 동시 실행</button>
+      <button class="resetbtn" onclick="resetRankTable()">⟲ 초기화</button>
+      <div id="rankTable" style="margin-top:12px;"></div>
+      <div class="hint">💡 SAL=3000(SCOTT·FORD), SAL=1250(WARD·MARTIN), SAL=1100(ADAMS·CHOI)이 동점 구간입니다. RANK는 동점 다음 순위를 건너뛰고, DENSE_RANK는 건너뛰지 않고, ROW_NUMBER는 동점이어도 무조건 순서를 매깁니다.</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: PK 제약조건 ===== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>🔑 기본키(PK)로 중복·NULL 막기</h2>
+      <div class="desc">PRODUCTS와 같은 구조로 새 테이블을 만들고, PK 위반 상황을 직접 넣어봅니다. (Q99번 관련)</div>
+      <div class="sqlcode">
+        <div class="ln active">CREATE TABLE PRODUCTS_TEST (</div>
+        <div class="ln active">&nbsp;&nbsp;PROD_ID VARCHAR(10) NOT NULL,</div>
+        <div class="ln active">&nbsp;&nbsp;PROD_NAME VARCHAR(100),</div>
+        <div class="ln active">&nbsp;&nbsp;CONSTRAINT PK_TEST PRIMARY KEY (PROD_ID)</div>
+        <div class="ln active">);</div>
+      </div>
+      <div style="display:flex; gap:8px; margin:12px 0;">
+        <button class="modebtn" onclick="tryInsertPK('P001','정상 상품')">INSERT ('P001','정상 상품')</button>
+        <button class="modebtn" onclick="tryInsertPK('P001','중복 시도')">INSERT ('P001','중복 시도') ← 같은 PK</button>
+        <button class="modebtn" onclick="tryInsertPK(null,'ID 없는 상품')">INSERT (NULL,'ID 없는 상품')</button>
+      </div>
+      <div id="pkResultBox"></div>
+      <div id="pkTable" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔢 COUNT(*) vs COUNT(PK칼럼)</h2>
+      <div class="desc">STU_ID는 PK라서 NULL이 있을 수 없습니다. 그래서 COUNT(*)와 COUNT(STU_ID)는 항상 같습니다. TEL처럼 NULL 허용 칼럼과 비교해보세요. (Q107번 관련)</div>
+      <button class="runbtn" onclick="runCountCompare()">▶ 비교 실행</button>
+      <div class="resultbox" id="countResult"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: 참조무결성 ===== -->
+  <div class="panel" id="panel2">
+    <div class="card">
+      <h2>🧩 학생을 삭제하면 수강기록은?</h2>
+      <div class="desc">STUDENTS(부모)를 지울 때 ENROLL(자식)에 정책을 어떻게 걸었는지에 따라 결과가 달라집니다. 정책을 고르고 학생을 삭제해보세요. (Q102, 108번 관련)</div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="modebtn on" id="polCascade" onclick="setPolicy('CASCADE')">ON DELETE CASCADE</button>
+        <button class="modebtn" id="polSetNull" onclick="setPolicy('SETNULL')">ON DELETE SET NULL</button>
+        <button class="modebtn" id="polRestrict" onclick="setPolicy('RESTRICT')">ON DELETE RESTRICT</button>
+      </div>
+
+      <div class="inputrow" style="margin-bottom:10px;">
+        <select id="stuDeleteSelect" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+        <button class="runbtn" style="margin-top:0;" onclick="runDeleteStudent()">🗑️ 이 학생 DELETE 실행</button>
+        <button class="resetbtn" style="margin-top:0;" onclick="resetPolicyDemo()">⟲ 초기화</button>
+      </div>
+
+      <div id="policyResultBox"></div>
+      <div id="enrollTable" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: MERGE·DDL 변경 ===== -->
+  <div class="panel" id="panel3">
+    <div class="card">
+      <h2>🔀 MERGE — 있으면 UPDATE, 없으면 INSERT</h2>
+      <div class="desc">P001(기존 상품)과 P999(신규 상품)를 동시에 MERGE 해봅니다. (Q106번 관련)</div>
+      <button class="runbtn" onclick="runMerge()">▶ MERGE 실행</button>
+      <button class="resetbtn" onclick="resetMerge()">⟲ 초기화</button>
+      <div id="mergeTable" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🛠️ ALTER TABLE — 칼럼 바꾸기 / 삭제하기</h2>
+      <div class="desc">EMP 테이블 구조를 실제로 바꿔봅니다. (Q100, 110번 관련)</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="modebtn" onclick="runAlter('drop')">ALTER TABLE EMP DROP COLUMN COMM;</button>
+        <button class="modebtn" onclick="runAlter('reset')">⟲ 원상복구</button>
+      </div>
+      <div id="alterTable"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ============ 공통: 탭 전환 ============ */
+function showTab(n){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on', i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+
+/* ============ 공통 데이터 ============ */
+const EMP = [
+  {emp:7369,name:'SMITH',sal:800},{emp:7499,name:'ALLEN',sal:1600},{emp:7521,name:'WARD',sal:1250},
+  {emp:7566,name:'JONES',sal:2975},{emp:7654,name:'MARTIN',sal:1250},{emp:7698,name:'BLAKE',sal:2850},
+  {emp:7782,name:'CLARK',sal:2450},{emp:7788,name:'SCOTT',sal:3000},{emp:7839,name:'KING',sal:5000},
+  {emp:7844,name:'TURNER',sal:1500},{emp:7876,name:'ADAMS',sal:1100},{emp:7900,name:'JAMES',sal:950},
+  {emp:7902,name:'FORD',sal:3000},{emp:7934,name:'MILLER',sal:1300},{emp:8001,name:'LEE',sal:3200},
+  {emp:8002,name:'PARK',sal:1400},{emp:8003,name:'CHOI',sal:1100},{emp:8006,name:'JO',sal:3500},
+];
+const STUDENTS = [
+  {id:'S2021001',name:'강하늘'},{id:'S2021002',name:'박보검'},{id:'S2021003',name:'김지원'},
+  {id:'S2022001',name:'윤아'},{id:'S2022002',name:'차은우'},{id:'S2022003',name:'수지'},
+  {id:'S2023001',name:'송중기'},{id:'S2023002',name:'아이유'},{id:'S2023003',name:'현빈'},{id:'S2023004',name:'손예진'},
+];
+let ENROLL = [
+  {stu:'S2021001',sub:'C001',score:95},{stu:'S2021001',sub:'C002',score:92},{stu:'S2021001',sub:'C003',score:85},
+  {stu:'S2021002',sub:'C005',score:88},{stu:'S2021002',sub:'C006',score:90},{stu:'S2021002',sub:'C007',score:82},
+  {stu:'S2021003',sub:'C008',score:91},{stu:'S2021003',sub:'C010',score:96},{stu:'S2021003',sub:'C011',score:88},
+  {stu:'S2022001',sub:'C001',score:80},{stu:'S2022001',sub:'C002',score:85},{stu:'S2022001',sub:'C009',score:100},
+];
+const ENROLL_ORIG = JSON.parse(JSON.stringify(ENROLL));
+
+/* ============ TAB 0: 순위함수 동점자 ============ */
+function resetRankTable(){
+  document.getElementById('rankTable').innerHTML = `<div class="hint">버튼을 눌러 실행해보세요.</div>`;
+}
+function runRankCompare(){
+  const sorted = [...EMP].sort((a,b)=>b.sal-a.sal);
+  let rank=0, denseRank=0, lastSal=null, denseSal=null;
+  const rows = sorted.map((e,i)=>{
+    if(e.sal !== lastSal){ rank = i+1; lastSal = e.sal; }
+    if(e.sal !== denseSal){ denseRank++; denseSal = e.sal; }
+    return {...e, rank, denseRank, rowNum:i+1};
+  });
+  document.getElementById('rankTable').innerHTML = `<table class="rtab" id="rankBody"><tr><th>ENAME</th><th>SAL</th><th>RANK()</th><th>DENSE_RANK()</th><th>ROW_NUMBER()</th></tr></table>`;
+  const tbl = document.getElementById('rankBody');
+  rows.forEach((r,i)=>{
+    setTimeout(()=>{
+      const tr = document.createElement('tr');
+      tr.id = 'rk'+i;
+      tr.innerHTML = `<td>${r.name}</td><td>${r.sal}</td><td><span class="rankbadge">${r.rank}</span></td><td><span class="rankbadge">${r.denseRank}</span></td><td><span class="rankbadge">${r.rowNum}</span></td>`;
+      tbl.appendChild(tr);
+      tr.style.opacity = 0;
+      requestAnimationFrame(()=>{ tr.style.transition = 'opacity .25s, background .25s'; tr.style.opacity = 1; });
+      const isTie = r.rank !== r.rowNum;
+      if(isTie){
+        setTimeout(()=>{ tr.classList.add('hl'); }, 200);
+      }
+    }, i*220);
+  });
+}
+resetRankTable();
+
+/* ============ TAB 1-1: PK 제약조건 ============ */
+let pkRows = [];
+function tryInsertPK(id, name){
+  if(id===null){
+    document.getElementById('pkResultBox').innerHTML = `<div class="errbox">🚫 오류: PROD_ID는 NOT NULL + PRIMARY KEY라서 값을 반드시 넣어야 합니다.</div>`;
+    return;
+  }
+  if(pkRows.some(r=>r.id===id)){
+    document.getElementById('pkResultBox').innerHTML = `<div class="errbox">🚫 오류: PROD_ID '${id}'는 이미 존재합니다. PK는 중복을 허용하지 않습니다.</div>`;
+    return;
+  }
+  pkRows.push({id, name});
+  document.getElementById('pkResultBox').innerHTML = `<div class="okbox">✅ 정상 삽입됨: ('${id}', '${name}')</div>`;
+  document.getElementById('pkTable').innerHTML = `<table class="rtab"><tr><th>PROD_ID</th><th>PROD_NAME</th></tr>${pkRows.map(r=>`<tr class="hl"><td>${r.id}</td><td>${r.name}</td></tr>`).join('')}</table>`;
+}
+
+/* ============ TAB 1-2: COUNT(*) vs COUNT(PK) ============ */
+function runCountCompare(){
+  const totalStu = STUDENTS.length;
+  document.getElementById('countResult').innerHTML =
+    `COUNT(*) = ${totalStu}건<br>COUNT(STU_ID) = ${totalStu}건  ← PK라서 NULL이 있을 수 없어 항상 같음<br>COUNT(TEL) = 사람마다 다름 ← NULL 허용 칼럼이라 값이 없는 사람은 안 셈`;
+}
+
+/* ============ TAB 2: 참조무결성 ============ */
+let curPolicy = 'CASCADE';
+function setPolicy(p){
+  curPolicy = p;
+  document.getElementById('polCascade').classList.toggle('on', p==='CASCADE');
+  document.getElementById('polSetNull').classList.toggle('on', p==='SETNULL');
+  document.getElementById('polRestrict').classList.toggle('on', p==='RESTRICT');
+}
+function initStuDeleteSelect(){
+  document.getElementById('stuDeleteSelect').innerHTML = STUDENTS.map(s=>`<option value="${s.id}">${s.id} · ${s.name}</option>`).join('');
+}
+function renderEnrollTable(){
+  document.getElementById('enrollTable').innerHTML = `<table class="rtab"><tr><th>STU_ID</th><th>SUB_ID</th><th>SCORE</th></tr>
+    ${ENROLL.map(e=>`<tr><td>${e.stu===null?'<span style="color:#b91c1c">NULL</span>':e.stu}</td><td>${e.sub}</td><td>${e.score}</td></tr>`).join('')}</table>`;
+}
+function resetPolicyDemo(){
+  ENROLL = JSON.parse(JSON.stringify(ENROLL_ORIG));
+  document.getElementById('policyResultBox').innerHTML = '';
+  renderEnrollTable();
+}
+function runDeleteStudent(){
+  const sid = document.getElementById('stuDeleteSelect').value || STUDENTS[0].id;
+  const related = ENROLL.filter(e=>e.stu===sid);
+  if(curPolicy==='RESTRICT'){
+    if(related.length>0){
+      document.getElementById('policyResultBox').innerHTML = `<div class="errbox">🚫 삭제 거부: ${sid} 학생은 ENROLL에 ${related.length}건의 수강 기록이 남아있어 RESTRICT 정책 때문에 STUDENTS에서 삭제할 수 없습니다.</div>`;
+    } else {
+      document.getElementById('policyResultBox').innerHTML = `<div class="okbox">✅ 이 학생은 수강 기록이 없어 정상 삭제되었습니다.</div>`;
+    }
+    return;
+  }
+  if(curPolicy==='CASCADE'){
+    ENROLL = ENROLL.filter(e=>e.stu!==sid);
+    document.getElementById('policyResultBox').innerHTML = `<div class="okbox">✅ ${sid} 학생 삭제 완료. CASCADE 정책이라 관련 ENROLL ${related.length}건도 함께 삭제되었습니다.</div>`;
+  } else {
+    ENROLL = ENROLL.map(e=> e.stu===sid ? {...e, stu:null} : e);
+    document.getElementById('policyResultBox').innerHTML = `<div class="okbox">✅ ${sid} 학생 삭제 완료. SET NULL 정책이라 ENROLL의 STU_ID ${related.length}건이 NULL로 남았습니다 (수강 기록 자체는 유지).</div>`;
+  }
+  renderEnrollTable();
+}
+initStuDeleteSelect(); renderEnrollTable();
+
+/* ============ TAB 3-1: MERGE ============ */
+let mergeProducts = {P001:{name:'삼성 갤럭시 S24',price:1150000}, P002:{name:'LG 휘센 에어컨',price:2300000}};
+function resetMerge(){
+  mergeProducts = {P001:{name:'삼성 갤럭시 S24',price:1150000}, P002:{name:'LG 휘센 에어컨',price:2300000}};
+  renderMergeTable();
+}
+function renderMergeTable(highlightIds){
+  highlightIds = highlightIds || [];
+  document.getElementById('mergeTable').innerHTML = `<table class="rtab"><tr><th>PROD_ID</th><th>PROD_NAME</th><th>PRICE</th></tr>
+    ${Object.keys(mergeProducts).map(id=>`<tr class="${highlightIds.includes(id)?'hl':''}"><td>${id}</td><td>${mergeProducts[id].name}</td><td>${mergeProducts[id].price.toLocaleString()}</td></tr>`).join('')}</table>`;
+}
+function runMerge(){
+  // P001은 이미 존재 → UPDATE, P999는 없음 → INSERT
+  mergeProducts['P001'] = {name:'삼성 갤럭시 S24', price:999000};
+  mergeProducts['P999'] = {name:'신상품', price:5000};
+  renderMergeTable(['P001','P999']);
+}
+resetMerge();
+
+/* ============ TAB 3-2: ALTER TABLE ============ */
+function runAlter(mode){
+  if(mode==='drop'){
+    document.getElementById('alterTable').innerHTML = `<table class="rtab"><tr><th>EMPNO</th><th>ENAME</th><th>SAL</th></tr>
+      ${EMP.slice(0,5).map(e=>`<tr class="hl"><td>${e.emp}</td><td>${e.name}</td><td>${e.sal}</td></tr>`).join('')}</table>
+      <div class="hint">COMM 칼럼이 테이블 구조에서 완전히 사라졌습니다. (기존 데이터도 함께 삭제됨 — 되돌릴 수 없는 DDL입니다)</div>`;
+  } else {
+    document.getElementById('alterTable').innerHTML = `<table class="rtab"><tr><th>EMPNO</th><th>ENAME</th><th>SAL</th><th>COMM</th></tr>
+      ${EMP.slice(0,5).map(e=>`<tr><td>${e.emp}</td><td>${e.name}</td><td>${e.sal}</td><td><i>NULL</i></td></tr>`).join('')}</table>`;
+  }
+}
+runAlter('reset');
+</script>
+</body>
+</html>
