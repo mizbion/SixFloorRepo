@@ -173,6 +173,15 @@
     border-color: #ff4ca7;
     box-shadow: 0 6px 18px rgba(255,76,167,.4), 0 0 20px rgba(255,125,200,.34);
   }
+  .quick-link-btn.resume-download {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+  .quick-link-btn.resume-download:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 5px 14px rgba(59,130,246,.28);
+  }
   @keyframes pinkPulse {
     0%, 100% { box-shadow: 0 0 0 1px rgba(255,82,170,.24), 0 0 8px rgba(255,82,170,.18); }
     50% { box-shadow: 0 0 0 1px rgba(255,82,170,.34), 0 0 16px rgba(255,82,170,.34); }
@@ -403,6 +412,21 @@
       <input id="searchInput" type="text" placeholder="교안 제목·설명 검색…" oninput="onSearch()">
     </div>
     <div class="topbar-tools">
+      <a
+        class="quick-link-btn resume-download"
+        href="resume.hwp"
+        download="resume.hwp"
+        title="이력서 다운로드"
+        aria-label="이력서 다운로드"
+      >
+        <svg class="quick-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <polyline points="9 15 12 18 15 15"/>
+        </svg>
+        <span class="quick-link-text">이력서다운로드</span>
+      </a>
       <a
         class="quick-link-btn"
         href="https://www.mycompiler.io/ko/new/java"
