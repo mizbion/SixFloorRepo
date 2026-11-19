@@ -32,7 +32,7 @@ def parse_meta(filepath):
     try:
         with open(filepath, encoding='utf-8') as f:
             content = f.read()
-        for m in re.finditer(r'<!--\s*meta:(\w+)=([^-]+?)\s*-->', content):
+        for m in re.finditer(r'<!--\s*meta:(\w+)=(.+?)\s*-->', content):
             key   = m.group(1).strip()
             value = m.group(2).strip()
             meta[key] = value
