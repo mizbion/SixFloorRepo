@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>06. 관계형 vs 비관계형 데이터베이스</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽6 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.twotab{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+@media(max-width:560px){.twotab{grid-template-columns:1fr;}}
+.tabletitle{font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;}
+.jsonbox{background:#0c0d1f; color:#c9cff2; border-radius:12px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.8; white-space:pre;}
+.jsonbox .jkey{color:#93c5fd;} .jsonbox .jval{color:#fde68a;}
+.scenariocard{padding:14px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:10px; cursor:pointer;}
+.scenariocard .sresult{display:none; margin-top:10px; font-size:12.5px; color:var(--sub); border-top:1px dashed var(--border); padding-top:10px;}
+.scenariocard.open .sresult{display:block;}
+.scenariocard .stitle{font-weight:700; font-size:13.5px; display:flex; justify-content:space-between; align-items:center;}
+.pickbadge{font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 06</span>
+  <h1>관계형 vs 비관계형 데이터베이스</h1>
+  <p>지금까지 배운 "테이블·PK·FK"는 사실 데이터베이스의 한 종류일 뿐입니다. 완전히 다르게 생긴 데이터베이스도 있다는 걸 알아봅니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 같은 데이터, 다른 저장 방식 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>같은 학생 정보, 완전히 다르게 생겼다</h2>
+    <p class="lead">지금까지 배운 방식(관계형)과, 또 다른 방식(비관계형/NoSQL)으로 똑같은 학생 정보를 저장하면 이렇게 다릅니다.</p>
+    <div class="card">
+      <div class="twotab">
+        <div>
+          <div class="tabletitle">🗄️ 관계형 DB — 표(테이블) 여러 개로 나눠 저장</div>
+          <table class="dtab2" style="margin-bottom:8px;"><tr><th>STU_ID</th><th>NAME</th><th>CLUB_ID</th></tr><tr><td>S2023001</td><td>박준서</td><td>C01</td></tr></table>
+          <table class="dtab2"><tr><th>CLUB_ID</th><th>동아리명</th></tr><tr><td>C01</td><td>밴드부</td></tr></table>
+        </div>
+        <div>
+          <div class="tabletitle">📦 비관계형(NoSQL) DB — 문서 하나에 다 몰아넣기</div>
+          <div class="jsonbox">{
+  <span class="jkey">"이름"</span>: <span class="jval">"박준서"</span>,
+  <span class="jkey">"동아리"</span>: {
+    <span class="jkey">"이름"</span>: <span class="jval">"밴드부"</span>,
+    <span class="jkey">"장소"</span>: <span class="jval">"음악실"</span>
+  }
+}</div>
+        </div>
+      </div>
+      <div class="hint">👀 관계형은 정보를 여러 표로 <b>쪼개서</b> 저장하고 필요할 때 연결(JOIN)합니다. 비관계형은 관련된 정보를 <b>한 덩어리(문서)</b>에 몰아서 저장합니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 장단점 비교 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>무엇이 다를까?</h2>
+    <p class="lead">카드를 눌러서 각 방식의 특징을 확인해보세요.</p>
+    <div class="dikw" id="rdbLadder"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 상황별 선택 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>이런 서비스는 뭘 써야 할까?</h2>
+    <p class="lead">각 시나리오를 눌러서 어떤 방식이 더 어울릴지 확인해보세요.</p>
+    <div id="scenarioList"></div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">관계형 데이터베이스가 특히 강한 부분은 무엇일까요?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>관계형 DB</b>는 데이터를 여러 테이블로 나눠 저장하고 PK·FK로 연결합니다 — 정확성과 일관성이 중요한 데이터(계좌, 학사정보)에 강합니다.</li>
+        <li><b>비관계형(NoSQL) DB</b>는 관련 정보를 한 덩어리로 저장합니다 — 구조가 자주 바뀌거나 데이터 양이 폭발적으로 많은 서비스(SNS 피드, 로그)에 강합니다.</li>
+        <li>이 강의는 <b>관계형 DB(SQL)</b>를 중심으로 진행합니다. 실무에서 가장 널리 쓰이고, 백엔드 개발의 기본기이기 때문입니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>07. ERD 읽는 법</b> — 여러 테이블의 관계를 한눈에 보여주는 설계도, ERD를 직접 읽어봅니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 B: 특징 사다리 ============ */
+const RDB_POINTS = [
+  {title:'구조가 엄격하다 (관계형)', ex:'모든 행이 반드시 같은 칼럼을 가짐', body:'테이블을 만들 때 칼럼과 자료형을 미리 정해야 합니다. 대신 데이터가 항상 일관된 모양을 유지합니다.'},
+  {title:'구조가 유연하다 (비관계형)', ex:'문서마다 필드가 달라도 됨', body:'어떤 학생 문서엔 "동아리" 정보가 있고 어떤 문서엔 없어도 괜찮습니다. 서비스가 빠르게 바뀌는 초기 스타트업 등에서 유리합니다.'},
+  {title:'데이터 중복이 적다 (관계형)', ex:'동아리 정보는 CLUBS 테이블에 딱 1번만', body:'PK/FK로 연결하기 때문에 같은 정보를 여러 번 저장할 필요가 없어, 수정할 때 한 곳만 고치면 됩니다.'},
+  {title:'대량 데이터 처리에 유리하다 (비관계형)', ex:'초당 수만 건의 로그 저장', body:'JOIN 같은 복잡한 연산 없이 문서를 통째로 읽고 쓰기 때문에, 매우 많은 양의 데이터를 빠르게 넣고 빼는 데 유리한 경우가 많습니다.'},
+];
+function renderRdbLadder(){
+  document.getElementById('rdbLadder').innerHTML = RDB_POINTS.map((p,i)=>`
+    <div class="dstep" id="rp${i}" onclick="toggleRdb(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${p.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">${p.ex}</b><br>${p.body}</div>
+    </div>`).join('');
+}
+function toggleRdb(i){ document.getElementById('rp'+i).classList.toggle('open'); }
+renderRdbLadder();
+
+/* ============ 섹션 C: 시나리오 선택 ============ */
+const SCEN = [
+  {title:'💰 은행 계좌 이체 시스템', answer:'관계형', reason:'돈이 오가는 데이터는 단 1원도 틀리면 안 됩니다. 관계형 DB의 엄격한 규칙과 트랜잭션(다음 파트에서 배울 개념)이 정확성을 보장해줍니다.'},
+  {title:'📱 인스타그램의 "좋아요" 개수 실시간 집계', answer:'비관계형', reason:'매초 수십만 개씩 쏟아지는 "좋아요" 이벤트를 빠르게 기록해야 합니다. 정확한 관계보다 "속도"와 "양"이 더 중요한 상황입니다.'},
+  {title:'🏫 학교 학사 시스템 (성적, 수강신청)', answer:'관계형', reason:'학생-과목-성적처럼 명확한 관계가 있고, 정확성이 매우 중요한 데이터라 관계형 DB가 표준으로 쓰입니다.'},
+];
+function renderScenarios(){
+  document.getElementById('scenarioList').innerHTML = SCEN.map((s,i)=>`
+    <div class="scenariocard" id="sc${i}" onclick="pickScenario(${i}, event)">
+      <div class="stitle">${s.title}<span id="scbadge${i}"></span></div>
+      <div class="sresult">${s.reason}</div>
+    </div>`).join('');
+}
+function pickScenario(i){
+  const card = document.getElementById('sc'+i);
+  card.classList.toggle('open');
+  const badge = document.getElementById('scbadge'+i);
+  if(card.classList.contains('open')){
+    badge.innerHTML = `<span class="pickbadge" style="background:var(--ac-l); color:var(--ac);">정답: ${SCEN[i].answer}</span>`;
+  } else {
+    badge.innerHTML = '';
+  }
+}
+renderScenarios();
+
+/* ============ 섹션 D: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 정해진 형식 없이 아무 데이터나 자유롭게 넣을 수 있다', correct:false},
+  {text:'B. 테이블 간 관계를 명확히 정의하고 데이터 일관성을 지키는 데 강하다', correct:true},
+  {text:'C. 데이터 양이 아무리 많아져도 항상 가장 빠르다', correct:false},
+  {text:'D. 모든 서비스에 무조건 관계형을 써야 한다', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! PK·FK로 관계를 명확히 정의하고, 규칙에 안 맞는 데이터는 애초에 저장을 막아주는 것이 관계형 DB의 핵심 강점입니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 상황에 따라 비관계형이 더 유리한 경우도 있다는 걸(시나리오에서 봤듯) 기억해주세요 — "무조건 관계형"이 정답은 아닙니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>02. 엑셀로 다 되지 않나?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽2 전용: 엑셀 충돌 시뮬레이션 ── */
+.excelRow{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:6px;}
+.excelSide{background:var(--surf2); border-radius:12px; padding:14px; text-align:center;}
+.excelHeader{font-size:12px; font-weight:700; color:var(--sub); margin-bottom:8px;}
+.excelCell{background:var(--card); border:1.5px solid var(--border); border-radius:8px; padding:12px; font-family:'JetBrains Mono',monospace; font-size:13px; transition:.4s;}
+.excelCell.conflict{background:var(--red-l); border-color:#fca5a5; color:#b91c1c; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 02</span>
+  <h1>엑셀로 다 되지 않나?</h1>
+  <p>동아리 회원 명단, 반 성적표... 엑셀로도 잘 관리되는 것 같은데 왜 굳이 "데이터베이스"라는 걸 따로 배워야 할까요?</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 엑셀 참사 시뮬레이션 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>동아리 회원 명단, 엑셀로 관리하던 어느 날</h2>
+    <p class="lead">회장과 총무가 각자 자기 컴퓨터에서 같은 파일을 열어 수정하고 있었습니다. 버튼을 눌러 무슨 일이 벌어지는지 확인해보세요.</p>
+    <div class="card">
+      <div class="excelRow">
+        <div class="excelSide">
+          <div class="excelHeader">💻 회장의 화면</div>
+          <div class="excelCell" id="prezCell">이수아 - 부원</div>
+        </div>
+        <div class="excelSide">
+          <div class="excelHeader">💻 총무의 화면</div>
+          <div class="excelCell" id="treasCell">이수아 - 부원</div>
+        </div>
+      </div>
+      <button class="runbtn" onclick="runExcelConflict()">▶ 두 사람이 동시에 저장하면?</button>
+      <button class="resetbtn" onclick="resetExcelConflict()">⟲ 초기화</button>
+      <div class="hint" id="excelHint">아직 아무 일도 일어나지 않았습니다. 버튼을 눌러보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 엑셀의 4가지 한계 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>엑셀이 힘들어하는 것들</h2>
+    <p class="lead">방금 본 "동시 저장 충돌"은 시작일 뿐입니다. 카드를 눌러서 다른 문제들도 확인해보세요.</p>
+    <div class="dikw" id="excelProblems"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 중복과 불일치 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>같은 사람인데 시트마다 정보가 다르다면?</h2>
+    <p class="lead">"회원명단" 시트와 "출석부" 시트에 같은 학생 정보가 각각 따로 적혀있습니다. 전화번호를 바꿔야 한다면?</p>
+    <div class="card">
+      <div class="togglebar">
+        <button class="on" id="excelModeBtn" onclick="setDupMode(true)">📁 엑셀 방식 (시트마다 따로 저장)</button>
+        <button id="dbModeBtn" onclick="setDupMode(false)">🗄️ 데이터베이스 방식 (한 곳에만 저장)</button>
+      </div>
+      <div id="dupArea"></div>
+      <div class="hint" id="dupHint"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">다음 중 데이터베이스를 쓰는 것이 특히 유리한 상황은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>엑셀은 <b>동시에 여러 명이 안전하게 수정</b>하는 것이 어렵습니다 (덮어쓰기 위험).</li>
+        <li>같은 정보가 <b>여러 시트에 중복 저장</b>되면, 하나를 바꿀 때 나머지도 다 찾아서 바꿔야 하고 실수하면 데이터가 서로 어긋납니다.</li>
+        <li>데이터베이스는 정보를 <b>한 곳에만 저장</b>하고, 여러 사람·프로그램이 <b>동시에 안전하게</b> 접근할 수 있도록 설계되어 있습니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>03. 테이블이란 무엇인가</b> — 데이터베이스가 데이터를 저장하는 기본 단위, "테이블"의 구조(행과 열)를 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+/* ============ 스크롤 진행바 ============ */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 엑셀 동시저장 충돌 ============ */
+function resetExcelConflict(){
+  document.getElementById('prezCell').textContent = '이수아 - 부원';
+  document.getElementById('treasCell').textContent = '이수아 - 부원';
+  document.getElementById('prezCell').classList.remove('conflict');
+  document.getElementById('treasCell').classList.remove('conflict');
+  document.getElementById('excelHint').textContent = '아직 아무 일도 일어나지 않았습니다. 버튼을 눌러보세요.';
+}
+function runExcelConflict(){
+  document.getElementById('prezCell').textContent = '이수아 - 부회장 (회장이 수정 중)';
+  document.getElementById('treasCell').textContent = '이수아 - 회비 미납 (총무가 수정 중)';
+  setTimeout(()=>{
+    document.getElementById('excelHint').textContent = '⏳ 두 사람 다 "저장"을 눌렀습니다...';
+  }, 600);
+  setTimeout(()=>{
+    document.getElementById('treasCell').textContent = '이수아 - 부회장 (총무가 수정한 "회비 미납" 정보는 사라짐!)';
+    document.getElementById('treasCell').classList.add('conflict');
+    document.getElementById('excelHint').innerHTML = '💥 나중에 저장한 회장의 파일이 총무의 파일을 덮어써 버렸습니다. 총무가 어렵게 확인한 "회비 미납" 정보가 통째로 사라졌어요. 엑셀은 "누가 마지막에 저장했는지"만 알 뿐, 두 사람의 수정을 똑똑하게 합쳐주지 못합니다.';
+  }, 1400);
+}
+
+/* ============ 섹션 B: 엑셀의 4가지 한계 ============ */
+const PROBLEMS = [
+  {title:'1. 동시 편집 충돌', ex:'방금 본 것처럼', body:'여러 명이 동시에 수정하면 나중에 저장한 사람이 이전 수정 내용을 덮어써 버립니다.'},
+  {title:'2. 데이터 중복·불일치', ex:'회원명단 시트 vs 출석부 시트', body:'같은 정보를 여러 곳에 각각 저장하면, 하나를 바꿀 때 나머지를 깜빡하고 안 바꿔서 서로 다른 정보가 남습니다.'},
+  {title:'3. 대용량 데이터에서 느려짐', ex:'회원 10만 명 이상', body:'엑셀은 데이터가 많아지면(수만~수십만 행) 파일을 열고 계산하는 속도가 급격히 느려지고, 심하면 아예 열리지 않습니다.'},
+  {title:'4. 보안·권한 관리가 어려움', ex:'"이 시트는 회장만, 저 시트는 총무만"', body:'엑셀 파일 하나를 통째로 주고받다 보니, "이 정보는 이 사람만 보게 하고 싶다"는 세밀한 권한 설정이 거의 불가능합니다.'},
+];
+function renderProblems(){
+  document.getElementById('excelProblems').innerHTML = PROBLEMS.map((p,i)=>`
+    <div class="dstep" id="pb${i}" onclick="toggleProblem(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${p.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">예: ${p.ex}</b><br>${p.body}</div>
+    </div>`).join('');
+}
+function toggleProblem(i){ document.getElementById('pb'+i).classList.toggle('open'); }
+renderProblems();
+
+/* ============ 섹션 C: 중복 vs 단일 저장 ============ */
+function setDupMode(excel){
+  document.getElementById('excelModeBtn').classList.toggle('on', excel);
+  document.getElementById('dbModeBtn').classList.toggle('on', !excel);
+  if(excel){
+    document.getElementById('dupArea').innerHTML = `
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">📄 회원명단 시트</div>
+      <table class="dtab2" style="margin-bottom:12px;"><tr><th>이름</th><th>전화번호</th></tr><tr><td>이수아</td><td>010-2222-3333</td></tr></table>
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">📄 출석부 시트</div>
+      <table class="dtab2"><tr><th>이름</th><th>전화번호</th></tr><tr><td>이수아</td><td>010-2222-9999</td></tr></table>`;
+    document.getElementById('dupHint').innerHTML = '⚠️ 이수아의 번호가 두 시트에 <b>서로 다르게</b> 저장돼 있습니다! 언제 바뀐 걸까요? 어느 게 진짜일까요? 이런 "불일치"는 시트가 늘어날수록 점점 걷잡을 수 없어집니다.';
+  } else {
+    document.getElementById('dupArea').innerHTML = `
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">🗄️ STUDENTS 테이블 (딱 한 군데)</div>
+      <table class="dtab2"><tr><th>이름</th><th>전화번호</th></tr><tr><td>이수아</td><td>010-2222-3333</td></tr></table>
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin:12px 0 6px;">📋 출석 체크할 때는?</div>
+      <div class="freetext">출석부는 별도 시트가 아니라, STUDENTS 테이블을 "연결"해서 이름과 전화번호를 그때그때 가져다 씁니다. (이 "연결"하는 방법은 4~5번째 시간에 배울 <mark>기본키·외래키</mark>가 담당합니다!)</div>`;
+    document.getElementById('dupHint').textContent = '✅ 전화번호는 STUDENTS 테이블 딱 한 군데에만 저장됩니다. 바꿀 일이 생기면 그 한 곳만 고치면 되고, 이를 참조하는 모든 곳에 자동으로 최신 정보가 반영됩니다.';
+  }
+}
+setDupMode(true);
+
+/* ============ 섹션 D: 미니 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 친구 3명과 함께 볼 여행 일정표', correct:false},
+  {text:'B. 학교 전체 학생 2,000명의 정보를 여러 선생님이 동시에 수정하는 시스템', correct:true},
+  {text:'C. 이번 주 내 용돈 기입장', correct:false},
+  {text:'D. 혼자 보는 좋아하는 영화 목록', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 데이터 양이 많고(2,000명), 동시에 여러 명이 수정하는 상황일수록 엑셀의 한계가 바로 드러나고 데이터베이스의 장점이 커집니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 나머지는 규모가 작고 혼자(또는 소수만) 쓰는 경우라 엑셀로도 충분합니다. 정답은 B번이에요.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

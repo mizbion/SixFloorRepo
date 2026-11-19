@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>03. 테이블이란 무엇인가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽3 전용 ── */
+table.ixtab{width:100%; border-collapse:collapse; font-size:13.5px;}
+table.ixtab th{background:var(--surf3); padding:10px 12px; text-align:left; cursor:pointer; user-select:none; transition:.15s;}
+table.ixtab th.hlcol{background:var(--ac); color:#fff;}
+table.ixtab td{padding:10px 12px; border-top:1px solid var(--border); cursor:pointer; transition:.15s;}
+table.ixtab tr.hlrow td{background:var(--ac-l);}
+table.ixtab td.hlcol{background:var(--ac-l);}
+.typebadge{display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; background:var(--surf3); color:var(--sub); margin-left:6px;}
+.matchgrid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:6px;}
+.matchcol{display:flex; flex-direction:column; gap:8px;}
+.matchitem{padding:11px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-size:13px; cursor:pointer; text-align:center; transition:.15s;}
+.matchitem.picked{background:var(--ac); color:#fff; border-color:var(--ac);}
+.matchitem.matched{background:var(--green-l); border-color:#86efac; color:#166534; font-weight:700; cursor:default;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 03</span>
+  <h1>테이블이란 무엇인가</h1>
+  <p>엑셀 시트와 정말 닮았지만, 데이터베이스에서는 "테이블"이라고 부릅니다. 행과 열이 각각 무엇을 뜻하는지 정확히 짚어봅니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 행과 열 클릭 탐험 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>이름표를 클릭해서 구조를 파악해보세요</h2>
+    <p class="lead">아래는 STUDENTS 테이블입니다. <b>가로줄(행)</b>과 <b>세로줄(열)</b>을 각각 눌러서 어떻게 다른지 확인해보세요.</p>
+    <div class="card">
+      <div style="overflow-x:auto;">
+        <table class="ixtab" id="ixTable"></table>
+      </div>
+      <div class="hint" id="ixHint">칼럼 이름(맨 위 회색 줄)이나, 학생 한 명의 정보 줄을 클릭해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 행 vs 열 용어 정리 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>같은 걸 부르는 여러 이름</h2>
+    <p class="lead">엑셀에서 쓰던 말과 데이터베이스에서 쓰는 말이 서로 다릅니다. 클릭해서 짝을 확인하세요.</p>
+    <div class="dikw" id="termLadder"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 칼럼마다 정해진 자료형 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>모든 칸에 아무거나 넣을 수 없다</h2>
+    <p class="lead">각 칼럼(열)에는 "여기엔 이런 종류의 값만 들어올 수 있다"는 규칙, <b>자료형(데이터 타입)</b>이 정해져 있습니다. 잘못된 값을 넣어보세요.</p>
+    <div class="card">
+      <table class="dtab2" style="margin-bottom:14px;">
+        <tr><th>칼럼명</th><th>자료형</th><th>의미</th></tr>
+        <tr><td>YEAR</td><td><span class="typebadge">INT</span></td><td>정수(숫자)만 가능</td></tr>
+        <tr><td>NAME</td><td><span class="typebadge">TEXT</span></td><td>문자(글자)</td></tr>
+        <tr><td>JOIN_DATE</td><td><span class="typebadge">DATE</span></td><td>날짜 형식만 가능</td></tr>
+      </table>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="modebtn2" onclick="tryInsertType('YEAR','3')">YEAR 칼럼에 3 넣기</button>
+        <button class="modebtn2" onclick="tryInsertType('YEAR','삼학년')">YEAR 칼럼에 "삼학년" 넣기</button>
+        <button class="modebtn2" onclick="tryInsertType('JOIN_DATE','2024-03-01')">JOIN_DATE에 2024-03-01 넣기</button>
+        <button class="modebtn2" onclick="tryInsertType('JOIN_DATE','작년 봄쯤')">JOIN_DATE에 "작년 봄쯤" 넣기</button>
+      </div>
+      <div id="typeResultBox" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">STUDENTS 테이블에서 "김지원 학생의 전공"이라는 하나의 값이 있는 위치를 뭐라고 부를까요?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>행(row)</b>은 하나의 완결된 데이터 묶음(레코드) — 예: 학생 한 명의 모든 정보.</li>
+        <li><b>열(column)</b>은 모든 행이 공통으로 갖는 하나의 속성(필드) — 예: 모든 학생의 "이름".</li>
+        <li>각 열에는 <b>자료형</b>이 정해져 있어서, 규칙에 안 맞는 값은 애초에 저장할 수 없습니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>04. 기본키(PK)란 무엇인가</b> — 똑같은 이름의 학생이 2명이라면? 데이터를 정확히 구별하는 방법을 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+/* ============ 스크롤 진행바 ============ */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 행/열 클릭 탐험 ============ */
+const STU = [
+  {id:'S2021001', name:'강하늘', major:'컴퓨터공학', year:4},
+  {id:'S2023001', name:'송중기', major:'데이터과학', year:2},
+  {id:'S2023002', name:'아이유', major:'컴퓨터공학', year:2},
+];
+const COLS = ['id','name','major','year'];
+const COLLABEL = {id:'STU_ID', name:'NAME', major:'MAJOR', year:'YEAR'};
+function renderIxTable(){
+  let html = '<tr>' + COLS.map(c=>`<th onclick="hlCol('${c}')">${COLLABEL[c]}</th>`).join('') + '</tr>';
+  STU.forEach((s,ri)=>{
+    html += `<tr id="ixrow${ri}" onclick="hlRow(${ri})">` + COLS.map(c=>`<td id="ixcell${ri}_${c}">${s[c]}</td>`).join('') + '</tr>';
+  });
+  document.getElementById('ixTable').innerHTML = html;
+}
+function clearIxHl(){
+  document.querySelectorAll('#ixTable th').forEach(th=>th.classList.remove('hlcol'));
+  document.querySelectorAll('#ixTable tr').forEach(tr=>tr.classList.remove('hlrow'));
+  document.querySelectorAll('#ixTable td').forEach(td=>td.classList.remove('hlcol'));
+}
+function hlCol(c){
+  clearIxHl();
+  document.querySelectorAll('#ixTable th').forEach((th,i)=>{ if(COLS[i]===c) th.classList.add('hlcol'); });
+  STU.forEach((s,ri)=>document.getElementById('ixcell'+ri+'_'+c).classList.add('hlcol'));
+  document.getElementById('ixHint').innerHTML = `📏 이 <b>세로줄 전체</b>가 "${COLLABEL[c]}"라는 하나의 <b>열(칼럼/필드)</b>입니다. 모든 학생이 공통으로 갖는 하나의 정보 종류입니다.`;
+}
+function hlRow(ri){
+  clearIxHl();
+  document.getElementById('ixrow'+ri).classList.add('hlrow');
+  document.getElementById('ixHint').innerHTML = `📏 이 <b>가로줄 전체</b>가 "${STU[ri].name}" 학생 한 명에 대한 <b>행(row/레코드)</b>입니다. 여러 칼럼의 값이 모여 하나의 완결된 정보 단위를 이룹니다.`;
+}
+renderIxTable();
+
+/* ============ 섹션 B: 용어 매핑 ============ */
+const TERMS = [
+  {title:'표 전체', ex:'엑셀: 시트(Sheet)  ↔  DB: 테이블(Table)', body:'데이터를 저장하는 기본 틀 자체를 가리키는 말입니다.'},
+  {title:'가로줄 (행)', ex:'엑셀: 행(Row)  ↔  DB: 레코드(Record) / 로우(Row)', body:'하나의 개체(사람, 상품 등)에 대한 정보 한 묶음입니다.'},
+  {title:'세로줄 (열)', ex:'엑셀: 열(Column)  ↔  DB: 필드(Field) / 칼럼(Column)', body:'모든 행이 공통으로 갖는 하나의 속성입니다.'},
+  {title:'칸 하나', ex:'엑셀: 셀(Cell)  ↔  DB: 값(Value)', body:'특정 행의 특정 열이 만나는 지점에 있는 딱 하나의 데이터입니다.'},
+];
+function renderTerms(){
+  document.getElementById('termLadder').innerHTML = TERMS.map((t,i)=>`
+    <div class="dstep" id="tm${i}" onclick="toggleTerm(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${t.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">${t.ex}</b><br>${t.body}</div>
+    </div>`).join('');
+}
+function toggleTerm(i){ document.getElementById('tm'+i).classList.toggle('open'); }
+renderTerms();
+
+/* ============ 섹션 C: 자료형 검증 ============ */
+function tryInsertType(col, val){
+  const box = document.getElementById('typeResultBox');
+  let ok = false;
+  if(col==='YEAR') ok = /^\d+$/.test(val);
+  if(col==='JOIN_DATE') ok = /^\d{4}-\d{2}-\d{2}$/.test(val);
+  if(ok){
+    box.innerHTML = `<div class="okbox2">✅ 정상 저장됨: ${col} = '${val}'</div>`;
+  } else {
+    box.innerHTML = `<div class="errbox2">🚫 오류: '${val}'은(는) ${col} 칼럼의 자료형(${col==='YEAR'?'INT: 정수':'DATE: 날짜'})에 맞지 않아 저장할 수 없습니다.</div>`;
+  }
+}
+
+/* ============ 섹션 D: 미니 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 행 (row)', correct:false},
+  {text:'B. 열 (column)', correct:false},
+  {text:'C. 값 (value) / 셀 (cell)', correct:true},
+  {text:'D. 테이블 (table)', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! "김지원 학생의 전공"처럼 행(김지원)과 열(전공)이 만나는 딱 한 칸의 값을 셀 또는 값이라고 부릅니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 C번입니다. 행이나 열은 "전체 줄"을 가리키고, 이 문제는 그 줄들이 교차하는 "한 칸"을 묻고 있어요.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

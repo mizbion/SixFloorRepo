@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>20. 프론트엔드 vs 백엔드</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽15 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.restlayout{border:2px solid var(--border); border-radius:16px; overflow:hidden; margin:14px 0;}
+.rlfloor{background:#fef3c7; padding:20px; text-align:center; cursor:pointer;}
+.rlkitchen{background:#dbeafe; padding:20px; text-align:center; cursor:pointer;}
+.rllabel{font-weight:900; font-size:14px; margin-bottom:4px;}
+.matchbtn-row{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+.matchbtn{flex:1; min-width:150px; padding:11px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; cursor:pointer; text-align:center;}
+.matchbtn.pick-fe{background:#fef3c7; border-color:#fcd34d;}
+.matchbtn.pick-be{background:#dbeafe; border-color:#93c5fd;}
+.jobcompare{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+@media(max-width:560px){.jobcompare{grid-template-columns:1fr;}}
+.jobcard{border:1.5px solid var(--border); border-radius:12px; padding:16px;}
+.jobcard h4{margin-bottom:8px; font-size:14px;}
+.jobcard li{margin-left:16px; font-size:12.5px; color:var(--sub); margin-bottom:4px;}
+.jsonbox{background:#0c0d1f; color:#c9cff2; border-radius:12px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.8; white-space:pre;}
+.jsonbox .jkey{color:#93c5fd;} .jsonbox .jval{color:#fde68a;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 20</span>
+  <h1>프론트엔드 vs 백엔드</h1>
+  <p>3부의 마지막 시간! "화면에 보이는 것"과 "보이지 않는 곳에서 일어나는 일"의 역할 분담을 명확히 정리합니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 홀과 주방 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>손님이 보는 홀, 보이지 않는 주방</h2>
+    <p class="lead">11번 시간의 식당 비유를 다시 떠올려봅시다. 클릭해서 각 영역이 무엇에 해당하는지 확인하세요.</p>
+    <div class="card">
+      <div class="restlayout">
+        <div class="rlfloor" onclick="explainArea('fe')">
+          <div class="rllabel">🍽️ 홀 (손님이 보는 공간)</div>
+          <div style="font-size:12px; color:var(--sub);">= 프론트엔드</div>
+        </div>
+        <div class="rlkitchen" onclick="explainArea('be')">
+          <div class="rllabel">🍳 주방 (안 보이는 공간)</div>
+          <div style="font-size:12px; color:var(--sub);">= 백엔드</div>
+        </div>
+      </div>
+      <div class="hint" id="areaHint">홀 또는 주방을 클릭해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 각 영역이 다루는 기술 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>서로 다른 도구를 씁니다</h2>
+    <p class="lead">카드를 눌러서 각 영역의 대표 기술을 확인해보세요.</p>
+    <div class="dikw" id="techLadder"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 버튼 클릭 시 역할 분담 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>"회원가입" 버튼, 누가 뭘 할까?</h2>
+    <p class="lead">각 작업이 프론트엔드 일인지 백엔드 일인지 눌러서 맞혀보세요.</p>
+    <div class="card">
+      <div id="taskList"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: JSON으로 데이터 주고받기 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>프론트와 백엔드는 어떤 형식으로 대화할까?</h2>
+    <p class="lead">서버가 화면(HTML)을 통째로 만들어주지 않고, "데이터만" 딱 골라서 보내주는 경우가 많습니다. 이때 가장 널리 쓰이는 형식이 <b>JSON</b>입니다. 버튼을 눌러 확인해보세요.</p>
+    <div class="card">
+      <button class="runbtn" onclick="runJsonDemo()">▶ 백엔드가 보내주는 데이터 확인하기</button>
+      <div id="jsonDemoArea" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:6px;">🔀 그런데 JSON만 있는 건 아닙니다 — 같은 데이터, 다른 방식들</div>
+      <p class="lead" style="margin-bottom:12px;">똑같은 학생 정보를 세 가지 다른 방식으로 주고받는다면 어떻게 보일까요? 버튼을 눌러 비교해보세요.</p>
+      <div class="togglebar" id="formatToggle">
+        <button class="on" id="fmtJson" onclick="setFormat('json')">JSON</button>
+        <button id="fmtXml" onclick="setFormat('xml')">XML</button>
+        <button id="fmtHtml" onclick="setFormat('html')">전체 HTML 렌더링</button>
+      </div>
+      <div id="formatArea"></div>
+      <div class="hint" id="formatHint"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">다음 중 백엔드 개발자가 주로 다루는 일은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>프론트엔드</b>는 사용자가 직접 보고 만지는 화면(UI/UX)을 만듭니다.</li>
+        <li><b>백엔드</b>는 화면 뒤에서 요청을 처리하고, 데이터베이스와 대화하며, 비즈니스 로직(규칙)을 실행합니다.</li>
+        <li>우리가 지금까지 배운 <b>SQL·테이블·PK/FK는 전부 백엔드 개발자가 다루는 영역</b>입니다. 다음 4부에서는 이 둘이 실제로 어떻게 연결되는지 직접 들여다봅니다.</li>
+      </ul>
+      <div class="nextbox">🎉 여기까지가 <b>3부: 웹은 어떻게 동작하는가</b>의 끝입니다! 다음 시간부터는 드디어 <b>4부: 백엔드가 DB와 대화하는 법</b>으로 들어갑니다. (API, 커넥션, 회원가입 버튼의 전체 흐름 등)</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 홀/주방 설명 ============ */
+function explainArea(area){
+  const hint = document.getElementById('areaHint');
+  if(area==='fe'){
+    hint.innerHTML = '🍽️ <b>프론트엔드</b>는 사용자가 직접 보고 클릭하는 화면입니다. 예쁜 디자인, 버튼, 입력창, 애니메이션 등 "눈에 보이는 모든 것"을 만듭니다.';
+  } else {
+    hint.innerHTML = '🍳 <b>백엔드</b>는 사용자 눈에 보이지 않는 곳에서, 요청을 처리하고 데이터베이스와 대화하며 실제 "일"을 처리합니다. 손님은 주방 안을 볼 수 없지만, 맛있는 요리(정확한 결과)를 받으려면 주방이 잘 돌아가야 합니다.';
+  }
+}
+
+/* ============ 섹션 B: 기술 스택 사다리 ============ */
+const TECH = [
+  {title:'프론트엔드 기술', ex:'HTML · CSS · JavaScript · React 등', body:'화면 구조(HTML), 디자인(CSS), 동작·상호작용(JavaScript)을 만드는 언어와 도구들입니다.'},
+  {title:'백엔드 기술', ex:'Python(Flask, FastAPI) · Java(Spring) · Node.js 등', body:'서버에서 요청을 처리하는 프로그램을 만드는 언어와 프레임워크입니다. 이 강의에서는 파이썬의 Flask·FastAPI를 기준으로 배웁니다.'},
+  {title:'데이터베이스', ex:'MySQL · PostgreSQL · Oracle · SQLite 등', body:'백엔드가 대화하는 저장소입니다. 우리가 1~10번 시간 동안 배운 모든 내용이 여기 해당합니다.'},
+];
+function renderTech(){
+  document.getElementById('techLadder').innerHTML = TECH.map((t,i)=>`
+    <div class="dstep" id="tc${i}" onclick="toggleTech(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${t.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">${t.ex}</b><br>${t.body}</div>
+    </div>`).join('');
+}
+function toggleTech(i){ document.getElementById('tc'+i).classList.toggle('open'); }
+renderTech();
+
+/* ============ 섹션 C: 작업 분담 맞히기 ============ */
+const TASKS = [
+  {title:'입력창에 "이메일 형식이 아닙니다" 빨간 글씨 띄우기', answer:'fe', reason:'사용자가 입력하는 즉시(서버에 물어보지 않고) 화면에서 바로 확인해주는 것이라 프론트엔드가 처리합니다.'},
+  {title:'비밀번호를 암호화해서 저장하기', answer:'be', reason:'보안이 중요한 처리는 반드시 서버(백엔드)에서 이뤄져야 합니다.'},
+  {title:'"가입 완료!" 버튼에 애니메이션 효과 주기', answer:'fe', reason:'화면 표현/애니메이션은 프론트엔드의 역할입니다.'},
+  {title:'STUDENTS 테이블에 INSERT문으로 새 회원 정보 저장', answer:'be', reason:'데이터베이스에 직접 접근해 SQL을 실행하는 것은 백엔드만 할 수 있습니다.'},
+];
+function renderTasks(){
+  document.getElementById('taskList').innerHTML = TASKS.map((t,i)=>`
+    <div style="margin-bottom:14px;">
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">${t.title}</div>
+      <div class="matchbtn-row">
+        <div class="matchbtn" id="task${i}fe" onclick="pickTask(${i},'fe')">프론트엔드</div>
+        <div class="matchbtn" id="task${i}be" onclick="pickTask(${i},'be')">백엔드</div>
+      </div>
+      <div class="hint" id="taskResult${i}" style="display:none;"></div>
+    </div>`).join('');
+}
+function pickTask(i, choice){
+  const t = TASKS[i];
+  document.getElementById('task'+i+'fe').classList.remove('pick-fe','pick-be');
+  document.getElementById('task'+i+'be').classList.remove('pick-fe','pick-be');
+  document.getElementById('task'+i+choice).classList.add(choice==='fe' ? 'pick-fe' : 'pick-be');
+  const resultEl = document.getElementById('taskResult'+i);
+  resultEl.style.display = 'block';
+  if(choice===t.answer){
+    resultEl.innerHTML = `✅ 정답! ${t.reason}`;
+  } else {
+    resultEl.innerHTML = `❌ 정답은 ${t.answer==='fe'?'프론트엔드':'백엔드'}입니다. ${t.reason}`;
+  }
+}
+renderTasks();
+
+/* ============ 섹션 D 보충: JSON vs XML vs HTML 비교 ============ */
+const FORMAT_SAMPLES = {
+  json: {
+    code: `[
+  { "이름": "강하늘", "전공": "컴퓨터공학" },
+  { "이름": "송중기", "전공": "데이터과학" }
+]`,
+    hint: '✅ <b>JSON</b>: 오늘날 API의 표준입니다. 기호가 적고 가벼워서 데이터 전송량이 작고, 자바스크립트(프론트엔드)에서 <code>JSON.parse()</code> 한 줄이면 바로 객체로 변환됩니다. 그래서 지금은 거의 모든 신규 서비스가 JSON을 기본으로 씁니다.'
+  },
+  xml: {
+    code: `<students>
+  <student>
+    <name>강하늘</name>
+    <major>컴퓨터공학</major>
+  </student>
+  <student>
+    <name>송중기</name>
+    <major>데이터과학</major>
+  </student>
+</students>`,
+    hint: '📜 <b>XML</b>: JSON보다 먼저 널리 쓰이던 방식입니다. 여는 태그·닫는 태그가 다 있어서 같은 정보인데도 훨씬 장황(용량이 큼)하지만, 문서 구조를 엄격하게 검증할 수 있다는 장점이 있어 은행·공공기관처럼 데이터 정확성이 극도로 중요한 오래된 시스템에서는 지금도 종종 쓰입니다.'
+  },
+  html: {
+    code: `<html><body>
+  <table>
+    <tr><td>강하늘</td><td>컴퓨터공학</td></tr>
+    <tr><td>송중기</td><td>데이터과학</td></tr>
+  </table>
+</body></html>`,
+    hint: '🖼️ <b>전체 HTML 렌더링</b>: 데이터가 아니라 "완성된 화면"을 통째로 내려주는, 더 예전 방식입니다(12번 시간에 배운 정적/동적 데이터 기억하시나요?). 프론트엔드가 따로 그릴 필요 없이 바로 화면에 붙이면 되지만, 데이터만 필요한 모바일 앱이나 다른 화면에서는 재사용할 수 없고, 아주 조그만 값 하나 바뀌어도 화면 전체를 다시 만들어 보내야 해서 비효율적입니다.'
+  }
+};
+function setFormat(fmt){
+  document.getElementById('fmtJson').classList.toggle('on', fmt==='json');
+  document.getElementById('fmtXml').classList.toggle('on', fmt==='xml');
+  document.getElementById('fmtHtml').classList.toggle('on', fmt==='html');
+  const sample = FORMAT_SAMPLES[fmt];
+  document.getElementById('formatArea').innerHTML = `<div class="sqlcode" style="white-space:pre;">${sample.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+  document.getElementById('formatHint').innerHTML = sample.hint;
+}
+setFormat('json');
+
+/* ============ 섹션 D: JSON 데모 ============ */
+function runJsonDemo(){
+  document.getElementById('jsonDemoArea').innerHTML = `
+    <div class="jsonbox">[
+  {
+    <span class="jkey">"이름"</span>: <span class="jval">"강하늘"</span>,
+    <span class="jkey">"전공"</span>: <span class="jval">"컴퓨터공학"</span>,
+    <span class="jkey">"학년"</span>: <span class="jval">4</span>
+  },
+  {
+    <span class="jkey">"이름"</span>: <span class="jval">"송중기"</span>,
+    <span class="jkey">"전공"</span>: <span class="jval">"데이터과학"</span>,
+    <span class="jkey">"학년"</span>: <span class="jval">2</span>
+  }
+]</div>
+    <div class="hint">👀 이건 STUDENTS 테이블을 SQL로 조회(<code>SELECT NAME, MAJOR, YEAR FROM STUDENTS</code>)한 결과를, 백엔드가 <b>JSON</b>이라는 형식으로 바꿔서 프론트엔드에 넘겨준 모습입니다. 프론트엔드는 이 JSON을 받아서, 보기 좋은 화면(표, 카드 등)으로 그려줍니다. <b>DB의 행과 열이 JSON의 목록과 키-값으로 옮겨지는 과정</b>을 눈여겨보세요 — 이게 바로 4부에서 배울 "API"의 핵심입니다.</div>`;
+}
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 버튼 색깔과 폰트 디자인 정하기', correct:false},
+  {text:'B. 데이터베이스에서 사용자 정보를 조회하는 SQL 작성하기', correct:true},
+  {text:'C. 화면 애니메이션 효과 만들기', correct:false},
+  {text:'D. 마우스 클릭 시 화면 전환 효과 넣기', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! SQL 작성과 데이터베이스 접근은 백엔드 개발자의 핵심 업무입니다. 나머지는 모두 화면(디자인/애니메이션) 관련이라 프론트엔드 영역입니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 나머지 보기는 전부 "눈에 보이는" 화면 작업이라 프론트엔드 영역입니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

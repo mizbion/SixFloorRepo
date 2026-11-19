@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>17. 웹페이지를 열면 무슨 일이 일어날까</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽12 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.steprow{display:flex; align-items:flex-start; gap:12px; margin-bottom:4px; opacity:.3; transition:.3s;}
+.steprow.active{opacity:1;}
+.stepnum{width:28px; height:28px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; flex-shrink:0;}
+.steprow.active .stepnum{background:var(--ac); color:#fff;}
+.stepcontent{flex:1; padding-bottom:16px; border-left:2px dashed var(--border); padding-left:14px; margin-left:-15px; padding-top:2px;}
+.steprow:last-child .stepcontent{border-left:none;}
+.stepcontent .stitle2{font-weight:700; font-size:14px; margin-bottom:4px;}
+.stepcontent .sdesc{font-size:12.5px; color:var(--sub);}
+.statuscard{display:inline-block; padding:8px 16px; border-radius:10px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; margin:4px; cursor:pointer;}
+.statuscard.s200{background:var(--green-l); color:#166534;}
+.statuscard.s404{background:var(--red-l); color:#b91c1c;}
+.statuscard.s500{background:#fef3c7; color:#92400e;}
+.scenariocard{padding:14px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:10px;}
+.scenariocard .sresult{display:none; margin-top:10px; font-size:12.5px; color:var(--sub); border-top:1px dashed var(--border); padding-top:10px;}
+.scenariocard.open .sresult{display:block;}
+.scenariocard .stitle{font-weight:700; font-size:13.5px;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 17</span>
+  <h1>웹페이지를 열면 무슨 일이 일어날까</h1>
+  <p>주소창에 주소를 치고 엔터를 누르는 그 짧은 순간, 실제로는 여러 단계가 아주 빠르게 지나갑니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 5단계 타임라인 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>www.school.com/students 를 입력하면?</h2>
+    <p class="lead">버튼을 눌러 한 단계씩 진행하며 무슨 일이 일어나는지 확인해보세요.</p>
+    <div class="card">
+      <div id="stepTimeline"></div>
+      <button class="runbtn" onclick="nextStep()">▶ 다음 단계</button>
+      <button class="resetbtn" onclick="resetSteps()">⟲ 처음부터</button>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 요청과 응답 안의 내용 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>요청과 응답, 그 안에는 무엇이 들어있을까</h2>
+    <p class="lead">택배 상자에 송장이 붙어있듯, 요청과 응답에도 정해진 정보가 담겨 있습니다.</p>
+    <div class="twotab">
+      <div class="card">
+        <div class="tabletitle">📤 요청 (Request)</div>
+        <table class="dtab2">
+          <tr><td>메서드</td><td>GET</td></tr>
+          <tr><td>주소</td><td>/students</td></tr>
+          <tr><td>보내는 사람 정보</td><td>브라우저 종류 등</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="tabletitle">📥 응답 (Response)</div>
+        <table class="dtab2">
+          <tr><td>상태 코드</td><td>200 (성공)</td></tr>
+          <tr><td>내용</td><td>HTML 화면 데이터</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 상태 코드 미리보기 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>서버가 보내는 짧은 신호, 상태 코드</h2>
+    <p class="lead">클릭해서 각 상태 코드가 무슨 뜻인지 확인해보세요.</p>
+    <div class="card">
+      <div>
+        <span class="statuscard s200" onclick="showStatus('200')">200 OK</span>
+        <span class="statuscard s404" onclick="showStatus('404')">404 Not Found</span>
+        <span class="statuscard s500" onclick="showStatus('500')">500 Server Error</span>
+      </div>
+      <div class="hint" id="statusHint">코드를 클릭해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 정적 데이터 vs 동적 데이터 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>매번 똑같은 것 vs 매번 달라지는 것</h2>
+    <p class="lead">웹페이지의 모든 요소가 다 데이터베이스를 거치는 건 아닙니다. 아래 요소들을 눌러서 "정적"인지 "동적"인지 확인해보세요.</p>
+    <div class="card">
+      <div id="staticDynamicList"></div>
+      <div class="hint" id="staticDynamicHint">화면 요소를 하나씩 클릭해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">서버가 요청받은 페이지를 찾지 못했을 때 보통 어떤 상태 코드를 보낼까요?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>웹페이지 로딩은 <b>요청 → 서버 처리(DB 조회 포함) → 응답 → 화면 렌더링</b> 순서로 이뤄집니다.</li>
+        <li>요청에는 "무엇을, 어떻게" 원하는지가, 응답에는 "성공했는지"를 알려주는 <b>상태 코드</b>와 실제 내용이 담겨 있습니다.</li>
+        <li>상태 코드 200은 성공, 404는 "찾을 수 없음", 500은 "서버 내부 오류"를 뜻합니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>18. HTTP란 무엇인가</b> — 방금 본 요청·응답이 정확히 어떤 "규칙"을 따르는지 알아봅니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 5단계 타임라인 ============ */
+const STEPS12 = [
+  {title:'① 브라우저가 요청을 만든다', desc:'주소창의 www.school.com/students를 해석해서 "이 페이지 주세요"라는 요청을 만듭니다.'},
+  {title:'② 요청이 인터넷을 통해 서버로 이동한다', desc:'요청이 여러 네트워크 장비를 거쳐 학교 서버 컴퓨터까지 전달됩니다.'},
+  {title:'③ 서버가 요청을 처리한다 (DB 조회 포함)', desc:'서버 프로그램이 "학생 목록을 보여줘야겠다"고 판단하고, 필요하면 데이터베이스에 SQL로 SELECT 요청을 보내 데이터를 가져옵니다.'},
+  {title:'④ 서버가 응답을 만들어 돌려보낸다', desc:'가져온 데이터를 HTML 형태로 조립해서, 상태 코드(200 등)와 함께 클라이언트로 다시 보냅니다.'},
+  {title:'⑤ 브라우저가 화면을 그린다', desc:'받은 HTML을 해석해서 우리 눈에 보이는 실제 화면으로 그려냅니다.'},
+];
+let curStep12 = -1;
+function renderSteps(){
+  document.getElementById('stepTimeline').innerHTML = STEPS12.map((s,i)=>`
+    <div class="steprow" id="st${i}">
+      <div class="stepnum">${i+1}</div>
+      <div class="stepcontent"><div class="stitle2">${s.title}</div><div class="sdesc">${s.desc}</div></div>
+    </div>`).join('');
+}
+function nextStep(){
+  if(curStep12 >= STEPS12.length-1) return;
+  curStep12++;
+  document.getElementById('st'+curStep12).classList.add('active');
+}
+function resetSteps(){
+  curStep12 = -1;
+  document.querySelectorAll('.steprow').forEach(el=>el.classList.remove('active'));
+}
+renderSteps();
+
+/* ============ 섹션 C: 상태 코드 ============ */
+function showStatus(code){
+  const hint = document.getElementById('statusHint');
+  if(code==='200') hint.innerHTML = '✅ <b>200 OK</b> — 요청이 성공적으로 처리되었다는 뜻입니다. 우리가 웹서핑할 때 대부분 이 코드를 받습니다(눈에는 안 보이지만요).';
+  else if(code==='404') hint.innerHTML = '❓ <b>404 Not Found</b> — 요청한 주소에 해당하는 페이지가 서버에 없다는 뜻입니다. URL을 잘못 입력했을 때 흔히 보는 "페이지를 찾을 수 없습니다" 화면이 이 코드 때문입니다.';
+  else hint.innerHTML = '💥 <b>500 Internal Server Error</b> — 서버 프로그램 안에서 처리 도중 예상치 못한 오류(버그)가 발생했다는 뜻입니다. 사용자 잘못이 아니라 서버 쪽 문제입니다.';
+}
+
+/* ============ 섹션 D: 정적 vs 동적 ============ */
+const SD_ITEMS = [
+  {label:'🖼️ 학교 로고 이미지', type:'static', desc:'로고 파일은 언제 요청하든 항상 똑같은 파일 그대로 전달됩니다. 서버는 그냥 파일을 찾아서 보내줄 뿐, DB에 물어볼 필요가 없습니다. 이런 데이터를 <b>정적(static)</b> 데이터라고 합니다.'},
+  {label:'🎨 페이지 디자인(CSS)', type:'static', desc:'디자인 규칙 파일도 누가 요청하든 내용이 바뀌지 않는 정적 파일입니다.'},
+  {label:'📋 "3학년 학생 목록" 화면', type:'dynamic', desc:'이 목록은 데이터베이스 상황에 따라 계속 바뀝니다. 요청이 올 때마다 서버가 SQL로 STUDENTS 테이블을 조회해서 그 순간의 최신 데이터로 새로 만들어줍니다. 이런 데이터를 <b>동적(dynamic)</b> 데이터라고 합니다.'},
+  {label:'👤 로그인한 내 이름 표시', type:'dynamic', desc:'로그인한 사람이 누구냐에 따라 표시되는 이름이 다릅니다. 매번 서버가 "지금 로그인한 사람이 누구지?"를 확인해서 다르게 응답을 만들어야 하는 동적 데이터입니다.'},
+];
+function renderStaticDynamic(){
+  document.getElementById('staticDynamicList').innerHTML = SD_ITEMS.map((it,i)=>
+    `<div class="scenariocard" id="sd${i}" onclick="toggleSd(${i})" style="cursor:pointer;">
+      <div class="stitle">${it.label} <span style="font-size:11px; font-weight:700; color:${it.type==='static'?'#166534':'#1e40af'};">[클릭해서 확인]</span></div>
+      <div class="sresult">${it.type==='static' ? '📦 <b>정적 데이터</b>' : '🔄 <b>동적 데이터</b>'} — ${it.desc}</div>
+    </div>`).join('');
+}
+function toggleSd(i){ document.getElementById('sd'+i).classList.toggle('open'); }
+renderStaticDynamic();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 200', correct:false},
+  {text:'B. 404', correct:true},
+  {text:'C. 500', correct:false},
+  {text:'D. 100', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 404는 "요청한 자원을 찾을 수 없다"는 뜻으로, 흔히 잘못된 URL을 입력했을 때 만나게 됩니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번(404)입니다. 200은 성공, 500은 서버 내부 오류를 뜻합니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

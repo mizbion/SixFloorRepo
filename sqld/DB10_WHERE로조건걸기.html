@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>10. WHERE로 조건 걸기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽10 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+table.wtab{width:100%; border-collapse:collapse; font-size:13px;}
+table.wtab th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.wtab td{padding:8px 10px; border-top:1px solid var(--border); transition:.25s;}
+table.wtab tr.match td{background:var(--ac-l);}
+table.wtab tr.nomatch td{opacity:.25; text-decoration:line-through;}
+.opgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:14px 0;}
+@media(max-width:520px){.opgrid{grid-template-columns:repeat(2,1fr);}}
+.opbtn{padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; cursor:pointer; text-align:center;}
+.opbtn.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 10</span>
+  <h1>WHERE로 조건 걸기</h1>
+  <p>수백, 수천 개의 행 중에서 내가 원하는 것만 골라내는 방법. WHERE는 SQL에서 가장 자주 쓰는 문법입니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 조건 없이 vs 조건 있이 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>조건 하나로 완전히 달라지는 결과</h2>
+    <p class="lead">슬라이더로 학년을 바꿔보면서, WHERE 조건에 맞는 학생만 실시간으로 남는 걸 확인해보세요.</p>
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <span style="font-size:13px; color:var(--sub); min-width:70px;">YEAR =</span>
+        <input type="range" min="1" max="4" step="1" value="2" id="yearSlider" oninput="renderWhereDemo()" style="flex:1; accent-color:var(--ac)">
+        <span id="yearVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac);">2</span>
+      </div>
+      <div class="sqlcode" id="whereSql"></div>
+      <table class="wtab" id="whereTab" style="margin-top:12px;"></table>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 비교 연산자 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>조건을 만드는 여러 방법</h2>
+    <p class="lead">연산자를 눌러서 각각 어떤 학생이 걸리는지 비교해보세요.</p>
+    <div class="card">
+      <div class="opgrid" id="opGrid"></div>
+      <table class="wtab" id="opTab"></table>
+      <div class="hint" id="opHint"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: AND / OR 조합 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>조건을 두 개 이상 걸고 싶다면?</h2>
+    <p class="lead">두 조건을 체크해서 AND(둘 다 만족)와 OR(하나만 만족)의 차이를 확인해보세요.</p>
+    <div class="card">
+      <div class="checklist">
+        <div class="checkitem on" id="condA" onclick="toggleCond('A')">MAJOR = '컴퓨터공학'</div>
+        <div class="checkitem on" id="condB" onclick="toggleCond('B')">YEAR = 2</div>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn2 on" id="logicAND" onclick="setLogic('AND')">AND (둘 다 만족)</button>
+        <button class="modebtn2" id="logicOR" onclick="setLogic('OR')">OR (하나만 만족해도 OK)</button>
+      </div>
+      <div class="sqlcode" id="logicSql"></div>
+      <table class="wtab" id="logicTab" style="margin-top:12px;"></table>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">"학년이 3학년 이상인 학생"을 찾는 올바른 조건은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>WHERE는 <b>조건에 맞는 행만 골라내는</b> 필터 역할을 합니다.</li>
+        <li>비교 연산자(<code>=, &gt;, &lt;, &gt;=, &lt;=, &lt;&gt;</code>)로 다양한 조건을 만들 수 있습니다.</li>
+        <li><b>AND</b>는 모든 조건을 다 만족해야 하고, <b>OR</b>는 조건 중 하나만 만족해도 통과합니다 — 둘을 헷갈리면 결과가 완전히 달라집니다.</li>
+      </ul>
+      <div class="nextbox">🎉 2부 SQL 기초의 핵심 3형제(SELECT-FROM-WHERE)를 모두 배웠습니다! 다음 시간부터는 데이터를 추가·수정·삭제하는 INSERT/UPDATE/DELETE로 이어집니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+const STU10 = [
+  {id:'S2021001', name:'강하늘', major:'컴퓨터공학', year:4},
+  {id:'S2022001', name:'윤아', major:'컴퓨터공학', year:3},
+  {id:'S2022002', name:'차은우', major:'산업디자인', year:3},
+  {id:'S2023001', name:'송중기', major:'데이터과학', year:2},
+  {id:'S2023002', name:'아이유', major:'컴퓨터공학', year:2},
+  {id:'S2023003', name:'현빈', major:'산업디자인', year:2},
+];
+
+/* ============ 섹션 A: 슬라이더 WHERE 필터 ============ */
+function renderWhereDemo(){
+  const y = +document.getElementById('yearSlider').value;
+  document.getElementById('yearVal').textContent = y;
+  document.getElementById('whereSql').innerHTML = `<div class="ln active">SELECT NAME, YEAR FROM STUDENTS WHERE YEAR = ${y};</div>`;
+  document.getElementById('whereTab').innerHTML = `<tr><th>NAME</th><th>YEAR</th></tr>` +
+    STU10.map(s=>`<tr class="${s.year===y?'match':'nomatch'}"><td>${s.name}</td><td>${s.year}</td></tr>`).join('');
+}
+renderWhereDemo();
+
+/* ============ 섹션 B: 비교 연산자 ============ */
+const OPS = [
+  {label:'YEAR = 2', fn:s=>s.year===2},
+  {label:'YEAR > 2', fn:s=>s.year>2},
+  {label:'YEAR < 3', fn:s=>s.year<3},
+  {label:'YEAR >= 3', fn:s=>s.year>=3},
+  {label:"MAJOR = '산업디자인'", fn:s=>s.major==='산업디자인'},
+  {label:"MAJOR <> '컴퓨터공학'", fn:s=>s.major!=='컴퓨터공학'},
+];
+let curOpIdx = 0;
+function renderOpGrid(){
+  document.getElementById('opGrid').innerHTML = OPS.map((o,i)=>
+    `<div class="opbtn ${i===curOpIdx?'on':''}" id="op${i}" onclick="pickOp(${i})">${o.label}</div>`).join('');
+  renderOpResult();
+}
+function pickOp(i){
+  curOpIdx = i;
+  document.querySelectorAll('.opbtn').forEach((el,idx)=>el.classList.toggle('on', idx===i));
+  renderOpResult();
+}
+function renderOpResult(){
+  const op = OPS[curOpIdx];
+  const matched = STU10.filter(op.fn);
+  document.getElementById('opTab').innerHTML = `<tr><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>` +
+    STU10.map(s=>`<tr class="${op.fn(s)?'match':'nomatch'}"><td>${s.name}</td><td>${s.major}</td><td>${s.year}</td></tr>`).join('');
+  document.getElementById('opHint').textContent = `WHERE ${op.label} → ${matched.length}명 조회됨`;
+}
+renderOpGrid();
+
+/* ============ 섹션 C: AND/OR 조합 ============ */
+let condOn = {A:true, B:true};
+let curLogic = 'AND';
+function toggleCond(c){
+  condOn[c] = !condOn[c];
+  document.getElementById('cond'+c).classList.toggle('on', condOn[c]);
+  renderLogic();
+}
+function setLogic(l){
+  curLogic = l;
+  document.getElementById('logicAND').classList.toggle('on', l==='AND');
+  document.getElementById('logicOR').classList.toggle('on', l==='OR');
+  renderLogic();
+}
+function renderLogic(){
+  const parts = [];
+  if(condOn.A) parts.push("MAJOR = '컴퓨터공학'");
+  if(condOn.B) parts.push('YEAR = 2');
+  const sqlCond = parts.length ? parts.join(` ${curLogic} `) : '(조건 없음 — 체크박스를 최소 1개 선택하세요)';
+  document.getElementById('logicSql').innerHTML = `<div class="ln active">SELECT NAME, MAJOR, YEAR FROM STUDENTS${parts.length?' WHERE '+sqlCond:''};</div>`;
+  const testFn = s=>{
+    const results = [];
+    if(condOn.A) results.push(s.major==='컴퓨터공학');
+    if(condOn.B) results.push(s.year===2);
+    if(results.length===0) return true;
+    return curLogic==='AND' ? results.every(Boolean) : results.some(Boolean);
+  };
+  document.getElementById('logicTab').innerHTML = `<tr><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>` +
+    STU10.map(s=>`<tr class="${testFn(s)?'match':'nomatch'}"><td>${s.name}</td><td>${s.major}</td><td>${s.year}</td></tr>`).join('');
+}
+renderLogic();
+
+/* ============ 섹션 D: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. WHERE YEAR > 3', correct:false},
+  {text:'B. WHERE YEAR >= 3', correct:true},
+  {text:'C. WHERE YEAR = 3', correct:false},
+  {text:'D. WHERE YEAR < 3', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! "이상"은 그 값을 포함하기 때문에 >=(크거나 같다)를 써야 합니다. A번(YEAR > 3)은 3학년을 빼버리는 실수입니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. ">"는 "초과"(3 미포함), ">="는 "이상"(3 포함)이라는 걸 기억해주세요.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

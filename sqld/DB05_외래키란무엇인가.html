@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>05. 외래키(FK)란 무엇인가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽5 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.twotab{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+@media(max-width:560px){.twotab{grid-template-columns:1fr;}}
+table.fktab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.fktab th{background:var(--surf3); padding:7px 9px; text-align:left;}
+table.fktab td{padding:7px 9px; border-top:1px solid var(--border); cursor:pointer; transition:.2s;}
+table.fktab td.fkkey{color:var(--ac); font-weight:700;}
+table.fktab tr.hlfk td{background:var(--ac-l);}
+.tabletitle{font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 05</span>
+  <h1>외래키(FK)란 무엇인가</h1>
+  <p>학생 테이블과 동아리 테이블은 따로 있는데, "이 학생이 어느 동아리 소속인지"는 어떻게 알 수 있을까요?</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 두 테이블을 연결하는 문제 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>학생은 어느 동아리 소속일까?</h2>
+    <p class="lead">학생 정보와 동아리 정보가 각각 다른 테이블에 있습니다. 학생을 클릭하면 어느 동아리 소속인지 연결해서 찾아보세요.</p>
+    <div class="card">
+      <div class="twotab">
+        <div>
+          <div class="tabletitle">👤 STUDENTS</div>
+          <table class="fktab" id="fkStuTab"></table>
+        </div>
+        <div>
+          <div class="tabletitle">🎸 CLUBS</div>
+          <table class="fktab" id="fkClubTab"></table>
+        </div>
+      </div>
+      <div class="hint" id="fkHint">학생 이름을 클릭해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: FK가 하는 일 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>CLUB_ID라는 칼럼의 정체</h2>
+    <p class="lead">방금 연결이 가능했던 이유는 STUDENTS 테이블 안에 CLUB_ID라는 칼럼이 있었기 때문입니다. 이 칼럼을 <b>외래키(Foreign Key, FK)</b>라고 부릅니다.</p>
+    <div class="dikw" id="fkLadder"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 참조 무결성 위반 체험 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>존재하지 않는 동아리를 연결하려 하면?</h2>
+    <p class="lead">새 학생을 등록하면서 CLUB_ID를 잘못 입력해봅시다.</p>
+    <div class="card">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="modebtn2" onclick="tryInsertFk('C01')">CLUB_ID = 'C01' (밴드부, 실제 있음)</button>
+        <button class="modebtn2" onclick="tryInsertFk('C99')">CLUB_ID = 'C99' (존재하지 않음)</button>
+      </div>
+      <div id="fkInsertResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">외래키(FK)에 대한 설명으로 옳은 것은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>외래키(Foreign Key)</b>는 한 테이블의 칼럼이 <b>다른 테이블의 기본키(PK)를 참조</b>하는 것입니다.</li>
+        <li>FK 덕분에 데이터를 중복 저장하지 않고도, 필요할 때마다 테이블끼리 <b>연결해서</b> 정보를 가져올 수 있습니다.</li>
+        <li>데이터베이스는 FK가 <b>존재하지 않는 값을 참조</b>하려 하면 오류를 내서 막아줍니다. 이를 <b>참조 무결성</b>이라고 부릅니다.</li>
+      </ul>
+      <div class="nextbox">🎉 여기까지가 "데이터베이스의 기본 구조" 1부입니다! 다음 시간부터는 SQL로 이 테이블들을 실제로 다뤄보는 연습을 시작합니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+/* ============ 스크롤 진행바 ============ */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 두 테이블 연결 ============ */
+const STUDENTS_FK = [
+  {id:'S2023001', name:'박준서', club:'C01'},
+  {id:'S2023002', name:'이수아', club:'C02'},
+  {id:'S2023003', name:'김도윤', club:'C01'},
+];
+const CLUBS = [
+  {id:'C01', name:'밴드부', room:'음악실'},
+  {id:'C02', name:'문예부', room:'도서실'},
+  {id:'C03', name:'과학탐구부', room:'과학실'},
+];
+function renderFkTabs(){
+  document.getElementById('fkStuTab').innerHTML = '<tr><th>이름</th><th style="color:var(--ac)">CLUB_ID</th></tr>' +
+    STUDENTS_FK.map((s,i)=>`<tr id="fkstu${i}" onclick="hlFkStudent(${i})"><td>${s.name}</td><td class="fkkey">${s.club}</td></tr>`).join('');
+  document.getElementById('fkClubTab').innerHTML = '<tr><th style="color:var(--ac)">CLUB_ID</th><th>동아리명</th><th>장소</th></tr>' +
+    CLUBS.map((c,i)=>`<tr id="fkclub${i}"><td class="fkkey">${c.id}</td><td>${c.name}</td><td>${c.room}</td></tr>`).join('');
+}
+function hlFkStudent(i){
+  document.querySelectorAll('#fkStuTab tr').forEach(tr=>tr.classList.remove('hlfk'));
+  document.querySelectorAll('#fkClubTab tr').forEach(tr=>tr.classList.remove('hlfk'));
+  document.getElementById('fkstu'+i).classList.add('hlfk');
+  const s = STUDENTS_FK[i];
+  const clubIdx = CLUBS.findIndex(c=>c.id===s.club);
+  document.getElementById('fkclub'+clubIdx).classList.add('hlfk');
+  const club = CLUBS[clubIdx];
+  document.getElementById('fkHint').innerHTML = `🔗 <b>${s.name}</b> 학생의 CLUB_ID(<b>${s.club}</b>)가 CLUBS 테이블의 CLUB_ID와 <b>같은 값</b>인 행을 찾아 연결하면, "${s.name} 학생은 <b>${club.name}</b>(${club.room}) 소속"이라는 걸 알 수 있습니다.`;
+}
+renderFkTabs();
+
+/* ============ 섹션 B: FK 개념 사다리 ============ */
+const FKSTEPS = [
+  {title:'STUDENTS 테이블에 CLUB_ID 칼럼 추가', ex:'박준서 → CLUB_ID = C01', body:'학생 정보를 저장할 때, 동아리 이름을 통째로 다시 적는 대신 CLUBS 테이블의 기본키(CLUB_ID) 값만 살짝 적어둡니다.'},
+  {title:'이 칼럼이 다른 테이블의 PK를 "참조"함', ex:'STUDENTS.CLUB_ID → CLUBS.CLUB_ID', body:'이렇게 다른 테이블의 기본키를 가리키는 칼럼을 외래키(FK)라고 부릅니다.'},
+  {title:'필요할 때 JOIN으로 연결해서 조회', ex:'다음 시간에 배울 SQL의 JOIN 문법', body:'평소엔 각자 따로 저장돼 있다가, "학생과 동아리 정보를 같이 보고 싶다"는 순간에만 SQL의 JOIN으로 두 테이블을 연결합니다.'},
+];
+function renderFkLadder(){
+  document.getElementById('fkLadder').innerHTML = FKSTEPS.map((f,i)=>`
+    <div class="dstep" id="fk${i}" onclick="toggleFkStep(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${f.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">${f.ex}</b><br>${f.body}</div>
+    </div>`).join('');
+}
+function toggleFkStep(i){ document.getElementById('fk'+i).classList.toggle('open'); }
+renderFkLadder();
+
+/* ============ 섹션 C: 참조 무결성 ============ */
+function tryInsertFk(clubId){
+  const exists = CLUBS.some(c=>c.id===clubId);
+  const box = document.getElementById('fkInsertResult');
+  if(exists){
+    box.innerHTML = `<div class="okbox2">✅ 정상 등록됨: 새 학생의 CLUB_ID = '${clubId}' → CLUBS 테이블에 실제로 존재하는 값이라 연결이 가능합니다.</div>`;
+  } else {
+    box.innerHTML = `<div class="errbox2">🚫 오류: CLUB_ID = '${clubId}'는 CLUBS 테이블에 존재하지 않습니다. 외래키는 "참조하는 대상이 실제로 존재해야 한다"는 규칙(참조 무결성) 때문에 이 값을 저장할 수 없습니다.</div>`;
+  }
+}
+
+/* ============ 섹션 D: 미니 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 외래키는 반드시 그 테이블 자신의 기본키여야 한다', correct:false},
+  {text:'B. 외래키는 다른 테이블의 기본키 값을 참조하는 칼럼이다', correct:true},
+  {text:'C. 외래키가 있으면 두 테이블은 하나로 합쳐진다', correct:false},
+  {text:'D. 외래키는 아무 값이나 자유롭게 넣을 수 있다', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 외래키는 자기 테이블에 있는 칼럼이지만, 값 자체는 다른 테이블의 기본키를 가리킵니다. 이 연결고리 덕분에 두 테이블을 필요할 때 이어붙일 수 있습니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 방금 실습에서 봤듯 존재하지 않는 값은 넣을 수 없고(D 오답), 테이블이 물리적으로 합쳐지는 것도 아닙니다(C 오답).';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

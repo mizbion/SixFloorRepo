@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>29. SQL 인젝션이란 무엇인가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽29 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.sqlcode{background:var(--header-bg); border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#d8daf7; line-height:1.9; white-space:pre-wrap;}
+.familycard{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+.familypill{flex:1; min-width:150px; padding:14px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); text-align:center; cursor:pointer;}
+.familypill .fname{font-weight:900; font-size:13.5px; margin-bottom:4px;}
+.familypill .fdesc{font-size:11.5px; color:var(--sub); display:none; text-align:left; margin-top:6px;}
+.familypill.open .fdesc{display:block;}
+.loginmock{max-width:280px; margin:0 auto; display:flex; flex-direction:column; gap:8px;}
+.loginmock input{padding:9px 12px; border-radius:8px; border:1.5px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:13px;}
+.breakhl{background:#fee2e2; color:#b91c1c; padding:0 3px; border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 29</span>
+  <h1>SQL 인젝션이란 무엇인가</h1>
+  <p>23·28번 시간에 살짝 봤던 그 위험, 오늘은 실제로 로그인을 뚫어보면서 원리와 방어법을 제대로 배웁니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 로그인 우회 시연 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>비밀번호 없이 로그인이 될까?</h2>
+    <p class="lead">이 로그인 화면의 백엔드는 (일부러) 취약하게 만들었습니다 — 입력값을 SQL에 그대로 이어붙입니다. 비밀번호 칸에 <code>' OR '1'='1</code>을 입력하고 로그인해보세요.</p>
+    <div class="card">
+      <div class="loginmock">
+        <input type="text" id="injId" value="admin" placeholder="아이디">
+        <input type="text" id="injPw" placeholder="비밀번호 (여기에 시도해보세요)" value="">
+        <button class="runbtn" onclick="tryInjectionLogin()" style="margin:4px 0 0;">로그인 시도</button>
+      </div>
+      <div id="injResult" style="margin-top:14px;"></div>
+      <div class="hint">💡 힌트: 비밀번호 칸에 정확히 <code>' OR '1'='1</code> 을 입력해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 원리 분해 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>왜 이게 뚫릴까? WHERE 절을 뜯어보면</h2>
+    <p class="lead">방금 입력한 값이 SQL 문장 안에서 어떤 마법을 부렸는지 한 글자씩 분해해봅니다.</p>
+    <div class="card">
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">원래 의도했던 조건</div>
+      <div class="sqlcode">WHERE ID='admin' AND PW='정상비밀번호'</div>
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin:12px 0 6px;">입력값이 그대로 끼워진 후</div>
+      <div class="sqlcode">WHERE ID='admin' AND PW='<span class="breakhl">' OR '1'='1</span>'</div>
+      <div class="hint">🔍 비밀번호 칸에 넣은 <code>'</code>(작은따옴표)가 "문자열이 여기서 끝났다"는 신호가 되어버립니다. 그 뒤에 이어지는 <code>OR '1'='1'</code>은 "또는 1=1"이라는 뜻인데, <b>1=1은 항상 참</b>이라서 AND로 연결된 전체 조건이 사실상 <b>"이 조건 아니면 무조건 참"</b>이 되어버립니다. 결과적으로 비밀번호를 몰라도 첫 번째 사용자로 로그인에 성공합니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 더 위험한 형태들 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>로그인 우회는 시작일 뿐입니다</h2>
+    <p class="lead">카드를 눌러서 다른 공격 형태도 확인해보세요. (실행은 안 되고, 원리만 설명합니다.)</p>
+    <div class="familycard" id="attackCards"></div>
+  </section>
+
+  <!-- ===== 섹션 D: 방어법 정리 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>그럼 어떻게 막을까?</h2>
+    <p class="lead">카드를 눌러서 방어 방법들을 확인해보세요.</p>
+    <div class="familycard" id="defenseCards"></div>
+
+    <div class="card" style="margin-top:14px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:8px;">🧪 STEP 1과 똑같은 공격, 이번엔 안전한 방식으로</div>
+      <p class="lead" style="margin-bottom:10px;">아까 로그인을 뚫었던 그 값을 그대로 다시 입력해보세요. 이번엔 파라미터 바인딩을 쓰는 서버라서 어떻게 다른지 확인합니다.</p>
+      <div class="loginmock">
+        <input type="text" id="safeId" value="admin" placeholder="아이디">
+        <input type="text" id="safePw" value="' OR '1'='1" placeholder="비밀번호">
+        <button class="runbtn" onclick="trySafeLogin()" style="margin:4px 0 0;">로그인 시도 (안전한 버전)</button>
+      </div>
+      <div id="safeResult" style="margin-top:14px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">SQL 인젝션을 막는 가장 근본적이고 확실한 방법은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>SQL 인젝션</b>은 사용자 입력값에 작은따옴표 등을 섞어, SQL 문법 구조 자체를 깨뜨려 의도치 않은 명령을 실행시키는 공격입니다.</li>
+        <li>로그인 우회부터 데이터 통째 유출(UNION), 테이블 삭제(DROP TABLE)까지 <b>같은 원리에서 다양한 형태의 공격</b>이 파생됩니다.</li>
+        <li>가장 확실한 방어는 <b>파라미터 바인딩</b>입니다 — 값을 SQL 문법과 분리해서 전달하면, 입력값이 무엇이든 절대 명령으로 해석되지 않습니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>30. 트랜잭션이 실생활에서 왜 중요한가</b> — 계좌이체 예시로, "작업 중간에 실패하면 안 되는 이유"를 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 공통 데이터 ============ */
+const USERS = [
+  {id:'admin', pw:'sup3rSecr3t!', role:'관리자'},
+  {id:'hong123', pw:'abcd1234', role:'일반회원'},
+];
+
+/* ============ 섹션 A: 로그인 우회 데모 ============ */
+function tryInjectionLogin(){
+  const id = document.getElementById('injId').value;
+  const pw = document.getElementById('injPw').value;
+  const sql = `SELECT * FROM USERS WHERE ID='${id}' AND PW='${pw}'`;
+  const box = document.getElementById('injResult');
+
+  // 취약한 방식 시뮬레이션: 문자열을 그대로 이어붙였을 때 결과를 "해석"한다
+  let bypassed = false;
+  let matched = null;
+  // 정상 로그인 체크
+  matched = USERS.find(u => u.id===id && u.pw===pw);
+  // 인젝션 패턴 체크 (아주 단순화한 시뮬레이션): PW에 " OR '1'='1" 류가 들어있고 앞에 '가 있으면 전체 조건이 참이 된다고 가정
+  const injectionPattern = /'\s*or\s*'?1'?\s*=\s*'?1/i;
+  if(!matched && injectionPattern.test(pw)){
+    bypassed = true;
+    matched = USERS.find(u => u.id===id) || USERS[0];
+  }
+
+  let html = `<div style="font-size:11px; font-weight:700; color:var(--sub); margin-bottom:4px;">실제로 만들어진 SQL</div>
+    <div class="sqlcode">${sql.replace(injectionPattern, m=>`<span class="breakhl">${m}</span>`)}</div>`;
+
+  if(bypassed){
+    html += `<div class="errbox2" style="margin-top:10px;">🚨 로그인 성공?! 비밀번호를 전혀 몰랐는데도 "${matched.id}"(${matched.role}) 계정으로 로그인되어 버렸습니다. WHERE 조건이 항상 참이 되어버렸기 때문입니다.</div>`;
+  } else if(matched){
+    html += `<div class="okbox2" style="margin-top:10px;">✅ 정상 로그인 성공 (아이디·비밀번호가 정확히 일치)</div>`;
+  } else {
+    html += `<div class="hint" style="margin-top:10px;">❌ 로그인 실패. 힌트대로 비밀번호 칸에 <code>' OR '1'='1</code> 을 입력해서 다시 시도해보세요.</div>`;
+  }
+  box.innerHTML = html;
+}
+
+/* ============ 섹션 D 보충: 파라미터 바인딩 대조실험 ============ */
+function trySafeLogin(){
+  const id = document.getElementById('safeId').value;
+  const pw = document.getElementById('safePw').value;
+  const box = document.getElementById('safeResult');
+  // 파라미터 바인딩: pw는 순수 문자열로만 비교됨 (항상 참 트릭이 통하지 않음)
+  const matched = USERS.find(u => u.id===id && u.pw===pw);
+  const html = `
+    <div style="font-size:11px; font-weight:700; color:var(--sub); margin-bottom:4px;">실제로 실행된 코드 (파라미터 바인딩)</div>
+    <div class="sqlcode">cursor.execute(\n  "SELECT * FROM USERS WHERE ID=? AND PW=?",\n  ("${id}", "${pw}")\n)\n# PW 파라미터에 그대로 들어간 값: "${pw}"\n# → 이 문자열 전체가 "비밀번호 후보"로만 비교됨 (SQL 문법으로 해석되지 않음)</div>
+    <div class="${matched?'okbox2':'errbox2'}" style="margin-top:10px;">${matched
+      ? `✅ 로그인 성공 (아이디·비밀번호 완전 일치)`
+      : `🔒 로그인 실패. "${pw}"라는 문자열과 정확히 똑같은 비밀번호를 가진 사용자가 없기 때문입니다. STEP 1에서는 이 값으로 뚫렸지만, 지금은 아무리 특수문자를 조합해도 SQL 구조를 깨뜨릴 수 없습니다.`}</div>`;
+  box.innerHTML = html;
+}
+
+/* ============ 섹션 C: 다양한 공격 형태 ============ */
+const ATTACKS = [
+  {name:'🔓 로그인 우회 (다시 정리)',
+   scenario:'상품 상세 페이지가 아니라 "로그인"에 인젝션을 쓰면, 인증 절차 자체를 건너뛸 수 있습니다.',
+   before:"SELECT * FROM USERS WHERE ID='admin' AND PW='정상비밀번호'",
+   after:"SELECT * FROM USERS WHERE ID='admin' AND PW='<span class=\"breakhl\">' OR '1'='1</span>'",
+   result:'→ 조건이 사실상 "항상 참"이 되어, WHERE에 걸리는 첫 번째 사용자로 로그인 성공 (비밀번호 불필요)',
+   condition:'이 공격이 성립하려면: 입력값이 SQL 문자열에 그대로 이어붙여져야 하고, 작은따옴표가 필터링되지 않아야 합니다.'},
+  {name:'📤 데이터 통째 유출 (UNION)',
+   scenario:'상품 상세 페이지 URL의 상품 번호(ID)에 값을 조작해서, 전혀 다른 테이블(USERS)의 내용을 상품 목록인 것처럼 뽑아낼 수 있습니다.',
+   before:"SELECT NAME, PRICE FROM PRODUCTS WHERE PROD_ID='5'",
+   after:"SELECT NAME, PRICE FROM PRODUCTS WHERE PROD_ID='<span class=\"breakhl\">5' UNION SELECT ID, PW FROM USERS --</span>'",
+   result:'→ 원래는 상품 이름·가격이 나와야 할 자리에, USERS 테이블의 아이디·비밀번호가 "상품 목록"인 것처럼 화면에 그대로 출력됩니다.',
+   condition:'이 공격이 성립하려면: UNION으로 합치는 두 SELECT의 <b>칼럼 개수가 정확히 같아야</b> 합니다. 공격자는 보통 칼럼 개수를 하나씩 늘려가며 시도합니다.'},
+  {name:'💣 테이블 파괴 (DROP TABLE)',
+   scenario:'세미콜론(;)으로 새로운 SQL 문장을 이어 붙이면, 조회 요청 하나에 완전히 다른 파괴적인 명령을 몰래 끼워넣을 수 있습니다.',
+   before:"SELECT * FROM PRODUCTS WHERE PROD_ID='5'",
+   after:"SELECT * FROM PRODUCTS WHERE PROD_ID='<span class=\"breakhl\">5'; DROP TABLE STUDENTS; --</span>'",
+   result:'→ 상품 조회는 정상적으로 실행되지만, 그 뒤에 몰래 끼워진 DROP TABLE이 함께 실행되어 STUDENTS 테이블 전체가 사라집니다.',
+   condition:'이 공격이 성립하려면: 데이터베이스/드라이버가 <b>한 번에 여러 SQL 문장(세미콜론으로 구분)을 실행하도록 허용</b>해야 합니다. 최신 라이브러리들은 이를 기본적으로 막아두는 경우가 많지만, 설정에 따라 여전히 위험할 수 있습니다.'},
+];
+function renderAttacks(){
+  document.getElementById('attackCards').innerHTML = ATTACKS.map((a,i)=>`
+    <div class="dstep" id="at${i}" onclick="toggleAttack(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${a.name}</div>
+      <div class="dbody">
+        <div style="margin-bottom:8px;">🗣️ ${a.scenario}</div>
+        <div style="font-size:11px; font-weight:700; color:var(--sub); margin-bottom:3px;">공격 전 (정상)</div>
+        <div class="sqlcode" style="font-size:11px;">${a.before}</div>
+        <div style="font-size:11px; font-weight:700; color:var(--sub); margin:8px 0 3px;">공격 후 (조작된 값 삽입)</div>
+        <div class="sqlcode" style="font-size:11px;">${a.after}</div>
+        <div class="hint" style="margin-top:8px;">${a.result}</div>
+        <div class="hint" style="margin-top:6px; background:var(--surf3);">📌 ${a.condition}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleAttack(i){ document.getElementById('at'+i).classList.toggle('open'); }
+renderAttacks();
+
+/* ============ 섹션 D: 방어법 ============ */
+const DEFENSES = [
+  {name:'🛡️ 파라미터 바인딩 (핵심)',
+   desc:'값을 SQL 문법과 완전히 분리해서 전달합니다. 데이터베이스는 이 값을 "혹시 SQL 명령이 아닐까?"라고 해석하지 않고, 무조건 순수한 데이터(문자 그대로)로만 취급합니다.',
+   code:"cursor.execute(\n  \"SELECT * FROM USERS WHERE ID=? AND PW=?\",\n  (id, pw)\n)\n# pw에 \" ' OR '1'='1 \"이 들어와도\n# \"그 글자 그대로 된 비밀번호\"를 찾을 뿐, 조건을 깨지 않음",
+   effect:'✅ 효과: STEP 1의 로그인 우회, STEP 3의 UNION·DROP TABLE 공격까지 — 입력값을 조작해서 SQL 구조를 깨뜨리는 모든 방식을 한 번에 막아줍니다.'},
+  {name:'✅ 입력값 검증',
+   desc:'"이 칸에는 이런 값만 와야 한다"는 규칙을 서버에서도 다시 확인합니다 (21번 시간의 "클라이언트를 믿지 않는다"와 같은 원리). 예를 들어 학번 칸에는 숫자만, 이메일 칸에는 이메일 형식만 허용합니다.',
+   code:"import re\nif not re.match(r'^[0-9]{9}$', student_id):\n    return error('학번 형식이 올바르지 않습니다')",
+   effect:'✅ 효과: 파라미터 바인딩을 빠뜨린 실수가 있어도, 애초에 따옴표(\')나 세미콜론(;) 같은 위험한 문자가 값에 섞여 들어올 가능성 자체를 줄여주는 "2차 방어선" 역할을 합니다.'},
+  {name:'🔑 최소 권한 원칙',
+   desc:'백엔드가 DB에 접속할 때 쓰는 계정에, 꼭 필요한 권한만 부여합니다. 예를 들어 상품 조회 기능이라면 그 계정에는 SELECT 권한만 주고, DELETE·DROP 권한은 아예 주지 않습니다.',
+   code:"-- DB 계정 생성 시\nGRANT SELECT ON PRODUCTS TO 'app_readonly'@'localhost';\n-- DELETE, DROP 등은 부여하지 않음",
+   effect:'✅ 효과: 만약 다른 방어가 전부 뚫려서 STEP 3의 DROP TABLE 공격이 시도되더라도, 애초에 그 계정에 테이블을 삭제할 권한 자체가 없다면 공격은 "권한 없음" 오류로 실패합니다. 최후의 안전장치입니다.'},
+];
+function renderDefenses(){
+  document.getElementById('defenseCards').innerHTML = DEFENSES.map((d,i)=>`
+    <div class="dstep" id="df${i}" onclick="toggleDefense(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${d.name}</div>
+      <div class="dbody">
+        <div style="margin-bottom:8px;">${d.desc}</div>
+        <div class="sqlcode" style="font-size:11px;">${d.code}</div>
+        <div class="hint" style="margin-top:8px;">${d.effect}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleDefense(i){ document.getElementById('df'+i).classList.toggle('open'); }
+renderDefenses();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 비밀번호를 더 길게 설정하도록 요구하기', correct:false},
+  {text:'B. 파라미터 바인딩으로 값을 SQL 문법과 분리해서 전달하기', correct:true},
+  {text:'C. 로그인 버튼의 디자인을 예쁘게 만들기', correct:false},
+  {text:'D. 에러 메시지를 화려하게 표시하기', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 비밀번호 길이나 디자인은 SQL 인젝션과 무관합니다. 값을 SQL 문법과 완전히 분리해서 전달하는 파라미터 바인딩이 근본적인 해결책입니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. STEP 1에서 본 로그인 우회도, 파라미터 바인딩을 썼다면 애초에 불가능했습니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

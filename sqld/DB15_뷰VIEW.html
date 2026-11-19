@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>15. 뷰(VIEW) — 쿼리를 저장해두기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽15(신규) 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.familycard{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+.familypill{flex:1; min-width:140px; padding:14px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); text-align:center; cursor:pointer;}
+.familypill .fname{font-weight:900; font-size:14px; margin-bottom:4px;}
+.familypill .fdesc{font-size:11.5px; color:var(--sub); display:none;}
+.familypill.open .fdesc{display:block;}
+.vscol{display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:center;}
+@media(max-width:560px){.vscol{grid-template-columns:1fr;}}
+.vsarrow{text-align:center; font-size:20px; color:var(--ac-b); font-weight:900;}
+.subqbox{background:var(--surf2); border-radius:10px; padding:12px 14px; margin:8px 0; font-family:'JetBrains Mono',monospace; font-size:13px;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 15</span>
+  <h1>뷰(VIEW) — 쿼리를 저장해두기</h1>
+  <p>2부 SQL의 진짜 마지막 시간! 매번 길게 쓰던 JOIN·서브쿼리를 이름 하나로 재사용하는 방법을 배웁니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 매번 반복하기 지친다면 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>이 JOIN 문, 오늘만 벌써 5번째 씁니다</h2>
+    <p class="lead">"학생 이름 + 소속 동아리 + 방"을 조회하는 JOIN 문을 다른 화면에서도, 다른 보고서에서도 계속 다시 써야 한다면 어떨까요? 본격적으로 보기 전에, 일상에서 "뷰"와 똑같은 원리로 동작하는 것들을 먼저 찾아봅시다.</p>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:6px;">🔎 뷰(VIEW), 사실 이미 매일 쓰고 있습니다</div>
+      <div id="viewAnalogyCards"></div>
+    </div>
+
+    <div class="card">
+      <div class="sqlcode">
+        <div class="ln active">SELECT S.NAME, C.NAME AS 동아리명, C.ROOM</div>
+        <div class="ln active">FROM STUDENTS S JOIN CLUBS C ON S.CLUB_ID = C.CLUB_ID;</div>
+      </div>
+      <button class="runbtn" onclick="runRepeatDemo()">▶ 이 문장, 5번 반복해서 써보기</button>
+      <button class="resetbtn" onclick="resetRepeatDemo()">⟲ 초기화</button>
+      <div id="repeatStage" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: VIEW로 이름 붙이기 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>CREATE VIEW로 딱 한 번만 정의해두면?</h2>
+    <p class="lead">이 JOIN 문에 이름을 붙여서 저장해두면, 다음부터는 그 이름만 부르면 됩니다.</p>
+    <div class="card">
+      <div class="sqlcode">
+        <div class="ln active">CREATE VIEW STUDENT_CLUB_VIEW AS</div>
+        <div class="ln active">SELECT S.NAME, C.NAME AS 동아리명, C.ROOM</div>
+        <div class="ln active">FROM STUDENTS S JOIN CLUBS C ON S.CLUB_ID = C.CLUB_ID;</div>
+      </div>
+      <div class="vscol" style="margin-top:14px;">
+        <div>
+          <div class="tabletitle">😩 뷰 없이 (매번)</div>
+          <div class="sqlcode" style="font-size:11.5px;">SELECT S.NAME, C.NAME, C.ROOM<br>FROM STUDENTS S JOIN CLUBS C<br>ON S.CLUB_ID = C.CLUB_ID;</div>
+        </div>
+        <div class="vsarrow">➡️</div>
+        <div>
+          <div class="tabletitle">😌 뷰가 있으면</div>
+          <div class="sqlcode" style="font-size:11.5px;">SELECT * FROM STUDENT_CLUB_VIEW;</div>
+        </div>
+      </div>
+      <div class="hint">한 줄로 줄었습니다! 뷰는 마치 "미리 만들어둔 테이블"처럼 SELECT할 수 있습니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 뷰는 진짜 테이블이 아니다 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>뷰는 데이터를 저장하지 않는 "가상의 창문"</h2>
+    <p class="lead">원본 STUDENTS 테이블의 CLUB_ID가 바뀌면, 뷰의 결과도 실시간으로 바뀝니다. 뷰 자체엔 데이터가 없기 때문입니다.</p>
+    <div class="card">
+      <button class="runbtn" onclick="runViewLiveDemo()">▶ 박준서를 문예부로 옮기고 뷰 다시 확인</button>
+      <button class="resetbtn" onclick="resetViewLiveDemo()">⟲ 초기화</button>
+      <table class="dtab2" id="viewLiveTab" style="margin-top:12px;"></table>
+      <div class="hint" id="viewLiveHint">뷰는 실제로는 "SELECT 문을 기억해뒀다가, 조회할 때마다 다시 실행"하는 것뿐입니다. 그래서 원본이 바뀌면 뷰 결과도 항상 최신 상태를 보여줍니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 뷰의 장점 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>뷰를 쓰는 이유, 3가지</h2>
+    <p class="lead">카드를 눌러서 각 장점을 확인해보세요.</p>
+    <div class="familycard" id="viewBenefitCards"></div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">뷰(VIEW)에 대한 설명으로 옳은 것은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>뷰(VIEW)</b>는 자주 쓰는 SELECT 문(특히 복잡한 JOIN·서브쿼리)에 이름을 붙여 저장해두는 것입니다.</li>
+        <li>뷰는 <b>실제 데이터를 따로 저장하지 않는 "가상의 테이블"</b>입니다 — 조회할 때마다 저장된 SELECT 문이 다시 실행되어 항상 최신 데이터를 보여줍니다.</li>
+        <li>뷰는 <b>복잡한 쿼리 숨기기, 재사용성, 특정 칼럼만 노출하는 보안</b> 등 여러 실무적 이유로 사용됩니다.</li>
+      </ul>
+      <div class="nextbox">🎉 이제 진짜로 <b>2부: SQL로 데이터와 대화하기</b>가 끝났습니다! SELECT부터 뷰까지, SQL의 핵심 8개 개념을 모두 배웠습니다. 다음 시간부터는 <b>16. 클라이언트-서버 구조란 무엇인가</b>로 3부가 시작됩니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 공통 데이터 ============ */
+let STU_V = [
+  {id:'S2023001', name:'박준서', club:'C01'},
+  {id:'S2023002', name:'이수아', club:'C02'},
+];
+const CLUBS_V = [
+  {id:'C01', name:'밴드부', room:'음악실'},
+  {id:'C02', name:'문예부', room:'도서실'},
+];
+
+/* ============ 섹션 A: 일상 속 '뷰' 비유 ============ */
+const VIEW_ANALOGIES = [
+  {title:'📷 스마트폰 사진 "즐겨찾기" 앨범', body:'즐겨찾기 앨범을 열면 하트를 누른 사진들이 모여 보이죠? 하지만 그 사진들이 실제로 복사되어 새 폴더에 저장된 게 아닙니다. "하트 표시된 사진만 보여줘"라는 조건을 저장해뒀다가, 앨범을 열 때마다 전체 사진첩에서 다시 찾아서 보여주는 것뿐입니다. 그래서 원본 사진을 지우면 즐겨찾기 앨범에서도 자동으로 사라집니다. — 이게 정확히 VIEW가 동작하는 방식입니다.'},
+  {title:'📧 이메일의 "중요 편지함" / 스마트 폴더', body:'Gmail의 "중요함"이나 "안읽음" 폴더도 마찬가지입니다. 메일이 실제로 그 폴더로 옮겨간 게 아니라, "이 조건에 맞는 메일만 보여줘"라는 저장된 검색 조건일 뿐입니다. 원본 메일함(받은편지함)은 그대로 있고, 조건에 맞는 것만 골라 비춰주는 것이죠.'},
+];
+function renderViewAnalogies(){
+  document.getElementById('viewAnalogyCards').innerHTML = VIEW_ANALOGIES.map((v,i)=>`
+    <div class="dstep" id="va${i}" onclick="toggleAnalogy(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${v.title}</div>
+      <div class="dbody">${v.body}</div>
+    </div>`).join('');
+}
+function toggleAnalogy(i){ document.getElementById('va'+i).classList.toggle('open'); }
+renderViewAnalogies();
+
+/* ============ 섹션 A: 반복 작성의 고통 ============ */
+function resetRepeatDemo(){
+  document.getElementById('repeatStage').innerHTML = '';
+}
+function runRepeatDemo(){
+  const uses = ['출석부 화면', '동아리 담당교사 보고서', '학생회 명단 인쇄', '전체 학생 안내문', '학년말 통계자료'];
+  document.getElementById('repeatStage').innerHTML = uses.map((u,i)=>`<div class="subqbox" id="rp${i}" style="opacity:0; text-align:left;">📄 ${u}에서도 → 똑같은 JOIN 문 복사·붙여넣기</div>`).join('');
+  uses.forEach((u,i)=>{
+    setTimeout(()=>{
+      const el = document.getElementById('rp'+i);
+      el.style.transition = 'opacity .25s';
+      el.style.opacity = 1;
+      if(i===uses.length-1){
+        setTimeout(()=>{
+          const hint = document.createElement('div');
+          hint.className = 'hint';
+          hint.innerHTML = '😩 이렇게 5곳에서 똑같은 JOIN 문을 반복하다 보면, 나중에 조건을 하나 바꿔야 할 때 5곳을 전부 찾아 고쳐야 합니다. 실수로 하나라도 빼먹으면 화면마다 결과가 달라지는 사고로 이어집니다.';
+          document.getElementById('repeatStage').appendChild(hint);
+        }, 300);
+      }
+    }, i*250);
+  });
+}
+
+/* ============ 섹션 C: 뷰의 실시간성 ============ */
+function renderViewLiveTab(){
+  document.getElementById('viewLiveTab').innerHTML = `<tr><th>NAME</th><th>동아리명</th><th>ROOM</th></tr>` +
+    STU_V.map(s=>{
+      const c = CLUBS_V.find(x=>x.id===s.club);
+      return `<tr><td>${s.name}</td><td>${c.name}</td><td>${c.room}</td></tr>`;
+    }).join('');
+}
+function resetViewLiveDemo(){
+  STU_V = [{id:'S2023001', name:'박준서', club:'C01'}, {id:'S2023002', name:'이수아', club:'C02'}];
+  renderViewLiveTab();
+  document.getElementById('viewLiveHint').innerHTML = '뷰는 실제로는 "SELECT 문을 기억해뒀다가, 조회할 때마다 다시 실행"하는 것뿐입니다. 그래서 원본이 바뀌면 뷰 결과도 항상 최신 상태를 보여줍니다.';
+}
+function runViewLiveDemo(){
+  document.getElementById('viewLiveHint').innerHTML = '⚙️ UPDATE STUDENTS SET CLUB_ID = \'C02\' WHERE NAME = \'박준서\'; 실행 중...';
+  setTimeout(()=>{
+    STU_V = STU_V.map(s=> s.name==='박준서' ? {...s, club:'C02'} : s);
+    renderViewLiveTab();
+    document.getElementById('viewLiveTab').rows[1].style.background = '#fef3c7';
+    document.getElementById('viewLiveHint').innerHTML = '✅ STUDENT_CLUB_VIEW를 다시 SELECT했더니 박준서가 이제 "문예부"로 바로 표시됩니다. 뷰 자체를 따로 손보지 않아도, 원본 테이블 값만 바꾸면 뷰 결과가 자동으로 최신화됩니다.';
+  }, 700);
+}
+resetViewLiveDemo();
+
+/* ============ 섹션 D: 뷰의 장점 카드 ============ */
+const VIEW_BENEFITS = [
+  {name:'재사용성', desc:'긴 JOIN·서브쿼리를 한 번만 정의해두면, 이후엔 짧은 SELECT * FROM 뷰이름; 으로 계속 재사용할 수 있습니다.', analogy:'🏦 <b>일상 비유</b>: 은행 앱에서 매번 계좌번호 16자리를 입력하는 대신 "우리집 월세" 같은 별명으로 저장해둔 즐겨찾기 계좌와 같습니다. 한 번만 등록해두면, 다음부터는 별명 하나만 눌러서 바로 이체할 수 있습니다.'},
+  {name:'복잡함 숨기기', desc:'뷰를 쓰는 사람은 그 안에 복잡한 JOIN이 몇 개나 숨어있는지 몰라도 됩니다. 그냥 하나의 테이블처럼 다루면 됩니다.', analogy:'📺 <b>일상 비유</b>: TV 리모컨의 "외출 모드" 버튼 하나와 같습니다. 버튼 하나만 누르면 실제로는 에어컨 끄기·조명 끄기·커튼 닫기·보일러 켜기가 순서대로 다 실행되지만, 사용자는 그 복잡한 과정을 전혀 몰라도 됩니다. 뷰도 마찬가지로 안에 JOIN이 3개든 5개든, 쓰는 사람은 그냥 "테이블 하나"로만 다루면 됩니다.'},
+  {name:'보안 (칼럼 제한)', desc:'원본 테이블에는 민감한 칼럼(예: 주민번호)이 있어도, 뷰를 만들 때 그 칼럼을 빼고 정의하면 뷰를 보는 사람은 그 정보에 접근할 수 없습니다.', analogy:'📄 <b>일상 비유</b>: 이력서를 낼 때 "경력증명서"만 따로 떼어 제출하는 것과 비슷합니다. 회사 인사 시스템(원본 테이블)에는 주민번호·급여·평가등급까지 다 있지만, 외부에 보여줄 땐 이름·경력·직급만 담긴 문서(뷰)를 따로 만들어 그것만 공개합니다.'},
+];
+function renderViewBenefits(){
+  document.getElementById('viewBenefitCards').innerHTML = VIEW_BENEFITS.map((v,i)=>`
+    <div class="familypill" id="vb${i}" onclick="toggleViewBenefit(${i})">
+      <div class="fname">${v.name}</div>
+      <div class="fdesc">
+        <div style="margin-bottom:8px;">${v.desc}</div>
+        <div style="text-align:left; background:var(--surf2); border-radius:8px; padding:8px 10px; font-size:11.5px; line-height:1.6;">${v.analogy}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleViewBenefit(i){ document.getElementById('vb'+i).classList.toggle('open'); }
+renderViewBenefits();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 뷰는 원본 테이블과 별도로 데이터를 통째로 복사해서 저장한다', correct:false},
+  {text:'B. 뷰는 SELECT 문을 저장해두었다가, 조회할 때마다 다시 실행한다', correct:true},
+  {text:'C. 뷰를 만들면 원본 테이블은 더 이상 조회할 수 없다', correct:false},
+  {text:'D. 뷰는 한 번 만들면 원본 데이터가 바뀌어도 항상 처음 값 그대로다', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 방금 STEP 3에서 박준서의 동아리를 바꾸자마자 뷰 결과도 바로 바뀌는 걸 확인했죠? 그게 바로 뷰가 데이터를 복사 저장하지 않고 SELECT 문만 기억한다는 증거입니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 뷰는 "가상의 테이블"이라, 데이터를 별도로 저장하지 않고 원본 테이블을 그때그때 다시 조회합니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

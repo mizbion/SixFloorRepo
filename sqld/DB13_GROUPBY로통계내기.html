@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>13. GROUP BY로 데이터 묶어서 통계내기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽13(신규) 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.groupbox2{border:1.5px solid var(--border); border-radius:12px; padding:12px; background:var(--surf2); margin-bottom:10px; transition:.3s;}
+.groupbox2 h4{font-size:13px; margin-bottom:6px; color:var(--ac);}
+.groupbox2 .chip2{display:inline-block; background:var(--card); border:1px solid var(--border); border-radius:6px; padding:2px 8px; font-size:11.5px; margin:2px;}
+.groupbox2.fail2{opacity:.3;}
+.barrow2{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+.barlabel2{width:90px; font-size:12px; font-weight:700; flex-shrink:0;}
+.barwrap2{flex:1; background:var(--surf2); border-radius:6px; overflow:hidden;}
+.bar2{height:22px; border-radius:6px; background:var(--ac); transition:width .5s ease; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:700; white-space:nowrap;}
+.familycard{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+.familypill{flex:1; min-width:140px; padding:14px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); text-align:center; cursor:pointer;}
+.familypill .fname{font-weight:900; font-size:15px; margin-bottom:4px;}
+.familypill .fdesc{font-size:11.5px; color:var(--sub); display:none;}
+.familypill.open .fdesc{display:block;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 13</span>
+  <h1>GROUP BY로 데이터 묶어서 통계내기</h1>
+  <p>행 하나하나가 아니라, "전공별 인원수" 같은 통계를 만드는 법을 배웁니다. 다음 두 시간(서브쿼리, 뷰)까지가 2부입니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 흩어진 행 → 그룹으로 뭉치기 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>"전공별 학생 수"는 어떻게 셀까?</h2>
+    <p class="lead">학생 10명을 한 명씩 세는 대신, 전공이 같은 사람끼리 무리를 지어보면 답이 보입니다. 버튼을 눌러 확인해보세요.</p>
+    <div class="card">
+      <div class="sqlcode">
+        <div class="ln active">SELECT MAJOR, COUNT(*) AS 인원수</div>
+        <div class="ln active">FROM STUDENTS</div>
+        <div class="ln active">GROUP BY MAJOR;</div>
+      </div>
+      <button class="runbtn" onclick="runGroupAnim()">▶ 전공별로 묶기</button>
+      <button class="resetbtn" onclick="resetGroupAnim()">⟲ 초기화</button>
+      <div id="groupStage" style="margin-top:14px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 집계함수 5형제 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>그룹별로 계산해주는 함수들</h2>
+    <p class="lead">COUNT 말고도 여러 계산이 가능합니다. 카드를 눌러서 확인해보세요.</p>
+    <div class="familycard" id="aggCards"></div>
+  </section>
+
+  <!-- ===== 섹션 C: HAVING으로 그룹 필터링 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>묶은 다음에 조건을 걸고 싶다면? HAVING</h2>
+    <p class="lead">슬라이더로 기준 인원수를 바꿔보면서, HAVING이 어떤 그룹만 남기는지 확인해보세요.</p>
+    <div class="card">
+      <div class="sqlcode" id="havingSql"></div>
+      <div style="display:flex; align-items:center; gap:12px; margin:14px 0;">
+        <span style="font-size:13px; color:var(--sub); min-width:110px;">기준 인원수 &gt;=</span>
+        <input type="range" min="1" max="4" step="1" value="2" id="havingSlider" oninput="renderHaving()" style="flex:1; accent-color:var(--ac)">
+        <span id="havingVal" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--ac);">2</span>
+      </div>
+      <div id="havingStage"></div>
+      <div class="hint">💡 WHERE는 묶기 전 "행" 하나하나를 거르고, HAVING은 묶은 후 "그룹"을 거릅니다. (10번 시간 EMP 예제와 같은 원리입니다!)</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 실전 종합 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>실전: 전공별 평균 학년까지</h2>
+    <p class="lead">COUNT뿐 아니라 AVG도 함께 써서 더 풍부한 통계를 만들어봅니다.</p>
+    <div class="card">
+      <div class="sqlcode">
+        <div class="ln active">SELECT MAJOR, COUNT(*) AS 인원수, AVG(YEAR) AS 평균학년</div>
+        <div class="ln active">FROM STUDENTS</div>
+        <div class="ln active">GROUP BY MAJOR</div>
+        <div class="ln active">ORDER BY 인원수 DESC;</div>
+      </div>
+      <div id="finalStatTab" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">"평균 학년이 2.5 이상인 전공만 보여줘"라는 조건은 어디에 써야 할까요?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>GROUP BY</b>는 지정한 칼럼 값이 같은 행들을 하나의 그룹으로 묶습니다.</li>
+        <li>그룹별로 <b>COUNT·SUM·AVG·MAX·MIN</b> 같은 집계함수를 써서 통계를 낼 수 있습니다.</li>
+        <li>그룹을 묶은 뒤 조건을 걸고 싶다면 WHERE가 아니라 <b>HAVING</b>을 씁니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>14. 서브쿼리 — 질문 속의 질문</b> — SELECT·WHERE·JOIN·GROUP BY를 조합해서 더 복잡한 질문에 답하는 법을 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 공통 데이터 ============ */
+const STU_G = [
+  {name:'강하늘', major:'컴퓨터공학', year:4}, {name:'윤아', major:'컴퓨터공학', year:3},
+  {name:'아이유', major:'컴퓨터공학', year:2}, {name:'박보검', major:'경영학', year:4},
+  {name:'수지', major:'경영학', year:3}, {name:'손예진', major:'경영학', year:2},
+  {name:'김지원', major:'데이터과학', year:4}, {name:'송중기', major:'데이터과학', year:2},
+  {name:'차은우', major:'산업디자인', year:3}, {name:'현빈', major:'산업디자인', year:2},
+];
+
+/* ============ 섹션 A: 그룹 애니메이션 ============ */
+function groupByMajor(){
+  const g = {};
+  STU_G.forEach(s=>{ (g[s.major]=g[s.major]||[]).push(s); });
+  return g;
+}
+function resetGroupAnim(){
+  document.getElementById('groupStage').innerHTML = `<div style="display:flex; flex-wrap:wrap; gap:6px;">` +
+    STU_G.map(s=>`<span class="chip2">${s.name}(${s.major})</span>`).join('') + `</div>`;
+}
+function runGroupAnim(){
+  const groups = groupByMajor();
+  const majors = Object.keys(groups);
+  let html = '';
+  majors.forEach((m,i)=>{
+    html += `<div class="groupbox2" id="gg${i}" style="opacity:0;"><h4>MAJOR = ${m}</h4>` +
+      groups[m].map(s=>`<span class="chip2">${s.name}</span>`).join('') +
+      `<div style="margin-top:6px; font-weight:700; font-size:12.5px;">COUNT(*) = ${groups[m].length}</div></div>`;
+  });
+  document.getElementById('groupStage').innerHTML = html;
+  majors.forEach((m,i)=>{
+    setTimeout(()=>{
+      const el = document.getElementById('gg'+i);
+      el.style.transition = 'opacity .4s';
+      el.style.opacity = '1';
+    }, i*300);
+  });
+}
+resetGroupAnim();
+
+/* ============ 섹션 B: 집계함수 카드 ============ */
+const AGGS = [
+  {name:'COUNT', ex:'전공별 인원수', desc:'그룹 안의 행이 몇 개인지 셉니다.', sql:"SELECT MAJOR, COUNT(*) AS 인원수\nFROM STUDENTS\nGROUP BY MAJOR;"},
+  {name:'SUM', ex:'부서별 급여 합계', desc:'그룹 안의 값들을 모두 더합니다.', sql:"SELECT DEPTNO, SUM(SAL) AS 급여합계\nFROM EMP\nGROUP BY DEPTNO;"},
+  {name:'AVG', ex:'전공별 평균 학년', desc:'그룹 안의 값들의 평균을 냅니다.', sql:"SELECT MAJOR, AVG(YEAR) AS 평균학년\nFROM STUDENTS\nGROUP BY MAJOR;"},
+  {name:'MAX / MIN', ex:'과목별 최고/최저 점수', desc:'그룹 안에서 가장 큰 값 / 가장 작은 값을 찾습니다.', sql:"SELECT SUB_ID, MAX(SCORE) AS 최고점, MIN(SCORE) AS 최저점\nFROM ENROLL\nGROUP BY SUB_ID;"},
+];
+function renderAggCards(){
+  document.getElementById('aggCards').innerHTML = AGGS.map((a,i)=>`
+    <div class="familypill" id="ag${i}" onclick="toggleAgg(${i})">
+      <div class="fname">${a.name}</div>
+      <div style="font-size:11.5px; color:var(--sub);">예: ${a.ex}</div>
+      <div class="fdesc">
+        <div style="margin-bottom:8px;">${a.desc}</div>
+        <div class="sqlcode" style="text-align:left; font-size:11px; padding:10px 12px; white-space:pre-wrap; word-break:break-word;">${a.sql}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleAgg(i){ document.getElementById('ag'+i).classList.toggle('open'); }
+renderAggCards();
+
+/* ============ 섹션 C: HAVING ============ */
+function renderHaving(){
+  const th = +document.getElementById('havingSlider').value;
+  document.getElementById('havingVal').textContent = th;
+  document.getElementById('havingSql').innerHTML =
+    `<div class="ln active">SELECT MAJOR, COUNT(*) AS 인원수</div><div class="ln active">FROM STUDENTS</div>
+     <div class="ln active">GROUP BY MAJOR</div><div class="ln active">HAVING COUNT(*) >= ${th};</div>`;
+  const groups = groupByMajor();
+  document.getElementById('havingStage').innerHTML = Object.keys(groups).map(m=>{
+    const cnt = groups[m].length;
+    const pass = cnt >= th;
+    return `<div class="groupbox2 ${pass?'':'fail2'}"><h4>MAJOR = ${m}</h4>${groups[m].map(s=>`<span class="chip2">${s.name}</span>`).join('')}
+      <div style="margin-top:6px; font-weight:700; font-size:12.5px;">COUNT(*) = ${cnt} ${pass?'✅ 통과':'❌ 제외'}</div></div>`;
+  }).join('');
+}
+renderHaving();
+
+/* ============ 섹션 D: 실전 종합 ============ */
+function renderFinalStat(){
+  const groups = groupByMajor();
+  const rows = Object.keys(groups).map(m=>{
+    const arr = groups[m];
+    const avg = (arr.reduce((s,x)=>s+x.year,0)/arr.length).toFixed(1);
+    return {major:m, cnt:arr.length, avg};
+  }).sort((a,b)=>b.cnt-a.cnt);
+  const maxCnt = Math.max(...rows.map(r=>r.cnt));
+  document.getElementById('finalStatTab').innerHTML = rows.map(r=>
+    `<div class="barrow2"><div class="barlabel2">${r.major}</div><div class="barwrap2"><div class="bar2" style="width:${r.cnt/maxCnt*100}%">${r.cnt}명 · 평균 ${r.avg}학년</div></div></div>`
+  ).join('');
+}
+renderFinalStat();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. WHERE 절', correct:false},
+  {text:'B. HAVING 절', correct:true},
+  {text:'C. ORDER BY 절', correct:false},
+  {text:'D. SELECT 절', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! "평균 학년"은 AVG(YEAR)라는 집계함수 결과이고, 집계함수를 조건으로 걸 때는 반드시 HAVING을 씁니다. WHERE에는 집계함수를 쓸 수 없다는 걸 8~9번 시간에도 배웠었죠.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 집계함수(AVG, COUNT 등)로 만든 결과를 걸러낼 땐 HAVING을 써야 합니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

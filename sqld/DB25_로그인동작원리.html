@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>25. 로그인은 어떻게 동작하는가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽25 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.sqlcode{background:var(--header-bg); border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#d8daf7; line-height:2; white-space:pre-wrap;}
+.hashbox{font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--surf2); border-radius:8px; padding:8px 12px; word-break:break-all; color:var(--ac);}
+.leakrow{display:flex; justify-content:space-between; padding:8px 10px; border-bottom:1px solid var(--border); font-size:12px; font-family:'JetBrains Mono',monospace;}
+.compareArrow{text-align:center; font-size:22px; color:var(--ac-b); margin:6px 0;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 25</span>
+  <h1>로그인은 어떻게 동작하는가</h1>
+  <p>24번에서 회원가입한 계정으로 이제 로그인해봅니다. 비밀번호는 정확히 어떻게 저장되고, 어떻게 확인될까요?</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 비밀번호를 그대로 저장하면 안 되는 이유 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>만약 회사 데이터베이스가 해킹당한다면?</h2>
+    <p class="lead">두 회사 모두 해킹을 당했습니다. 한 곳은 비밀번호를 그대로(평문) 저장했고, 한 곳은 암호화(해싱)해서 저장했습니다. 버튼을 눌러 유출된 데이터를 비교해보세요.</p>
+    <div class="card">
+      <button class="runbtn" onclick="revealLeak()">▶ 유출된 데이터베이스 확인하기</button>
+      <div id="leakStage" style="margin-top:14px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 해싱 체험 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>해싱(Hashing)이란 정확히 무엇일까</h2>
+    <p class="lead">비밀번호를 입력하면, 원본과 전혀 상관없어 보이는 문자열로 바뀝니다. 직접 타이핑하면서 확인해보세요.</p>
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--sub);">비밀번호:</span>
+        <input type="text" id="hashInput" class="priceinput" style="width:160px; text-align:left;" value="abc1234" oninput="renderHash()">
+      </div>
+      <div style="font-size:11px; font-weight:700; color:var(--sub); margin-bottom:4px;">해싱 결과 (DB에 저장되는 값)</div>
+      <div class="hashbox" id="hashOutput"></div>
+      <div class="hint">👀 <b>abc1234</b>와 <b>abc1235</b>처럼 한 글자만 달라도 결과가 완전히 다르게 바뀝니다. 그리고 이 해시값만 보고는 원래 비밀번호가 뭐였는지 절대 거꾸로 알아낼 수 없습니다 (일방향 함수). 실제로는 여기서 보여준 것보다 훨씬 복잡한 SHA-256 같은 알고리즘을 씁니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 로그인 검증 과정 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>그럼 로그인할 때는 어떻게 확인할까?</h2>
+    <p class="lead">원본을 저장 안 했는데 어떻게 맞는지 확인할까요? 정답: <b>입력값도 똑같이 해싱해서, 저장된 해시와 비교</b>합니다.</p>
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <span style="font-size:13px; color:var(--sub);">로그인 시 입력한 비밀번호:</span>
+        <input type="text" id="loginPwInput" class="priceinput" style="width:160px; text-align:left;" value="abc1234">
+      </div>
+      <button class="runbtn" onclick="runLoginCheck()">▶ 로그인 시도</button>
+      <div id="loginCheckStage" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 무작위 대입 공격 방지 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>비밀번호를 계속 틀리게 넣으면?</h2>
+    <p class="lead">해싱만으로는 부족합니다. 공격자가 비밀번호를 수천 번 무작위로 대입해볼 수도 있으니까요. 버튼을 눌러 로그인 실패를 반복해보세요.</p>
+    <div class="card">
+      <button class="modebtn2" onclick="tryWrongLogin()">❌ 틀린 비밀번호로 로그인 시도</button>
+      <button class="resetbtn" onclick="resetLoginAttempt()">⟲ 초기화</button>
+      <div id="attemptStage" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">해싱된 비밀번호에 대한 설명으로 옳은 것은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>비밀번호는 절대 그대로(평문) 저장하지 않고, <b>해싱(Hashing)</b>이라는 되돌릴 수 없는 방식으로 변환해서 저장합니다.</li>
+        <li>로그인 시에는 입력값을 <b>똑같이 해싱해서, 저장된 해시값과 비교</b>하는 방식으로 확인합니다 — 원본 비밀번호는 서버도 알 수 없습니다.</li>
+        <li>해싱만으로는 무작위 대입 공격을 막지 못하므로, <b>로그인 실패 횟수 제한</b> 같은 추가 방어도 함께 씁니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>26. 세션과 쿠키란 무엇인가</b> — 로그인에 성공한 사실을 서버가 어떻게 "기억"하는지 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 간단한 데모용 해시 함수 (실제 알고리즘 아님, 개념 시연용) ============ */
+function fakeHash(str){
+  let h1 = 0, h2 = 0;
+  for(let i=0;i<str.length;i++){
+    h1 = (h1*31 + str.charCodeAt(i)) >>> 0;
+    h2 = (h2*17 + str.charCodeAt(i)*7) >>> 0;
+  }
+  return h1.toString(16).padStart(8,'0') + h2.toString(16).padStart(8,'0');
+}
+
+/* ============ 섹션 A: 유출 비교 ============ */
+function revealLeak(){
+  document.getElementById('leakStage').innerHTML = `
+    <div class="twotab">
+      <div>
+        <div class="tabletitle" style="color:#b91c1c;">🚨 A회사 (평문 저장)</div>
+        <div style="border:1.5px solid #fca5a5; border-radius:10px; overflow:hidden;">
+          <div class="leakrow"><span>hong123</span><span>1234abcd</span></div>
+          <div class="leakrow"><span>kim2024</span><span>mypassword</span></div>
+        </div>
+        <div class="hint">😱 해커가 이 표를 그대로 손에 넣으면, 모든 사용자의 진짜 비밀번호를 바로 알 수 있습니다. 다른 사이트에 같은 비밀번호를 쓰는 사람이라면 그 사이트도 뚫립니다.</div>
+      </div>
+      <div>
+        <div class="tabletitle" style="color:#166534;">🔒 B회사 (해싱 저장)</div>
+        <div style="border:1.5px solid #86efac; border-radius:10px; overflow:hidden;">
+          <div class="leakrow"><span>hong123</span><span style="font-size:10px;">${fakeHash('1234abcd')}</span></div>
+          <div class="leakrow"><span>kim2024</span><span style="font-size:10px;">${fakeHash('mypassword')}</span></div>
+        </div>
+        <div class="hint">✅ 해커가 이 표를 손에 넣어도 의미 없는 문자열뿐입니다. 이 값에서 원래 비밀번호를 거꾸로 계산해낼 방법이 없습니다.</div>
+      </div>
+    </div>`;
+}
+
+/* ============ 섹션 B: 해싱 체험 ============ */
+function renderHash(){
+  const val = document.getElementById('hashInput').value;
+  document.getElementById('hashOutput').textContent = fakeHash(val);
+}
+renderHash();
+
+/* ============ 섹션 C: 로그인 검증 ============ */
+const STORED_HASH = fakeHash('abc1234');
+function runLoginCheck(){
+  const input = document.getElementById('loginPwInput').value;
+  const inputHash = fakeHash(input);
+  const match = inputHash === STORED_HASH;
+  document.getElementById('loginCheckStage').innerHTML = `
+    <div class="sqlcode">1) DB에 저장된 해시값:
+   ${STORED_HASH}
+
+2) 방금 입력한 값을 똑같은 방식으로 해싱:
+   "${input}" → ${inputHash}
+
+3) 두 값을 비교: ${match ? '일치! ✅' : '불일치! ❌'}</div>
+    <div class="${match?'okbox2':'errbox2'}" style="margin-top:10px;">${match ? '✅ 로그인 성공! 두 해시값이 정확히 같습니다.' : '🚫 로그인 실패! 해시값이 다릅니다 — 원본 비밀번호를 저장하지 않았어도 이렇게 정확히 맞는지 확인할 수 있습니다.'}</div>`;
+}
+
+/* ============ 섹션 D: 로그인 실패 제한 ============ */
+let attemptCount = 0;
+function resetLoginAttempt(){
+  attemptCount = 0;
+  document.getElementById('attemptStage').innerHTML = '';
+}
+function tryWrongLogin(){
+  attemptCount++;
+  const box = document.getElementById('attemptStage');
+  if(attemptCount < 5){
+    box.innerHTML = `<div class="hint">❌ 로그인 실패 (${attemptCount}/5회). 아직은 다시 시도할 수 있습니다.</div>`;
+  } else {
+    box.innerHTML = `<div class="errbox2">🔒 로그인 실패가 5회 누적되어, 이 계정은 10분간 로그인이 잠깁니다. 공격자가 비밀번호를 수천 번 무작위로 시도하는 것을 막기 위한 장치입니다.</div>`;
+  }
+}
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 해싱된 값을 보면 원래 비밀번호를 계산해낼 수 있다', correct:false},
+  {text:'B. 같은 비밀번호는 항상 같은 해시값을 만든다', correct:true},
+  {text:'C. 해싱은 데이터베이스 용량을 줄이기 위한 압축 기술이다', correct:false},
+  {text:'D. 해싱하면 비밀번호를 다시 원래대로 복원할 수 있다', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! "같은 입력 → 항상 같은 출력"이라는 특징 덕분에, 로그인 시 입력값을 해싱해서 저장된 해시와 비교하는 방식이 가능합니다. 반대로 해시값에서 원본을 복원하는 것(A, D)은 불가능합니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 해싱은 압축이 아니라 "되돌릴 수 없는 암호화"이고, 절대 원본으로 복원할 수 없습니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

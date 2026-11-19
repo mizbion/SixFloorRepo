@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>27. 게시판 하나로 보는 CRUD 전체 흐름</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽27 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.sqlcode{background:var(--header-bg); border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#d8daf7; line-height:2; white-space:pre-wrap;}
+table.boardtab{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.boardtab th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.boardtab td{padding:8px 10px; border-top:1px solid var(--border); cursor:pointer; transition:.2s;}
+table.boardtab tr:hover td{background:var(--surf2);}
+table.boardtab tr.selectedrow td{background:var(--ac-l);}
+.crudbadge{display:inline-block; font-size:10.5px; font-weight:900; padding:2px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace;}
+.crudbadge.C{background:#dbeafe; color:#1e40af;} .crudbadge.R{background:#dcfce7; color:#166534;}
+.crudbadge.U{background:#fef3c7; color:#92400e;} .crudbadge.D{background:#fee2e2; color:#b91c1c;}
+.formrow{display:flex; flex-direction:column; gap:8px; max-width:360px; margin-bottom:10px;}
+.formrow input, .formrow textarea{padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); font-family:'Noto Sans KR',sans-serif; font-size:13px;}
+.timeline2{position:relative; padding-left:6px;}
+.tlitem{position:relative; padding-left:38px; padding-bottom:6px;}
+.tlitem::before{content:''; position:absolute; left:11px; top:34px; bottom:-6px; width:2px; background:var(--border);}
+.tlitem:last-child::before{display:none;}
+.tlnum{position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; background:var(--ac); border:2px solid var(--ac); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; z-index:2;}
+.tlhead{padding:10px 14px; border-radius:12px; background:var(--ac-l); border:1.5px solid var(--ac-b);}
+.tltitle{font-weight:700; font-size:13px; margin-bottom:6px;}
+.tlbody{font-size:12.5px; color:var(--text);}
+.tlbody .sqlcode{margin-top:8px; font-size:11px;}
+.inputrow{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 27 · 5부 시작</span>
+  <h1>게시판 하나로 보는 CRUD 전체 흐름</h1>
+  <p>5부 "실전 데이터 흐름 이해"의 시작입니다. 진짜 게시판 하나를 직접 조작하면서, SELECT·INSERT·UPDATE·DELETE가 실전에서 어떻게 쓰이는지 확인합니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 목록 조회 (READ) ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2><span class="crudbadge R">READ</span> 게시판 목록부터 봅시다</h2>
+    <p class="lead">게시판을 열면 가장 먼저 전체 글 목록을 SELECT로 조회합니다. 이 화면 뒤에서 실제로 무슨 일이 일어나는지 먼저 확인해봅시다.</p>
+    <div class="card">
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">🖥️ 백엔드(Flask) 코드</div>
+      <div class="sqlcode">@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    posts = db.query(
+      "SELECT POST_ID, TITLE, AUTHOR FROM POSTS ORDER BY POST_ID DESC"
+    )
+    return jsonify(posts)</div>
+      <div class="hint">📥 화면이 열리면 브라우저가 <code>GET /api/posts</code> 요청을 보내고, 위 함수가 실행되어 목록 전체를 JSON으로 돌려줍니다. 실제 목록은 아래처럼 보입니다.</div>
+      <table class="boardtab" id="boardListTab" style="margin-top:12px;"></table>
+      <div id="postDetailArea" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 글쓰기 (CREATE) ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2><span class="crudbadge C">CREATE</span> 새 글 작성하기</h2>
+    <p class="lead">직접 제목과 내용을 입력하고 등록해보세요. "등록하기"를 누르는 순간 어떤 과정을 거치는지 단계별로 표시됩니다.</p>
+    <div class="card">
+      <div class="formrow">
+        <input type="text" id="newTitle" placeholder="제목을 입력하세요" value="여름방학 특강 안내">
+        <textarea id="newContent" placeholder="내용을 입력하세요" rows="2">7월부터 방학특강이 시작됩니다.</textarea>
+      </div>
+      <button class="runbtn" onclick="createPost()">▶ 등록하기</button>
+      <button class="resetbtn" onclick="resetCreateStage()">⟲ 과정 지우기</button>
+      <div id="createProcess" style="margin-top:12px;"></div>
+      <div id="createResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 수정 (UPDATE) ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2><span class="crudbadge U">UPDATE</span> 글 수정하기</h2>
+    <p class="lead">수정할 글을 <b>고르는 순간</b>과, 제목을 바꿔 <b>저장하는 순간</b> — 이 두 번 모두 서버와 통신이 일어납니다. 각각 어떤 SQL이 실행되는지 확인해보세요.</p>
+    <div class="card">
+      <div class="inputrow" style="margin-bottom:10px;">
+        <select id="editSelect" onchange="loadEditForm()" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+      </div>
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">① 글을 고르면: 현재 내용을 먼저 불러옵니다</div>
+      <div id="loadProcess"></div>
+      <div class="formrow" style="margin-top:10px;">
+        <input type="text" id="editTitle">
+      </div>
+      <button class="runbtn" onclick="updatePost()">▶ 수정 저장</button>
+      <div style="font-size:12px; font-weight:700; color:var(--sub); margin:10px 0 6px;">② "수정 저장"을 누르면: 새 내용을 서버로 보내 저장합니다</div>
+      <div id="updateProcess"></div>
+      <div id="updateResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 삭제 (DELETE) ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2><span class="crudbadge D">DELETE</span> 글 삭제하기</h2>
+    <p class="lead">삭제할 글을 고르고 삭제해보세요. "삭제하기"를 누르면 무슨 일이 일어나는지 단계별로 표시됩니다.</p>
+    <div class="card">
+      <div class="inputrow" style="margin-bottom:10px;">
+        <select id="deleteSelect" style="padding:9px 12px; border-radius:9px; border:1.5px solid var(--border); font-size:13px;"></select>
+      </div>
+      <button class="runbtn" onclick="deletePost()">🗑️ 삭제하기</button>
+      <button class="resetbtn" onclick="resetBoard()">⟲ 게시판 초기화 (모든 STEP 되돌리기)</button>
+      <div class="hint">💡 이 버튼은 STEP 2~4에서 만든 변경사항(새 글, 수정, 삭제)을 전부 지우고, 게시판을 맨 처음 3개 글 상태로 되돌립니다.</div>
+      <div id="deleteProcess" style="margin-top:12px;"></div>
+      <div id="deleteResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">게시글을 수정하거나 삭제할 때 절대 빠뜨리면 안 되는 SQL 구문은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>게시판 같은 실제 서비스는 결국 <b>CRUD(Create·Read·Update·Delete)</b> 네 가지 동작의 조합입니다.</li>
+        <li>조회(목록)는 조건 없이 전체를, 상세 조회·수정·삭제는 <b>WHERE POST_ID = ?</b>처럼 정확히 하나의 글만 지정해서 처리합니다.</li>
+        <li>이 네 동작은 각각 HTTP 메서드(GET/POST/PUT/DELETE, 18·22번)와도 그대로 대응됩니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>28. 프론트엔드 입력값이 DB까지 가는 여정</b> — 방금 만든 게시글 작성 폼의 값이, 실제로 어떤 경로를 거쳐 데이터베이스까지 도착하는지 처음부터 끝까지 추적해봅니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 공유 게시판 데이터 (전체 STEP이 공유) ============ */
+let POSTS = [
+  {id:3, title:'급식 메뉴 변경 안내', author:'영양선생님', content:'다음 주부터 급식 메뉴가 일부 변경됩니다.'},
+  {id:2, title:'동아리 박람회 일정', author:'학생회', content:'이번 금요일 동아리 박람회가 열립니다.'},
+  {id:1, title:'중간고사 시간표 공지', author:'교무부', content:'중간고사는 다음 달 둘째 주에 진행됩니다.'},
+];
+const INITIAL_POSTS = JSON.parse(JSON.stringify(POSTS));
+let nextId = 4;
+
+function resetBoard(){
+  POSTS = JSON.parse(JSON.stringify(INITIAL_POSTS));
+  nextId = 4;
+  document.getElementById('postDetailArea').innerHTML = '';
+  document.getElementById('createProcess').innerHTML = '';
+  document.getElementById('createResult').innerHTML = '';
+  document.getElementById('loadProcess').innerHTML = '';
+  document.getElementById('updateProcess').innerHTML = '';
+  document.getElementById('updateResult').innerHTML = '';
+  document.getElementById('deleteProcess').innerHTML = '';
+  document.getElementById('deleteResult').innerHTML = '';
+  document.getElementById('newTitle').value = '여름방학 특강 안내';
+  document.getElementById('newContent').value = '7월부터 방학특강이 시작됩니다.';
+  renderBoardList();
+  refreshSelectors();
+}
+
+/* 과정(process) 렌더링 공통 함수: 단계 리스트를 순서대로 보여줌 */
+function renderProcess(containerId, steps){
+  document.getElementById(containerId).innerHTML =
+    `<div class="timeline2">` + steps.map((s,i)=>`
+      <div class="tlitem open" style="cursor:default;">
+        <div class="tlnum">${i+1}</div>
+        <div class="tlhead">
+          <div class="tltitle">${s.title}</div>
+          <div class="tlbody" style="display:block;">
+            ${s.detail ? `<div>${s.detail}</div>` : ''}
+            ${s.code ? `<div class="sqlcode">${s.code}</div>` : ''}
+          </div>
+        </div>
+      </div>`).join('') + `</div>`;
+}
+
+function renderBoardList(){
+  document.getElementById('boardListTab').innerHTML = `<tr><th>번호</th><th>제목</th><th>작성자</th></tr>` +
+    POSTS.map(p=>`<tr onclick="showDetail(${p.id})"><td>${p.id}</td><td>${p.title}</td><td>${p.author}</td></tr>`).join('');
+}
+function showDetail(id){
+  const p = POSTS.find(x=>x.id===id);
+  document.getElementById('postDetailArea').innerHTML = p ? `
+    <div style="font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;">🖥️ 이 글을 클릭하면 실행되는 코드</div>
+    <div class="sqlcode">@app.route('/api/posts/&lt;id&gt;', methods=['GET'])
+def get_post(id):
+    post = db.query("SELECT * FROM POSTS WHERE POST_ID = ?", (id,))
+    return jsonify(post)
+
+# 실제 실행된 SQL: SELECT * FROM POSTS WHERE POST_ID = ${id};</div>
+    <div class="card" style="margin-top:8px; padding:12px 16px;">
+      <div style="font-weight:700;">${p.title}</div>
+      <div style="font-size:11px; color:var(--sub); margin:4px 0;">작성자: ${p.author}</div>
+      <div style="font-size:13px;">${p.content}</div>
+    </div>` : '';
+}
+renderBoardList();
+
+/* ============ STEP 2: CREATE ============ */
+function resetCreateStage(){
+  document.getElementById('createProcess').innerHTML = '';
+  document.getElementById('createResult').innerHTML = '';
+}
+function createPost(){
+  const title = document.getElementById('newTitle').value.trim();
+  const content = document.getElementById('newContent').value.trim();
+  const box = document.getElementById('createResult');
+  if(!title){
+    document.getElementById('createProcess').innerHTML = '';
+    box.innerHTML = `<div class="errbox2">🚫 제목을 입력해주세요.</div>`;
+    return;
+  }
+  const newPost = {id:nextId, title, author:'나', content};
+
+  renderProcess('createProcess', [
+    {title:'① 프론트엔드가 폼 데이터를 모은다', detail:`입력창의 제목("${title}")과 내용을 자바스크립트가 하나의 객체로 모읍니다.`},
+    {title:'② POST 요청을 서버로 보낸다', code:`fetch('/api/posts', {\n  method: 'POST',\n  body: JSON.stringify({ title: '${title}', content: '${content}' })\n});`},
+    {title:'③ 백엔드가 요청을 받아 INSERT를 실행한다',
+     code:`@app.route('/api/posts', methods=['POST'])\ndef create_post():\n    data = request.json\n    db.execute(\n      "INSERT INTO POSTS (POST_ID, TITLE, AUTHOR, CONTENT) VALUES (?, ?, ?, ?)",\n      (${newPost.id}, data['title'], '나', data['content'])\n    )\n    return jsonify({'결과': '등록 완료'})`},
+    {title:'④ 응답을 받아 화면(목록)을 갱신한다', detail:'서버가 "등록 완료" 응답을 보내면, 프론트엔드가 STEP 1의 목록을 다시 그려서 새 글이 보이게 합니다.'},
+  ]);
+
+  POSTS.unshift(newPost);
+  nextId++;
+  box.innerHTML = `<div class="okbox2">✅ 실제로 실행된 SQL: <code>INSERT INTO POSTS (POST_ID, TITLE, AUTHOR, CONTENT) VALUES (${newPost.id}, '${title}', '나', '${content}')</code><br>등록 완료! STEP 1의 목록을 다시 보면 방금 쓴 글이 맨 위에 추가되어 있습니다.</div>`;
+  renderBoardList();
+  refreshSelectors();
+}
+
+/* ============ 공통: 수정/삭제용 select 채우기 ============ */
+function refreshSelectors(){
+  const opts = POSTS.map(p=>`<option value="${p.id}">${p.id}. ${p.title}</option>`).join('');
+  document.getElementById('editSelect').innerHTML = opts;
+  document.getElementById('deleteSelect').innerHTML = opts;
+  loadEditForm();
+}
+
+/* ============ STEP 3: UPDATE ============ */
+function loadEditForm(){
+  const id = +document.getElementById('editSelect').value;
+  const p = POSTS.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('editTitle').value = p.title;
+
+  renderProcess('loadProcess', [
+    {title:'글을 고르는 순간, 먼저 GET 요청이 나간다', code:`fetch('/api/posts/${id}');`},
+    {title:'백엔드가 SELECT로 현재 내용을 조회한다',
+     code:`@app.route('/api/posts/<id>', methods=['GET'])\ndef get_post_for_edit(id):\n    post = db.query("SELECT * FROM POSTS WHERE POST_ID = ?", (id,))\n    return jsonify(post)\n\n# 실제 SQL: SELECT * FROM POSTS WHERE POST_ID = ${id};`},
+    {title:'응답으로 받은 현재 제목이 입력창에 자동으로 채워진다', detail:`그래서 방금 드롭다운을 바꾸자마자 위 입력창에 "${p.title}"이 바로 나타난 것입니다. 수정 폼은 항상 "현재 저장된 값"에서부터 시작해야 하기 때문입니다.`},
+  ]);
+  document.getElementById('updateProcess').innerHTML = '';
+  document.getElementById('updateResult').innerHTML = '';
+}
+function updatePost(){
+  const id = +document.getElementById('editSelect').value;
+  const newTitle = document.getElementById('editTitle').value.trim();
+  const p = POSTS.find(x=>x.id===id);
+  if(!p || !newTitle) return;
+
+  renderProcess('updateProcess', [
+    {title:'① 바뀐 제목을 PUT 요청으로 전송', code:`fetch('/api/posts/${id}', {\n  method: 'PUT',\n  body: JSON.stringify({ title: '${newTitle}' })\n});`},
+    {title:'② 백엔드가 UPDATE를 실행 (WHERE로 이 글만 지정)',
+     code:`@app.route('/api/posts/<id>', methods=['PUT'])\ndef update_post(id):\n    data = request.json\n    db.execute(\n      "UPDATE POSTS SET TITLE = ? WHERE POST_ID = ?",\n      (data['title'], id)\n    )\n    return jsonify({'결과': '수정 완료'})`},
+    {title:'③ 응답을 받아 목록·상세 화면을 다시 그린다', detail:`WHERE POST_ID = ${id} 덕분에 ${id}번 글의 제목만 정확히 바뀝니다. 만약 WHERE가 없었다면 POSTS 테이블의 모든 글 제목이 "${newTitle}"로 뒤바뀌는 대형 사고가 났을 겁니다 (11번 시간 기억나시나요?).`},
+  ]);
+
+  p.title = newTitle;
+  document.getElementById('updateResult').innerHTML = `<div class="okbox2">✅ ${id}번 글의 제목이 "${newTitle}"(으)로 저장되었습니다.</div>`;
+  renderBoardList();
+  refreshSelectors();
+}
+
+/* ============ STEP 4: DELETE ============ */
+function deletePost(){
+  const id = +document.getElementById('deleteSelect').value;
+  const p = POSTS.find(x=>x.id===id);
+  if(!p) return;
+
+  renderProcess('deleteProcess', [
+    {title:'① DELETE 요청을 서버로 보낸다', code:`fetch('/api/posts/${id}', { method: 'DELETE' });`},
+    {title:'② 백엔드가 DELETE로 이 글만 지정해서 지운다',
+     code:`@app.route('/api/posts/<id>', methods=['DELETE'])\ndef delete_post(id):\n    db.execute("DELETE FROM POSTS WHERE POST_ID = ?", (id,))\n    return jsonify({'결과': '삭제 완료'})`},
+    {title:'③ 응답을 받아 목록에서 이 글을 제거한다', detail:`"${p.title}" 글 한 건만 삭제되고, 나머지 글은 전혀 영향을 받지 않습니다.`},
+  ]);
+
+  POSTS = POSTS.filter(x=>x.id!==id);
+  document.getElementById('deleteResult').innerHTML = `<div class="okbox2">✅ "${p.title}" 글이 삭제되었습니다. STEP 1의 목록에서도 사라진 걸 확인할 수 있습니다.</div>`;
+  renderBoardList();
+  refreshSelectors();
+}
+refreshSelectors();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. ORDER BY', correct:false},
+  {text:'B. WHERE', correct:true},
+  {text:'C. GROUP BY', correct:false},
+  {text:'D. SELECT *', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! WHERE 없이 UPDATE·DELETE를 실행하면 게시판의 모든 글이 한꺼번에 영향을 받는 대형 사고로 이어집니다. (11번 시간에도 배웠던 내용이죠!)';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. WHERE로 정확히 하나의 글만 지정해야 안전합니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

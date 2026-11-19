@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>21. 백엔드 서버는 왜 필요한가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽21 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.familycard{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+.familypill{flex:1; min-width:140px; padding:14px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); text-align:center; cursor:pointer;}
+.familypill .fname{font-weight:900; font-size:14px; margin-bottom:4px;}
+.familypill .fdesc{font-size:11.5px; color:var(--sub); display:none;}
+.familypill.open .fdesc{display:block;}
+.trustzone{border-radius:14px; padding:16px; text-align:center;}
+.trustzone.untrusted{background:#fef2f2; border:2px dashed #fca5a5;}
+.trustzone.trusted{background:var(--green-l); border:2px solid #86efac;}
+.trustzone .tzicon{font-size:26px; margin-bottom:6px;}
+.priceinput{font-family:'JetBrains Mono',monospace; font-size:16px; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); width:110px; text-align:right;}
+.sqlcode{background:var(--header-bg); border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#d8daf7; line-height:2.1;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 21</span>
+  <h1>백엔드 서버는 왜 필요한가</h1>
+  <p>4부 "백엔드가 DB와 대화하는 법"의 시작입니다. 프론트엔드(화면)만으로는 왜 안 되는지, 그 이유부터 확실히 짚고 갑니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 가격 조작 시연 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>이 가격, 누가 정할까?</h2>
+    <p class="lead">노트북(1,200,000원) 결제 화면입니다. 정상적인 화면에는 가격을 바꿀 방법이 어디에도 없습니다. 그런데 "결제하기" 버튼을 누르면 실제로는 브라우저가 서버에 어떤 요청을 보낼까요?</p>
+
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:14px; padding:14px; background:var(--surf2); border-radius:12px; margin-bottom:14px;">
+        <div style="font-size:32px;">💻</div>
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:14px;">삼성 갤럭시북 노트북</div>
+          <div style="font-size:13px; color:var(--sub);">1,200,000원</div>
+        </div>
+        <button class="runbtn" style="margin:0;" onclick="revealNetworkRequest()">결제하기</button>
+      </div>
+      <div class="hint" id="step1Intro">👆 버튼을 눌러서, 이 클릭이 실제로 어떤 데이터를 서버로 보내는지 "개발자도구"로 들여다봅시다.</div>
+    </div>
+
+    <div class="card" id="devtoolsCard" style="display:none; margin-top:14px;">
+      <div style="font-weight:700; font-size:13px; margin-bottom:8px;">🛠️ 개발자도구 — Network 탭 (실제로 전송되는 요청)</div>
+      <div class="sqlcode" style="font-size:12px; line-height:1.9;">POST /api/pay HTTP/1.1
+Content-Type: application/json
+
+{
+  "product_id": "P003",
+  "price": <span id="netPriceDisplay" contenteditable="true" style="background:#5c3d05; padding:2px 8px; border-radius:5px; outline:2px dashed #fbbf24; cursor:text;">1200000</span>
+}</div>
+      <div class="hint">🖊️ 이 노란 테두리 숫자, 직접 클릭해서 아무 값으로나 바꿔보세요. 개발자도구의 Network 탭이나 콘솔에서는 <b>실제로 이렇게 요청 내용을 가로채서 값을 바꾼 뒤 전송</b>할 수 있습니다. 화면에는 그런 버튼이 없어도, 요청 자체를 조작하는 건 막을 수 없습니다.</div>
+      <button class="runbtn" onclick="tryFakePay()">🚀 이 요청을 (조작된 값 그대로) 서버로 전송</button>
+      <div id="hackResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 믿을 수 있는 영역, 없는 영역 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>프론트엔드는 "사용자 손 안"에 있다</h2>
+    <p class="lead">방금 가격을 마음대로 바꿀 수 있었던 이유를, 실제 코드로 직접 확인해봅시다. 같은 결제 기능이 프론트엔드와 백엔드에 각각 어떻게 나뉘어 있는지 보세요.</p>
+
+    <div class="card">
+      <div class="twotab">
+        <div>
+          <div class="tabletitle">📱 프론트엔드 코드 (JS)</div>
+          <div class="sqlcode" style="font-size:11px;">let price = 1200000;
+
+function checkout(){
+  fetch('/api/pay', {
+    method: 'POST',
+    body: JSON.stringify({ price: price })
+  });
+}</div>
+          <div class="hint" style="margin-top:8px;">🔓 이 코드는 사용자 브라우저에 <b>그대로 다운로드</b>됩니다. F12(개발자도구)를 누르면 이 코드를 누구나 읽고, 심지어 <code>price</code> 값을 콘솔에서 직접 바꿔서 실행할 수도 있습니다.</div>
+        </div>
+        <div>
+          <div class="tabletitle">🖥️ 백엔드 코드 (Python)</div>
+          <div class="sqlcode" style="font-size:11px;">@app.route('/api/pay', methods=['POST'])
+def pay():
+    product_id = request.json['product_id']
+    real_price = db.query(
+      "SELECT PRICE FROM PRODUCTS
+       WHERE PROD_ID=?", (product_id,))
+    charge_card(real_price)</div>
+          <div class="hint" style="margin-top:8px;">🔒 이 코드는 <b>우리 회사 서버 컴퓨터 안</b>에서만 실행됩니다. 사용자는 이 코드를 볼 수도, 실행 중간에 값을 바꿀 수도 없습니다. 오직 "요청을 보내고 응답을 받는" 것만 가능합니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:10px;">그래서 각자 정확히 무슨 일을 담당할까요?</div>
+      <div class="twotab">
+        <div>
+          <div class="tabletitle" style="color:#92400e;">📱 프론트엔드가 하는 일</div>
+          <ul style="font-size:12.5px; line-height:1.9; padding-left:18px; color:var(--text);">
+            <li>상품 정보를 화면에 예쁘게 보여주기</li>
+            <li>사용자 입력(배송지, 카드번호 등) 받기</li>
+            <li>"결제하기" 버튼 클릭 시 서버로 요청 전송</li>
+            <li>서버 응답을 받아 "결제 완료" 화면 표시</li>
+          </ul>
+        </div>
+        <div>
+          <div class="tabletitle" style="color:#166534;">🖥️ 백엔드가 하는 일</div>
+          <ul style="font-size:12.5px; line-height:1.9; padding-left:18px; color:var(--text);">
+            <li>요청받은 상품의 <b>진짜 가격을 DB에서 조회</b></li>
+            <li>재고가 실제로 있는지 확인</li>
+            <li>결제 금액을 최종 계산하고 카드사에 승인 요청</li>
+            <li>결제 결과를 데이터베이스에 기록</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hint">💡 한 줄로 요약하면: 프론트엔드는 <b>"보여주고 전달하는"</b> 역할, 백엔드는 <b>"판단하고 책임지는"</b> 역할을 맡습니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 백엔드가 반드시 해야 하는 일 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>"클라이언트가 보낸 값"을 다시 확인하는 3가지 실전 사례</h2>
+    <p class="lead">모두 같은 패턴입니다 — 클라이언트가 보낸 값을 그대로 쓰지 않고, <b>서버가 데이터베이스에서 진짜 값을 다시 조회해서 비교</b>합니다. 카드를 눌러 위험한 코드와 안전한 코드를 비교해보세요.</p>
+    <div id="backendDutyCards"></div>
+  </section>
+
+  <!-- ===== 섹션 D: 이중 검증 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>그럼 프론트엔드 검증은 필요 없을까?</h2>
+    <p class="lead">아닙니다! 목적이 다를 뿐, 둘 다 필요합니다. 아래 회원가입 폼에 직접 입력해보면서 두 검증이 어떻게 다르게 동작하는지 확인해보세요.</p>
+    <div class="card">
+      <div class="hint" style="margin-top:10px;">💡 힌트: <code>hong123</code>, <code>kim2024</code>, <code>abcd</code>는 이미 가입된 아이디입니다. 이 중 하나를 입력하고 가입해보세요.</div>
+      <div style="display:flex; flex-direction:column; gap:10px; max-width:320px; margin-top:10px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--sub);">아이디</label>
+          <input type="text" id="suId" class="priceinput" style="width:100%; text-align:left;" placeholder="4자 이상" oninput="checkFrontend()">
+          <div class="hint" id="idFeedback" style="margin-top:4px; padding:6px 10px;"></div>
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--sub);">비밀번호</label>
+          <input type="text" id="suPw" class="priceinput" style="width:100%; text-align:left;" placeholder="6자 이상" oninput="checkFrontend()">
+          <div class="hint" id="pwFeedback" style="margin-top:4px; padding:6px 10px;"></div>
+        </div>
+      </div>
+      <button class="runbtn" id="signupBtn" onclick="submitSignup()" disabled style="margin-top:12px;">가입하기</button>
+      <div id="signupResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">다음 중 반드시 백엔드(서버)에서 처리해야 하는 것은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>프론트엔드 코드는 <b>사용자의 브라우저 안</b>에서 실행되기 때문에, 개발자도구 등으로 얼마든지 조작될 수 있습니다 — 그래서 <b>절대 신뢰할 수 없습니다.</b></li>
+        <li>가격, 할인율, 재고 수량처럼 <b>클라이언트가 보낸 값은 절대 그대로 믿지 말고, 서버가 데이터베이스에서 진짜 값을 다시 조회해서 비교</b>해야 합니다.</li>
+        <li>프론트엔드의 즉각적인 입력 검증(사용자 경험용)과 백엔드의 최종 검증(보안용)은 <b>목적이 다르므로 둘 다 필요</b>합니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>22. API란 무엇인가</b> — 프론트엔드가 이 믿음직한 백엔드에게 정확히 어떤 규칙으로 말을 거는지 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 가격 조작 시연 ============ */
+function revealNetworkRequest(){
+  document.getElementById('step1Intro').innerHTML = '📡 결제 버튼을 눌렀더니, 브라우저가 아래와 같은 요청을 서버로 보내려고 준비했습니다.';
+  document.getElementById('devtoolsCard').style.display = 'block';
+}
+function tryFakePay(){
+  const val = document.getElementById('netPriceDisplay').textContent.replace(/[^0-9]/g,'');
+  const box = document.getElementById('hackResult');
+  const REAL_PRICE = 1200000;
+  if(+val === REAL_PRICE){
+    box.innerHTML = `<div class="okbox2">✅ 정상 결제: ${(+val).toLocaleString()}원이 결제되었습니다. (아직 값을 안 바꿨네요! 위 노란 숫자를 직접 고쳐본 뒤 다시 전송해보세요.)</div>`;
+  } else {
+    box.innerHTML = `<div class="errbox2">🚨 화면에는 가격을 바꿀 방법이 전혀 없었는데도, 서버로 전송되는 요청은 <b>${(+val || 0).toLocaleString()}원</b>으로 조작해서 보낼 수 있었습니다! 만약 서버가 이 값을 그대로 믿고 결제를 승인한다면, 1,200,000원짜리 노트북이 사용자가 마음대로 적은 금액에 팔려나갑니다. 화면(프론트엔드)을 아무리 안전하게 만들어도, <b>서버로 오는 요청 자체는 누구나 조작할 수 있다</b>는 뜻입니다.</div>`;
+  }
+}
+
+/* ============ 섹션 C: 클라이언트 값 재확인 3가지 사례 ============ */
+const DUTIES = [
+  {name:'💳 상품 가격', scenario:'클라이언트가 "이 가격에 결제해주세요"라고 가격까지 함께 보냅니다.',
+   bad:"# ❌ 위험한 코드\nclient_price = request.json['price']\ncharge_card(client_price)  # 보낸 값 그대로 결제!",
+   good:"# ✅ 안전한 코드\nproduct_id = request.json['product_id']\nreal_price = db.query(\n  \"SELECT PRICE FROM PRODUCTS WHERE PROD_ID=?\",\n  (product_id,))\ncharge_card(real_price)  # DB에서 다시 조회한 값으로 결제",
+   why:'가격을 클라이언트가 정하게 두면, 개발자도구로 0원이나 1원으로 바꿔서 보내는 것도 가능해집니다. 반드시 상품 ID만 받고, 가격은 서버가 DB에서 직접 조회해야 합니다.'},
+  {name:'🎟️ 할인 쿠폰', scenario:'클라이언트가 "쿠폰 적용해서 최종 84만원이에요"라며 이미 계산된 금액을 보냅니다.',
+   bad:"# ❌ 위험한 코드\nfinal_price = request.json['final_price']\ncharge_card(final_price)",
+   good:"# ✅ 안전한 코드\ncoupon = db.query(\n  \"SELECT DISCOUNT_RATE FROM COUPONS WHERE CODE=?\",\n  (coupon_code,))\nfinal_price = real_price * (1 - coupon.discount_rate)\ncharge_card(final_price)  # 할인율도 서버가 직접 계산",
+   why:'할인 계산까지 클라이언트에 맡기면, 존재하지도 않는 "90% 할인 쿠폰"을 만들어 보낼 수 있습니다. 쿠폰이 진짜 있는지, 할인율이 몇 %인지도 서버가 DB에서 다시 확인해야 합니다.'},
+  {name:'📦 재고 수량', scenario:'클라이언트가 "재고 있어서 5개 주문할게요"라고 수량만 보냅니다.',
+   bad:"# ❌ 위험한 코드\nqty = request.json['qty']\ncreate_order(qty)  # 재고 확인 없이 바로 주문 생성",
+   good:"# ✅ 안전한 코드\nstock = db.query(\n  \"SELECT STOCK FROM PRODUCTS WHERE PROD_ID=?\",\n  (product_id,))\nif stock < qty:\n    return error('재고가 부족합니다')\ncreate_order(qty)",
+   why:'재고 확인 없이 바로 주문을 만들면, 재고가 0개인데도 수백 개가 팔린 것처럼 기록되는 사고가 날 수 있습니다. 항상 실제 재고를 다시 조회해서 비교해야 합니다.'},
+];
+function renderDuties(){
+  document.getElementById('backendDutyCards').innerHTML = DUTIES.map((d,i)=>`
+    <div class="dstep" id="dt${i}" onclick="toggleDuty(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${d.name}</div>
+      <div class="dbody">
+        <div style="margin-bottom:10px;">🗣️ ${d.scenario}</div>
+        <div style="font-size:11px; font-weight:700; color:#b91c1c; margin-bottom:4px;">❌ 위험한 방식</div>
+        <div class="sqlcode" style="text-align:left; font-size:11px; padding:10px 12px; white-space:pre-wrap;">${d.bad}</div>
+        <div style="font-size:11px; font-weight:700; color:#166534; margin:8px 0 4px;">✅ 안전한 방식</div>
+        <div class="sqlcode" style="text-align:left; font-size:11px; padding:10px 12px; white-space:pre-wrap;">${d.good}</div>
+        <div class="hint" style="margin-top:8px;">💬 ${d.why}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleDuty(i){ document.getElementById('dt'+i).classList.toggle('open'); }
+renderDuties();
+
+/* ============ 섹션 D: 실시간 회원가입 폼 검증 ============ */
+const EXISTING_IDS = ['hong123', 'kim2024', 'abcd'];
+function checkFrontend(){
+  const id = document.getElementById('suId').value;
+  const pw = document.getElementById('suPw').value;
+  const idBox = document.getElementById('idFeedback');
+  const pwBox = document.getElementById('pwFeedback');
+  const idOk = id.length >= 4;
+  const pwOk = pw.length >= 6;
+
+  if(id.length===0){ idBox.textContent=''; idBox.style.background=''; }
+  else if(idOk){ idBox.textContent='✅ 사용 가능한 형식입니다'; idBox.style.background='var(--green-l)'; }
+  else{ idBox.textContent=`❌ ${4-id.length}자 더 필요합니다 (프론트엔드가 즉시 확인 — 서버에 물어보지 않음)`; idBox.style.background='var(--red-l)'; }
+
+  if(pw.length===0){ pwBox.textContent=''; pwBox.style.background=''; }
+  else if(pwOk){ pwBox.textContent='✅ 사용 가능한 형식입니다'; pwBox.style.background='var(--green-l)'; }
+  else{ pwBox.textContent=`❌ ${6-pw.length}자 더 필요합니다 (프론트엔드가 즉시 확인 — 서버에 물어보지 않음)`; pwBox.style.background='var(--red-l)'; }
+
+  document.getElementById('signupBtn').disabled = !(idOk && pwOk);
+  document.getElementById('signupResult').innerHTML = '';
+}
+function submitSignup(){
+  const id = document.getElementById('suId').value;
+  const box = document.getElementById('signupResult');
+  box.innerHTML = `<div class="hint">📡 서버로 전송 중... "${id}" 아이디가 이미 있는지 데이터베이스에서 조회하는 중입니다. (이건 프론트엔드 혼자서는 절대 알 수 없습니다 — 다른 모든 사용자의 아이디 목록을 브라우저가 가지고 있을 리 없으니까요.)</div>`;
+  setTimeout(()=>{
+    if(EXISTING_IDS.includes(id)){
+      box.innerHTML = `<div class="errbox2">🚫 가입 실패: 백엔드가 DB를 조회해보니 "${id}"는 이미 사용 중인 아이디입니다. 프론트엔드 검증(글자 수)은 모두 통과했지만, <b>백엔드만 알 수 있는 정보(중복 여부)</b>때문에 최종적으로 막혔습니다.</div>`;
+    } else {
+      box.innerHTML = `<div class="okbox2">✅ 가입 성공! "${id}"는 사용 가능한 아이디임을 백엔드가 DB 조회로 확인하고, 새 사용자로 등록했습니다.</div>`;
+    }
+  }, 700);
+}
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 버튼 hover 시 색깔이 바뀌는 효과', correct:false},
+  {text:'B. 입력 즉시 "글자 수가 부족합니다" 안내를 띄우는 것', correct:false},
+  {text:'C. 결제 금액이 실제 상품 가격과 일치하는지 최종 확인하는 것', correct:true},
+  {text:'D. 화면 전환 애니메이션', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 돈과 관련된 최종 확인은 절대 프론트엔드만 믿으면 안 됩니다. 나머지는 전부 화면(프론트엔드)의 몫입니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 C번입니다. 나머지는 사용자 경험을 위한 화면 처리라 프론트엔드에서 담당해도 괜찮습니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

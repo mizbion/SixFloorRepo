@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>04. 기본키(PK)란 무엇인가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽4 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+table.pktab{width:100%; border-collapse:collapse; font-size:13.5px;}
+table.pktab th{background:var(--surf3); padding:9px 11px; text-align:left;}
+table.pktab td{padding:9px 11px; border-top:1px solid var(--border);}
+table.pktab tr.ambiguous td{background:#fef3c7;}
+.candlist{display:flex; flex-direction:column; gap:8px; margin-top:6px;}
+.canditem{display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-size:13.5px;}
+.canditem .verdict{font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:20px;}
+.verdict.good{background:var(--green-l); color:#166534;}
+.verdict.bad{background:var(--red-l); color:#b91c1c;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 04</span>
+  <h1>기본키(PK)란 무엇인가</h1>
+  <p>우리 학교에 "박준서"라는 이름을 가진 학생이 2명이라면? 정확히 한 명을 콕 집어내는 방법이 필요합니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 동명이인 문제 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>"박준서 학생 정보 좀 수정해주세요"</h2>
+    <p class="lead">교무실에 이런 요청이 들어왔습니다. 그런데 우리 학교 데이터에는...</p>
+    <div class="card">
+      <table class="pktab">
+        <tr><th>이름</th><th>전공</th><th>학년</th></tr>
+        <tr class="ambiguous"><td>박준서</td><td>컴퓨터공학</td><td>2</td></tr>
+        <tr class="ambiguous"><td>박준서</td><td>경영학</td><td>4</td></tr>
+      </table>
+      <div class="hint">🤔 "박준서"가 2명입니다! 이름만으로는 어느 박준서를 수정해야 할지 알 수 없습니다. 컴퓨터도 마찬가지로 헷갈립니다.</div>
+      <button class="runbtn" onclick="revealPkFix()">▶ 학번을 추가하면?</button>
+      <div id="pkFixArea"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 좋은 PK의 조건 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>아무 칼럼이나 PK가 될 수 있을까?</h2>
+    <p class="lead">후보들을 하나씩 눌러서 기본키로 적합한지 확인해보세요.</p>
+    <div class="candlist" id="candList"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 실제 EMP 테이블에서 PK 찾기 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>실전: EMP 테이블에서 기본키는?</h2>
+    <p class="lead">지난 시간 SQL 실습에서 봤던 EMP 테이블입니다. 어떤 칼럼이 기본키일지 클릭해서 맞혀보세요.</p>
+    <div class="card">
+      <table class="pktab" id="empPkTable"></table>
+      <div class="hint" id="empPkHint">칼럼 이름을 클릭해서 기본키를 골라보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">다음 중 기본키(PK)의 조건으로 옳지 <u>않은</u> 것은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>기본키(Primary Key)</b>는 테이블의 각 행을 <b>유일하게 식별</b>하는 칼럼(또는 칼럼 조합)입니다.</li>
+        <li>좋은 PK는 <b>절대 중복되지 않고, NULL(빈 값)이 없으며, 잘 바뀌지 않는</b> 값이어야 합니다. 그래서 이름·전화번호보다 "학번"처럼 별도로 발급한 고유번호를 씁니다.</li>
+        <li>PK가 있어야 컴퓨터가 "정확히 이 행"을 콕 집어서 수정·삭제·조회할 수 있습니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>05. 외래키(FK)란 무엇인가</b> — 서로 다른 두 테이블을 "연결"해서 함께 활용하는 방법을 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+/* ============ 스크롤 진행바 ============ */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 학번 추가로 문제 해결 ============ */
+function revealPkFix(){
+  document.getElementById('pkFixArea').innerHTML = `
+    <table class="pktab" style="margin-top:14px;">
+      <tr><th style="color:var(--ac)">STU_ID (학번)</th><th>이름</th><th>전공</th><th>학년</th></tr>
+      <tr><td style="color:var(--ac); font-weight:700;">S2023001</td><td>박준서</td><td>컴퓨터공학</td><td>2</td></tr>
+      <tr><td style="color:var(--ac); font-weight:700;">S2021007</td><td>박준서</td><td>경영학</td><td>4</td></tr>
+    </table>
+    <div class="hint">✅ 이제 "S2023001의 정보를 수정해주세요"라고 하면 절대 헷갈릴 일이 없습니다. 이렇게 각 행을 유일하게 구별해주는 칼럼을 <b>기본키(Primary Key, PK)</b>라고 부릅니다.</div>`;
+}
+
+/* ============ 섹션 B: PK 후보 체크리스트 ============ */
+const CANDS = [
+  {label:'이름 (NAME)', good:false, reason:'동명이인이 있을 수 있어 중복됩니다 (방금 박준서 사례).'},
+  {label:'학번 (STU_ID)', good:true, reason:'학교에서 학생 한 명당 하나씩만 발급하는 고유 번호입니다. 절대 중복되지 않습니다.'},
+  {label:'전화번호 (TEL)', good:false, reason:'번호를 안 적었거나 바뀔 수 있어서(결번, 번호 변경) 좋은 PK가 아닙니다.'},
+  {label:'생년월일 (BIRTH)', good:false, reason:'같은 날 태어난 학생이 여러 명일 수 있어 중복 가능성이 있습니다.'},
+];
+function renderCands(){
+  document.getElementById('candList').innerHTML = CANDS.map((c,i)=>`
+    <div class="canditem" id="cd${i}" onclick="revealCand(${i})" style="cursor:pointer;">
+      <span>${c.label}</span>
+      <span class="verdict" id="cdv${i}" style="visibility:hidden;">?</span>
+    </div>`).join('');
+}
+function revealCand(i){
+  const c = CANDS[i];
+  const el = document.getElementById('cd'+i);
+  const v = document.getElementById('cdv'+i);
+  v.style.visibility = 'visible';
+  v.textContent = c.good ? '✅ 적합' : '❌ 부적합';
+  v.className = 'verdict ' + (c.good ? 'good' : 'bad');
+  if(!el.querySelector('.candreason')){
+    const p = document.createElement('div');
+    p.className = 'candreason';
+    p.style.cssText = 'width:100%; font-size:12px; color:var(--sub); margin-top:8px;';
+    p.textContent = c.reason;
+    el.style.flexDirection = 'column';
+    el.style.alignItems = 'flex-start';
+    el.appendChild(p);
+  }
+}
+renderCands();
+
+/* ============ 섹션 C: EMP 테이블 PK 찾기 ============ */
+const EMP_SAMPLE = [
+  {empno:7369, ename:'SMITH', job:'CLERK', deptno:20},
+  {empno:7566, ename:'JONES', job:'MANAGER', deptno:20},
+  {empno:7900, ename:'JAMES', job:'CLERK', deptno:30},
+];
+function renderEmpPkTable(){
+  const cols = ['empno','ename','job','deptno'];
+  const label = {empno:'EMPNO', ename:'ENAME', job:'JOB', deptno:'DEPTNO'};
+  let html = '<tr>' + cols.map(c=>`<th onclick="pickEmpPk('${c}')" id="empth_${c}">${label[c]}</th>`).join('') + '</tr>';
+  EMP_SAMPLE.forEach(e=> html += '<tr>' + cols.map(c=>`<td>${e[c]}</td>`).join('') + '</tr>');
+  document.getElementById('empPkTable').innerHTML = html;
+}
+function pickEmpPk(col){
+  document.querySelectorAll('#empPkTable th').forEach(th=>th.style.background='');
+  const th = document.getElementById('empth_'+col);
+  const hint = document.getElementById('empPkHint');
+  if(col==='empno'){
+    th.style.background = 'var(--green-l)';
+    hint.innerHTML = '✅ 정답입니다! EMPNO(사원번호)는 사원 한 명당 하나씩 발급되는 고유 번호라 중복될 일이 없습니다. 실제로 EMP 테이블의 기본키입니다.';
+  } else if(col==='ename'){
+    th.style.background = 'var(--red-l)';
+    hint.innerHTML = '❌ ENAME(이름)은 동명이인이 있을 수 있어 PK로 부적합합니다.';
+  } else if(col==='job'){
+    th.style.background = 'var(--red-l)';
+    hint.innerHTML = '❌ JOB(직급)은 여러 사원이 같은 직급(예: CLERK)을 가질 수 있어 절대 유일하지 않습니다.';
+  } else {
+    th.style.background = 'var(--red-l)';
+    hint.innerHTML = '❌ DEPTNO(부서번호)는 한 부서에 여러 사원이 속해 있어 유일하지 않습니다.';
+  }
+}
+renderEmpPkTable();
+
+/* ============ 섹션 D: 미니 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 절대 중복되면 안 된다', correct:false},
+  {text:'B. 값이 자주 바뀌어도 상관없다', correct:true},
+  {text:'C. NULL(빈 값)이 없어야 한다', correct:false},
+  {text:'D. 각 행을 유일하게 구별할 수 있어야 한다', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! PK는 오히려 "거의 안 바뀌는" 값이어야 좋습니다. 자주 바뀌면 그 값을 참조하고 있는 다른 테이블들도 줄줄이 고쳐야 해서 곤란해집니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 나머지 셋은 모두 좋은 PK가 갖춰야 할 조건입니다. "값이 자주 바뀌어도 된다"는 오히려 PK가 피해야 할 특징이라 정답은 B번이에요.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

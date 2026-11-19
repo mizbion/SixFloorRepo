@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>01. 데이터란 무엇인가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 01</span>
+  <h1>데이터란 무엇인가?</h1>
+  <p>숫자 하나, 글자 하나는 아무 의미가 없습니다. 그런데 왜 우리는 그걸 "데이터베이스"에 소중히 저장할까요?</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 흩어진 데이터 조각 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>이 4개를 보고 무슨 뜻인지 알 수 있나요?</h2>
+    <p class="lead">아래 카드에는 진짜 있는 정보가 담겨 있어요. 그런데 따로 떼어놓으면... 그냥 숫자와 글자 뭉치일 뿐입니다.</p>
+    <div class="card">
+      <div class="rawgrid">
+        <div class="rawcard">박준서</div>
+        <div class="rawcard">170</div>
+        <div class="rawcard">17</div>
+        <div class="rawcard">010-1234-5678</div>
+      </div>
+      <button class="runbtn" onclick="assembleProfile()">🔗 의미를 연결해보기</button>
+      <button class="resetbtn" onclick="resetProfile()">⟲ 다시 흩뜨리기</button>
+      <div class="profilecard" id="profileCard">
+        <div class="prow"><span class="plabel">이름</span><span>박준서</span></div>
+        <div class="prow"><span class="plabel">키</span><span>170cm</span></div>
+        <div class="prow"><span class="plabel">나이</span><span>17세</span></div>
+        <div class="prow"><span class="plabel">전화번호</span><span>010-1234-5678</span></div>
+      </div>
+      <div class="hint" id="stepAHint">👆 흩어져 있을 땐 "데이터", 이렇게 연결되고 이름표가 붙는 순간 "정보"가 됩니다. 이게 오늘 개념의 전부예요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: DIKW 사다리 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>데이터가 지혜가 되기까지</h2>
+    <p class="lead">데이터는 계단을 하나씩 올라가면서 점점 쓸모있어집니다. 각 단계를 눌러서 예시를 확인해보세요.</p>
+    <div class="dikw" id="dikwLadder"></div>
+  </section>
+
+  <!-- ===== 섹션 C: 구조화 vs 비구조화 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>데이터베이스는 어떤 데이터를 좋아할까?</h2>
+    <p class="lead">같은 내용이라도 "표"로 정리되어 있느냐, 그냥 "글"로 풀어져 있느냐에 따라 컴퓨터가 다루는 방식이 완전히 달라집니다.</p>
+    <div class="card">
+      <div class="togglebar">
+        <button class="on" id="structBtn" onclick="setStructMode(true)">📋 구조화된 데이터</button>
+        <button id="unstructBtn" onclick="setStructMode(false)">📝 비구조화된 데이터</button>
+      </div>
+      <div id="structArea"></div>
+      <div class="hint" id="structHint"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">다음 중 "정보"에 해당하는 것은 무엇일까요?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>데이터</b>는 그 자체로는 의미가 없는 날것의 값입니다 (숫자, 글자, 기호).</li>
+        <li>데이터가 <b>정리되고 해석</b>되면 비로소 "정보"가 되고, 우리는 정보를 보고 판단을 내립니다.</li>
+        <li>데이터베이스는 특히 <b>표(테이블) 형태로 정리된, 구조화된 데이터</b>를 저장하고 관리하는 데 최적화되어 있습니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>02. 엑셀로 다 되지 않나?</b> — 엑셀 파일로 데이터를 관리하면 왜 문제가 생기는지, 데이터베이스가 정확히 무엇을 해결해주는지 알아봅니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+
+<script>
+/* ============ 스크롤 진행바 ============ */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 섹션 A: 흩어진 데이터 → 프로필 조합 ============ */
+function assembleProfile(){
+  document.querySelectorAll('.rawcard').forEach((el,i)=>{
+    setTimeout(()=>{ el.style.opacity = '0.15'; el.style.transform = 'scale(.9)'; }, i*120);
+  });
+  setTimeout(()=>{
+    document.getElementById('profileCard').classList.add('show');
+  }, 550);
+}
+function resetProfile(){
+  document.querySelectorAll('.rawcard').forEach(el=>{ el.style.opacity = '1'; el.style.transform = 'scale(1)'; });
+  document.getElementById('profileCard').classList.remove('show');
+}
+
+/* ============ 섹션 B: DIKW 사다리 ============ */
+const DIKW = [
+  {title:'데이터 (Data)', example:'170, 175, 168, 182', body:'그냥 숫자 4개입니다. 무엇에 대한 숫자인지도 모르고, 이걸로 뭘 할 수 있는지도 모릅니다.'},
+  {title:'정보 (Information)', example:'우리 반 학생 4명의 키: 평균 173.75cm', body:'"이건 키에 대한 데이터고, 평균은 173.75cm구나" — 데이터에 의미(맥락)가 붙어서 이해할 수 있는 형태가 되었습니다.'},
+  {title:'지식 (Knowledge)', example:'우리 반은 옆반(평균 168cm)보다 키가 큰 편이다', body:'여러 정보를 비교·연결해서 "패턴"이나 "관계"를 찾아낸 것입니다.'},
+  {title:'지혜 (Wisdom)', example:'그러니 이번 학교 농구대회엔 우리 반이 유리할 것이다', body:'지식을 바탕으로 앞으로 어떻게 행동할지 "판단"을 내리는 단계입니다.'},
+];
+function renderDikw(){
+  document.getElementById('dikwLadder').innerHTML = DIKW.map((d,i)=>`
+    <div class="dstep" id="dk${i}" onclick="toggleDikw(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${d.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">${d.example}</b><br>${d.body}</div>
+    </div>`).join('');
+}
+function toggleDikw(i){
+  document.getElementById('dk'+i).classList.toggle('open');
+}
+renderDikw();
+
+/* ============ 섹션 C: 구조화 vs 비구조화 ============ */
+function setStructMode(structured){
+  document.getElementById('structBtn').classList.toggle('on', structured);
+  document.getElementById('unstructBtn').classList.toggle('on', !structured);
+  if(structured){
+    document.getElementById('structArea').innerHTML = `<table class="dtab2">
+      <tr><th>이름</th><th>키</th><th>나이</th><th>연락처</th></tr>
+      <tr><td>박준서</td><td>170</td><td>17</td><td>010-1234-5678</td></tr>
+      <tr><td>이수아</td><td>163</td><td>17</td><td>010-2222-3333</td></tr>
+    </table>`;
+    document.getElementById('structHint').textContent = '✅ 칼럼(이름·키·나이·연락처)이 딱 정해져 있고, 각 값이 어느 자리에 들어가는지 명확합니다. 컴퓨터가 "특정 조건으로 찾기", "정렬하기", "계산하기"를 아주 빠르고 정확하게 할 수 있습니다. → 이게 바로 데이터베이스가 저장하는 방식입니다.';
+  } else {
+    document.getElementById('structArea').innerHTML = `<div class="freetext">
+      "저는 <mark>박준서</mark>이고, 키는 <mark>170</mark>이에요. 나이는 <mark>17살</mark>이고 번호는 <mark>010-1234-5678</mark>이에요. 참고로 저희 반 <mark>이수아</mark>는 저보다 좀 작아요, 아마 <mark>163</mark> 정도?"
+    </div>`;
+    document.getElementById('structHint').textContent = '⚠️ 사람은 읽고 이해할 수 있지만, 컴퓨터 입장에선 어디서부터 어디까지가 "이름"이고 "키"인지 스스로 알아내야 합니다(하이라이트된 부분을 컴퓨터가 직접 찾아내야 함). 이런 데이터를 다루려면 훨씬 복잡한 기술(자연어 처리 등)이 필요합니다.';
+  }
+}
+setStructMode(true);
+
+/* ============ 섹션 D: 미니 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. "82"라는 숫자', correct:false},
+  {text:'B. 학생 20명의 시험 점수를 평균 낸 "반 평균 82점"', correct:true},
+  {text:'C. 아무 설명 없는 엑셀 셀에 적힌 "김민준"', correct:false},
+  {text:'D. 종이에 적힌 전화번호 "010-9999-1111"', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! "82점"이라는 값 하나만 있으면 데이터지만, "학생 20명을 평균 냈다"는 맥락과 계산이 더해지면서 정보가 되었습니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 나머지 보기들은 맥락 없이 던져진 숫자·이름일 뿐이라 아직 "데이터" 단계입니다. 정답은 B번이에요.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 (섹션 스크롤 위치 표시) ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

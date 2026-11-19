@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>14. 서브쿼리 — 질문 속의 질문</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽14(신규) 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.familycard{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
+.familypill{flex:1; min-width:140px; padding:14px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); text-align:center; cursor:pointer;}
+.familypill .fname{font-weight:900; font-size:14px; margin-bottom:4px;}
+.familypill .fdesc{font-size:11.5px; color:var(--sub); display:none;}
+.familypill.open .fdesc{display:block;}
+.subqbox{background:var(--surf2); border-radius:10px; padding:12px 14px; margin:8px 0; font-family:'JetBrains Mono',monospace; font-size:13px; text-align:center; transition:.4s;}
+.subqbox.inner{border:2px dashed var(--ac-b); color:var(--ac);}
+.subqresult{font-weight:900; font-size:18px; color:var(--ac); text-align:center; margin:8px 0;}
+.p-select{background:#dbeafe; color:#1e40af; padding:3px 8px; border-radius:6px; transition:.15s;}
+.p-select.hlpart{transform:scale(1.05); outline:2px solid var(--ac);}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 14</span>
+  <h1>서브쿼리 — 질문 속의 질문</h1>
+  <p>"평균보다 학년이 높은 학생은?" 이런 질문에 답하려면, SQL 문장 안에 또 다른 SQL 문장이 필요합니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: 서브쿼리가 필요한 순간 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>"평균보다 학년이 높은 학생"을 어떻게 찾을까?</h2>
+    <p class="lead">이 질문에 답하려면 사실 질문이 2단계입니다. ① 평균 학년이 몇인지 먼저 알아야 하고, ② 그 값보다 높은 학생을 찾아야 합니다. 버튼을 눌러 확인해보세요.</p>
+    <div class="card">
+      <button class="runbtn" onclick="runSubqDemo()">▶ 서브쿼리 실행 과정 보기</button>
+      <button class="resetbtn" onclick="resetSubqDemo()">⟲ 초기화</button>
+      <div id="subqStage" style="margin-top:14px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 서브쿼리 문법 해부 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>바깥 질문과 안쪽 질문</h2>
+    <p class="lead">색칠된 부분을 클릭해서 어디가 "바깥(메인) 쿼리"이고 어디가 "안쪽(서브) 쿼리"인지 확인해보세요.</p>
+    <div class="card">
+      <div class="sqlcode" style="text-align:center;">
+        SELECT NAME, YEAR FROM STUDENTS<br>
+        WHERE YEAR &gt; <span class="p-select" onclick="explainSubqPart('inner')" style="cursor:pointer;">(SELECT AVG(YEAR) FROM STUDENTS)</span>
+      </div>
+      <div class="hint" id="subqPartHint">괄호 안쪽(서브쿼리)을 클릭해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: IN을 쓰는 다중행 서브쿼리 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>결과가 여러 개라면? IN을 쓴다</h2>
+    <p class="lead">"밴드부(C01)에 속한 학생들이 듣는 과목"처럼, 서브쿼리 결과가 여러 개일 수도 있습니다. 이때는 <code>=</code> 대신 <code>IN</code>을 씁니다.</p>
+    <div class="card">
+      <div class="sqlcode">
+        <div class="ln active">SELECT NAME, SUB_ID FROM ENROLL</div>
+        <div class="ln active">WHERE STU_ID IN (</div>
+        <div class="ln active">&nbsp;&nbsp;SELECT STU_ID FROM STUDENTS WHERE CLUB_ID = 'C01'</div>
+        <div class="ln active">);</div>
+      </div>
+      <button class="runbtn" onclick="runInSubq()">▶ 실행 결과 보기</button>
+      <div id="inSubqResult" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 서브쿼리는 어디에나 들어갈 수 있다 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>서브쿼리, 세 군데에 넣을 수 있다</h2>
+    <p class="lead">각 카드의 "실행 과정 보기" 버튼을 눌러서 단계별로 확인해보세요.</p>
+    <div style="display:flex; flex-direction:column; gap:14px;" id="subqLocCards"></div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">서브쿼리에 대한 설명으로 옳은 것은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>서브쿼리</b>는 SQL 문장 안에 괄호로 들어가는 또 다른 SQL 문장입니다. 안쪽부터 먼저 실행되어 값을 만들고, 그 값을 바깥 쿼리가 사용합니다.</li>
+        <li>서브쿼리 결과가 <b>값 1개</b>면 <code>=, &gt;, &lt;</code> 같은 일반 비교연산자를, <b>값 여러 개</b>면 <code>IN</code>을 씁니다.</li>
+        <li>서브쿼리는 <b>WHERE, FROM, SELECT</b> 절 어디에나 들어갈 수 있는 유연한 도구입니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>15. 뷰(VIEW) — 자주 쓰는 쿼리를 저장해두기</b> — 복잡한 JOIN·서브쿼리를 매번 새로 쓰지 않고 재사용하는 방법을 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 공통 데이터 ============ */
+const STU_SQ = [
+  {id:'S2021001', name:'강하늘', year:4, club:'C02'}, {id:'S2022001', name:'윤아', year:3, club:null},
+  {id:'S2023002', name:'아이유', year:2, club:'C01'}, {id:'S2023001', name:'송중기', year:2, club:'C01'},
+  {id:'S2024001', name:'차은우', year:1, club:null},
+];
+const ENROLL_SQ = [
+  {stu:'S2023002', name:'아이유', sub:'C001'}, {stu:'S2023001', name:'송중기', sub:'C009'},
+  {stu:'S2021001', name:'강하늘', sub:'C001'}, {stu:'S2022001', name:'윤아', sub:'C002'},
+];
+
+/* ============ 섹션 A: 서브쿼리 실행 과정 ============ */
+function resetSubqDemo(){
+  document.getElementById('subqStage').innerHTML = '';
+}
+function runSubqDemo(){
+  const avg = (STU_SQ.reduce((s,x)=>s+x.year,0)/STU_SQ.length);
+  document.getElementById('subqStage').innerHTML = `
+    <div class="subqbox inner" id="sqStep1">① 안쪽(서브)쿼리 먼저 실행: SELECT AVG(YEAR) FROM STUDENTS</div>
+    <div class="subqresult" id="sqStep2" style="opacity:0;"></div>
+    <div class="subqbox" id="sqStep3" style="opacity:0;">② 그 값을 바깥 쿼리에 대입: SELECT NAME, YEAR FROM STUDENTS WHERE YEAR &gt; <b id="sqAvgInline"></b></div>
+    <table class="dtab2" id="sqResultTab" style="margin-top:10px; opacity:0;"></table>
+  `;
+  setTimeout(()=>{
+    document.getElementById('sqStep2').style.transition='opacity .3s';
+    document.getElementById('sqStep2').style.opacity = 1;
+    document.getElementById('sqStep2').textContent = `→ 평균 = ${avg.toFixed(1)}`;
+  }, 700);
+  setTimeout(()=>{
+    document.getElementById('sqAvgInline').textContent = avg.toFixed(1);
+    document.getElementById('sqStep3').style.transition='opacity .3s';
+    document.getElementById('sqStep3').style.opacity = 1;
+  }, 1400);
+  setTimeout(()=>{
+    const rows = STU_SQ.filter(s=>s.year > avg);
+    document.getElementById('sqResultTab').innerHTML = `<tr><th>NAME</th><th>YEAR</th></tr>` +
+      rows.map(s=>`<tr><td>${s.name}</td><td>${s.year}</td></tr>`).join('');
+    document.getElementById('sqResultTab').style.transition='opacity .3s';
+    document.getElementById('sqResultTab').style.opacity = 1;
+  }, 2100);
+}
+
+/* ============ 섹션 B: 서브쿼리 문법 해부 ============ */
+function explainSubqPart(part){
+  document.querySelector('.p-select').classList.add('hlpart');
+  document.getElementById('subqPartHint').innerHTML = '🔵 이 부분이 <b>서브쿼리</b>입니다. 데이터베이스는 전체 문장을 실행할 때 이 괄호 안쪽을 가장 먼저 계산해서 값 하나(평균)를 만들고, 그다음 바깥의 WHERE 조건에 그 값을 끼워 넣습니다.';
+}
+
+/* ============ 섹션 C: IN 서브쿼리 ============ */
+function runInSubq(){
+  const clubMembers = STU_SQ.filter(s=>s.club==='C01').map(s=>s.id);
+  const rows = ENROLL_SQ.filter(e=>clubMembers.includes(e.stu));
+  document.getElementById('inSubqResult').innerHTML = `<table class="dtab2"><tr><th>NAME</th><th>SUB_ID</th></tr>
+    ${rows.map(r=>`<tr><td>${r.name}</td><td>${r.sub}</td></tr>`).join('')}</table>
+    <div class="hint">서브쿼리(<code>SELECT STU_ID FROM STUDENTS WHERE CLUB_ID='C01'</code>)가 먼저 [${clubMembers.join(', ')}] 라는 목록을 만들고, 바깥 쿼리가 그 목록에 <code>IN</code>으로 포함되는 수강 기록만 골라냈습니다.</div>`;
+}
+
+/* ============ 섹션 D: 서브쿼리 위치 (실행 애니메이션) ============ */
+function resetLocDemo(id){
+  document.getElementById(id).innerHTML = '';
+}
+function runWhereSubqDemo(){
+  const maxYear = Math.max(...STU_SQ.map(s=>s.year));
+  document.getElementById('locStage0').innerHTML = `
+    <div class="subqbox inner" id="w0">① 안쪽 실행: SELECT MAX(YEAR) FROM STUDENTS</div>
+    <div class="subqresult" id="w1" style="opacity:0;"></div>
+    <table class="dtab2" id="w2" style="opacity:0;"></table>`;
+  setTimeout(()=>{
+    document.getElementById('w1').style.transition='opacity .3s';
+    document.getElementById('w1').style.opacity=1;
+    document.getElementById('w1').textContent = `→ 최고학년 = ${maxYear}`;
+  }, 600);
+  setTimeout(()=>{
+    const rows = STU_SQ.filter(s=>s.year===maxYear);
+    document.getElementById('w2').innerHTML = `<tr><th>NAME</th><th>YEAR</th></tr>` + rows.map(s=>`<tr><td>${s.name}</td><td>${s.year}</td></tr>`).join('');
+    document.getElementById('w2').style.transition='opacity .3s';
+    document.getElementById('w2').style.opacity=1;
+  }, 1300);
+}
+function runFromSubqDemo(){
+  document.getElementById('locStage1').innerHTML = `
+    <div class="subqbox inner" id="f0">① 안쪽 실행: SELECT * FROM STUDENTS WHERE YEAR = 2 (임시 테이블처럼 취급)</div>
+    <table class="dtab2" id="f1" style="opacity:0; margin-bottom:8px;"></table>
+    <div class="subqbox" id="f2" style="opacity:0;">② 바깥에서 그 결과 위에 다시 조회: SELECT COUNT(*) FROM (위 결과)</div>
+    <div class="subqresult" id="f3" style="opacity:0;"></div>`;
+  setTimeout(()=>{
+    const rows = STU_SQ.filter(s=>s.year===2);
+    document.getElementById('f1').innerHTML = `<tr><th>NAME</th><th>YEAR</th></tr>` + rows.map(s=>`<tr><td>${s.name}</td><td>${s.year}</td></tr>`).join('');
+    document.getElementById('f1').style.transition='opacity .3s';
+    document.getElementById('f1').style.opacity=1;
+  }, 600);
+  setTimeout(()=>{
+    document.getElementById('f2').style.transition='opacity .3s';
+    document.getElementById('f2').style.opacity=1;
+  }, 1300);
+  setTimeout(()=>{
+    const cnt = STU_SQ.filter(s=>s.year===2).length;
+    document.getElementById('f3').style.transition='opacity .3s';
+    document.getElementById('f3').style.opacity=1;
+    document.getElementById('f3').textContent = `→ 결과: ${cnt}명`;
+  }, 2000);
+}
+function runSelectSubqDemo(){
+  const avg = (STU_SQ.reduce((s,x)=>s+x.year,0)/STU_SQ.length);
+  document.getElementById('locStage2').innerHTML = `
+    <div class="subqbox inner" id="s0">① 안쪽 실행 (딱 값 1개): SELECT AVG(YEAR) FROM STUDENTS</div>
+    <div class="subqresult" id="s1" style="opacity:0;"></div>
+    <table class="dtab2" id="s2" style="opacity:0;"></table>`;
+  setTimeout(()=>{
+    document.getElementById('s1').style.transition='opacity .3s';
+    document.getElementById('s1').style.opacity=1;
+    document.getElementById('s1').textContent = `→ 평균 = ${avg.toFixed(1)}`;
+  }, 600);
+  setTimeout(()=>{
+    document.getElementById('s2').innerHTML = `<tr><th>NAME</th><th>YEAR</th><th>평균학년</th></tr>` +
+      STU_SQ.map(s=>`<tr><td>${s.name}</td><td>${s.year}</td><td>${avg.toFixed(1)}</td></tr>`).join('');
+    document.getElementById('s2').style.transition='opacity .3s';
+    document.getElementById('s2').style.opacity=1;
+  }, 1300);
+}
+function renderSubqLocs(){
+  document.getElementById('subqLocCards').innerHTML = `
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">① WHERE 절 — 조건 비교용</div>
+      <div class="sqlcode" style="font-size:11.5px;">SELECT NAME, YEAR FROM STUDENTS<br>WHERE YEAR = (SELECT MAX(YEAR) FROM STUDENTS);</div>
+      <button class="runbtn" onclick="runWhereSubqDemo()">▶ 실행 과정 보기</button>
+      <button class="resetbtn" onclick="resetLocDemo('locStage0')">⟲ 초기화</button>
+      <div id="locStage0" style="margin-top:10px;"></div>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">② FROM 절 — 인라인 뷰</div>
+      <div class="sqlcode" style="font-size:11.5px;">SELECT COUNT(*) FROM<br>(SELECT * FROM STUDENTS WHERE YEAR = 2);</div>
+      <button class="runbtn" onclick="runFromSubqDemo()">▶ 실행 과정 보기</button>
+      <button class="resetbtn" onclick="resetLocDemo('locStage1')">⟲ 초기화</button>
+      <div id="locStage1" style="margin-top:10px;"></div>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">③ SELECT 절 — 스칼라 서브쿼리</div>
+      <div class="sqlcode" style="font-size:11.5px;">SELECT NAME, YEAR,<br>&nbsp;&nbsp;(SELECT AVG(YEAR) FROM STUDENTS) AS 평균학년<br>FROM STUDENTS;</div>
+      <button class="runbtn" onclick="runSelectSubqDemo()">▶ 실행 과정 보기</button>
+      <button class="resetbtn" onclick="resetLocDemo('locStage2')">⟲ 초기화</button>
+      <div id="locStage2" style="margin-top:10px;"></div>
+    </div>`;
+}
+renderSubqLocs();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. 바깥 쿼리가 먼저 실행되고, 그 다음 서브쿼리가 실행된다', correct:false},
+  {text:'B. 서브쿼리가 먼저 실행되어 값을 만들고, 바깥 쿼리가 그 값을 사용한다', correct:true},
+  {text:'C. 서브쿼리와 바깥 쿼리는 항상 동시에 실행된다', correct:false},
+  {text:'D. 서브쿼리는 WHERE 절에만 쓸 수 있다', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 섹션 A에서 본 것처럼, 안쪽(서브) 쿼리가 먼저 실행되어 값을 만들고 나서야 바깥 쿼리가 그 값을 조건으로 사용할 수 있습니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 그리고 서브쿼리는 WHERE뿐 아니라 FROM, SELECT 절에도 쓸 수 있다는 걸 STEP 4에서 확인했었죠.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

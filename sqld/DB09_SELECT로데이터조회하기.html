@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>09. SELECT로 데이터 조회하기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽9 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+.checklist{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+.checkitem{padding:9px 14px; border-radius:20px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; cursor:pointer; user-select:none;}
+.checkitem.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 09</span>
+  <h1>SELECT로 데이터 조회하기</h1>
+  <p>데이터베이스에서 가장 많이 쓰는 명령, SELECT를 직접 조립해보면서 익혀봅니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: SELECT * vs 특정 칼럼 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>전부 볼까, 필요한 것만 볼까?</h2>
+    <p class="lead"><code>*</code>는 "전부 다"라는 뜻입니다. 두 버튼을 눌러 결과가 어떻게 다른지 비교해보세요.</p>
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn2" onclick="runSelectDemo('all')">SELECT * FROM STUDENTS;</button>
+        <button class="modebtn2" onclick="runSelectDemo('some')">SELECT NAME, MAJOR FROM STUDENTS;</button>
+      </div>
+      <div id="selectDemoTab"></div>
+      <div class="hint" id="selectDemoHint">버튼을 눌러 결과를 확인해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: 별칭(AS) ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>칼럼 이름에 별명 붙이기 (AS)</h2>
+    <p class="lead">칼럼명이 딱딱하거나 영어라면, AS로 보기 편한 이름을 붙일 수 있습니다.</p>
+    <div class="card">
+      <button class="runbtn" onclick="runAliasDemo()">▶ AS 적용해보기</button>
+      <div id="aliasDemoTab" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: 나만의 SELECT 문 조립하기 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>직접 조립해보기</h2>
+    <p class="lead">보고 싶은 칼럼을 체크하면, 그에 맞는 SQL 문장과 결과가 실시간으로 만들어집니다.</p>
+    <div class="card">
+      <div class="checklist" id="colChecklist"></div>
+      <div class="sqlcode" id="builderSql"></div>
+      <div id="builderTab" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">STUDENTS 테이블에서 이름과 학년만 보고 싶습니다. 올바른 SQL은?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><code>SELECT *</code>는 모든 칼럼을, <code>SELECT 칼럼명, 칼럼명</code>은 원하는 칼럼만 골라서 보여줍니다.</li>
+        <li>칼럼이 많아지고 화면이 복잡해질수록, <b>필요한 칼럼만 골라 보는 습관</b>이 중요합니다 (실무에서도 SELECT *는 잘 안 씁니다).</li>
+        <li><code>AS</code>로 결과 화면에 표시될 이름에 별칭을 붙일 수 있습니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>10. WHERE로 조건 걸기</b> — "전체"가 아니라 "원하는 조건에 맞는 행"만 골라내는 법을 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+const STU9 = [
+  {id:'S2021001', name:'강하늘', major:'컴퓨터공학', year:4, tel:'010-1111-0001'},
+  {id:'S2023001', name:'송중기', major:'데이터과학', year:2, tel:'010-1111-0007'},
+  {id:'S2023002', name:'아이유', major:'컴퓨터공학', year:2, tel:'010-1111-0008'},
+];
+
+/* ============ 섹션 A: SELECT * vs 특정 칼럼 ============ */
+function runSelectDemo(mode){
+  const hint = document.getElementById('selectDemoHint');
+  if(mode==='all'){
+    document.getElementById('selectDemoTab').innerHTML = `<table class="dtab2"><tr><th>STU_ID</th><th>NAME</th><th>MAJOR</th><th>YEAR</th><th>TEL</th></tr>
+      ${STU9.map(s=>`<tr><td>${s.id}</td><td>${s.name}</td><td>${s.major}</td><td>${s.year}</td><td>${s.tel}</td></tr>`).join('')}</table>`;
+    hint.textContent = '👀 * 를 쓰면 STUDENTS 테이블의 모든 칼럼(5개)이 다 나옵니다.';
+  } else {
+    document.getElementById('selectDemoTab').innerHTML = `<table class="dtab2"><tr><th>NAME</th><th>MAJOR</th></tr>
+      ${STU9.map(s=>`<tr><td>${s.name}</td><td>${s.major}</td></tr>`).join('')}</table>`;
+    hint.textContent = '✅ 원하는 칼럼(NAME, MAJOR) 2개만 콕 집어서 결과를 훨씬 간결하게 받을 수 있습니다.';
+  }
+}
+
+/* ============ 섹션 B: AS 별칭 ============ */
+function runAliasDemo(){
+  document.getElementById('aliasDemoTab').innerHTML = `
+    <div class="sqlcode" style="margin-bottom:10px;"><div class="ln active">SELECT NAME AS 이름, MAJOR AS 전공 FROM STUDENTS;</div></div>
+    <table class="dtab2"><tr><th>이름</th><th>전공</th></tr>
+      ${STU9.map(s=>`<tr><td>${s.name}</td><td>${s.major}</td></tr>`).join('')}</table>
+    <div class="hint">칼럼 이름이 NAME→"이름", MAJOR→"전공"으로 바뀌어 표시됩니다. 실제 테이블 구조는 전혀 바뀌지 않고, 화면에 보여줄 때만 별명을 씁니다.</div>`;
+}
+
+/* ============ 섹션 C: SELECT 빌더 ============ */
+const BUILD_COLS = ['id','name','major','year','tel'];
+const BUILD_LABEL = {id:'STU_ID', name:'NAME', major:'MAJOR', year:'YEAR', tel:'TEL'};
+let checked = {id:true, name:true};
+function renderChecklist(){
+  document.getElementById('colChecklist').innerHTML = BUILD_COLS.map(c=>
+    `<div class="checkitem ${checked[c]?'on':''}" id="chk_${c}" onclick="toggleCol('${c}')">${BUILD_LABEL[c]}</div>`).join('');
+  updateBuilder();
+}
+function toggleCol(c){
+  checked[c] = !checked[c];
+  document.getElementById('chk_'+c).classList.toggle('on', checked[c]);
+  updateBuilder();
+}
+function updateBuilder(){
+  const cols = BUILD_COLS.filter(c=>checked[c]);
+  if(cols.length===0){
+    document.getElementById('builderSql').innerHTML = `<div class="ln err">SELECT 뒤에는 최소 1개 이상의 칼럼이 필요합니다!</div>`;
+    document.getElementById('builderTab').innerHTML = '';
+    return;
+  }
+  const colStr = cols.map(c=>BUILD_LABEL[c]).join(', ');
+  document.getElementById('builderSql').innerHTML = `<div class="ln active">SELECT ${colStr} FROM STUDENTS;</div>`;
+  document.getElementById('builderTab').innerHTML = `<table class="dtab2"><tr>${cols.map(c=>`<th>${BUILD_LABEL[c]}</th>`).join('')}</tr>
+    ${STU9.map(s=>'<tr>'+cols.map(c=>`<td>${s[c]}</td>`).join('')+'</tr>').join('')}</table>`;
+}
+renderChecklist();
+
+/* ============ 섹션 D: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. SELECT NAME, YEAR FROM STUDENTS;', correct:true},
+  {text:'B. FROM STUDENTS SELECT NAME, YEAR;', correct:false},
+  {text:'C. SELECT * FROM STUDENTS WHERE NAME, YEAR;', correct:false},
+  {text:'D. GET NAME, YEAR FROM STUDENTS;', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! SELECT(무엇을) → FROM(어디서) 순서를 지켰고, 칼럼은 쉼표로 나열했습니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 A번입니다. SQL은 반드시 SELECT가 먼저, FROM이 그 다음에 와야 합니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>11. INSERT·UPDATE·DELETE로 데이터 바꾸기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽11(신규) 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.modebtn2{padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); font-size:12.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+table.itab{width:100%; border-collapse:collapse; font-size:13px;}
+table.itab th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.itab td{padding:8px 10px; border-top:1px solid var(--border); transition:.3s;}
+table.itab tr.newrow td{background:var(--green-l);}
+table.itab tr.changedrow td{background:#fef3c7;}
+table.itab tr.deletedrow td{background:var(--red-l); opacity:.4; text-decoration:line-through;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 11</span>
+  <h1>INSERT·UPDATE·DELETE로 데이터 바꾸기</h1>
+  <p>지금까지는 SELECT로 "읽기"만 했습니다. 이제 데이터를 직접 "쓰는" 방법을 배웁니다 — 넣고, 고치고, 지우는 3형제입니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 섹션 A: INSERT - 새 행 추가 ===== -->
+  <section>
+    <div class="eyebrow">STEP 1</div>
+    <h2>INSERT — 새로운 데이터를 넣는다</h2>
+    <p class="lead">전학생이 왔습니다. STUDENTS 테이블에 새 학생을 등록해봅시다.</p>
+    <div class="card">
+      <div class="sqlcode">
+        <div class="ln active">INSERT INTO STUDENTS (STU_ID, NAME, MAJOR, YEAR)</div>
+        <div class="ln active">VALUES ('S2024011', '한지민', '컴퓨터공학', 1);</div>
+      </div>
+      <table class="itab" id="insertTab" style="margin-top:12px;"></table>
+      <button class="runbtn" onclick="runInsert()">▶ INSERT 실행</button>
+      <button class="resetbtn" onclick="resetInsert()">⟲ 초기화</button>
+      <div class="hint" id="insertHint">아직 실행하지 않았습니다.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 B: UPDATE - 값 수정 ===== -->
+  <section>
+    <div class="eyebrow">STEP 2</div>
+    <h2>UPDATE — 있는 데이터를 고친다</h2>
+    <p class="lead">한지민 학생이 2학년으로 진급했습니다. 그런데 <b>WHERE를 빼먹으면</b> 어떻게 될까요? 두 버전을 비교해보세요.</p>
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn2" onclick="runUpdate(true)">✅ WHERE 포함 (한지민만 수정)</button>
+        <button class="modebtn2" onclick="runUpdate(false)">❌ WHERE 없이 (전체 수정!)</button>
+      </div>
+      <div class="sqlcode" id="updateSql"></div>
+      <table class="itab" id="updateTab" style="margin-top:12px;"></table>
+      <div class="hint" id="updateHint">버튼을 눌러 결과를 확인해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 C: DELETE - 행 삭제 ===== -->
+  <section>
+    <div class="eyebrow">STEP 3</div>
+    <h2>DELETE — 데이터를 지운다</h2>
+    <p class="lead">이번엔 삭제입니다. DELETE도 WHERE가 없으면 정말 위험합니다.</p>
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="modebtn2" onclick="runDelete(true)">✅ WHERE 포함 (1학년만 삭제)</button>
+        <button class="modebtn2" onclick="runDelete(false)">❌ WHERE 없이 (전체 삭제!)</button>
+      </div>
+      <div class="sqlcode" id="deleteSql"></div>
+      <table class="itab" id="deleteTab" style="margin-top:12px;"></table>
+      <div class="hint" id="deleteHint">버튼을 눌러 결과를 확인해보세요.</div>
+    </div>
+  </section>
+
+  <!-- ===== 섹션 D: 세 명령어 정리 ===== -->
+  <section>
+    <div class="eyebrow">STEP 4</div>
+    <h2>INSERT · UPDATE · DELETE, 언제 쓸까</h2>
+    <p class="lead">카드를 클릭해서 각각의 역할을 정리해보세요.</p>
+    <div class="dikw" id="dmlLadder"></div>
+  </section>
+
+  <!-- ===== 섹션 E: 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">STEP 5</div>
+    <h2>확인 퀴즈</h2>
+    <p class="lead">다음 중 가장 위험한 실수는 무엇일까요?</p>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li><b>INSERT</b>는 새 행 추가, <b>UPDATE</b>는 기존 값 수정, <b>DELETE</b>는 행 삭제입니다. SELECT까지 합쳐 이 4개를 <b>DML(데이터 조작어)</b>이라고 부릅니다 (8번 시간 기억하시나요?).</li>
+        <li><b>UPDATE와 DELETE는 WHERE 없이 실행하면 테이블 전체에 적용</b>됩니다 — 실무에서 가장 자주 나는 대형 사고 중 하나입니다.</li>
+        <li>그래서 실무에서는 UPDATE·DELETE 실행 전에 반드시 <b>같은 조건으로 SELECT를 먼저 해서</b> "내가 지금 몇 건에 영향을 주는지" 확인하는 습관이 중요합니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>12. JOIN으로 테이블 합치기</b> — 여러 테이블에 나뉘어 있는 데이터를 한 번에 연결해서 조회하는 방법을 배웁니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+/* ============ 공통 데이터 ============ */
+const BASE_STUDENTS = [
+  {id:'S2023001', name:'송중기', major:'데이터과학', year:2},
+  {id:'S2023002', name:'아이유', major:'컴퓨터공학', year:2},
+  {id:'S2024001', name:'차은우', major:'산업디자인', year:1},
+];
+
+/* ============ 섹션 A: INSERT ============ */
+function renderInsertTab(withNew){
+  let rows = [...BASE_STUDENTS];
+  document.getElementById('insertTab').innerHTML = `<tr><th>STU_ID</th><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>` +
+    rows.map(s=>`<tr><td>${s.id}</td><td>${s.name}</td><td>${s.major}</td><td>${s.year}</td></tr>`).join('') +
+    (withNew ? `<tr class="newrow"><td>S2024011</td><td>한지민</td><td>컴퓨터공학</td><td>1</td></tr>` : '');
+}
+function resetInsert(){
+  renderInsertTab(false);
+  document.getElementById('insertHint').textContent = '아직 실행하지 않았습니다.';
+}
+function runInsert(){
+  renderInsertTab(true);
+  document.getElementById('insertHint').innerHTML = '✅ 새로운 행 하나가 테이블 맨 아래에 추가되었습니다(초록색). 기존 데이터는 전혀 건드리지 않고, 딱 한 줄만 새로 생겼습니다.';
+}
+resetInsert();
+
+/* ============ 섹션 B: UPDATE ============ */
+function runUpdate(withWhere){
+  if(withWhere){
+    document.getElementById('updateSql').innerHTML = `<div class="ln active">UPDATE STUDENTS SET YEAR = 2</div><div class="ln active">WHERE NAME = '한지민';</div>`;
+    document.getElementById('updateTab').innerHTML = `<tr><th>STU_ID</th><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>
+      <tr><td>S2023001</td><td>송중기</td><td>데이터과학</td><td>2</td></tr>
+      <tr><td>S2023002</td><td>아이유</td><td>컴퓨터공학</td><td>2</td></tr>
+      <tr><td>S2024001</td><td>차은우</td><td>산업디자인</td><td>1</td></tr>
+      <tr class="changedrow"><td>S2024011</td><td>한지민</td><td>컴퓨터공학</td><td>2</td></tr>`;
+    document.getElementById('updateHint').innerHTML = '✅ WHERE 조건 덕분에 한지민 학생의 YEAR만 정확히 2로 바뀌었습니다(노란색). 나머지는 그대로입니다.';
+  } else {
+    document.getElementById('updateSql').innerHTML = `<div class="ln err">UPDATE STUDENTS SET YEAR = 2;</div><div class="ln err">-- WHERE 조건이 없습니다!</div>`;
+    document.getElementById('updateTab').innerHTML = `<tr><th>STU_ID</th><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>
+      <tr class="changedrow"><td>S2023001</td><td>송중기</td><td>데이터과학</td><td>2</td></tr>
+      <tr class="changedrow"><td>S2023002</td><td>아이유</td><td>컴퓨터공학</td><td>2</td></tr>
+      <tr class="changedrow"><td>S2024001</td><td>차은우</td><td>산업디자인</td><td>2</td></tr>
+      <tr class="changedrow"><td>S2024011</td><td>한지민</td><td>컴퓨터공학</td><td>2</td></tr>`;
+    document.getElementById('updateHint').innerHTML = '🚨 큰일 났습니다! WHERE가 없어서 <b>모든 학생</b>의 YEAR가 2로 바뀌어 버렸습니다. 1학년이었던 차은우까지 전부 2학년이 되어버렸습니다. 실무에서 이런 실수가 실제 서비스에서 일어나면 큰 사고입니다.';
+  }
+}
+document.getElementById('updateSql').innerHTML = '';
+document.getElementById('updateTab').innerHTML = '';
+
+/* ============ 섹션 C: DELETE ============ */
+function runDelete(withWhere){
+  if(withWhere){
+    document.getElementById('deleteSql').innerHTML = `<div class="ln active">DELETE FROM STUDENTS</div><div class="ln active">WHERE YEAR = 1;</div>`;
+    document.getElementById('deleteTab').innerHTML = `<tr><th>STU_ID</th><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>
+      <tr><td>S2023001</td><td>송중기</td><td>데이터과학</td><td>2</td></tr>
+      <tr><td>S2023002</td><td>아이유</td><td>컴퓨터공학</td><td>2</td></tr>
+      <tr class="deletedrow"><td>S2024001</td><td>차은우</td><td>산업디자인</td><td>1</td></tr>`;
+    document.getElementById('deleteHint').innerHTML = '✅ 1학년(YEAR=1)인 차은우 학생만 정확히 삭제되었습니다(빨간 취소선). 나머지 학생은 안전합니다.';
+  } else {
+    document.getElementById('deleteSql').innerHTML = `<div class="ln err">DELETE FROM STUDENTS;</div><div class="ln err">-- WHERE 조건이 없습니다!</div>`;
+    document.getElementById('deleteTab').innerHTML = `<tr><th>STU_ID</th><th>NAME</th><th>MAJOR</th><th>YEAR</th></tr>
+      <tr class="deletedrow"><td>S2023001</td><td>송중기</td><td>데이터과학</td><td>2</td></tr>
+      <tr class="deletedrow"><td>S2023002</td><td>아이유</td><td>컴퓨터공학</td><td>2</td></tr>
+      <tr class="deletedrow"><td>S2024001</td><td>차은우</td><td>산업디자인</td><td>1</td></tr>`;
+    document.getElementById('deleteHint').innerHTML = '💀 최악의 상황입니다! WHERE가 없어서 STUDENTS 테이블의 <b>모든 학생 데이터가 통째로 삭제</b>되었습니다. 실무에서는 이런 사고를 막기 위해 삭제 전 반드시 백업을 하고, 실행 전 조건을 두 번 세 번 확인합니다.';
+  }
+}
+document.getElementById('deleteSql').innerHTML = '';
+document.getElementById('deleteTab').innerHTML = '';
+
+/* ============ 섹션 D: DML 정리 사다리 ============ */
+const DML_ITEMS = [
+  {title:'INSERT — 새로 넣기', ex:'새 학생 등록, 새 주문 접수', body:'테이블에 없던 완전히 새로운 행을 하나 추가합니다.'},
+  {title:'UPDATE — 고쳐 쓰기', ex:'학년 진급, 배송 상태 변경', body:'이미 있는 행의 특정 칼럼 값을 바꿉니다. 반드시 WHERE로 "어느 행"인지 콕 집어야 합니다.'},
+  {title:'DELETE — 지우기', ex:'탈퇴 회원 삭제, 취소된 주문 제거', body:'행 전체를 통째로 없앱니다. 이것 역시 WHERE로 대상을 정확히 지정해야 합니다.'},
+  {title:'(참고) SELECT — 읽기만', ex:'9~10번 시간에 배운 내용', body:'INSERT/UPDATE/DELETE와 달리 데이터를 바꾸지 않고 "조회"만 합니다. 이 4개를 합쳐서 DML(데이터 조작어)이라고 부릅니다.'},
+];
+function renderDmlLadder(){
+  document.getElementById('dmlLadder').innerHTML = DML_ITEMS.map((d,i)=>`
+    <div class="dstep" id="dm${i}" onclick="toggleDml(${i})">
+      <div class="dtitle"><span class="dnum">${i+1}</span>${d.title}</div>
+      <div class="dbody"><b style="color:var(--ac)">예: ${d.ex}</b><br>${d.body}</div>
+    </div>`).join('');
+}
+function toggleDml(i){ document.getElementById('dm'+i).classList.toggle('open'); }
+renderDmlLadder();
+
+/* ============ 섹션 E: 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. INSERT 문에서 칼럼 순서를 다르게 쓰는 것', correct:false},
+  {text:'B. UPDATE나 DELETE 문에서 WHERE를 빠뜨리는 것', correct:true},
+  {text:'C. SELECT 문에서 칼럼을 여러 개 조회하는 것', correct:false},
+  {text:'D. 테이블 이름을 대문자로 쓰는 것', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 방금 실습에서 봤듯, WHERE를 빠뜨리면 테이블 전체가 수정되거나 삭제되는 치명적인 사고로 이어집니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 나머지 보기들은 결과에 큰 영향이 없는 사소한 스타일 차이일 뿐입니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>

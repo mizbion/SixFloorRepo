@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>28. 프론트엔드 입력값이 DB까지 가는 여정</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb; --card:#ffffff; --surf2:#eceefb; --surf3:#dfe3f7;
+  --border:#c9cff2; --text:#1a1c33; --sub:#5c6089;
+  --ac:#4338ca; --ac-l:#ecebfd; --ac-b:#b6b3ef;
+  --header-bg:#0c0d1f; --grad-end:#6366f1;
+  --green:#16a34a; --green-l:#dcfce7; --red:#dc2626; --red-l:#fee2e2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans KR',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:80px;}
+.progress{position:fixed; top:0; left:0; height:4px; background:var(--ac); width:0%; z-index:100; transition:width .1s;}
+header{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; padding:56px 24px 48px; text-align:center;}
+.kicker{display:inline-block; background:rgba(255,255,255,.12); color:#c7c9f5; font-size:12.5px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px; letter-spacing:.3px;}
+header h1{font-family:'Black Han Sans',sans-serif; font-size:32px; letter-spacing:.5px; margin-bottom:12px;}
+header p{color:#a9adf0; font-size:14.5px; max-width:480px; margin:0 auto;}
+.wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+section{margin-top:56px;}
+.eyebrow{font-size:12.5px; font-weight:700; color:var(--ac); letter-spacing:.5px; margin-bottom:8px;}
+h2{font-size:22px; margin-bottom:10px; line-height:1.4;}
+.lead{color:var(--sub); font-size:14.5px; margin-bottom:20px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px 24px; box-shadow:0 4px 20px rgba(50,50,120,.06);}
+.hint{background:var(--surf2); border-radius:12px; padding:12px 16px; font-size:13.5px; color:var(--sub); margin-top:16px;}
+.runbtn{padding:11px 22px; border-radius:10px; border:none; background:var(--ac); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; margin-right:8px; margin-top:14px;}
+.resetbtn{padding:11px 22px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--sub); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:14px;}
+.dot-nav{display:flex; justify-content:center; gap:8px; margin:40px 0 0;}
+.dot-nav span{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.dot-nav span.on{background:var(--ac); width:22px; border-radius:5px; transition:.2s;}
+
+/* ── 섹션A: 흩어진 데이터 ── */
+.rawgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:18px 0;}
+.rawcard{background:var(--surf2); border:1.5px dashed var(--ac-b); border-radius:14px; padding:20px 14px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--sub); transition:.4s;}
+.profilecard{display:none; background:var(--ac); color:#fff; border-radius:16px; padding:22px; margin-top:18px;}
+.profilecard.show{display:block; animation:popin .4s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.92);} to{opacity:1; transform:scale(1);}}
+.profilecard .prow{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:14px;}
+.profilecard .prow:last-child{border-bottom:none;}
+.profilecard .plabel{opacity:.75;}
+
+/* ── 섹션B: DIKW 사다리 ── */
+.dikw{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.dstep{border:1.5px solid var(--border); border-radius:14px; padding:16px 18px; cursor:pointer; transition:.2s; background:var(--card);}
+.dstep:hover{border-color:var(--ac-b);}
+.dstep .dtitle{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+.dstep .dtitle .dnum{width:26px; height:26px; border-radius:50%; background:var(--surf2); color:var(--ac); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;}
+.dstep .dbody{display:none; margin-top:10px; padding-left:34px; font-size:13.5px; color:var(--sub); line-height:1.7;}
+.dstep.open{border-color:var(--ac); background:var(--ac-l);}
+.dstep.open .dtitle .dnum{background:var(--ac); color:#fff;}
+.dstep.open .dbody{display:block;}
+
+/* ── 섹션C: 구조화 vs 비구조화 ── */
+.togglebar{display:flex; gap:8px; margin-bottom:16px;}
+.togglebar button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); font-weight:700; font-size:13px; color:var(--sub); cursor:pointer;}
+.togglebar button.on{background:var(--ac); color:#fff; border-color:var(--ac);}
+table.dtab2{width:100%; border-collapse:collapse; font-size:13px;}
+table.dtab2 th{background:var(--surf3); padding:8px 10px; text-align:left;}
+table.dtab2 td{padding:8px 10px; border-top:1px solid var(--border);}
+.freetext{font-size:13.5px; color:var(--text); line-height:1.9; background:var(--surf2); border-radius:10px; padding:16px;}
+.freetext mark{background:#fde68a; padding:0 3px; border-radius:3px;}
+
+/* ── 섹션D: 미니 퀴즈 ── */
+.quizopt{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); margin-bottom:9px; cursor:pointer; font-size:13.5px; transition:.15s;}
+.quizopt:hover{border-color:var(--ac-b);}
+.quizopt.correct{background:var(--green-l); border-color:#86efac; font-weight:700;}
+.quizopt.wrong{background:var(--red-l); border-color:#fca5a5;}
+.quizfeedback{margin-top:12px; font-size:13.5px; font-weight:700; display:none;}
+.quizfeedback.show{display:block;}
+
+/* ── 마무리 ── */
+.recap{background:linear-gradient(135deg,var(--header-bg),#1c1e3d); color:#fff; border-radius:18px; padding:26px 24px;}
+.recap li{margin:8px 0 8px 18px; font-size:14px; color:#d8daf7;}
+.nextbox{margin-top:16px; background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px; font-size:13px; color:#c7c9f5;}
+
+/* ── 토픽28 전용 ── */
+.errbox2{background:var(--red-l); border:1.5px solid #fca5a5; color:#b91c1c; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.okbox2{background:var(--green-l); border:1.5px solid #86efac; color:#166534; border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px;}
+.sqlcode{background:var(--header-bg); border-radius:12px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#d8daf7; line-height:1.9; white-space:pre-wrap;}
+.timeline2{position:relative; padding-left:6px;}
+.tlitem{position:relative; padding-left:38px; padding-bottom:6px;}
+.tlitem::before{content:''; position:absolute; left:11px; top:34px; bottom:-6px; width:2px; background:var(--border);}
+.tlitem:last-child::before{display:none;}
+.tlnum{position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; background:var(--ac); border:2px solid var(--ac); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; z-index:2;}
+.tlhead{padding:10px 14px; border-radius:12px; background:var(--ac-l); border:1.5px solid var(--ac-b);}
+.tltitle{font-weight:700; font-size:13px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;}
+.tltag{font-size:10px; font-weight:700; color:var(--ac); background:rgba(255,255,255,.55); padding:2px 8px; border-radius:20px;}
+.tlbody{font-size:12.5px; color:var(--text);}
+.tlbody .sqlcode{margin-top:8px;}
+.valuebox{font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--card); border:1.5px dashed var(--ac-b); border-radius:8px; padding:6px 10px; display:inline-block; color:var(--ac); font-weight:700;}
+.inputrow{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<header>
+  <span class="kicker">데이터베이스 × 백엔드 연계 · 28</span>
+  <h1>프론트엔드 입력값이 DB까지 가는 여정</h1>
+  <p>직접 아무 문장이나 입력해보세요. 그 글자들이 8단계를 거치며 어떤 모습으로 계속 변신하는지, 처음부터 끝까지 따라갑니다.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== 여정 전체 ===== -->
+  <section>
+    <div class="card">
+      <div style="font-weight:700; font-size:14px; margin-bottom:10px;">✍️ 게시판에 댓글을 달아봅시다</div>
+      <div class="inputrow" style="margin-bottom:12px;">
+        <input type="text" id="journeyInput" style="flex:1; padding:10px 14px; border-radius:9px; border:1.5px solid var(--border); font-size:14px;" value="오늘 급식 진짜 맛있었어요!">
+      </div>
+      <button class="runbtn" onclick="runJourney()">▶ 이 값의 여정 추적 시작</button>
+      <button class="resetbtn" onclick="resetJourney()">⟲ 초기화</button>
+      <div class="hint" id="journeyIntro" style="margin-top:12px;">아직 추적을 시작하지 않았습니다. 위 문장을 자유롭게 바꿔서 입력해도 좋습니다.</div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div id="journeyStage"></div>
+    </div>
+  </section>
+
+  <!-- ===== 미니 퀴즈 ===== -->
+  <section>
+    <div class="eyebrow">확인 퀴즈</div>
+    <h2>이 여정에서, SQL 인젝션을 막아주는 단계는 어디였나요?</h2>
+    <div class="card">
+      <div id="quizOptions"></div>
+      <div class="quizfeedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ===== 마무리 ===== -->
+  <section>
+    <div class="recap">
+      <div class="eyebrow" style="color:#a9adf0;">오늘의 핵심 정리</div>
+      <h2 style="color:#fff;">기억할 것 3가지</h2>
+      <ul>
+        <li>입력창에 적은 글자는 <b>자바스크립트 문자열 → JSON → HTTP 본문 → 파이썬 문자열 → SQL 파라미터 → DB 저장값</b> 순서로 계속 형태를 바꾸며 이동합니다.</li>
+        <li>각 단계는 서로 다른 "언어"를 쓰기 때문에, 값이 그 언어에 맞게 <b>포장되고 다시 풀리는 과정</b>이 반드시 필요합니다.</li>
+        <li>이 여정 전체가 안전하려면 <b>파라미터 바인딩(23번)</b>처럼, 값을 코드와 분리해서 다루는 습관이 각 단계마다 지켜져야 합니다.</li>
+      </ul>
+      <div class="nextbox">➡️ 다음 시간: <b>29. SQL 인젝션이란 무엇인가</b> — 오늘 살짝 스쳐 지나간 그 위험을, 실제 공격 원리와 방어법으로 본격적으로 파헤쳐봅니다.</div>
+    </div>
+  </section>
+
+  <div class="dot-nav" id="dotNav"></div>
+</div><!-- /wrap -->
+<script>
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function escapeJs(s){
+  return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+
+function resetJourney(){
+  document.getElementById('journeyStage').innerHTML = '';
+  document.getElementById('journeyIntro').textContent = '아직 추적을 시작하지 않았습니다. 위 문장을 자유롭게 바꿔서 입력해도 좋습니다.';
+}
+
+function runJourney(){
+  const raw = document.getElementById('journeyInput').value || '(빈 값)';
+  const html = escapeHtml(raw);
+  const js = escapeJs(raw);
+
+  document.getElementById('journeyIntro').textContent = `"${raw}" 라는 값이 지금부터 8단계를 거칩니다. 순서대로 나타납니다.`;
+
+  const STAGES = [
+    {tag:'화면', title:'① 입력창의 값 (자바스크립트 문자열)',
+     code:`let comment = '${js}';`,
+     detail:`사용자가 타이핑한 순간, 이 값은 브라우저 메모리 안의 자바스크립트 <b>문자열(string)</b>일 뿐입니다. 아직 서버는 이 값의 존재조차 모릅니다.`},
+    {tag:'20번', title:'② JSON으로 포장된다',
+     code:`JSON.stringify({ comment: '${js}' })\n// 결과: '{"comment":"${js}"}'`,
+     detail:`서버로 보내기 좋은 공용 형식인 JSON으로 값을 감쌉니다. "comment"라는 이름표가 붙었습니다.`},
+    {tag:'18·12번', title:'③ HTTP 요청 본문에 실려 전송된다',
+     code:`POST /api/comments HTTP/1.1\nContent-Type: application/json\n\n{"comment":"${html}"}`,
+     detail:`이 JSON 문자열이 HTTP 요청의 "몸통(body)"에 담겨, 인터넷을 통해 서버로 이동합니다.`},
+    {tag:'22번', title:'④ 백엔드 API 함수가 요청을 받는다',
+     code:`@app.route('/api/comments', methods=['POST'])\ndef create_comment():\n    data = request.json\n    text = data['comment']\n    # 이제 text는 파이썬 문자열: '${js}'`,
+     detail:`서버는 받은 JSON을 다시 풀어서(파싱), 파이썬이 다룰 수 있는 문자열로 되돌립니다. 이 순간 언어가 자바스크립트에서 파이썬으로 바뀌었습니다.`},
+    {tag:'23번', title:'⑤ SQL 파라미터로 안전하게 전달된다',
+     code:`cursor.execute(\n  "INSERT INTO COMMENTS (CONTENT) VALUES (?)",\n  (text,)\n)`,
+     detail:`⚠️ 만약 이 값을 SQL 문자열에 그냥 이어붙였다면(23번 시간 기억나시나요?) 위험했겠지만, <b>파라미터 바인딩</b>으로 전달했기 때문에 이 값은 끝까지 "순수한 데이터"로만 취급됩니다.`},
+    {tag:'DB', title:'⑥ 데이터베이스 테이블에 실제로 저장된다',
+     code:`COMMENTS 테이블\n┌────────┬──────────────────────────────┐\n│ ID     │ CONTENT                        │\n├────────┼──────────────────────────────┤\n│ 101    │ ${html}\n└────────┴──────────────────────────────┘`,
+     detail:`여러 단계를 거쳐온 이 값이, 드디어 디스크에 실제로 저장된 진짜 데이터가 되었습니다.`},
+    {tag:'1~15번', title:'⑦ 다시 조회될 때 SELECT로 꺼내진다',
+     code:`SELECT CONTENT FROM COMMENTS WHERE ID = 101;\n# 결과: '${js}'`,
+     detail:`댓글 목록을 새로고침하면, 저장해둔 이 값을 SQL로 다시 꺼내옵니다.`},
+    {tag:'화면', title:'⑧ JSON으로 응답, 화면에 최종 표시된다',
+     code:`jsonify({"comment": "${html}"})\n→ 프론트엔드가 받아서 화면에 렌더링: "${html}"`,
+     detail:`처음 입력했던 그 문장이, 여러 언어와 형식을 넘나든 끝에 다시 화면에 그대로 나타납니다. 이게 바로 "여정"입니다.`},
+  ];
+
+  let htmlOut = '<div class="timeline2">' + STAGES.map((s,i)=>`
+    <div class="tlitem" id="jt${i}" style="opacity:0; transition:opacity .3s;">
+      <div class="tlnum">${i+1}</div>
+      <div class="tlhead">
+        <div class="tltitle">${s.title}<span class="tltag">${s.tag}</span></div>
+        <div class="tlbody">
+          <div>${s.detail}</div>
+          <div class="sqlcode">${s.code}</div>
+        </div>
+      </div>
+    </div>`).join('') + '</div>';
+  document.getElementById('journeyStage').innerHTML = htmlOut;
+
+  STAGES.forEach((s,i)=>{
+    setTimeout(()=>{ document.getElementById('jt'+i).style.opacity = 1; }, i*350);
+  });
+}
+
+/* ============ 퀴즈 ============ */
+const QUIZ_OPTS = [
+  {text:'A. ② JSON으로 포장하는 단계', correct:false},
+  {text:'B. ⑤ SQL 파라미터로 전달하는 단계', correct:true},
+  {text:'C. ⑥ 데이터베이스에 저장되는 단계', correct:false},
+  {text:'D. ⑧ 화면에 표시되는 단계', correct:false},
+];
+function renderQuiz(){
+  document.getElementById('quizOptions').innerHTML = QUIZ_OPTS.map((o,i)=>
+    `<button class="quizopt" id="qz${i}" onclick="answerQuiz(${i})">${o.text}</button>`).join('');
+  document.getElementById('quizFeedback').classList.remove('show');
+}
+function answerQuiz(i){
+  QUIZ_OPTS.forEach((o,idx)=>{
+    const el = document.getElementById('qz'+idx);
+    el.onclick = null;
+    if(o.correct) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.add('show');
+  if(QUIZ_OPTS[i].correct){
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ 정답! 값을 SQL 문자열에 직접 이어붙이지 않고 "파라미터"로 분리해서 전달하는 이 단계 덕분에, 아무리 이상한 내용을 입력해도 SQL 명령으로 오해되지 않습니다.';
+  } else {
+    fb.style.color = 'var(--red)';
+    fb.textContent = '❌ 아쉬워요. 정답은 B번입니다. 나머지 단계들은 형식을 바꾸거나 값을 전달/표시할 뿐, 보안과 직접 관련된 단계는 파라미터 바인딩입니다.';
+  }
+}
+renderQuiz();
+
+/* ============ 점 네비게이션 ============ */
+function renderDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  document.getElementById('dotNav').innerHTML = Array.from(sections).map((_,i)=>`<span id="nvdot${i}"></span>`).join('');
+}
+function updateDotNav(){
+  const sections = document.querySelectorAll('.wrap > section');
+  let activeIdx = 0;
+  sections.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top < window.innerHeight*0.5) activeIdx = i;
+  });
+  sections.forEach((_,i)=>{
+    const dot = document.getElementById('nvdot'+i);
+    if(dot) dot.classList.toggle('on', i===activeIdx);
+  });
+}
+renderDotNav();
+window.addEventListener('scroll', updateDotNav);
+updateDotNav();
+</script>
+</body>
+</html>
